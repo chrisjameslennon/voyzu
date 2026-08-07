@@ -8,5 +8,10 @@ export async function PackageTopNav({
 }: {
   domains: VoyzuComposedSurfaceDomain[];
 }) {
-  return <PackageTopNavClient domains={await managedPackageDomains(domains)} />;
+  return (
+    <PackageTopNavClient
+      domains={await managedPackageDomains(domains)}
+      allDomains={domains}
+    />
+  );
 }

@@ -8,6 +8,7 @@ import type { VoyzuComposedSurfaceDomain } from "@voyzu/ui-surface/types";
 
 interface PackageTopNavProps {
   domains: VoyzuComposedSurfaceDomain[];
+  allDomains: VoyzuComposedSurfaceDomain[];
 }
 
 function routeMatches(pathname: string, routePath: string) {
@@ -22,26 +23,29 @@ function routeMatches(pathname: string, routePath: string) {
   );
 }
 
-export function PackageTopNavClient({ domains }: PackageTopNavProps) {
+export function PackageTopNavClient({ domains, allDomains }: PackageTopNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const isMobile = useIsMobile();
-  const activeDomain = domains.find((domain) =>
+  const activeDomain = allDomains.find((domain) =>
     domain.routePaths.some(({ path }) => routeMatches(pathname, path))
   );
 
   if (isMobile) {
-    const domain = activeDomain ?? domains[0];
-    if (!domain) return null;
+    const isSettings = pathname.startsWith("/settings");
+    const label = isSettings ? "Settings" : activeDomain?.label;
+    if (!label) return null;
 
     return (
       <button
         className={`${styles.topNavButton} ${styles.topNavButtonActive}`}
         type="button"
-        aria-label={domain.label}
-        onClick={() => router.push(domain.defaultPath)}
+        aria-label={label}
+        onClick={() => {
+          if (activeDomain) router.push(activeDomain.defaultPath);
+        }}
       >
-        {domain.label}
+        {label}
       </button>
     );
   }
