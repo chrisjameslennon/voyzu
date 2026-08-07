@@ -3,6 +3,8 @@ export type DetailBackSource =
   | "journal"
   | "arLedgerEntry"
   | "apLedgerEntry"
+  | "arLedgerEntryEnquiry"
+  | "apLedgerEntryEnquiry"
   | "taxLedgerEntry"
   | "inventoryLedgerEntry"
   | "arInvoices"
@@ -29,6 +31,8 @@ export function normalizeDetailBackSource(value: string | undefined): DetailBack
   if (value === "journals") return "journals";
   if (value === "ar-ledger-entry") return "arLedgerEntry";
   if (value === "ap-ledger-entry") return "apLedgerEntry";
+  if (value === "ar-ledger-entry-enquiry") return "arLedgerEntryEnquiry";
+  if (value === "ap-ledger-entry-enquiry") return "apLedgerEntryEnquiry";
   if (value === "tax-ledger-entry") return "taxLedgerEntry";
   if (value === "inventory-ledger-entry") return "inventoryLedgerEntry";
   if (value === "ar-invoices") return "arInvoices";
@@ -59,6 +63,8 @@ export function detailBackHref({ from, fromCode, fallbackHref }: DetailBackConte
   if (from === "journal" && fromCode) return `/finance/journals/${encodeURIComponent(fromCode)}`;
   if (from === "arLedgerEntry" && fromCode) return `/finance/subledgers/ar/ledger-entries/${encodeURIComponent(fromCode)}`;
   if (from === "apLedgerEntry" && fromCode) return `/finance/subledgers/ap/ledger-entries/${encodeURIComponent(fromCode)}`;
+  if (from === "arLedgerEntryEnquiry" && fromCode) return `/finance/subledgers/ar/ledger-entry-enquiry/${encodeURIComponent(fromCode)}`;
+  if (from === "apLedgerEntryEnquiry" && fromCode) return `/finance/subledgers/ap/ledger-entry-enquiry/${encodeURIComponent(fromCode)}`;
   if (from === "taxLedgerEntry" && fromCode) return `/finance/subledgers/tax/ledger-entries/${encodeURIComponent(fromCode)}`;
   if (from === "inventoryLedgerEntry" && fromCode) return `/finance/inventory/ledger/${encodeURIComponent(fromCode)}`;
   if (from === "arInvoices") return "/finance/subledgers/ar/invoices";
@@ -104,6 +110,8 @@ function sourceQueryValue(from: Exclude<DetailBackSource, "journals">) {
   if (from === "journal") return "journal";
   if (from === "arLedgerEntry") return "ar-ledger-entry";
   if (from === "apLedgerEntry") return "ap-ledger-entry";
+  if (from === "arLedgerEntryEnquiry") return "ar-ledger-entry-enquiry";
+  if (from === "apLedgerEntryEnquiry") return "ap-ledger-entry-enquiry";
   if (from === "taxLedgerEntry") return "tax-ledger-entry";
   if (from === "inventoryLedgerEntry") return "inventory-ledger-entry";
   if (from === "arInvoices") return "ar-invoices";
