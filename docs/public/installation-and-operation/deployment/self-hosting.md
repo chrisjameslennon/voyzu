@@ -148,14 +148,14 @@ Voyzu has no default authentication secret and rejects missing values or values 
 Run deployments from a local Voyzu repository. If you do not already have one:
 
 ```bash
-git clone https://github.com/chrisjameslennon/voyzu.git
+git clone --branch main --single-branch https://github.com/chrisjameslennon/voyzu.git
 cd voyzu
 npm ci
 ```
 
 The deployment script creates a production Voyzu installation using
 `create-voyzu`. The platform is downloaded from
-`https://github.com/chrisjameslennon/voyzu.git`.
+the `main` branch of `https://github.com/chrisjameslennon/voyzu.git`.
 
 First inspect the plan without connecting:
 

@@ -32,6 +32,9 @@ npm exec --yes --package=github:chrisjameslennon/create-voyzu -- create-voyzu de
 
 The command creates the root `package.json` and `packages/` directory when they do not exist. It downloads the Voyzu Platform into `.run/voyzu`, creates the development runtime and installs its dependencies.
 
+The disposable platform runtime is always downloaded from Voyzu's `main`
+branch. Development branch and tag overrides are not supported.
+
 The resulting structure is:
 
 ```

@@ -48,6 +48,9 @@ npm exec --yes --package=github:chrisjameslennon/create-voyzu -- create-voyzu in
 
 The command is the same in PowerShell, macOS and Linux shells.
 
+`create-voyzu` always downloads the Voyzu Platform from its `main` branch.
+Platform branch and tag overrides are not supported.
+
 Move into the generated project:
 
 ```shell
@@ -158,6 +161,9 @@ To update the Voyzu Platform itself, run:
 ```shell
 npm run voyzu:update
 ```
+
+The update fast-forwards the installed platform from `main`. It will refuse to
+update a platform checkout on another branch.
 
 Restart Voyzu after the update:
 
