@@ -40,7 +40,7 @@ export async function InstalledPackageDetailPage({ id }: { id?: string }) {
     : null;
   return (
     <InstalledPackageDetail
-      pageTitle="Packages"
+      pageTitle="Installed Packages"
       canManage={canManage}
       installedPackage={installedPackage}
       packageFiles={formattedPackageFiles}

@@ -24,6 +24,7 @@
 * [UI Application surface patterns](voyzu-platform-patterns/app-surface.md)
 * [Static assets](voyzu-platform-patterns/static-assets.md)
 * [Managing dependencies](voyzu-platform-patterns/managing-dependencies.md)
+* [PDF generation](voyzu-platform-patterns/pdf-generation.md)
 * [Documentation and help](voyzu-platform-patterns/documentation-and-help.md)
 * [Breadcrumb patterns](voyzu-platform-patterns/breadcrumbs.md)
 * [Authentication](voyzu-platform-patterns/authentication.md)

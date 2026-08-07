@@ -4,6 +4,7 @@ import {
   type VoyzuSurfaceSlots,
 } from "@voyzu/ui-surface/types";
 import { resolveExternalUrl } from "@voyzu/ui-surface";
+import { isInstalledPackageActive } from "@voyzu/package-management/server";
 
 import styles from "@voyzu/ui-surface/css-modules/surface.module.css";
 import { DeveloperButton } from "./top-nav/DeveloperButton";
@@ -15,9 +16,13 @@ interface SurfaceTopNavProps {
   activeRoute?: VoyzuSurfaceRoute;
 }
 
-export function SurfaceTopNav({ slots, activeRoute }: SurfaceTopNavProps) {
+export async function SurfaceTopNav({ slots, activeRoute }: SurfaceTopNavProps) {
   const helpUrl = activeRoute?.helpBaseUrl && activeRoute.helpPath
     ? resolveExternalUrl(activeRoute.helpBaseUrl, activeRoute.helpPath)
+    : undefined;
+  const apiDocsUrl = activeRoute?.apiDocsUrl
+    && await isInstalledPackageActive("@voyzu/api-reference")
+    ? activeRoute.apiDocsUrl
     : undefined;
 
   return (
@@ -27,7 +32,7 @@ export function SurfaceTopNav({ slots, activeRoute }: SurfaceTopNavProps) {
         {getSurfaceSlot(slots, "top.primaryNav")}
       </nav>
       <div className={styles.utility}>
-        <DeveloperButton href={activeRoute?.apiDocsUrl} />
+        <DeveloperButton href={apiDocsUrl} />
         <SettingsButton />
         {helpUrl ? <HelpButton href={helpUrl} /> : null}
         {getSurfaceSlot(slots, "top.user")}

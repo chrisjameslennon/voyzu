@@ -9,7 +9,7 @@ export async function InstalledPackagesListPage() {
   const canManage = await currentUserCanManageUsers();
   return (
     <InstalledPackageList
-      pageTitle="Packages"
+      pageTitle="Installed Packages"
       canManage={canManage}
       initialPackages={canManage ? await listInstalledPackages() : []}
       initialHomePageRoute={canManage ? await getHomePageRoute() : "/welcome"}

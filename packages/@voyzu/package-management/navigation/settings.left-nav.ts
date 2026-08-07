@@ -5,7 +5,7 @@ export const packageManagementSettingsLeftNav = [
     label: "Settings",
     items: [
       {
-        label: "Packages",
+        label: "Installed Packages",
         icon: "deployed_code",
         routeId: packageManagementModule.pageRoutes.list.id,
       },
