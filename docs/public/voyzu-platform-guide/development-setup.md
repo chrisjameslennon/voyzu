@@ -53,13 +53,33 @@ your-development-directory/
 
 Existing `.env.local`, `.gitignore`, `package.json` and package source are preserved.
 
+## 4. Create the PostgreSQL database
+
+Create an empty PostgreSQL database for the development environment. The examples in this guide use the name `voyzu`:
+
+```shell
+createdb voyzu
+```
+
+Record the database host, port, database name, username and password. The development installer does not create the PostgreSQL database itself.
+
+## 5. Configure the environment
+
 Open `.env.local` and replace `CHANGE_ME` in `VOYZU_DATABASE_URL` with the development database password:
 
 ```env
 VOYZU_DATABASE_URL=postgresql://postgres:your-password@localhost:5432/voyzu
 ```
 
-The installer generates `VOYZU_AUTH_SECRET`; preserve that value.
+If the database password contains reserved URL characters, URL-encode it.
+
+The installer has already generated a unique `VOYZU_AUTH_SECRET`. Preserve that value: Voyzu uses it to sign and verify authentication session cookies.
+
+{% hint style="warning" %}
+Do not commit `.env.local` or disclose its contents.
+{% endhint %}
+
+## 6. Initialize Voyzu and create the bootstrap administrator
 
 Initialize the preinstalled Voyzu packages and create the bootstrap administrator:
 
@@ -74,7 +94,11 @@ User code: ADMIN
 Password:  password
 ```
 
-## 4. Optionally install the Voyzu Ice Creams example package
+{% hint style="danger" %}
+The bootstrap administrator is only for initial setup. Sign in, create a named administrator with a strong unique password, verify that account can sign in, and delete the `ADMIN` user before exposing Voyzu to other users or a network.
+{% endhint %}
+
+## 7. Optionally install the Voyzu Ice Creams example package
 
 Voyzu Ice Creams is a simple package for managing ice cream flavours. It is a best-practice example that illustrates many Voyzu patterns.
 
@@ -94,7 +118,7 @@ npm run voyzu:dev
 
 Browse to `http://localhost:3000`, sign in using the bootstrap administrator and select **Ice Creams** from the top navigation.
 
-## 5. Write your package
+## 8. Write your package
 
 With the development environment set up, it is time to write your package. All packages must:
 
@@ -108,7 +132,7 @@ The directory structure and `package.json` name are both authoritative. For exam
 
 Follow [Develop a new package](develop-a-new-package.md) for a practical walkthrough based on the Voyzu Ice Creams reference package.
 
-## 6. Link your package into the Voyzu Platform
+## 9. Link your package into the Voyzu Platform
 
 Install a package being developed locally into the runtime:
 
@@ -125,7 +149,7 @@ packages/@acme/warehousing       editable source
 
 The command installs workspace dependencies, applies the package's database installation and composes it into Voyzu.&#x20;
 
-## 7. Run Voyzu
+## 10. Run Voyzu
 
 ```bash
 npm run voyzu:dev
@@ -147,7 +171,7 @@ To install every active package beneath the local `packages/` directory for watc
 npm run voyzu:link-packages
 ```
 
-## 8 Install your package
+## 11. Install your package
 
 Voyzu packages are installed directly from GitHub, so they do not require an npm publishing step. Commit and push a conforming package to a Git repository using the standard `packages/@publisher/package-name` structure.
 
@@ -161,7 +185,7 @@ The command downloads or refreshes the repository, copies the selected package i
 
 You must have Git access to the repository when the package is not public.
 
-## 9 Publish your package
+## 12. Publish your package
 
 Voyzu packages are installed directly from GitHub, so they do not require an npm publishing step. All that is required to publish your package is to make your directory public.
 

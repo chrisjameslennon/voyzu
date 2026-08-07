@@ -323,9 +323,8 @@ export async function getSystemInformation(): Promise<SystemInformation> {
   const paths = installationPaths(platformRoot);
   const platformManifestPath = join(paths.platformRoot, "package.json");
   const webManifestPath = join(paths.webRoot, "package.json");
-  const [platformManifest, webManifest, locks] = await Promise.all([
+  const [platformManifest, locks] = await Promise.all([
     readJson(platformManifestPath),
-    readJson(webManifestPath),
     readLocks(paths.webRoot),
   ]);
   const resolutionRoots = [paths.webRoot, paths.platformRoot, paths.runtimeRoot];
@@ -390,9 +389,7 @@ export async function getSystemInformation(): Promise<SystemInformation> {
           { label: "Voyzu version", value: platformManifest?.version ?? "Unavailable" },
           { label: "Node.js version", value: process.version },
           { label: "Next.js version", value: nextVersion },
-          { label: "Next.js configured version", value: webManifest?.dependencies?.next ?? "Unavailable" },
           { label: "React version", value: reactVersion },
-          { label: "React configured version", value: webManifest?.dependencies?.react ?? "Unavailable" },
           { label: "Instance root", value: paths.instanceRoot, mono: true },
           { label: "Runtime workspace (.run)", value: paths.runtimeRoot, mono: true },
           { label: "Voyzu platform root", value: paths.platformRoot, mono: true },
