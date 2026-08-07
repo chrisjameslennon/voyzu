@@ -23,7 +23,9 @@ export function SurfaceTopNav({ slots, activeRoute }: SurfaceTopNavProps) {
   return (
     <header className={styles.top}>
       <div className={styles.brand}>{getSurfaceSlot(slots, "top.brand")}</div>
-      <nav className={styles.primaryNav}>{getSurfaceSlot(slots, "top.primaryNav")}</nav>
+      <nav className={`${styles.primaryNav} ${styles.primaryNavWithMobileMenu}`}>
+        {getSurfaceSlot(slots, "top.primaryNav")}
+      </nav>
       <div className={styles.utility}>
         <DeveloperButton href={activeRoute?.apiDocsUrl} />
         <SettingsButton />

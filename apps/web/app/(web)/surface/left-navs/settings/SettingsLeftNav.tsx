@@ -5,7 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { LeftNav, MobileNavDrawer, type NavGroup } from "@voyzu/ui-components";
 import { useIsTablet } from "@voyzu/ui-layout";
-import type { VoyzuSurfaceNavGroup } from "@voyzu/ui-surface/types";
+import type {
+  VoyzuComposedSurfaceDomain,
+  VoyzuSurfaceNavGroup,
+} from "@voyzu/ui-surface/types";
 
 import { toNavItem, type SurfaceRoutePath } from "../../common/nav";
 import { canAccessRole, useCurrentUserAccess } from "../../common/useCurrentUserAccess";
@@ -14,9 +17,14 @@ import styles from "@voyzu/ui-surface/css-modules/surface.module.css";
 interface SettingsLeftNavProps {
   routePaths: SurfaceRoutePath[];
   leftNav: VoyzuSurfaceNavGroup[];
+  navigationDomains: VoyzuComposedSurfaceDomain[];
 }
 
-export function SettingsLeftNav({ routePaths, leftNav }: SettingsLeftNavProps) {
+export function SettingsLeftNav({
+  routePaths,
+  leftNav,
+  navigationDomains,
+}: SettingsLeftNavProps) {
   const router = useRouter();
   const pathname = usePathname();
   const isTablet = useIsTablet();
@@ -58,9 +66,12 @@ export function SettingsLeftNav({ routePaths, leftNav }: SettingsLeftNavProps) {
       <MobileNavDrawer
         isOpen={isMobileDrawerOpen}
         onClose={() => setIsMobileDrawerOpen(false)}
-        domains={[]}
+        domains={navigationDomains.map(({ label }) => label)}
         activeDomain="Settings"
-        onSelectDomain={() => undefined}
+        onSelectDomain={(label) => {
+          const domain = navigationDomains.find((item) => item.label === label);
+          if (domain) router.push(domain.defaultPath);
+        }}
         navSections={groups.map((group) => ({
           sectionLabel: group.label,
           items: group.items,

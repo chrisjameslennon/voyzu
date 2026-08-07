@@ -27,20 +27,21 @@ export function SurfaceFrame({
 }: SurfaceFrameProps) {
   return (
     <div className={styles.frame}>
-      <SurfaceTopNav slots={slots} activeRoute={activeRoute} />
+      <SurfaceTopNav
+        slots={slots}
+        activeRoute={activeRoute}
+      />
+      <aside
+        className={`${styles.left} ${!showLeftNav || Main ? styles.leftMobileOnly : ""}`}
+      >
+        {getSurfaceSlot(slots, "left.nav")}
+      </aside>
       {Main ? (
         <div className={styles.domainMain}>
           <Main>{children}</Main>
         </div>
       ) : (
-        <>
-          {showLeftNav ? (
-            <aside className={styles.left}>
-              {getSurfaceSlot(slots, "left.nav")}
-            </aside>
-          ) : null}
-          <main className={styles.main}>{children}</main>
-        </>
+        <main className={styles.main}>{children}</main>
       )}
     </div>
   );

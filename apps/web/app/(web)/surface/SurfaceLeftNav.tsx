@@ -1,13 +1,11 @@
-"use client";
+import type {
+  VoyzuComposedSurfaceDomain,
+  VoyzuSurfaceNavGroup,
+} from "@voyzu/ui-surface/types";
 
-import { usePathname } from "next/navigation";
-
-import type { VoyzuSurfaceNavGroup } from "@voyzu/ui-surface/types";
-import type { VoyzuComposedSurfaceDomain } from "@voyzu/ui-surface/types";
-
-import { PackageLeftNav } from "./packages/PackageLeftNav";
-import { SettingsLeftNav } from "./left-navs/settings/SettingsLeftNav";
 import type { SurfaceRoutePath } from "./common/nav";
+import { SurfaceLeftNavClient } from "./SurfaceLeftNavClient";
+import { managedPackageDomains } from "./packages/managedPackageDomains";
 
 interface SurfaceLeftNavProps {
   settingsRoutePaths: SurfaceRoutePath[];
@@ -15,21 +13,11 @@ interface SurfaceLeftNavProps {
   packageDomains: VoyzuComposedSurfaceDomain[];
 }
 
-export function SurfaceLeftNav({
-  settingsRoutePaths,
-  settingsLeftNav,
-  packageDomains,
-}: SurfaceLeftNavProps) {
-  const pathname = usePathname();
-
-  if (!pathname.startsWith("/settings")) {
-    return <PackageLeftNav domains={packageDomains} />;
-  }
-
+export async function SurfaceLeftNav(props: SurfaceLeftNavProps) {
   return (
-    <SettingsLeftNav
-      routePaths={settingsRoutePaths}
-      leftNav={settingsLeftNav}
+    <SurfaceLeftNavClient
+      {...props}
+      navigationDomains={await managedPackageDomains(props.packageDomains)}
     />
   );
 }

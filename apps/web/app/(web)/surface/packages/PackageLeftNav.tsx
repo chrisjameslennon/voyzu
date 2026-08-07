@@ -16,6 +16,7 @@ import { toNavItem } from "../common/nav";
 
 interface PackageLeftNavProps {
   domains: VoyzuComposedSurfaceDomain[];
+  navigationDomains: VoyzuComposedSurfaceDomain[];
 }
 
 function routeMatches(pathname: string, routePath: string) {
@@ -30,7 +31,7 @@ function routeMatches(pathname: string, routePath: string) {
   );
 }
 
-export function PackageLeftNav({ domains }: PackageLeftNavProps) {
+export function PackageLeftNav({ domains, navigationDomains }: PackageLeftNavProps) {
   const router = useRouter();
   const pathname = usePathname();
   const isTablet = useIsTablet();
@@ -41,16 +42,16 @@ export function PackageLeftNav({ domains }: PackageLeftNavProps) {
     domain.routePaths.some(({ path }) => routeMatches(pathname, path))
   );
 
-  if (!activeDomain) return null;
-
   const routePathById = new Map(
-    activeDomain.routePaths.map(({ id, path }) => [id, path]),
+    (activeDomain?.routePaths ?? []).map(({ id, path }) => [id, path]),
   );
-  const groups: NavGroup[] = activeDomain.leftNav.map((group) => ({
+  const groups: NavGroup[] = (activeDomain?.leftNav ?? []).map((group) => ({
     label: group.label,
     items: group.items.map((item) => toNavItem(item, routePathById)),
   }));
-  const hasLeftNavHeader = hasComposedPackageLeftNavHeader(activeDomain.packageName, pathname);
+  const hasLeftNavHeader = activeDomain
+    ? hasComposedPackageLeftNavHeader(activeDomain.packageName, pathname)
+    : false;
   const handleNavigate = (path: string) => {
     if (!path.startsWith("#")) router.push(path);
   };
@@ -75,7 +76,7 @@ export function PackageLeftNav({ domains }: PackageLeftNavProps) {
           isCollapseLocked={isTablet}
           headerSlot={hasLeftNavHeader ? (
             <ComposedPackageLeftNavHeader
-              packageName={activeDomain.packageName}
+              packageName={activeDomain!.packageName}
               isCollapsed={effectiveIsCollapsed}
             />
           ) : undefined}
@@ -84,10 +85,10 @@ export function PackageLeftNav({ domains }: PackageLeftNavProps) {
       <MobileNavDrawer
         isOpen={isMobileDrawerOpen}
         onClose={() => setIsMobileDrawerOpen(false)}
-        domains={domains.map(({ label }) => label)}
-        activeDomain={activeDomain.label}
+        domains={navigationDomains.map(({ label }) => label)}
+        activeDomain={activeDomain?.label ?? ""}
         onSelectDomain={(label) => {
-          const domain = domains.find((item) => item.label === label);
+          const domain = navigationDomains.find((item) => item.label === label);
           if (domain) router.push(domain.defaultPath);
         }}
         navSections={groups.map((group) => ({

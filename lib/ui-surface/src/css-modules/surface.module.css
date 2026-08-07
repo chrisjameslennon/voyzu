@@ -32,10 +32,6 @@
   min-width: 9rem;
 }
 
-.primaryNav {
-  padding-left: 1rem;
-}
-
 .brandText {
   color: var(--voyzu-color-brand);
   font-family: var(--voyzu-font-family-heading);
@@ -57,6 +53,11 @@
   flex: 1;
   height: 100%;
   min-width: 0;
+  padding-left: 1rem;
+}
+
+.primaryNavWithMobileMenu {
+  padding-left: 3.5rem;
 }
 
 .topNavButton {
@@ -255,6 +256,10 @@
     display: block;
   }
 
+  .leftMobileOnly {
+    display: none;
+  }
+
   .brand {
     display: flex;
     width: 9rem;
@@ -263,6 +268,10 @@
 
   .primaryNav {
     flex: initial;
+    padding-left: 0;
+  }
+
+  .primaryNavWithMobileMenu {
     padding-left: 0;
   }
 
