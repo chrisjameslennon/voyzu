@@ -294,8 +294,12 @@
 }
 
 @media (max-width: 767px) {
+  .listView {
+    padding-inline: 1rem;
+  }
+
   .compactMobilePadding {
-    padding-inline: calc(var(--vz-grid-gap) * 1.5);
+    padding-inline: 1rem;
   }
 
   .slotBreadcrumb,

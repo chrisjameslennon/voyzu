@@ -25,11 +25,15 @@
 }
 
 .brand {
-  display: flex;
+  display: none;
   align-items: center;
   padding: 0 1rem;
   width: 9rem;
   min-width: 9rem;
+}
+
+.primaryNav {
+  padding-left: 1rem;
 }
 
 .brandText {
@@ -259,6 +263,7 @@
 
   .primaryNav {
     flex: initial;
+    padding-left: 0;
   }
 
   .topNavButton {
