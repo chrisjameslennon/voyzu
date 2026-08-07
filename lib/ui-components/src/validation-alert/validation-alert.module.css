@@ -1,0 +1,46 @@
+.errorAlert {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  background: var(--voyzu-color-danger-bg);
+  border: 1px solid var(--voyzu-color-danger-border);
+  border-radius: var(--voyzu-radius-surface);
+  padding: 0.75rem;
+}
+
+.errorContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.errorList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.errorText {
+  font-size: var(--voyzu-font-size-body);
+  font-weight: 500;
+  color: var(--voyzu-color-danger-hover);
+  line-height: 1.4;
+}
+
+.errorClose {
+  color: var(--voyzu-color-danger);
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  transition: color var(--voyzu-transition-fast);
+}
+
+.errorClose:hover { color: var(--voyzu-color-danger-hover); }

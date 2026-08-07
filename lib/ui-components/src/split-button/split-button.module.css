@@ -1,0 +1,145 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.group {
+  display: inline-flex;
+  height: var(--voyzu-control-height);
+  align-items: stretch;
+}
+
+.main,
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.875rem;
+  font-family: var(--voyzu-font-family);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--voyzu-transition-fast);
+  border: none;
+}
+
+.main {
+  gap: var(--voyzu-space-inline);
+  padding: var(--voyzu-space-control-y) var(--voyzu-space-control-x);
+  border-radius: var(--voyzu-radius-control) 0 0 var(--voyzu-radius-control);
+}
+
+.toggle {
+  justify-content: center;
+  width: 2rem;
+  border-radius: 0 var(--voyzu-radius-control) var(--voyzu-radius-control) 0;
+}
+
+.main .material-symbols-outlined,
+.toggle .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.main:active,
+.toggle:active {
+  transform: scale(0.95);
+}
+
+.main:disabled,
+.toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.divider {
+  width: 1px;
+  align-self: stretch;
+}
+
+/* ── Primary variant ── */
+
+.groupPrimary .main,
+.groupPrimary .toggle {
+  color: var(--voyzu-color-text-inverse);
+  background: var(--voyzu-color-brand);
+  box-shadow: 0 4px 12px var(--voyzu-color-brand-soft);
+}
+
+.groupPrimary .main:hover:not(:disabled),
+.groupPrimary .toggle:hover:not(:disabled) {
+  background: var(--voyzu-color-brand-hover);
+}
+
+.groupPrimary .divider {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ── Secondary variant ── */
+
+.groupSecondary .main,
+.groupSecondary .toggle {
+  color: var(--voyzu-color-link);
+  background: var(--voyzu-color-surface);
+  box-shadow: var(--voyzu-shadow-surface);
+}
+
+.groupSecondary .main {
+  border: var(--voyzu-border-width) solid var(--voyzu-color-link);
+  border-right: none;
+}
+
+.groupSecondary .toggle {
+  border: var(--voyzu-border-width) solid var(--voyzu-color-link);
+  border-left: none;
+}
+
+.groupSecondary .main:hover:not(:disabled),
+.groupSecondary .toggle:hover:not(:disabled) {
+  background: var(--voyzu-color-primary-surface);
+}
+
+.groupSecondary .divider {
+  background: var(--voyzu-color-link);
+  opacity: 0.25;
+}
+
+/* ── Dropdown ── */
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.375rem);
+  right: 0;
+  z-index: 200;
+  width: max-content;
+  min-width: 12rem;
+  background: var(--voyzu-color-surface);
+  border-radius: var(--voyzu-radius-control);
+  box-shadow: var(--voyzu-shadow-floating);
+  border: 1px solid var(--voyzu-color-surface-secondary);
+  padding: 0.375rem 0;
+}
+
+.dropdownItem {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--voyzu-font-family);
+  color: var(--voyzu-color-text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background var(--voyzu-transition-fast);
+}
+
+.dropdownItem .material-symbols-outlined {
+  font-size: 18px;
+  color: var(--voyzu-color-text-secondary);
+}
+
+.dropdownItem:hover {
+  background: var(--voyzu-color-surface-muted);
+}

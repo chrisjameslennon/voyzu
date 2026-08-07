@@ -1,0 +1,260 @@
+/* ── Layout ── */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.calendarsRow {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+}
+
+.calendarCol {
+  width: 100%;
+}
+
+/* ── Labels row ── */
+
+.labelsRow {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.labelCol {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.labelColStart {
+  justify-content: flex-end;
+}
+
+.labelColEnd {
+  justify-content: flex-start;
+}
+
+.labelText {
+  font-size: var(--voyzu-font-size-body);
+  font-weight: 700;
+  color: var(--voyzu-color-link);
+  min-height: 20px;
+  transition: all var(--voyzu-transition-fast);
+}
+
+.labelDash {
+  color: var(--voyzu-color-text-tertiary);
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ── Calendar ── */
+
+.calendarLabel {
+  font-size: var(--voyzu-font-size-field-label);
+  font-weight: 600;
+  color: var(--voyzu-color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.calendar {
+  border-radius: var(--voyzu-radius-compact);
+  border: 1px solid var(--voyzu-color-border);
+  padding: 0.5rem;
+  background: var(--voyzu-color-surface);
+  box-shadow: var(--voyzu-shadow-surface);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Calendar header ── */
+
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.calendarNavBtn {
+  padding: 0.25rem;
+  color: var(--voyzu-color-text-tertiary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--voyzu-radius-compact);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--voyzu-transition-fast);
+}
+
+.calendarNavBtn:hover {
+  color: var(--voyzu-color-text);
+  background: var(--voyzu-color-surface-secondary);
+}
+
+.calendarSelectors {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ── Month/Year dropdowns ── */
+
+.selectorWrap {
+  position: relative;
+}
+
+.selectorBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+  background: none;
+  border: none;
+  border-radius: var(--voyzu-radius-compact);
+  cursor: pointer;
+  font-size: var(--voyzu-font-size-body);
+  font-weight: 700;
+  font-family: var(--voyzu-font-family);
+  color: var(--voyzu-color-text);
+  transition: background var(--voyzu-transition-fast);
+}
+
+.selectorBtn:hover {
+  background: var(--voyzu-color-surface-muted);
+}
+
+.selectorBtn .material-symbols-outlined {
+  font-size: 18px;
+  color: var(--voyzu-color-text-tertiary);
+}
+
+.selectorDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.25rem;
+  background: var(--voyzu-color-surface);
+  border: 1px solid var(--voyzu-color-border);
+  border-radius: var(--voyzu-radius-popover);
+  box-shadow: var(--voyzu-shadow-floating);
+  z-index: 20;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.selectorDropdownMonth {
+  width: 144px;
+}
+
+.selectorDropdownYear {
+  width: 96px;
+}
+
+.selectorOption {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--voyzu-font-size-body);
+  font-weight: 500;
+  font-family: var(--voyzu-font-family);
+  color: var(--voyzu-color-text-label);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all var(--voyzu-transition-fast);
+}
+
+.selectorOption:hover {
+  background: var(--voyzu-color-surface-muted);
+  color: var(--voyzu-color-link);
+}
+
+.selectorOptionActive {
+  background: var(--voyzu-color-primary-surface);
+  color: var(--voyzu-color-link);
+}
+
+/* ── Day grid ── */
+
+.dayHeaders {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 0.5rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.dayHeader {
+  font-size: var(--voyzu-font-size-field-label);
+  font-weight: 500;
+  color: var(--voyzu-color-text-secondary);
+}
+
+.dayGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  text-align: center;
+  flex: 1;
+}
+
+.dayCell {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dayEmpty {
+  width: 28px;
+}
+
+.dayBtn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--voyzu-radius-compact);
+  font-size: var(--voyzu-font-size-body);
+  font-family: var(--voyzu-font-family);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--voyzu-color-text);
+  transition: all var(--voyzu-transition-fast);
+}
+
+.dayBtn:hover {
+  background: var(--voyzu-color-surface-secondary);
+}
+
+.dayBtnToday {
+  background: var(--voyzu-color-surface-secondary);
+}
+
+.dayBtnSelected {
+  background: var(--voyzu-color-link);
+  color: var(--voyzu-color-text-inverse);
+  font-weight: 500;
+  box-shadow: var(--voyzu-shadow-surface);
+}
+
+.dayBtnSelected:hover {
+  background: var(--voyzu-color-link-hover);
+}

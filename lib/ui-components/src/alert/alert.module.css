@@ -1,0 +1,153 @@
+.alert {
+  --alert-bg: var(--voyzu-color-info-bg);
+  --alert-text: var(--voyzu-color-info-text);
+  --alert-border: var(--voyzu-color-info-border);
+  --alert-solid-bg: var(--voyzu-color-info);
+  --alert-solid-text: var(--voyzu-color-text-inverse);
+  --alert-link: var(--alert-text);
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--voyzu-space-section);
+  width: 100%;
+  padding: 1.125rem 1.875rem;
+  border: var(--voyzu-border-width) solid var(--alert-border);
+  border-radius: var(--voyzu-radius-surface);
+  font-family: var(--voyzu-font-family);
+  box-shadow: var(--voyzu-shadow-surface);
+}
+
+.content {
+  display: grid;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.title {
+  color: var(--alert-text);
+  font-size: var(--voyzu-font-size-body);
+  font-weight: 700;
+  line-height: var(--voyzu-line-height-heading);
+}
+
+.text {
+  color: var(--alert-text);
+  font-size: var(--voyzu-font-size-body);
+  font-weight: var(--voyzu-font-weight-body);
+  line-height: var(--voyzu-line-height-body);
+}
+
+.text a {
+  color: var(--alert-link);
+  font-weight: var(--voyzu-font-weight-link);
+  text-decoration: underline;
+}
+
+.close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  color: var(--alert-text);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--alert-link);
+}
+
+.close span {
+  font-size: 1.125rem;
+}
+
+.soft {
+  color: var(--alert-text);
+  background: var(--alert-bg);
+}
+
+.solid {
+  color: var(--alert-solid-text);
+  background: var(--alert-solid-bg);
+  border-color: var(--alert-solid-bg);
+}
+
+.solid .title,
+.solid .text,
+.solid .text a,
+.solid .close {
+  color: var(--alert-solid-text);
+}
+
+.outline {
+  color: var(--alert-text);
+  background: transparent;
+}
+
+.brand {
+  --alert-bg: var(--voyzu-color-brand-bg);
+  --alert-text: var(--voyzu-color-brand-text);
+  --alert-border: var(--voyzu-color-brand-border);
+  --alert-solid-bg: var(--voyzu-color-brand-base);
+  --alert-solid-text: var(--voyzu-color-text-inverse);
+  --alert-link: var(--voyzu-color-brand-hover);
+}
+
+.info {
+  --alert-bg: var(--voyzu-color-info-bg);
+  --alert-text: var(--voyzu-color-info-text);
+  --alert-border: var(--voyzu-color-info-border);
+  --alert-solid-bg: var(--voyzu-color-info);
+  --alert-solid-text: var(--voyzu-color-text-inverse);
+  --alert-link: var(--voyzu-color-info-hover);
+}
+
+.success {
+  --alert-bg: var(--voyzu-color-success-bg);
+  --alert-text: var(--voyzu-color-success-text);
+  --alert-border: var(--voyzu-color-success-border);
+  --alert-solid-bg: var(--voyzu-color-success);
+  --alert-solid-text: var(--voyzu-color-text-inverse);
+  --alert-link: var(--voyzu-color-success-hover);
+}
+
+.warning {
+  --alert-bg: var(--voyzu-color-warning-bg);
+  --alert-text: var(--voyzu-color-warning-text);
+  --alert-border: var(--voyzu-color-warning-border);
+  --alert-solid-bg: var(--voyzu-color-warning);
+  --alert-solid-text: var(--voyzu-color-text-inverse);
+  --alert-link: var(--voyzu-color-warning-hover);
+}
+
+.danger {
+  --alert-bg: var(--voyzu-color-danger-bg);
+  --alert-text: var(--voyzu-color-danger-text);
+  --alert-border: var(--voyzu-color-danger-border);
+  --alert-solid-bg: var(--voyzu-color-danger);
+  --alert-solid-text: var(--voyzu-color-text-inverse);
+  --alert-link: var(--voyzu-color-danger-hover);
+}
+
+.neutral {
+  --alert-bg: var(--voyzu-color-neutral-bg);
+  --alert-text: var(--voyzu-color-neutral-text);
+  --alert-border: var(--voyzu-color-neutral-border);
+  --alert-solid-bg: var(--voyzu-color-neutral);
+  --alert-solid-text: var(--voyzu-color-neutral-text);
+  --alert-link: var(--voyzu-color-neutral-hover);
+}
+
+.plain {
+  --alert-bg: var(--voyzu-color-plain-bg);
+  --alert-text: var(--voyzu-color-plain-text);
+  --alert-border: var(--voyzu-color-plain-border);
+  --alert-solid-bg: var(--voyzu-color-plain);
+  --alert-solid-text: var(--voyzu-color-plain-hover);
+  --alert-link: var(--voyzu-color-plain-hover);
+}

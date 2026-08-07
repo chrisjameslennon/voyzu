@@ -1,0 +1,149 @@
+/* ── Backdrop ── */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--voyzu-color-overlay);
+  backdrop-filter: blur(2px);
+  padding: 1rem;
+}
+
+/* ── Dialog ── */
+
+.dialog {
+  background: var(--voyzu-color-surface);
+  border-radius: var(--voyzu-radius-surface);
+  box-shadow: var(--voyzu-shadow-floating);
+  width: 100%;
+  max-width: 400px;
+  padding: 1.5rem;
+  border: 1px solid var(--voyzu-color-surface-secondary);
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 0.5rem;
+}
+
+.icon {
+  flex: 0 0 auto;
+  font-size: 1.5rem;
+  color: var(--voyzu-color-danger);
+}
+
+.title {
+  font-size: var(--voyzu-font-size-subheading);
+  font-weight: 700;
+  color: var(--voyzu-color-text-heading);
+  margin: 0;
+}
+
+.message {
+  font-size: var(--voyzu-font-size-body);
+  color: var(--voyzu-color-text-caption);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.message > p {
+  margin: 0;
+}
+
+.message > p + p {
+  margin-top: 0.75rem;
+}
+
+/* ── Actions ── */
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btnCancel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-size: var(--voyzu-font-size-body);
+  font-weight: 500;
+  font-family: var(--voyzu-font-family);
+  color: var(--voyzu-color-text-label);
+  background: var(--voyzu-color-surface-secondary);
+  border: 1px solid var(--voyzu-color-border);
+  border-radius: var(--voyzu-radius-control);
+  cursor: pointer;
+  box-shadow: var(--voyzu-shadow-surface);
+  transition: all var(--voyzu-transition-fast);
+}
+
+.btnCancel:hover {
+  background: var(--voyzu-color-border);
+}
+
+.btnCancel:active {
+  transform: scale(0.95);
+}
+
+.btnConfirmDanger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-size: var(--voyzu-font-size-body);
+  font-weight: 700;
+  font-family: var(--voyzu-font-family);
+  color: var(--voyzu-color-text-inverse);
+  background: var(--voyzu-color-danger);
+  border: none;
+  border-radius: var(--voyzu-radius-control);
+  cursor: pointer;
+  box-shadow: var(--voyzu-shadow-surface);
+  transition: all var(--voyzu-transition-fast);
+}
+
+.btnConfirmDanger:hover {
+  background: var(--voyzu-color-danger-hover);
+}
+
+.btnConfirmDanger:active {
+  transform: scale(0.95);
+}
+
+.btnConfirmPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-size: var(--voyzu-font-size-body);
+  font-weight: 700;
+  font-family: var(--voyzu-font-family);
+  color: var(--voyzu-color-text-inverse);
+  background: var(--voyzu-color-brand);
+  border: none;
+  border-radius: var(--voyzu-radius-control);
+  cursor: pointer;
+  box-shadow: 0 4px 12px var(--voyzu-color-brand-soft);
+  transition: all var(--voyzu-transition-fast);
+}
+
+.btnConfirmPrimary:hover {
+  background: var(--voyzu-color-brand-hover);
+}
+
+.btnConfirmPrimary:active {
+  transform: scale(0.95);
+}
+
+.btnConfirmPrimary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

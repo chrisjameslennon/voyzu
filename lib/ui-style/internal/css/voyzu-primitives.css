@@ -1,0 +1,41 @@
+/*
+  * Voyzu primitive variables.
+
+  * Define primitives here when there is no suitable Web Awesome or tailwind-color variable to reference.
+  * In generaal thw web awesome primitives are used as the basis for our design tokens, with some adjustments to fit our needs.
+  * See the peer file wa-primitives.css for the Web Awesome variables.
+
+  * These are internal variables and should not be used directly in component styles.
+  * The package src/css/design-tokens.css file defines the public-facing tokens that components should use, which reference these primitives.
+  */
+
+:root {
+  /* ── Brand ── */
+  /* Voyzu brand palette — no WA equivalent exists */
+  --_brand-primary: #eb3f17;
+  --_brand-primary-hover: #d4360f;
+  --_brand-primary-light: rgba(235, 63, 23, 0.1);
+  --_brand-primary-subtle: rgba(235, 63, 23, 0.05);
+  --_brand-background: #f8f6f6; /* warm off-white app background — no WA equivalent */
+
+  /* ── Typography ── */
+  --_font-family-body: "Inter", sans-serif;       /* app-specific font — WA uses ui-sans-serif system stack */
+  --_font-family-heading: "Manrope", sans-serif;  /* app-specific font — WA uses ui-sans-serif system stack */
+  --_font-weight-display: 700;                    /* display/hero weight — WA --wa-font-weight-bold tops out at 600 */
+  --_font-size-page-title-tablet: 1.75rem;        /* 28px — falls between WA scale steps xl (~25px) and 2xl (~32px) */
+
+  /* ── Spacing ── */
+  --_space-control-x: 1.25rem; /* 20px — sits between --wa-space-m (16px) and --wa-space-l (24px) */
+  --_control-height: 2.25rem;  /* 36px — sits between --wa-space-xl (32px) and --wa-space-2xl (40px) */
+
+  /* ── Shadows ── */
+  --_shadow-surface: 0 1px 2px rgba(0, 0, 0, 0.05); /* lighter/simpler than --wa-shadow-s which uses negative spread and color-mix */
+  --_shadow-elevated: 0 10px 40px rgba(0, 0, 0, 0.15); /* large floating panel — WA shadow-l blur is only 0.5rem, far too small */
+  --_shadow-deep: 0 20px 60px -15px rgba(0, 0, 0, 0.3); /* heavy drawer/overlay — WA has no equivalent high-opacity large shadow */
+
+  /* ── Motion ── */
+  --_transition-fast: 150ms ease;   /* WA --wa-transition-fast is 75ms — too fast for Voyzu UI */
+  --_transition-normal: 200ms ease; /* WA --wa-transition-normal is 150ms — Voyzu prefers slightly slower */
+  /* --_transition-slow removed: 300ms ease matches var(--wa-transition-slow) var(--wa-transition-easing) exactly */
+  --_transition-enter: 600ms ease-out; /* long-duration enter/exit animation (e.g. toast) — WA has no equivalent */
+}

@@ -1,0 +1,120 @@
+.wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  height: 2.5rem;
+  width: 100%;
+  padding: 0 var(--voyzu-space-field-x);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--voyzu-font-family);
+  border: 1px solid var(--voyzu-color-border);
+  border-radius: var(--voyzu-radius-control);
+  background: var(--voyzu-color-surface);
+  color: var(--voyzu-color-text);
+  outline: none;
+  transition: border-color var(--voyzu-transition-fast), box-shadow var(--voyzu-transition-fast);
+  box-shadow: var(--voyzu-shadow-surface);
+}
+
+.withLeadingIcon .input {
+  padding-left: 2.5rem;
+}
+
+.withTrailingIcon .input {
+  padding-right: 2.5rem;
+}
+
+.withBadge .input {
+  padding-right: 5rem;
+}
+
+.withBadge.withTrailingIcon .input {
+  padding-right: 7rem;
+}
+
+.input::placeholder {
+  color: var(--voyzu-color-text-placeholder);
+}
+
+.input:focus:not(.disabled) {
+  border-color: var(--voyzu-color-primary-focus-ring);
+  box-shadow: 0 0 0 2px var(--voyzu-color-surface), 0 0 0 5px var(--voyzu-color-primary-focus-ring);
+}
+
+.input.invalid {
+  border-color: var(--voyzu-color-danger-base);
+  background: var(--voyzu-color-danger-bg);
+  box-shadow: 0 0 0 1px var(--voyzu-color-danger-base);
+}
+
+.input.disabled {
+  color: var(--voyzu-color-text-secondary);
+  background: var(--voyzu-color-surface-muted);
+  cursor: text;
+}
+
+.icon,
+.iconButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--voyzu-color-text-tertiary);
+}
+
+.icon {
+  pointer-events: none;
+}
+
+.leadingIcon {
+  left: 0.75rem;
+}
+
+.trailingIcon {
+  right: 0.75rem;
+}
+
+.badge {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.withBadge.withTrailingIcon .badge {
+  right: 3rem;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--voyzu-radius-control);
+  background: transparent;
+  cursor: pointer;
+}
+
+.iconButton:hover:not(:disabled),
+.iconButton:focus-visible:not(:disabled) {
+  color: var(--voyzu-color-text);
+  background: var(--voyzu-color-surface-muted);
+}
+
+.iconButton:focus-visible {
+  outline: 2px solid var(--voyzu-color-primary-focus-ring);
+  outline-offset: 2px;
+}
+
+.iconButton:disabled {
+  color: var(--voyzu-color-text-disabled);
+  cursor: not-allowed;
+}

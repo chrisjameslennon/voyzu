@@ -1,0 +1,224 @@
+.endpoint {
+  padding: 3rem 0;
+  border-top: 1px solid #aeb7c4;
+  scroll-margin-top: 1.5rem;
+}
+
+.endpointIntro {
+  margin-bottom: 1.75rem;
+}
+
+.endpointHeading {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.endpointPath {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.45rem;
+  color: #485265;
+  font-size: 0.85rem;
+}
+
+.endpointPath code {
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+}
+
+.endpointDescription {
+  color: #5f6878;
+  line-height: 1.6;
+}
+
+.endpointSection {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(22rem, 32rem);
+  column-gap: 4rem;
+  row-gap: 1rem;
+  align-items: start;
+  padding: 1rem 0;
+}
+
+.endpointSectionHeader {
+  grid-column: 1 / -1;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #d6dae1;
+}
+
+.endpointSectionHeading {
+  margin: 0;
+  color: #98a1b2;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.endpointMain {
+  min-width: 0;
+}
+
+.propertiesPanelStack {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.responseDetails {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.responseCookies,
+.cookiePanel {
+  padding: 0.85rem;
+  border: 1px solid #cbd3df;
+  border-radius: 6px;
+  background: #edf2f7;
+}
+
+.responseCookiesHeading,
+.cookiePanelHeading {
+  margin: 0 0 0.65rem;
+  color: #98a1b2;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.responseCookiesList,
+.cookiePanelList {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.responseCookieName,
+.cookiePanelName {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #001b3d;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.responseCookieName code,
+.cookiePanelName code {
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+}
+
+.responseCookieAction,
+.cookiePanelAction {
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  color: #485265;
+  background: #dce4ee;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.responseCookieDescription,
+.cookiePanelDescription {
+  margin: 0.3rem 0 0;
+  color: #5f6878;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.responseCookieMeta,
+.cookiePanelMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+
+.responseCookieMeta span,
+.cookiePanelMeta span {
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  color: #485265;
+  background: #e6ebf2;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.typeScriptStack {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.documentationTabs {
+  min-width: 0;
+}
+
+.methodTag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.6rem;
+  height: 1.1rem;
+  padding: 0 0.35rem;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.methodGET {
+  color: #006adc;
+  background: #e8f2ff;
+}
+
+.methodPOST {
+  color: #07813f;
+  background: #e7f8ee;
+}
+
+.methodPUT {
+  color: #8a5a00;
+  background: #fff3d8;
+}
+
+.methodPATCH {
+  color: #5c45d6;
+  background: #efedff;
+}
+
+.methodDELETE {
+  color: #c7212f;
+  background: #ffe8eb;
+}
+
+.statusOk,
+.statusError {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  margin-right: 0.45rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.statusOk {
+  color: #07813f;
+  background: #e7f8ee;
+}
+
+.statusError {
+  color: #8a5a00;
+  background: #fff3d8;
+}
+
+@media (max-width: 1180px) {
+  .endpointSection {
+    grid-template-columns: 1fr;
+  }
+}

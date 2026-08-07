@@ -1,0 +1,16 @@
+node_modules
+**/node_modules
+.next
+**/.next
+/generated-composition/
+next.config.local.ts
+**/next-env.d.ts
+.env.local*
+.env.production
+.vscode
+/internal/
+public/chromium-pack.tar
+tsconfig.tsbuildinfo
+.claude/settings.local.json
+tests/test-results
+**/tests/test-results

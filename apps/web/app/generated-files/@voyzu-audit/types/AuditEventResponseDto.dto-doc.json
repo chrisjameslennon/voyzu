@@ -1,0 +1,5 @@
+{
+  "name": "AuditEventResponseDto",
+  "sourceFile": "packages/@voyzu/audit/modules/types/audit-event.response.dto.ts",
+  "typescript": "import type { ActorType } from \"@voyzu/types/modules/core\";\r\nexport interface AuditChangeResponseDto {\n  id: number;\n  fieldPath: string;\n  oldValue: unknown;\n  newValue: unknown;\n}\n\nexport interface AuditEventResponseDto {\n  id: number;\n  code: string;\n  packageCode: string;\n  companyId: number | null;\n  companyCode: string | null;\n  actorType: ActorType | null;\n  actorId: string | null;\n  actorCode: string | null;\n  actorDisplayName: string | null;\n  action: string;\n  entityType: string;\n  entityId: string;\n  entityCode: string | null;\n  mutationId: string | null;\n  creationDate: string;\n  changes?: AuditChangeResponseDto[];\n}\n\r\n"
+}

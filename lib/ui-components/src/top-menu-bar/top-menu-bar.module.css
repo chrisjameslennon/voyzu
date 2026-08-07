@@ -1,0 +1,86 @@
+.container {
+  width: 100%;
+  height: 3.5rem; /* h-14 */
+  background-color: var(--voyzu-color-text-heading);
+  color: var(--voyzu-color-text-inverse);
+  display: flex;
+  align-items: center;
+  padding: 0 1rem; /* px-4 */
+  box-shadow: var(--voyzu-shadow-sticky-bar);
+  z-index: 50;
+  flex-shrink: 0;
+  font-family: var(--voyzu-font-family);
+}
+
+.logoSection {
+  display: flex;
+  align-items: center;
+  margin-right: 3rem; /* mr-12 */
+}
+
+.logoImg {
+  height: 1.5rem; /* Adjust size as needed */
+  width: auto;
+  display: block;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem; /* gap-8 */
+  height: 100%;
+}
+
+.navItem {
+  height: 100%;
+  padding: 0 0.5rem; /* px-2 */
+  font-size: var(--voyzu-font-size-nav-item);
+  font-weight: 700;
+  font-family: var(--voyzu-font-family-nav);
+  border: none;
+  border-bottom: 4px solid transparent;
+  transition: color var(--voyzu-transition-fast), border-color var(--voyzu-transition-fast);
+  background: none;
+  cursor: pointer;
+  color: var(--voyzu-color-border-strong);
+  display: flex;
+  align-items: center;
+}
+
+.navItem:hover {
+  color: var(--voyzu-color-text-inverse);
+}
+
+.navItemActive {
+  border-bottom: 6px solid var(--voyzu-color-brand); /* taller orange underline */
+  color: var(--voyzu-color-text-inverse);
+}
+
+.rightSection {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--voyzu-color-border-strong);
+  padding: 0.25rem;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  transition: color var(--voyzu-transition-fast);
+}
+
+.iconButton:hover,
+.iconButtonActive {
+  color: var(--voyzu-color-text-inverse);
+}
+
+.iconButton .material-symbols-outlined {
+  font-size: 22px;
+}

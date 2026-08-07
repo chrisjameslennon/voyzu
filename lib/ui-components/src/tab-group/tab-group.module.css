@@ -1,0 +1,77 @@
+.tabGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.tabList {
+  display: flex;
+  align-items: stretch;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--voyzu-color-border);
+  padding: 0 2rem;
+  margin: 0;
+}
+
+.tab {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0.75rem 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--voyzu-color-text-secondary);
+  cursor: pointer;
+  position: relative;
+  transition: color var(--voyzu-transition-fast);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.tab:hover {
+  color: var(--voyzu-color-text-label);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--voyzu-color-primary-base);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.tabActive {
+  color: var(--voyzu-color-link);
+  border-bottom-color: var(--voyzu-color-link);
+}
+
+.tabActive:hover {
+  color: var(--voyzu-color-link-hover);
+}
+
+.tabDisabled {
+  color: var(--voyzu-color-border-strong);
+  cursor: not-allowed;
+}
+
+.tabDisabled:hover {
+  color: var(--voyzu-color-border-strong);
+}
+
+.panel {
+  padding-top: 1rem;
+}
+
+.compact .tabList {
+  gap: 1rem;
+  padding: 0;
+}
+
+.compact .tab {
+  padding: 0 0 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.compact .panel {
+  padding-top: 0.85rem;
+}

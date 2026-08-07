@@ -1,0 +1,37 @@
+.methodTag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 1rem;
+  padding: 0 0.3rem;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.methodGET {
+  color: #006adc;
+  background: #e8f2ff;
+}
+
+.methodPOST {
+  color: #07813f;
+  background: #e7f8ee;
+}
+
+.methodPUT {
+  color: #8a5a00;
+  background: #fff3d8;
+}
+
+.methodPATCH {
+  color: #5c45d6;
+  background: #efedff;
+}
+
+.methodDELETE {
+  color: #c7212f;
+  background: #ffe8eb;
+}

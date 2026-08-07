@@ -1,0 +1,228 @@
+{
+  "operationId": "audit-id-get",
+  "method": "get",
+  "path": "/api/audit/{id}",
+  "summary": "Get an audit event",
+  "description": "Gets one audit event by identifier.",
+  "tags": [
+    "Audit"
+  ],
+  "requestPathParams": {
+    "id": {
+      "description": "Audit event identifier.",
+      "schema": {
+        "type": "string"
+      },
+      "example": "string"
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "The audit event.",
+      "schemaRef": "AuditEventResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "code": {
+            "type": "string"
+          },
+          "packageCode": {
+            "type": "string"
+          },
+          "companyId": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "companyCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "actorType": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "APP",
+                  "API",
+                  "SYSTEM"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actorId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "actorCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "actorDisplayName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "action": {
+            "type": "string"
+          },
+          "entityType": {
+            "type": "string"
+          },
+          "entityId": {
+            "type": "string"
+          },
+          "entityCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "mutationId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "creationDate": {
+            "type": "string"
+          },
+          "changes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "fieldPath": {
+                  "type": "string"
+                },
+                "oldValue": {},
+                "newValue": {}
+              },
+              "required": [
+                "id",
+                "fieldPath",
+                "oldValue",
+                "newValue"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "packageCode",
+          "companyId",
+          "companyCode",
+          "actorType",
+          "actorId",
+          "actorCode",
+          "actorDisplayName",
+          "action",
+          "entityType",
+          "entityId",
+          "entityCode",
+          "mutationId",
+          "creationDate"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "id": 0,
+        "code": "string",
+        "packageCode": "string",
+        "companyId": 0,
+        "companyCode": "string",
+        "actorType": "APP",
+        "actorId": "string",
+        "actorCode": "string",
+        "actorDisplayName": "string",
+        "action": "string",
+        "entityType": "string",
+        "entityId": "string",
+        "entityCode": "string",
+        "mutationId": "string",
+        "creationDate": "string",
+        "changes": [
+          {
+            "id": 0,
+            "fieldPath": "string",
+            "oldValue": null,
+            "newValue": null
+          }
+        ]
+      }
+    },
+    "404": {
+      "description": "Audit event not found.",
+      "schemaRef": "EntityNotFoundErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "ENTITY_NOT_FOUND"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "ENTITY_NOT_FOUND",
+        "message": "string"
+      }
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "schemaRef": "InternalServerErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

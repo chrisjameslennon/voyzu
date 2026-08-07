@@ -1,0 +1,73 @@
+{
+  "operationId": "capability-pdf-get",
+  "method": "get",
+  "path": "/api/capability/pdf",
+  "summary": "Generate PDF",
+  "description": "Renders a printable application route as a PDF download.",
+  "tags": [
+    "Capability"
+  ],
+  "responses": {
+    "200": {
+      "description": "Generated PDF.",
+      "contentType": "application/pdf"
+    },
+    "400": {
+      "description": "The printable path was not supplied.",
+      "schemaRef": "InputValidationErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INPUT_VALIDATION_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INPUT_VALIDATION_ERROR",
+        "message": "string"
+      }
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "schemaRef": "InternalServerErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    },
+    "502": {
+      "description": "The printable route failed."
+    }
+  }
+}

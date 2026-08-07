@@ -1,0 +1,59 @@
+{
+  "operationId": "audit-count-get",
+  "method": "get",
+  "path": "/api/audit/count",
+  "summary": "Count audit events",
+  "description": "Counts audit events across installed packages using the supplied filters.",
+  "tags": [
+    "Audit"
+  ],
+  "responses": {
+    "200": {
+      "description": "Matching audit event count.",
+      "schemaRef": "AuditEventCountResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Number of audit events matching the supplied filters."
+          }
+        },
+        "required": [
+          "count"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "count": 0
+      }
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "schemaRef": "InternalServerErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

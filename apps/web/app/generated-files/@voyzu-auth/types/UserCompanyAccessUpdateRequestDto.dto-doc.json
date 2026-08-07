@@ -1,0 +1,5 @@
+{
+  "name": "UserCompanyAccessUpdateRequestDto",
+  "sourceFile": "packages/@voyzu/auth/modules/types/user-company-access.update.request.dto.ts",
+  "typescript": "export interface UserCompanyAccessUpdateRequestDto {\n  companyIds: number[];\n}\n"
+}

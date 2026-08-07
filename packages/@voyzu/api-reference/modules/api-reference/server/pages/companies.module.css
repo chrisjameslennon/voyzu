@@ -1,0 +1,185 @@
+.page {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  margin: -1px;
+  padding: 4rem 3rem 6rem;
+  overflow-x: hidden;
+  color: #172033;
+  background: #f7f8fa;
+}
+
+.header {
+  max-width: 1200px;
+  margin: 0 0 2.5rem;
+  padding-left: 0;
+}
+
+.eyebrow {
+  margin: 0 0 0.5rem;
+  color: #ff4b2f;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  line-height: 1.1;
+}
+
+.resourcePath {
+  display: block;
+  margin-top: 0.45rem;
+  color: #485265;
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+  font-size: 0.95rem;
+}
+
+.header p,
+.endpointDescription {
+  color: #5f6878;
+  line-height: 1.6;
+}
+
+.header p {
+  max-width: 720px;
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0;
+  min-width: 0;
+}
+
+.endpoint {
+  padding: 3rem 0;
+  border-top: 1px solid #aeb7c4;
+  scroll-margin-top: 1.5rem;
+}
+
+.endpointIntro {
+  margin-bottom: 1.75rem;
+}
+
+.endpointSection {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(22rem, 36rem);
+  column-gap: 2.25rem;
+  row-gap: 1rem;
+  align-items: start;
+  padding: 1rem 0;
+}
+
+.endpointMain {
+  min-width: 0;
+}
+
+.endpointHeading {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.endpointSectionHeader {
+  grid-column: 1 / -1;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid #d6dae1;
+}
+
+.endpointPath {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.45rem;
+  color: #485265;
+  font-size: 0.85rem;
+}
+
+.endpointPath code {
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+}
+
+.endpointSectionHeading {
+  margin: 0;
+  color: #98a1b2;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.propertiesPanelStack {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.methodTag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.6rem;
+  height: 1.1rem;
+  padding: 0 0.35rem;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.methodGET {
+  color: #006adc;
+  background: #e8f2ff;
+}
+
+.methodPOST {
+  color: #07813f;
+  background: #e7f8ee;
+}
+
+.methodPUT {
+  color: #8a5a00;
+  background: #fff3d8;
+}
+
+.methodPATCH {
+  color: #5c45d6;
+  background: #efedff;
+}
+
+.methodDELETE {
+  color: #c7212f;
+  background: #ffe8eb;
+}
+
+.statusOk,
+.statusError {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  margin-right: 0.45rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.statusOk {
+  color: #07813f;
+  background: #e7f8ee;
+}
+
+.statusError {
+  color: #8a5a00;
+  background: #fff3d8;
+}
+
+@media (max-width: 1180px) {
+  .endpointSection {
+    grid-template-columns: 1fr;
+  }
+}

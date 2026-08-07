@@ -1,0 +1,5 @@
+{
+  "name": "UserBatchUpdateRequestDto",
+  "sourceFile": "packages/@voyzu/auth/modules/types/user.batch-update.request.dto.ts",
+  "typescript": "import type { UserUpdateRequestDto } from \"./user.update.request.dto\";\n\nexport interface UserBatchUpdateRequestDto extends UserUpdateRequestDto {\n  code: string;\n}\n"
+}

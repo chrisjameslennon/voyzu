@@ -1,0 +1,95 @@
+{
+  "operationId": "auth-session-get",
+  "method": "get",
+  "path": "/api/auth/session",
+  "summary": "Get current session",
+  "description": "Returns the current UI authentication session state.",
+  "tags": [
+    "Auth"
+  ],
+  "responses": {
+    "200": {
+      "description": "The current session state.",
+      "schemaRef": "AuthSessionResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "authenticated": {
+            "type": "boolean",
+            "description": "Whether the request has an authenticated UI session."
+          },
+          "user": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "description": "User business code."
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "description": "User display name."
+                  },
+                  "role": {
+                    "type": "string",
+                    "description": "User role code."
+                  }
+                },
+                "required": [
+                  "code",
+                  "displayName",
+                  "role"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Authenticated user, when a session exists."
+          }
+        },
+        "required": [
+          "authenticated"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "authenticated": true,
+        "user": {
+          "code": "string",
+          "displayName": "string",
+          "role": "string"
+        }
+      }
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "schemaRef": "InternalServerErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

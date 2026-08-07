@@ -1,0 +1,122 @@
+.badge {
+  --badge-bg: var(--voyzu-color-surface-muted);
+  --badge-text: var(--voyzu-color-text-label);
+  --badge-border: var(--voyzu-color-border);
+  --badge-solid-bg: var(--voyzu-color-text-secondary);
+  --badge-solid-text: var(--voyzu-color-text-inverse);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  border: var(--voyzu-border-width) solid var(--badge-border);
+  border-radius: var(--voyzu-radius-pill);
+  font-family: var(--voyzu-font-family);
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.withIcon {
+  gap: 0.3em;
+}
+
+.icon {
+  flex: 0 0 auto;
+  font-size: 0.8em;
+  line-height: 1;
+}
+
+.xSmall {
+  padding: 0.1375rem 0.4125rem;
+  font-size: 0.61875rem;
+  letter-spacing: 0.04em;
+}
+
+.small {
+  padding: 0.249375rem 0.49875rem;
+  font-size: 0.620469rem;
+  letter-spacing: 0.03em;
+}
+
+.medium {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+}
+
+.large {
+  padding: 0.55rem 1.25rem;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+}
+
+.xLarge {
+  padding: 0.625rem 2rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+.soft {
+  color: var(--badge-text);
+  background: var(--badge-bg);
+}
+
+.solid {
+  color: var(--badge-solid-text);
+  background: var(--badge-solid-bg);
+}
+
+.outline {
+  color: var(--badge-text);
+  background: transparent;
+}
+
+.info {
+  --badge-bg: var(--voyzu-color-info-bg);
+  --badge-text: var(--voyzu-color-info-text);
+  --badge-border: var(--voyzu-color-info-border);
+  --badge-solid-bg: var(--voyzu-color-info);
+  --badge-solid-text: var(--voyzu-color-text-inverse);
+}
+
+.success {
+  --badge-bg: var(--voyzu-color-success-bg);
+  --badge-text: var(--voyzu-color-success-text);
+  --badge-border: var(--voyzu-color-success-border);
+  --badge-solid-bg: var(--voyzu-color-success);
+  --badge-solid-text: var(--voyzu-color-text-inverse);
+}
+
+.warning {
+  --badge-bg: var(--voyzu-color-warning-bg);
+  --badge-text: var(--voyzu-color-warning-text);
+  --badge-border: var(--voyzu-color-warning-border);
+  --badge-solid-bg: var(--voyzu-color-warning);
+  --badge-solid-text: var(--voyzu-color-text-inverse);
+}
+
+.danger {
+  --badge-bg: var(--voyzu-color-danger-bg);
+  --badge-text: var(--voyzu-color-danger-text);
+  --badge-border: var(--voyzu-color-danger-border);
+  --badge-solid-bg: var(--voyzu-color-danger);
+  --badge-solid-text: var(--voyzu-color-text-inverse);
+}
+
+.neutral {
+  --badge-bg: var(--voyzu-color-neutral-bg);
+  --badge-text: var(--voyzu-color-neutral-text);
+  --badge-border: var(--voyzu-color-neutral-border);
+  --badge-solid-bg: var(--voyzu-color-neutral);
+  --badge-solid-text: var(--voyzu-color-neutral-text);
+}
+
+.plain {
+  --badge-bg: var(--voyzu-color-plain-bg);
+  --badge-text: var(--voyzu-color-plain-text);
+  --badge-border: var(--voyzu-color-plain-border);
+  --badge-solid-bg: var(--voyzu-color-plain);
+  --badge-solid-text: var(--voyzu-color-plain-hover);
+}

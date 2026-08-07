@@ -1,0 +1,291 @@
+.frame {
+  display: grid;
+  grid-template-rows: 3.5rem 1fr;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "top"
+    "main";
+  height: 100vh;
+  overflow: hidden;
+  background: var(--voyzu-color-surface);
+  color: var(--voyzu-color-text);
+  font-family: var(--voyzu-font-family);
+}
+
+.top {
+  grid-area: top;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding-left: 0;
+  background: var(--voyzu-color-text-heading);
+  color: var(--voyzu-color-text-inverse);
+  box-shadow: var(--voyzu-shadow-sticky-bar);
+  z-index: 20;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  width: 9rem;
+  min-width: 9rem;
+}
+
+.brandText {
+  color: var(--voyzu-color-brand);
+  font-family: var(--voyzu-font-family-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.brandLogo {
+  display: block;
+  width: 5.75rem;
+  height: auto;
+}
+
+.primaryNav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  height: 100%;
+  min-width: 0;
+}
+
+.topNavButton {
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-bottom: 0;
+  background: transparent;
+  color: var(--voyzu-color-text-inverse);
+  font-family: var(--voyzu-font-family-nav);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.topNavButtonInactive {
+  color: var(--voyzu-color-border-strong);
+}
+
+.topNavButtonInactive:hover {
+  color: var(--voyzu-color-text-inverse);
+}
+
+.utility {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+  padding: 0 0.5rem;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: var(--voyzu-radius-compact);
+  background: transparent;
+  color: var(--voyzu-color-border-strong);
+}
+
+.iconButton span {
+  font-size: 22px;
+}
+
+.left {
+  grid-area: left;
+  display: contents;
+  min-height: 0;
+  height: 100%;
+  overflow: visible;
+  background: var(--voyzu-color-surface-muted);
+  border-right: 1px solid var(--voyzu-color-surface-border);
+}
+
+.desktopLeftNav {
+  display: none;
+}
+
+.mobileNavButton {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: var(--voyzu-radius-compact);
+  background: transparent;
+  color: var(--voyzu-color-border-strong);
+  cursor: pointer;
+}
+
+.mobileNavButton:hover {
+  color: var(--voyzu-color-text-inverse);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mobileNavButton span {
+  font-size: 22px;
+}
+
+.companyContext {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem 0;
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
+}
+
+.companyContextCollapsed {
+  align-items: center;
+  padding: 1rem 0.75rem 0;
+}
+
+.companyLabel {
+  color: var(--voyzu-color-text-tertiary);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.companyButton {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--voyzu-color-border);
+  border-radius: var(--voyzu-radius-control);
+  background: var(--voyzu-color-surface-secondary);
+  box-shadow: var(--voyzu-shadow-surface);
+  color: var(--voyzu-color-text);
+  font-family: var(--voyzu-font-family);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.companyButtonCollapsed {
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+}
+
+.companyDot {
+  width: 0.625rem;
+  height: 0.625rem;
+  flex-shrink: 0;
+  border-radius: var(--voyzu-radius-pill);
+  background: var(--voyzu-color-primary-base);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+}
+
+.main {
+  grid-area: main;
+  min-width: 0;
+  overflow: auto;
+  background: var(--voyzu-color-surface);
+}
+
+.domainMain {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  background: var(--voyzu-color-surface);
+}
+
+.content {
+  max-width: 62rem;
+  padding: 3rem 2.5rem;
+}
+
+.eyebrow {
+  color: var(--voyzu-color-text-tertiary);
+  font-size: var(--voyzu-font-size-body);
+  font-weight: 600;
+  margin: 0 0 1.25rem;
+}
+
+.title {
+  color: var(--voyzu-color-text-heading);
+  font-family: var(--voyzu-font-family-heading);
+  font-size: 2.5rem;
+  line-height: 1.1;
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  .frame {
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "top top"
+      "left main";
+  }
+
+  .top {
+    padding-left: 0;
+  }
+
+  .left {
+    display: block;
+  }
+
+  .brand {
+    display: flex;
+    width: 9rem;
+    min-width: 9rem;
+  }
+
+  .primaryNav {
+    flex: initial;
+  }
+
+  .topNavButton {
+    padding: 0 0.5rem;
+    border-bottom: 6px solid transparent;
+    font-size: var(--voyzu-font-size-nav-item);
+  }
+
+  .topNavButtonActive {
+    border-bottom-color: var(--voyzu-color-brand);
+  }
+
+  .utility {
+    gap: 0.5rem;
+    padding: 0 1rem;
+  }
+
+  .utility .iconButton:nth-child(n+2) {
+    display: inline-flex;
+  }
+
+  .desktopLeftNav {
+    display: block;
+    height: 100%;
+  }
+
+  .mobileNavButton {
+    display: none;
+  }
+}

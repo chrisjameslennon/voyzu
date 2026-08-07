@@ -1,0 +1,665 @@
+.title {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--vz-grid-gap);
+  align-items: start;
+  min-width: 0;
+}
+
+.title h1 {
+  overflow-wrap: anywhere;
+}
+
+.title h1 + p {
+  margin-top: 8px;
+}
+
+.titleIcon {
+  grid-column: 1;
+  grid-row: 1;
+  padding: 0.25rem;
+  background: var(--voyzu-color-brand-soft);
+  border-radius: var(--voyzu-radius-control);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--voyzu-color-brand);
+  box-shadow: var(--voyzu-shadow-surface);
+  margin-top: 0.125rem;
+}
+
+.titleIcon .titleIconSymbol {
+  font-size: 36px;
+  line-height: 1;
+}
+
+@media (max-width: 767px) {
+  .title {
+    grid-template-columns: 1fr;
+  }
+
+  .titleIcon {
+    display: none;
+  }
+
+  .title h1 {
+    display: block;
+  }
+
+  .title h1 + p {
+    display: none;
+  }
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--voyzu-space-inline);
+}
+
+.headerActionSeparator {
+  width: 1px;
+  height: 1.75rem;
+  background: var(--voyzu-color-surface-secondary);
+}
+
+.card {
+  background: var(--voyzu-color-surface);
+  border: 1px solid var(--voyzu-color-surface-border);
+  border-radius: 1rem;
+  box-shadow: var(--voyzu-shadow-surface);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--voyzu-space-inline);
+}
+
+.cardHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: var(--voyzu-space-inline);
+}
+
+.cardHeaderTitle {
+  margin: 0;
+}
+
+.mutedCard {
+  background: var(--voyzu-color-surface-muted);
+  border-color: var(--voyzu-color-surface-secondary);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem 2rem;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inlineGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--voyzu-space-inline);
+}
+
+.fieldFull {
+  grid-column: 1 / -1;
+}
+
+.sectionDivider {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--voyzu-color-surface-secondary);
+  padding-top: 1.5rem;
+}
+
+.sectionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem 2rem;
+}
+
+.sectionIntro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  gap: var(--voyzu-space-inline);
+}
+
+.sectionHeading :global(.material-symbols-outlined) {
+  color: var(--voyzu-color-link);
+  font-size: 20px;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.table th {
+  text-align: left;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--voyzu-color-text-tertiary);
+  padding: 0 0.75rem 0.625rem;
+  border-bottom: 1px solid var(--voyzu-color-surface-secondary);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.5rem 0.75rem;
+  color: var(--voyzu-color-text-label);
+  border-bottom: 1px solid var(--voyzu-color-surface-muted);
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.numericCell {
+  text-align: right;
+  font-weight: 600;
+  color: var(--voyzu-color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.strongCell {
+  color: var(--voyzu-color-text-label);
+  font-weight: 500;
+}
+
+.table th.numericCell,
+.table td.numericCell {
+  text-align: right;
+}
+
+.systemTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--voyzu-space-inline);
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: var(--voyzu-line-height-heading);
+  color: var(--voyzu-color-text-heading);
+}
+
+.systemTitle :global(.material-symbols-outlined) {
+  color: var(--voyzu-color-link);
+  font-size: 20px;
+}
+
+.systemBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.systemTitle + .systemBody {
+  margin-top: 1.25rem;
+}
+
+.systemRow {
+  font-size: 0.875rem;
+  color: var(--voyzu-color-text-caption);
+}
+
+.systemRow strong {
+  color: var(--voyzu-color-text);
+}
+
+.systemActorRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.systemFooter {
+  padding-top: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.summaryBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.625rem;
+  font-size: 0.875rem;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  line-height: var(--voyzu-line-height-body);
+}
+
+.summaryLabel {
+  color: var(--voyzu-color-text-secondary);
+}
+
+.summaryValue {
+  color: var(--voyzu-color-text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.summaryTotal {
+  border-top: 1px solid var(--voyzu-color-border-strong, var(--voyzu-color-border));
+  margin-top: 0.125rem;
+  padding-top: 0.625rem;
+}
+
+.summaryTotal .summaryLabel {
+  color: var(--voyzu-color-text);
+  font-weight: 700;
+}
+
+.fullWidthAction {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Temporary compatibility primitives while finance detail screens finish moving to generic slots. */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 9fr 3fr;
+  gap: 1.5rem;
+  padding: 0 2rem 3rem;
+}
+
+.detailAlert {
+  margin: 0 2rem;
+}
+
+.formCard {
+  grid-column: span 1;
+  background: var(--voyzu-color-surface);
+  border: 1px solid var(--voyzu-color-surface-border);
+  border-radius: 1rem;
+  box-shadow: var(--voyzu-shadow-surface);
+  padding: 2rem;
+}
+
+.fieldFullMobile {
+  grid-column: span 2;
+}
+
+.fieldHelp {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--voyzu-color-text-tertiary);
+  line-height: var(--voyzu-line-height-body);
+}
+
+.sidebarCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.statusCard {
+  background: var(--voyzu-color-surface);
+  border: 1px solid var(--voyzu-color-surface-border);
+  border-radius: 1rem;
+  box-shadow: var(--voyzu-shadow-surface);
+  padding: 1.5rem;
+  position: relative;
+  z-index: 50;
+}
+
+.systemCard {
+  background: var(--voyzu-color-surface-muted);
+  border: 1px solid var(--voyzu-color-surface-secondary);
+  border-radius: 1rem;
+  box-shadow: var(--voyzu-shadow-surface);
+  padding: 1.5rem;
+}
+
+.statusChip {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 0.625rem 2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  border: 1px solid var(--voyzu-color-border);
+  background: var(--voyzu-color-surface-muted);
+  color: var(--voyzu-color-text-secondary);
+}
+
+.statusChipActive {
+  background: var(--voyzu-color-success-bg);
+  color: var(--voyzu-color-success-text);
+  border-color: #86efac;
+}
+
+.auditBtn,
+.btnCancel,
+.btnSave,
+.batchCopyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-family: var(--voyzu-font-family);
+  color: var(--voyzu-color-text-secondary);
+  background: var(--voyzu-color-surface);
+  border: 1px solid var(--voyzu-color-border);
+  border-radius: var(--voyzu-radius-control);
+  cursor: pointer;
+  box-shadow: var(--voyzu-shadow-surface);
+  transition: all var(--voyzu-transition-fast);
+}
+
+.auditBtn {
+  width: 100%;
+  justify-content: center;
+}
+
+.btnSave {
+  color: var(--voyzu-color-primary-contrast);
+  background: var(--voyzu-color-brand);
+  border-color: var(--voyzu-color-brand);
+}
+
+.batchCloseBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: 1px solid var(--voyzu-color-border);
+  border-radius: var(--voyzu-radius-compact);
+  cursor: pointer;
+  color: var(--voyzu-color-text-secondary);
+  transition: all var(--voyzu-transition-fast);
+}
+
+.batchOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.batchModal {
+  background: var(--voyzu-color-surface);
+  border-radius: 1rem;
+  box-shadow: var(--voyzu-shadow-floating);
+  width: 100%;
+  max-width: 800px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.batchModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--voyzu-color-border);
+  flex-shrink: 0;
+}
+
+.batchModalTitle {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--voyzu-color-text-heading);
+}
+
+.batchModalActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.batchCode {
+  overflow: auto;
+  flex: 1;
+}
+
+.batchCode :global(pre) {
+  margin: 0;
+  padding: 1.5rem;
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  min-height: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.bankCashSlip {
+  flex: 1;
+  overflow: auto;
+  padding: 1.5rem;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bankCashTransactionPanel,
+.bankCashAccountPanel {
+  background: var(--voyzu-color-surface);
+  border: 1px solid var(--voyzu-color-border);
+  border-radius: var(--voyzu-radius-control);
+  box-shadow: var(--voyzu-shadow-surface);
+  overflow: hidden;
+}
+
+.bankCashTransactionPanel {
+  border-top: 4px solid var(--voyzu-color-brand);
+}
+
+.bankCashAccountPanel {
+  background: #fbfdff;
+}
+
+.bankCashSectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--voyzu-color-border);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.bankCashSectionHeader :global(.material-symbols-outlined) {
+  font-size: 20px;
+  color: var(--voyzu-color-brand);
+}
+
+.bankCashSectionHeader h3 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--voyzu-color-text-heading);
+}
+
+.bankCashMainGrid,
+.bankCashAccountGrid {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+
+.bankCashMainGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bankCashAccountGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.bankCashField,
+.bankCashFieldProminent {
+  min-width: 0;
+  padding: 0.875rem 1rem;
+  border-right: 1px solid var(--voyzu-color-border);
+  border-bottom: 1px solid var(--voyzu-color-border);
+}
+
+.bankCashMainGrid .bankCashField:nth-child(2n),
+.bankCashMainGrid .bankCashFieldProminent:nth-child(2n),
+.bankCashAccountGrid .bankCashField:nth-child(4n),
+.bankCashAccountGrid .bankCashFieldProminent:nth-child(4n) {
+  border-right: none;
+}
+
+.bankCashMainGrid .bankCashField:nth-last-child(-n + 2),
+.bankCashMainGrid .bankCashFieldProminent:nth-last-child(-n + 2),
+.bankCashAccountGrid .bankCashField:nth-last-child(-n + 4),
+.bankCashAccountGrid .bankCashFieldProminent:nth-last-child(-n + 4) {
+  border-bottom: none;
+}
+
+.bankCashField dt,
+.bankCashFieldProminent dt {
+  margin: 0 0 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  color: var(--voyzu-color-text-tertiary);
+}
+
+.bankCashField dd,
+.bankCashFieldProminent dd {
+  margin: 0;
+  min-height: 1.25rem;
+  color: var(--voyzu-color-text);
+  font-size: 0.875rem;
+  line-height: 1.35;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.bankCashFieldProminent dd {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--voyzu-color-text);
+}
+
+.memoInputWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+  min-width: 18rem;
+  padding: 0.625rem 0.5rem 0.625rem 1rem;
+  border-radius: var(--voyzu-radius-control);
+  border: 1px solid var(--voyzu-color-border);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--voyzu-font-family);
+  color: var(--voyzu-color-text-label);
+  background: var(--voyzu-color-surface);
+  box-shadow: var(--voyzu-shadow-surface);
+  transition: all var(--voyzu-transition-fast);
+}
+
+.memoInputWrap:focus-within {
+  box-shadow: 0 0 0 2px var(--voyzu-color-surface), 0 0 0 5px var(--voyzu-color-primary-focus-ring);
+}
+
+.memoInputInner {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  min-width: 0;
+}
+
+.memoConfirmBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--voyzu-radius-pill);
+  cursor: pointer;
+  color: var(--voyzu-color-text-secondary);
+  flex-shrink: 0;
+  transition: all var(--voyzu-transition-fast);
+}
+
+@media (max-width: 767px) {
+  .headerActions {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .headerActionSeparator {
+    display: none;
+  }
+
+  .formGrid,
+  .sectionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .bankCashMainGrid,
+  .bankCashAccountGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .bankCashField,
+  .bankCashFieldProminent,
+  .bankCashMainGrid .bankCashField:nth-child(2n),
+  .bankCashMainGrid .bankCashFieldProminent:nth-child(2n),
+  .bankCashAccountGrid .bankCashField:nth-child(4n),
+  .bankCashAccountGrid .bankCashFieldProminent:nth-child(4n) {
+    border-right: none;
+  }
+}

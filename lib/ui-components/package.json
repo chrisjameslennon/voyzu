@@ -1,0 +1,19 @@
+{
+  "name": "@voyzu/ui-components",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./filter-panel/filter-panel.module.css": "./src/filter-panel/filter-panel.module.css"
+  },
+  "peerDependencies": {
+    "@voyzu/ui-layout": "*",
+    "@voyzu/ui-style": "*",
+    "react": "^19",
+    "react-dom": "^19"
+  }
+}

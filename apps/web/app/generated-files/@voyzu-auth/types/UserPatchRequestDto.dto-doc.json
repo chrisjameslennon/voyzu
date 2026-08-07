@@ -1,0 +1,5 @@
+{
+  "name": "UserPatchRequestDto",
+  "sourceFile": "packages/@voyzu/auth/modules/types/user.patch.request.dto.ts",
+  "typescript": "import type { UserUpdateRequestDto } from \"./user.update.request.dto\";\n\nexport type UserPatchRequestDto = Partial<Omit<UserUpdateRequestDto, \"code\" | \"status\">>;\n"
+}

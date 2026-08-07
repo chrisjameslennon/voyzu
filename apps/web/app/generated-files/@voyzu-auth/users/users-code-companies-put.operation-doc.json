@@ -1,0 +1,129 @@
+{
+  "operationId": "users-code-companies-put",
+  "method": "put",
+  "path": "/api/users/{code}/companies",
+  "summary": "Replace Company Access",
+  "description": "Replace Company Access Users.",
+  "tags": [
+    "Users"
+  ],
+  "requestPathParams": {
+    "code": {
+      "description": "Business code of the requested record.",
+      "schema": {
+        "type": "string"
+      },
+      "example": "string"
+    }
+  },
+  "requestBody": {
+    "required": true,
+    "schemaRef": "UserCompanyAccessUpdateRequestDto",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "companyIds": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "required": [
+        "companyIds"
+      ],
+      "additionalProperties": false
+    },
+    "example": {
+      "companyIds": [
+        0
+      ]
+    }
+  },
+  "responses": {
+    "204": {
+      "description": "Company access replaced successfully."
+    },
+    "400": {
+      "description": "Validation failed.",
+      "schemaRef": "InputValidationErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INPUT_VALIDATION_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INPUT_VALIDATION_ERROR",
+        "message": "string"
+      }
+    },
+    "404": {
+      "description": "Entity not found.",
+      "schemaRef": "EntityNotFoundErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "ENTITY_NOT_FOUND"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "ENTITY_NOT_FOUND",
+        "message": "string"
+      }
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "schemaRef": "InternalServerErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

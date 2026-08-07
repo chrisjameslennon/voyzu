@@ -1,0 +1,5 @@
+{
+  "name": "AuthLoginResponseDto",
+  "sourceFile": "packages/@voyzu/auth/modules/types/auth-login.response.dto.ts",
+  "typescript": "import type { AuthUserDto } from \"./auth-user.dto\";\n\nexport interface AuthLoginResponseDto {\n  /** Authenticated user. */\n  user: AuthUserDto;\n}\n"
+}

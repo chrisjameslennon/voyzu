@@ -1,0 +1,210 @@
+@import "../../internal/css/wa-primitives.css";
+@import "../../internal/css/tailwind-color-primitives.css";
+@import "../../internal/css/voyzu-primitives.css";
+
+:root {
+  /* ------------------------------------------------------------------
+   * Application design tokens  (public — use these in components)
+   * ------------------------------------------------------------------ */
+
+  /* ── Brand / primary actions ── */
+  --voyzu-color-brand: var(--_brand-primary);
+  --voyzu-color-brand-hover: var(--_brand-primary-hover);
+  --voyzu-color-brand-soft: var(--_brand-primary-light);
+  --voyzu-color-brand-subtle: var(--_brand-primary-subtle);
+
+  /* ── App surfaces ── */
+  --voyzu-color-background: var(--_brand-background);
+  --voyzu-color-surface: var(--tw-color-white);
+  --voyzu-color-surface-secondary: var(--tw-color-gray-100);
+  --voyzu-color-surface-muted: var(--tw-color-gray-50);
+  --voyzu-color-surface-border: var(--tw-color-gray-200);
+  --voyzu-color-overlay: var(--wa-color-overlay-modal);
+
+  /* ── Text ── */
+  --voyzu-color-text: var(--tw-color-gray-800);
+  --voyzu-color-text-heading: var(--tw-color-gray-900);
+  --voyzu-color-text-label: var(--tw-color-gray-700);
+  --voyzu-color-text-caption: var(--tw-color-gray-600);
+  --voyzu-color-text-secondary: var(--tw-color-gray-500);
+  --voyzu-color-text-tertiary: var(--tw-color-gray-400);
+  --voyzu-color-text-help: var(--tw-color-gray-400);
+  --voyzu-color-text-placeholder: var(--tw-color-gray-400);
+  --voyzu-color-text-disabled: var(--tw-color-gray-300);
+  --voyzu-color-text-inverse: var(--tw-color-white);
+
+  /* ── Links ── */
+  --voyzu-color-link: var(--tw-color-blue-600);
+  --voyzu-color-link-hover: var(--tw-color-blue-700);
+
+  /* ── Borders ── */
+  --voyzu-color-border: var(--tw-color-gray-200);
+  --voyzu-color-border-strong: var(--tw-color-gray-300);
+
+  /* ── Primary interactive scale ── */
+  --voyzu-color-primary-surface: var(--tw-color-blue-50);
+  --voyzu-color-primary-surface-strong: var(--tw-color-blue-100);
+  --voyzu-color-primary-border: var(--tw-color-blue-200);
+  --voyzu-color-primary-border-strong: var(--tw-color-blue-300);
+  --voyzu-color-primary-focus-ring: var(--tw-color-blue-400);
+  --voyzu-color-primary-base: var(--tw-color-blue-500);
+  --voyzu-color-primary-text-strong: var(--tw-color-blue-800);
+  --voyzu-color-primary-text-emphasis: var(--tw-color-blue-900);
+
+  /* ── Generic semantic feedback ── */
+  --voyzu-color-brand-base: var(--voyzu-color-brand);
+  --voyzu-color-brand-bg: var(--voyzu-color-brand-subtle);
+  --voyzu-color-brand-text: var(--voyzu-color-brand);
+  --voyzu-color-brand-border: var(--voyzu-color-brand-soft);
+  --voyzu-color-info: var(--voyzu-color-primary-base);
+  --voyzu-color-info-base: var(--voyzu-color-primary-base);
+  --voyzu-color-info-bg: var(--voyzu-color-primary-surface);
+  --voyzu-color-info-text: var(--voyzu-color-primary-text-strong);
+  --voyzu-color-info-hover: var(--voyzu-color-primary-text-emphasis);
+  --voyzu-color-info-border: var(--voyzu-color-primary-border-strong);
+  --voyzu-color-success: var(--tw-color-green-600);
+  --voyzu-color-success-base: var(--tw-color-green-500);
+  --voyzu-color-success-bg: var(--tw-color-green-50);
+  --voyzu-color-success-text: var(--tw-color-green-700);
+  --voyzu-color-success-hover: var(--tw-color-green-700);
+  --voyzu-color-success-border: var(--tw-color-green-300);
+  --voyzu-color-warning: var(--tw-color-orange-600);
+  --voyzu-color-warning-base: var(--tw-color-orange-500);
+  --voyzu-color-warning-bg: var(--tw-color-orange-50);
+  --voyzu-color-warning-text: var(--tw-color-orange-700);
+  --voyzu-color-warning-hover: var(--tw-color-orange-700);
+  --voyzu-color-warning-border: var(--tw-color-orange-100);
+  --voyzu-color-danger: var(--tw-color-red-600);
+  --voyzu-color-danger-base: var(--tw-color-red-500);
+  --voyzu-color-danger-bg: var(--tw-color-red-50);
+  --voyzu-color-danger-text: var(--tw-color-red-700);
+  --voyzu-color-danger-hover: var(--tw-color-red-700);
+  --voyzu-color-danger-border: var(--tw-color-red-100);
+  --voyzu-color-neutral: var(--tw-color-gray-200);
+  --voyzu-color-neutral-base: var(--tw-color-gray-200);
+  --voyzu-color-neutral-bg: var(--tw-color-gray-100);
+  --voyzu-color-neutral-text: var(--tw-color-gray-700);
+  --voyzu-color-neutral-hover: var(--tw-color-gray-700);
+  --voyzu-color-neutral-border: var(--tw-color-gray-300);
+  --voyzu-color-plain: var(--tw-color-white);
+  --voyzu-color-plain-base: var(--tw-color-white);
+  --voyzu-color-plain-bg: var(--tw-color-white);
+  --voyzu-color-plain-text: var(--tw-color-gray-500);
+  --voyzu-color-plain-hover: var(--tw-color-gray-800);
+  --voyzu-color-plain-border: var(--tw-color-gray-200);
+
+  /* ── User avatar ── */
+  --voyzu-avatar-color: var(--wa-color-indigo-40);
+  --voyzu-avatar-color-hover: var(--wa-color-indigo-30);
+  --voyzu-avatar-color-focus: var(--wa-color-indigo-50);
+
+
+  /* ------------------------------------------------------------------
+   * Effects
+   * ------------------------------------------------------------------ */
+
+  /* ── Shadows ── */
+  --voyzu-shadow-surface: var(--_shadow-surface);
+  --voyzu-shadow-sticky-bar: var(--wa-shadow-s);
+  --voyzu-shadow-floating: var(--wa-shadow-l);
+  --voyzu-shadow-overlay: var(--wa-shadow-l);
+  --voyzu-shadow-elevated: var(--_shadow-elevated);
+  --voyzu-shadow-deep: var(--_shadow-deep);
+
+
+  /* ------------------------------------------------------------------
+   * Shape
+   * ------------------------------------------------------------------ */
+
+  /* ── Border radius ── */
+  --voyzu-radius-compact: var(--wa-border-radius-m);
+  --voyzu-radius-control: var(--wa-border-radius-l);
+  --voyzu-radius-surface: var(--wa-border-radius-l);
+  --voyzu-radius-popover: var(--wa-border-radius-l);
+  --voyzu-radius-pill: var(--wa-border-radius-pill);
+
+
+  /* ------------------------------------------------------------------
+   * Typography
+   * ------------------------------------------------------------------ */
+
+  --voyzu-font-family: var(--_font-family-body);
+  --voyzu-font-family-heading: var(--_font-family-heading);
+  --voyzu-font-family-nav: var(--_font-family-heading);
+
+  /* ── Font sizes ── */
+  --voyzu-font-size-page-title: var(--wa-font-size-3xl);
+  --voyzu-font-size-page-title-tablet: var(--_font-size-page-title-tablet);
+  --voyzu-font-size-page-title-mobile: var(--wa-font-size-l);
+  --voyzu-font-size-content-title: var(--wa-font-size-2xl);
+  --voyzu-font-size-section-heading: var(--wa-font-size-s);
+  --voyzu-font-size-body: var(--wa-font-size-s);
+  --voyzu-font-size-body-small: var(--wa-font-size-xs);
+  --voyzu-font-size-caption: var(--wa-font-size-xs);
+  --voyzu-font-size-field-label: var(--wa-font-size-2xs);
+  --voyzu-font-size-field-value: var(--wa-font-size-s);
+  --voyzu-font-size-field-helper: var(--wa-font-size-3xs);
+  --voyzu-font-size-nav-item: var(--wa-font-size-s);
+  --voyzu-font-size-breadcrumb: var(--wa-font-size-s);
+  --voyzu-font-size-button: var(--wa-font-size-s);
+  --voyzu-font-size-subheading: var(--wa-font-size-l);
+  --voyzu-font-size-tag: var(--wa-font-size-xs);
+
+  /* ── Font weights ── */
+  --voyzu-font-weight-page-title: var(--_font-weight-display);
+  --voyzu-font-weight-heading: var(--wa-font-weight-heading);
+  --voyzu-font-weight-section-heading: var(--wa-font-weight-heading);
+  --voyzu-font-weight-field-label: var(--wa-font-weight-heading);
+  --voyzu-font-weight-action: var(--wa-font-weight-action);
+  --voyzu-font-weight-body: var(--wa-font-weight-body);
+  --voyzu-font-weight-body-light: var(--wa-font-weight-light);
+  --voyzu-font-weight-link: var(--wa-font-weight-normal);
+
+  /* ── Line heights ── */
+  --voyzu-line-height-heading: var(--wa-line-height-condensed);
+  --voyzu-line-height-body: var(--wa-line-height-normal);
+
+
+  /* ------------------------------------------------------------------
+   * Spacing
+   * ------------------------------------------------------------------ */
+
+  --voyzu-space-inline: var(--wa-space-xs);
+  --voyzu-space-badge-y: var(--wa-space-2xs);
+  --voyzu-space-strip: var(--wa-space-s);
+  --voyzu-space-section: var(--wa-space-l);
+  --voyzu-space-panel-x: var(--wa-space-xl);
+
+  /* ── Control padding ── */
+  --voyzu-space-control-y: var(--wa-space-xs);
+  --voyzu-space-control-x: var(--_space-control-x);
+  --voyzu-space-field-y: var(--wa-space-s);
+  --voyzu-space-field-x: var(--wa-space-m);
+
+  /* ── Control sizing ── */
+  --voyzu-control-height: var(--_control-height);
+  --voyzu-control-size: var(--wa-space-m);
+
+  /* ── Border widths ── */
+  --voyzu-border-width: var(--wa-border-width-s);
+  --voyzu-border-width-strong: var(--wa-border-width-m);
+
+
+  /* ------------------------------------------------------------------
+   * Scrollbars
+   * ------------------------------------------------------------------ */
+
+  --voyzu-color-scrollbar-track: var(--tw-color-gray-100);
+  --voyzu-color-scrollbar-thumb: var(--voyzu-color-border-strong);
+  --voyzu-color-scrollbar-thumb-hover: var(--voyzu-color-text-tertiary);
+
+
+  /* ------------------------------------------------------------------
+   * Motion
+   * ------------------------------------------------------------------ */
+
+  --voyzu-transition-fast: var(--_transition-fast);
+  --voyzu-transition-normal: var(--_transition-normal);
+  --voyzu-transition-slow: var(--wa-transition-slow) var(--wa-transition-easing);
+  --voyzu-transition-enter: var(--_transition-enter);
+}

@@ -1,0 +1,5 @@
+{
+  "name": "UserCreateRequestDto",
+  "sourceFile": "packages/@voyzu/auth/modules/types/user.create.request.dto.ts",
+  "typescript": "import type { UserAccessMode, UserRole, UserStatus } from \"./user.response.dto\";\n\nexport interface UserCreateRequestDto {\n  code: string;\n  email?: string | null;\n  displayName: string;\n  password: string;\n  confirmPassword: string;\n  role: UserRole;\n  accessMode: UserAccessMode;\n  showDeveloperLinks?: boolean;\n  status?: UserStatus;\n  companyIds?: number[];\n}\n"
+}

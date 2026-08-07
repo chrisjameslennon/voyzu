@@ -1,0 +1,40 @@
+{
+  "name": "@voyzu/audit",
+  "version": "0.1.0",
+  "description": "Preinstalled audit capture, querying, APIs and UI.",
+  "repository": "https://github.com/chrisjameslennon/voyzu.git",
+  "private": true,
+  "type": "module",
+  "voyzu": {
+    "voyzu-package": true,
+    "allowInstall": true,
+    "dependencies": [],
+    "rootPaths": ["/audit"],
+    "preinstalled": true,
+    "settings": {
+      "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
+    }
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    "./voyzu-package": "./voyzu.package.ts",
+    "./audit": "./modules/audit/module.ts",
+    "./common": "./modules/common/module.ts",
+    "./types": "./modules/types/index.ts",
+    "./client": "./modules/common/client/index.ts",
+    "./server": "./modules/audit/server/index.ts",
+    "./stamps": "./modules/common/server/index.ts"
+  },
+  "peerDependencies": {
+    "@voyzu/auth": "^0.1.0",
+    "@voyzu/capability": "^0.1.0",
+    "@voyzu/types": "^0.1.0",
+    "@voyzu/ui-components": "^0.1.0",
+    "@voyzu/ui-layout": "^0.1.0",
+    "@voyzu/ui-style": "^0.1.0",
+    "@voyzu/ui-surface": "^0.1.0",
+    "next": "^16",
+    "react": "^19",
+    "server-only": "^0.0.1"
+  }
+}

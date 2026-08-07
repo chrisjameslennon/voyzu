@@ -1,0 +1,33 @@
+{
+  "name": "@voyzu/ui-reference",
+  "version": "0.1.0",
+  "description": "Preinstalled reference pages for Voyzu user-interface components and patterns.",
+  "repository": "https://github.com/chrisjameslennon/voyzu.git",
+  "private": true,
+  "type": "module",
+  "voyzu": {
+    "voyzu-package": true,
+    "allowInstall": true,
+    "dependencies": [],
+    "rootPaths": ["/ui-reference"],
+    "preinstalled": true,
+    "settings": {
+      "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
+    }
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    "./voyzu-package": "./voyzu.package.ts",
+    "./navigation/top-nav": "./navigation/top-nav.ts",
+    "./navigation/left-nav": "./navigation/left-nav.ts"
+  },
+  "peerDependencies": {
+    "@voyzu/types": "^0.1.0",
+    "@voyzu/ui-components": "^0.1.0",
+    "@voyzu/ui-layout": "^0.1.0",
+    "@voyzu/ui-style": "^0.1.0",
+    "next": "^16",
+    "react": "^19",
+    "shiki": "^4.4.1"
+  }
+}

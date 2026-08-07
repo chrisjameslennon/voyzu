@@ -1,0 +1,36 @@
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--voyzu-color-text-tertiary);
+}
+
+.text {
+  color: var(--voyzu-color-text-tertiary);
+  font-weight: 500;
+}
+
+.sep {
+  margin: 0 0.5rem;
+  color: var(--voyzu-color-text-tertiary);
+}
+
+.link {
+  color: var(--voyzu-color-text-secondary);
+  text-decoration: none;
+  font-size: inherit;
+  font-weight: inherit;
+  font-family: var(--voyzu-font-family);
+  transition: color var(--voyzu-transition-fast);
+}
+
+.link:hover {
+  color: var(--voyzu-color-text);
+}
+
+@media (max-width: 767px) {
+  .breadcrumb {
+    display: none;
+  }
+}

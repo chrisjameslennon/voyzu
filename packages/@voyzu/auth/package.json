@@ -1,0 +1,42 @@
+{
+  "name": "@voyzu/auth",
+  "version": "0.1.0",
+  "description": "Preinstalled Voyzu authentication and user management.",
+  "repository": "https://github.com/chrisjameslennon/voyzu.git",
+  "private": true,
+  "type": "module",
+  "voyzu": {
+    "voyzu-package": true,
+    "allowInstall": true,
+    "dependencies": [],
+    "rootPaths": ["/login", "/settings/users"],
+    "preinstalled": true,
+    "settings": {
+      "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
+    }
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    "./voyzu-package": "./voyzu.package.ts",
+    "./navigation/settings": "./navigation/settings.left-nav.ts",
+    "./auth": "./modules/auth/module.ts",
+    "./auth/client": "./modules/auth/client/index.ts",
+    "./auth/server": "./modules/auth/server/index.ts",
+    "./auth/server/session": "./modules/auth/server/session.ts",
+    "./types": "./modules/types/index.ts",
+    "./users": "./modules/users/module.ts",
+    "./users/client": "./modules/users/client/index.ts",
+    "./users/server": "./modules/users/server/index.ts"
+  },
+  "peerDependencies": {
+    "@voyzu/capability": "^0.1.0",
+    "@voyzu/types": "^0.1.0",
+    "@voyzu/ui-components": "^0.1.0",
+    "@voyzu/ui-layout": "^0.1.0",
+    "@voyzu/ui-style": "^0.1.0",
+    "@voyzu/ui-surface": "^0.1.0",
+    "next": "^16",
+    "react": "^19",
+    "server-only": "^0.0.1"
+  }
+}

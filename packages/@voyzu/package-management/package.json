@@ -1,0 +1,38 @@
+{
+  "name": "@voyzu/package-management",
+  "version": "0.1.0",
+  "description": "Preinstalled Voyzu package visibility and navigation management.",
+  "repository": "https://github.com/chrisjameslennon/voyzu.git",
+  "private": true,
+  "type": "module",
+  "voyzu": {
+    "voyzu-package": true,
+    "allowInstall": true,
+    "dependencies": [],
+    "rootPaths": ["/settings/packages"],
+    "preinstalled": true,
+    "settings": {
+      "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
+    }
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    "./voyzu-package": "./voyzu.package.ts",
+    "./navigation/settings": "./navigation/settings.left-nav.ts",
+    "./server": "./modules/package-management/server/index.ts",
+    "./types": "./modules/types/index.ts"
+  },
+  "peerDependencies": {
+    "@voyzu/auth": "^0.1.0",
+    "@voyzu/capability": "^0.1.0",
+    "@voyzu/types": "^0.1.0",
+    "@voyzu/ui-components": "^0.1.0",
+    "@voyzu/ui-layout": "^0.1.0",
+    "@voyzu/ui-style": "^0.1.0",
+    "@voyzu/ui-surface": "^0.1.0",
+    "next": "^16",
+    "react": "^19",
+    "server-only": "^0.0.1",
+    "shiki": "^4.4.1"
+  }
+}

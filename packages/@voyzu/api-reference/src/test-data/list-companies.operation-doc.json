@@ -1,0 +1,60 @@
+{
+  "operationId": "listCompanies",
+  "method": "get",
+  "path": "/api/companies",
+  "summary": "List companies",
+  "description": "Returns the companies available in the organization.",
+  "responses": {
+    "200": {
+      "description": "A list of all companies.",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "code", "name", "countryCode", "baseCurrencyCode", "status"],
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "Unique numeric identifier for the company."
+            },
+            "code": {
+              "type": "string",
+              "description": "Stable company code."
+            },
+            "name": {
+              "type": "string",
+              "description": "Company display name."
+            },
+            "countryCode": {
+              "type": "string",
+              "description": "Country code used for company localization."
+            },
+            "baseCurrencyCode": {
+              "type": "string",
+              "description": "Base currency code used for company reporting."
+            },
+            "status": {
+              "type": "string",
+              "enum": ["ACTIVE", "INACTIVE"],
+              "description": "Current company status."
+            }
+          }
+        }
+      },
+      "example": [
+        {
+          "id": 10001,
+          "code": "SAMP-AU",
+          "name": "Acme Australia Pty Ltd",
+          "countryCode": "AU",
+          "baseCurrencyCode": "AUD",
+          "status": "ACTIVE"
+        }
+      ]
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "modelReference": "See Error Response Model"
+    }
+  }
+}

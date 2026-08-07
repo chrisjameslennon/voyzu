@@ -1,0 +1,160 @@
+.page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 3rem 2rem 6rem;
+  font-family: var(--voyzu-font-family);
+  color: var(--voyzu-color-text);
+}
+
+/* ── Header ── */
+
+.header {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--voyzu-color-border);
+}
+
+.eyebrow {
+  margin: 0 0 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--voyzu-color-brand);
+}
+
+.title {
+  margin: 0 0 0.75rem;
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--voyzu-color-text);
+}
+
+.description {
+  margin: 0 0 1.25rem;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--voyzu-color-text-secondary);
+  max-width: 60ch;
+}
+
+.link {
+  color: var(--voyzu-color-link);
+}
+
+.importBlock {
+  display: inline-block;
+  padding: 0.625rem 1rem;
+  background: var(--voyzu-color-surface-muted);
+  border: 1px solid var(--voyzu-color-border);
+  border-radius: 6px;
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  color: var(--voyzu-color-text);
+}
+
+/* ── Sections ── */
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionTitle {
+  margin: 0 0 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--voyzu-color-text-secondary);
+  padding-bottom: 0.625rem;
+  border-bottom: 1px solid var(--voyzu-color-border);
+}
+
+/* ── Props table ── */
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--voyzu-color-border);
+  border-radius: 8px;
+}
+
+.propsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.propsTable th {
+  padding: 0.625rem 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--voyzu-color-text-secondary);
+  background: var(--voyzu-color-surface-muted);
+  border-bottom: 1px solid var(--voyzu-color-border);
+}
+
+.propsTable td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--voyzu-color-border);
+  vertical-align: top;
+  color: var(--voyzu-color-text);
+  line-height: 1.5;
+}
+
+.propsTable tr:last-child td {
+  border-bottom: none;
+}
+
+.propName {
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  color: var(--voyzu-color-brand);
+  font-weight: 600;
+}
+
+.propType {
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  color: var(--voyzu-color-text-secondary);
+}
+
+.propRequired {
+  text-align: center;
+  color: var(--voyzu-color-text-secondary);
+}
+
+/* ── Story card ── */
+
+.story {
+  border: 1px solid var(--voyzu-color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  background: var(--voyzu-color-surface);
+  border-bottom: 1px solid var(--voyzu-color-border);
+}
+
+.codeBlock {
+  overflow: auto;
+  background: #fff;
+}
+
+.codeBlock :global(pre) {
+  margin: 0;
+  padding: 1.25rem 1.5rem;
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  white-space: pre;
+}

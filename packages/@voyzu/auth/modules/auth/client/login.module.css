@@ -1,0 +1,43 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--voyzu-color-surface-muted);
+  font-family: var(--voyzu-font-family);
+}
+
+.panel {
+  width: min(100%, 24rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem;
+  border: 1px solid var(--voyzu-color-surface-border);
+  border-radius: var(--voyzu-radius-surface);
+  background: var(--voyzu-color-surface);
+  box-shadow: var(--voyzu-shadow-floating);
+}
+
+.logo {
+  width: 7rem;
+  height: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.title {
+  margin: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}

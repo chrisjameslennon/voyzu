@@ -1,0 +1,13 @@
+.group {
+  display: flex;
+  gap: var(--voyzu-space-section);
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: var(--voyzu-space-inline);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+}

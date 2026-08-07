@@ -1,0 +1,131 @@
+{
+  "operationId": "filterCompanies",
+  "method": "post",
+  "path": "/api/companies/filter",
+  "summary": "Filter companies",
+  "description": "Filters company records using the shared filter request body.",
+  "requestBody": {
+    "required": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "description": "Filter predicates applied to company fields.",
+          "items": {
+            "type": "object",
+            "required": ["field", "operator", "value"],
+            "properties": {
+              "field": {
+                "type": "string",
+                "description": "Company field to filter against."
+              },
+              "operator": {
+                "type": "string",
+                "enum": ["equals"],
+                "description": "Comparison operator applied to the field value."
+              },
+              "value": {
+                "type": "string",
+                "description": "Value used by the filter comparison."
+              }
+            }
+          }
+        },
+        "options": {
+          "type": "object",
+          "description": "Optional paging, ordering, and result-shaping options."
+        },
+        "groups": {
+          "type": "array",
+          "description": "Optional nested filter groups.",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["field", "operator", "value"],
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "description": "Grouped company field to filter against."
+                },
+                "operator": {
+                  "type": "string",
+                  "enum": ["equals"],
+                  "description": "Grouped comparison operator applied to the field value."
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Grouped value used by the filter comparison."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "example": {
+      "filters": [
+        {
+          "field": "status",
+          "operator": "equals",
+          "value": "ACTIVE"
+        }
+      ],
+      "options": {
+        "limit": 20
+      }
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "A filtered list of companies.",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "code", "name", "countryCode", "baseCurrencyCode", "status"],
+          "properties": {
+            "id": {
+              "type": "number",
+              "description": "Unique numeric identifier for the company."
+            },
+            "code": {
+              "type": "string",
+              "description": "Stable company code."
+            },
+            "name": {
+              "type": "string",
+              "description": "Company display name."
+            },
+            "countryCode": {
+              "type": "string",
+              "description": "Country code used for company localization."
+            },
+            "baseCurrencyCode": {
+              "type": "string",
+              "description": "Base currency code used for company reporting."
+            },
+            "status": {
+              "type": "string",
+              "enum": ["ACTIVE", "INACTIVE"],
+              "description": "Current company status."
+            }
+          }
+        }
+      },
+      "example": [
+        {
+          "id": 10001,
+          "code": "SAMP-AU",
+          "name": "Acme Australia Pty Ltd",
+          "status": "ACTIVE"
+        }
+      ]
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "modelReference": "See Error Response Model"
+    }
+  }
+}

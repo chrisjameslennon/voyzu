@@ -1,0 +1,99 @@
+.codeStack {
+  display: grid;
+  min-width: 0;
+}
+
+.codePanel {
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #1b1f26;
+  color: #eef2f7;
+}
+
+.codeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  color: #aab2c0;
+  font-size: 0.75rem;
+}
+
+.highlightedCode {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.highlightedCode :global(pre) {
+  max-width: 100%;
+  margin: 0;
+  padding: 1rem;
+  background: transparent !important;
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace !important;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.highlightedCode :global(code) {
+  font-family: inherit;
+}
+
+.emptyCodeBody {
+  padding: 1rem;
+  color: #aab2c0;
+  font-size: 0.8125rem;
+}
+
+.methodTag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.6rem;
+  height: 1.1rem;
+  padding: 0 0.35rem;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.methodGET {
+  color: #006adc;
+  background: #e8f2ff;
+}
+
+.methodPOST {
+  color: #07813f;
+  background: #e7f8ee;
+}
+
+.methodPUT {
+  color: #8a5a00;
+  background: #fff3d8;
+}
+
+.methodPATCH {
+  color: #5c45d6;
+  background: #efedff;
+}
+
+.methodDELETE {
+  color: #c7212f;
+  background: #ffe8eb;
+}
+
+.statusOk {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  margin-right: 0.45rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  color: #07813f;
+  background: #e7f8ee;
+  font-size: 0.7rem;
+  font-weight: 800;
+}

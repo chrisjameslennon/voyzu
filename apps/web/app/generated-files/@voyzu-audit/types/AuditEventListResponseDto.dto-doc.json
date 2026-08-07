@@ -1,0 +1,5 @@
+{
+  "name": "AuditEventListResponseDto",
+  "sourceFile": "packages/@voyzu/audit/modules/types/audit-event.list.response.dto.ts",
+  "typescript": "import type { AuditEventResponseDto } from \"./audit-event.response.dto\";\n\nexport interface AuditEventListResponseDto {\n  items: AuditEventResponseDto[];\n  nextCursor: string | null;\n  totalMatching: number;\n}\n\r\n"
+}

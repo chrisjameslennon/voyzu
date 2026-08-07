@@ -1,0 +1,94 @@
+{
+  "operationId": "user-batches-delete",
+  "method": "delete",
+  "path": "/api/user-batches",
+  "summary": "Batch Delete",
+  "description": "Batch Delete Users.",
+  "tags": [
+    "Users"
+  ],
+  "requestBody": {
+    "required": true,
+    "schemaRef": "CodesRequestDto",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "codes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Business codes identifying the records to act on."
+        }
+      },
+      "required": [
+        "codes"
+      ],
+      "additionalProperties": false
+    },
+    "example": {
+      "codes": [
+        "string"
+      ]
+    }
+  },
+  "responses": {
+    "204": {
+      "description": "Users deleted successfully."
+    },
+    "400": {
+      "description": "Validation failed.",
+      "schemaRef": "InputValidationErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INPUT_VALIDATION_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INPUT_VALIDATION_ERROR",
+        "message": "string"
+      }
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "schemaRef": "InternalServerErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "ignoreDeprecations": "6.0",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@voyzu/modules": [
+        "./lib/modules/index.ts"
+      ],
+      "@voyzu/modules/*": [
+        "./lib/modules/*"
+      ],
+      "@voyzu/capability": [
+        "./lib/capability/src/index.ts"
+      ],
+      "@voyzu/capability/*": [
+        "./lib/capability/src/*",
+        "./lib/capability/*"
+      ],
+      "@voyzu/types": [
+        "./lib/types/src/index.ts"
+      ],
+      "@voyzu/types/*": [
+        "./lib/types/src/*",
+        "./lib/types/*"
+      ],
+      "@voyzu/ui-components": [
+        "./lib/ui-components/src/index.ts"
+      ],
+      "@voyzu/ui-components/*": [
+        "./lib/ui-components/src/*"
+      ],
+      "@voyzu/ui-layout": [
+        "./lib/ui-layout/src/index.ts"
+      ],
+      "@voyzu/ui-layout/*": [
+        "./lib/ui-layout/src/*"
+      ],
+      "@voyzu/ui-style": [
+        "./lib/ui-style/src/index.ts"
+      ],
+      "@voyzu/ui-style/*": [
+        "./lib/ui-style/src/*"
+      ],
+      "@voyzu/ui-surface": [
+        "./lib/ui-surface/src/index.ts"
+      ],
+      "@voyzu/ui-surface/*": [
+        "./lib/ui-surface/src/*",
+        "./lib/ui-surface/*"
+      ]
+    }
+  }
+}

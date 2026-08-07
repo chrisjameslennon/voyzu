@@ -1,0 +1,176 @@
+/* ── Page shell ── */
+
+.page {
+  font-family: "Inter", sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Event sub-title (entityType · entityCode) ── */
+
+.headerSub {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0;
+  margin-top: 0.125rem;
+}
+
+/* ── Content grid ── */
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 9fr 3fr;
+  gap: 1.5rem;
+  align-items: start;
+  padding: 0 2rem 3rem;
+}
+
+/* ── Changes card ── */
+
+.changesCard {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.changesTitle {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #f3f4f6;
+  margin: 0;
+}
+
+.noChanges {
+  padding: 1.5rem 1.25rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* ── Changes table ── */
+
+.changesTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.th {
+  padding: 0.625rem 1.25rem;
+  text-align: left;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #f9fafb;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.tr:not(:last-child) {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.tr:hover {
+  background: #f9fafb;
+}
+
+.td {
+  padding: 0.625rem 1.25rem;
+  vertical-align: top;
+}
+
+.tdField {
+  font-weight: 600;
+  color: #1f2937;
+  width: 200px;
+  white-space: nowrap;
+}
+
+.tdOld {
+  color: #dc2626;
+  word-break: break-all;
+}
+
+.tdNew {
+  color: #15803d;
+  word-break: break-all;
+}
+
+/* ── Sidebar ── */
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.infoCard {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.infoTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--voyzu-space-inline);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: var(--voyzu-line-height-heading);
+  color: var(--voyzu-color-text-heading);
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  margin: 0;
+}
+
+.infoTitle .material-symbols-outlined {
+  font-size: 16px;
+  color: #9ca3af;
+}
+
+.infoBody {
+  padding: 0.5rem 0;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+}
+
+.infoRowStacked {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.infoLabel {
+  color: #6b7280;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.infoValue {
+  color: #1f2937;
+  font-weight: 600;
+  text-align: right;
+  word-break: break-all;
+}
+
+.infoRowStacked .infoValue {
+  text-align: left;
+  width: 100%;
+}
+
+/* ── Action badge ── */

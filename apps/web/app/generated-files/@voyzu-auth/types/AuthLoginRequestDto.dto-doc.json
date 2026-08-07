@@ -1,0 +1,5 @@
+{
+  "name": "AuthLoginRequestDto",
+  "sourceFile": "packages/@voyzu/auth/modules/types/auth-login.request.dto.ts",
+  "typescript": "export interface AuthLoginRequestDto {\n  /** User code, email address, or other configured login identifier. */\n  identifier: string;\n  /** User password. */\n  password: string;\n}\n"
+}

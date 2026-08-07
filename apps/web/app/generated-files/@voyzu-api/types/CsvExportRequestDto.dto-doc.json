@@ -1,0 +1,5 @@
+{
+  "name": "CsvExportRequestDto",
+  "sourceFile": "lib/types/src/params/csv-export.request.dto.ts",
+  "typescript": "export interface CsvExportColumnDto {\n  /** Source field key to read from each row. */\n  key: string;\n\n  /** Column heading to write in the CSV file. */\n  label: string;\n}\n\nexport interface CsvExportRequestDto {\n  /** Download filename without extension. */\n  filename: string;\n\n  /** CSV columns to include in output order. */\n  columns: CsvExportColumnDto[];\n\n  /** Rows to write to the CSV file. */\n  rows: Record<string, unknown>[];\n}\n"
+}

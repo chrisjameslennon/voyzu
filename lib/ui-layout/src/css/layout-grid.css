@@ -1,0 +1,23 @@
+/* --------------------------------------------------------------------------
+   Voyzu layout grid primitives
+
+   Scope:
+   - Global layout primitives only.
+   - Does not define page/view-specific placement.
+   - View-specific layout modules decide which columns each slot occupies.
+-------------------------------------------------------------------------- */
+
+:root {
+  --vz-grid-columns: 12;
+  --vz-grid-gap: 1rem;
+  --vz-workspace-inline-padding: 2rem;
+  --vz-workspace-inline-padding-compact: 1rem;
+}
+
+/* 12-column grid primitive */
+.vz-grid-12 {
+  display: grid;
+  grid-template-columns: repeat(var(--vz-grid-columns), minmax(0, 1fr));
+  column-gap: var(--vz-grid-gap);
+}
+

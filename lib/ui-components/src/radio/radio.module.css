@@ -1,0 +1,33 @@
+.radio {
+  -webkit-appearance: none;
+  appearance: none;
+  width: var(--voyzu-control-size);
+  height: var(--voyzu-control-size);
+  border: var(--voyzu-border-width-strong) solid var(--voyzu-color-border-strong);
+  border-radius: 50%;
+  cursor: pointer;
+  background: var(--voyzu-color-surface);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.radio:checked {
+  background: var(--voyzu-color-surface);
+  border-color: var(--voyzu-color-link);
+}
+
+.radio:checked::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--voyzu-color-link);
+}
+
+.radio:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--voyzu-color-surface), 0 0 0 5px var(--voyzu-color-primary-focus-ring);
+}

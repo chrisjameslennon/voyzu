@@ -1,0 +1,29 @@
+{
+  "name": "@voyzu/ui-layout",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./css/breakpoints.css": "./src/css/breakpoints.css",
+    "./css/layout-grid.css": "./src/css/layout-grid.css",
+    "./css-modules/create.layout.module.css": "./src/css-modules/create.layout.module.css",
+    "./css-modules/detail.layout.module.css": "./src/css-modules/detail.layout.module.css",
+    "./css-modules/list.layout.module.css": "./src/css-modules/list.layout.module.css",
+    "./css-modules/report.layout.module.css": "./src/css-modules/report.layout.module.css",
+    "./lib/breakpoints/breakpoints": {
+      "types": "./src/lib/breakpoints/breakpoints.ts",
+      "import": "./src/lib/breakpoints/breakpoints.ts"
+    },
+    "./lib/breakpoints/use-breakpoint": {
+      "types": "./src/lib/breakpoints/use-breakpoint.ts",
+      "import": "./src/lib/breakpoints/use-breakpoint.ts"
+    }
+  },
+  "peerDependencies": {
+    "react": "^19"
+  }
+}

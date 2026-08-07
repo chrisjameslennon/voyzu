@@ -1,0 +1,5 @@
+{
+  "name": "AuditEventCountResponseDto",
+  "sourceFile": "packages/@voyzu/audit/modules/types/audit-event-count.response.dto.ts",
+  "typescript": "export interface AuditEventCountResponseDto {\n  /** Number of audit events matching the supplied filters. */\n  count: number;\n}\n"
+}

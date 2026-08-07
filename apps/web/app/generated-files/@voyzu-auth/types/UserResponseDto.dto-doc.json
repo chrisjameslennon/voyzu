@@ -1,0 +1,5 @@
+{
+  "name": "UserResponseDto",
+  "sourceFile": "packages/@voyzu/auth/modules/types/user.response.dto.ts",
+  "typescript": "import type { AuditMetadataDto } from \"@voyzu/types/modules/core\";\n\nexport type UserRole = \"ADMIN\" | \"ORGANIZATION_USER\" | \"COMPANY_USER\";\nexport type UserAccessMode = \"UI\" | \"API\" | \"UI_AND_API\";\nexport type UserStatus = \"ACTIVE\" | \"INACTIVE\";\n\nexport interface UserCompanyAssignmentDto {\n  id: number;\n  userId: number;\n  companyId: number;\n  companyCode: string;\n  companyName: string;\n}\n\nexport interface UserResponseDto {\n  id: number;\n  code: string;\n  email: string | null;\n  displayName: string;\n  role: UserRole;\n  accessMode: UserAccessMode;\n  showDeveloperLinks: boolean;\n  status: UserStatus;\n  assignments: UserCompanyAssignmentDto[];\n  /** Audit metadata for creation and latest update. */\n  audit: AuditMetadataDto;\n}\n"
+}

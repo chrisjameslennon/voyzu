@@ -1,0 +1,58 @@
+.page {
+  width: 100%;
+  max-width: 96rem;
+  margin: 0 auto;
+  padding: 2.5rem;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.sections {
+  display: grid;
+  gap: 1rem;
+}
+
+.infoGrid {
+  margin: 0;
+}
+
+.infoRow {
+  display: grid;
+  grid-template-columns: minmax(12rem, 18rem) minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--voyzu-color-border);
+}
+
+.infoRow:first-child {
+  padding-top: 0;
+}
+
+.infoRow:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.infoValue {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.mono {
+  font-family: var(--voyzu-font-family-mono);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 767px) {
+  .page {
+    padding: 1.5rem 1rem;
+  }
+
+  .infoRow {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}

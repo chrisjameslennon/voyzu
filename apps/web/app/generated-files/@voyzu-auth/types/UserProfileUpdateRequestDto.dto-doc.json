@@ -1,0 +1,5 @@
+{
+  "name": "UserProfileUpdateRequestDto",
+  "sourceFile": "packages/@voyzu/auth/modules/types/user-profile.update.request.dto.ts",
+  "typescript": "export interface UserProfileUpdateRequestDto {\n  email?: string | null;\n  displayName: string;\n}\n"
+}

@@ -1,0 +1,117 @@
+.panel {
+  color: #172033;
+}
+
+.open {
+  background: transparent;
+}
+
+.card {
+  padding: 0.75rem;
+  border: 1px solid #d6dae1;
+  border-radius: 6px;
+  background: #eef1f5;
+}
+
+.heading {
+  margin-bottom: 0.55rem;
+  color: #485265;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.headingType {
+  margin-left: 0.4rem;
+  color: #7b8493;
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.properties {
+  display: grid;
+  gap: 0;
+}
+
+.property {
+  padding: 0.55rem 0;
+  padding-left: calc(var(--property-depth, 0) * 1.25rem);
+  border-bottom: 1px solid #d6dae1;
+}
+
+.property:last-child {
+  border-bottom: 0;
+}
+
+.propertyHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+
+.propertyName {
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.propertyType,
+.required {
+  font-size: 0.68rem;
+}
+
+.propertyType {
+  color: #7b8493;
+}
+
+.required {
+  color: #ff8a00;
+  font-weight: 700;
+}
+
+.description,
+.message,
+.enumValues {
+  color: #5f6878;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.enumValues {
+  margin-top: 0.15rem;
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+}
+
+.nestedProperties {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+}
+
+.nestedProperties .property {
+  padding-top: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.card .heading {
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid #d6dae1;
+  color: #172033;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.5;
+  text-transform: none;
+}
+
+.card .properties,
+.card .message {
+  padding-top: 0.55rem;
+}

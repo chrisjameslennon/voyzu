@@ -1,0 +1,68 @@
+{
+  "name": "@voyzu/api-reference",
+  "version": "0.5.0",
+  "description": "Preinstalled interactive reference for Voyzu API routes and OpenAPI documentation.",
+  "repository": "https://github.com/chrisjameslennon/voyzu.git",
+  "private": true,
+  "type": "module",
+  "voyzu": {
+    "voyzu-package": true,
+    "allowInstall": true,
+    "dependencies": [],
+    "rootPaths": ["/api-reference"],
+    "preinstalled": true,
+    "settings": {
+      "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
+    }
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    "./voyzu-package": "./voyzu.package.ts",
+    "./navigation/top-nav": "./navigation/top-nav.ts",
+    "./navigation/left-nav": "./navigation/left-nav.ts",
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./client": {
+      "types": "./src/client/index.ts",
+      "import": "./src/client/index.ts"
+    },
+    "./client/components": {
+      "types": "./src/client/components/index.ts",
+      "import": "./src/client/components/index.ts"
+    },
+    "./common": {
+      "types": "./src/common/index.ts",
+      "import": "./src/common/index.ts"
+    },
+    "./lib": {
+      "types": "./src/lib/index.ts",
+      "import": "./src/lib/index.ts"
+    },
+    "./server": {
+      "types": "./src/server/index.ts",
+      "import": "./src/server/index.ts"
+    },
+    "./test-data": {
+      "types": "./src/test-data/index.ts",
+      "import": "./src/test-data/index.ts"
+    },
+    "./types": {
+      "types": "./src/types/index.ts",
+      "import": "./src/types/index.ts"
+    }
+  },
+  "peerDependencies": {
+    "openapi-sampler": "^1.7.4",
+    "shiki": "^4.4.1",
+    "ts-json-schema-generator": "^2.9.0",
+    "ts-morph": "^28.0.0",
+    "@voyzu/types": "^0.1.0",
+    "@voyzu/ui-components": "^0.1.0",
+    "@voyzu/ui-surface": "^0.1.0",
+    "next": "^16",
+    "react": "^19",
+    "react-dom": "^19"
+  }
+}

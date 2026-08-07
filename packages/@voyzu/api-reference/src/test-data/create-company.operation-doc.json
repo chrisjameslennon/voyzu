@@ -1,0 +1,99 @@
+{
+  "operationId": "createCompany",
+  "method": "post",
+  "path": "/api/companies",
+  "summary": "Create company",
+  "description": "Creates a company record from a JSON request body.",
+  "requestBody": {
+    "required": true,
+    "schema": {
+      "type": "object",
+      "required": ["code", "name", "countryCode", "baseCurrencyCode"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Stable company code."
+        },
+        "name": {
+          "type": "string",
+          "description": "Company display name."
+        },
+        "countryCode": {
+          "type": "string",
+          "description": "Country code for localization and tax setup."
+        },
+        "baseCurrencyCode": {
+          "type": "string",
+          "description": "Base currency code used for company reporting."
+        },
+        "taxFilingAnchorMonth": {
+          "type": "number",
+          "description": "Optional tax filing anchor month."
+        },
+        "taxFilingIntervalMonths": {
+          "type": "number",
+          "enum": [1, 2, 3, 6, 12],
+          "description": "Optional tax filing interval."
+        }
+      }
+    },
+    "example": {
+      "code": "ACME-US",
+      "name": "Acme United States Inc",
+      "countryCode": "US",
+      "baseCurrencyCode": "USD"
+    }
+  },
+  "responses": {
+    "201": {
+      "description": "The created company.",
+      "schema": {
+        "type": "object",
+        "required": ["id", "code", "name", "countryCode", "baseCurrencyCode", "status"],
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Unique numeric identifier for the company."
+          },
+          "code": {
+            "type": "string",
+            "description": "Stable company code."
+          },
+          "name": {
+            "type": "string",
+            "description": "Company display name."
+          },
+          "countryCode": {
+            "type": "string",
+            "description": "Country code used for company localization."
+          },
+          "baseCurrencyCode": {
+            "type": "string",
+            "description": "Base currency code used for company reporting."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["ACTIVE", "INACTIVE"],
+            "description": "Current company status."
+          }
+        }
+      },
+      "example": {
+        "id": 10005,
+        "code": "ACME-US",
+        "name": "Acme United States Inc",
+        "countryCode": "US",
+        "baseCurrencyCode": "USD",
+        "status": "ACTIVE"
+      }
+    },
+    "400": {
+      "description": "Validation failed.",
+      "modelReference": "See Error Response Model"
+    },
+    "409": {
+      "description": "A company with this code already exists.",
+      "modelReference": "See Error Response Model"
+    }
+  }
+}

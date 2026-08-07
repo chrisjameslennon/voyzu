@@ -1,0 +1,5 @@
+{
+  "name": "FilterRequestDto",
+  "sourceFile": "lib/types/src/params/filter-request.dto.ts",
+  "typescript": "import type { Filter } from \"./filter\";\nimport type { ListOptions } from \"./list-options\";\n\nexport interface FilterRequestDto {\n  filters: Filter[];\n  options?: ListOptions;\n}\n"
+}

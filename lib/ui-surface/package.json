@@ -1,0 +1,31 @@
+{
+  "name": "@voyzu/ui-surface",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./client": {
+      "types": "./src/client/index.ts",
+      "import": "./src/client/index.ts"
+    },
+    "./server": {
+      "types": "./src/server/index.ts",
+      "import": "./src/server/index.ts"
+    },
+    "./types": {
+      "types": "./src/types/index.ts",
+      "import": "./src/types/index.ts"
+    },
+    "./css-modules/surface.module.css": "./src/css-modules/surface.module.css"
+  },
+  "peerDependencies": {
+    "@voyzu/ui-components": "*",
+    "next": "^16",
+    "react": "^19",
+    "server-only": "^0.0.1"
+  }
+}

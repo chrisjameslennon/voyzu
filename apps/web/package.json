@@ -1,0 +1,34 @@
+{
+  "name": "@voyzu/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "dev:port": "next dev",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "start:port": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@voyzu/api": "*",
+    "@voyzu/api-reference": "*",
+    "@voyzu/auth": "*",
+    "@voyzu/audit": "*",
+    "@voyzu/capability": "*",
+    "@voyzu/types": "*",
+    "@voyzu/ui-components": "*",
+    "@voyzu/ui-layout": "*",
+    "@voyzu/ui-style": "*",
+    "@voyzu/ui-surface": "*",
+    "@voyzu/welcome": "*",
+    "@voyzu/package-management": "*",
+    "@voyzu/system-info": "*",
+    "@voyzu/ui-reference": "*",
+    "next": "^16.2.12",
+    "react": "^19",
+    "react-dom": "^19",
+    "server-only": "^0.0.1"
+  }
+}

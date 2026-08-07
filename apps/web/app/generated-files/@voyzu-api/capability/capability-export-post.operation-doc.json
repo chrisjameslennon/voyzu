@@ -1,0 +1,107 @@
+{
+  "operationId": "capability-export-post",
+  "method": "post",
+  "path": "/api/capability/export",
+  "summary": "Export Rows",
+  "description": "Exports supplied tabular rows to a downloadable file.",
+  "tags": [
+    "Capability"
+  ],
+  "requestBody": {
+    "required": true,
+    "schemaRef": "CsvExportRequestDto",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "string",
+          "description": "Download filename without extension."
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "description": "Source field key to read from each row."
+              },
+              "label": {
+                "type": "string",
+                "description": "Column heading to write in the CSV file."
+              }
+            },
+            "required": [
+              "key",
+              "label"
+            ],
+            "additionalProperties": false
+          },
+          "description": "CSV columns to include in output order."
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "description": "Rows to write to the CSV file."
+        }
+      },
+      "required": [
+        "filename",
+        "columns",
+        "rows"
+      ],
+      "additionalProperties": false
+    },
+    "example": {
+      "filename": "string",
+      "columns": [
+        {
+          "key": "string",
+          "label": "string"
+        }
+      ],
+      "rows": [
+        {
+          "property1": null,
+          "property2": null
+        }
+      ]
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "Generated export file.",
+      "contentType": "application/octet-stream"
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "schemaRef": "InternalServerErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

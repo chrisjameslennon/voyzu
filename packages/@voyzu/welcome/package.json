@@ -1,0 +1,36 @@
+{
+  "name": "@voyzu/welcome",
+  "version": "0.1.0",
+  "description": "Preinstalled Voyzu welcome page and package installation guidance.",
+  "repository": "https://github.com/chrisjameslennon/voyzu.git",
+  "private": true,
+  "type": "module",
+  "voyzu": {
+    "voyzu-package": true,
+    "allowInstall": true,
+    "dependencies": [],
+    "rootPaths": ["/welcome"],
+    "preinstalled": true,
+    "settings": {
+      "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
+    }
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    "./voyzu-package": "./voyzu.package.ts",
+    "./navigation/top-nav": "./navigation/top-nav.ts",
+    ".": {
+      "types": "./modules/welcome/module.ts",
+      "import": "./modules/welcome/module.ts"
+    },
+    "./server": {
+      "types": "./modules/welcome/server/index.ts",
+      "import": "./modules/welcome/server/index.ts"
+    }
+  },
+  "peerDependencies": {
+    "@voyzu/types": "^0.1.0",
+    "@voyzu/ui-style": "^0.1.0",
+    "react": "^19"
+  }
+}

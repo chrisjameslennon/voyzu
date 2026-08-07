@@ -1,0 +1,30 @@
+{
+  "name": "@voyzu/system-info",
+  "version": "0.1.0",
+  "description": "Preinstalled Voyzu host, installation, and web-process diagnostics.",
+  "repository": "https://github.com/chrisjameslennon/voyzu.git",
+  "private": true,
+  "type": "module",
+  "voyzu": {
+    "voyzu-package": true,
+    "allowInstall": true,
+    "dependencies": [],
+    "rootPaths": ["/settings/system-information"],
+    "preinstalled": true,
+    "settings": {
+      "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
+    }
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    "./voyzu-package": "./voyzu.package.ts",
+    "./navigation/settings": "./navigation/settings.left-nav.ts"
+  },
+  "peerDependencies": {
+    "@voyzu/capability": "^0.1.0",
+    "@voyzu/types": "^0.1.0",
+    "@voyzu/ui-style": "^0.1.0",
+    "react": "^19",
+    "server-only": "^0.0.1"
+  }
+}
