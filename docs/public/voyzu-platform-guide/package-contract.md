@@ -143,7 +143,43 @@ Example:
 
 ### Page and API root paths
 
-A package must declare every URL namespace it owns in `voyzu.pageRootPaths` and `voyzu.apiRootPaths`. Every registered route must be its corresponding root path or a child of it. API roots are relative to the shared `/api` base, so `/warehousing` owns external API paths beneath `/api/warehousing`.
+A package must separately declare the page and API URL namespaces it owns. Root paths reserve namespaces; they do not create routes. Actual page and API routes are registered by the package's modules.
+
+#### Page root paths
+
+`voyzu.pageRootPaths` contains the package's browser-facing page namespaces. Every page route registered by the package must equal one of these roots or be a child of one.
+
+For example, a page root of `/warehousing` permits module page routes such as:
+
+```text
+/warehousing
+/warehousing/stock
+/warehousing/stock/{code}
+```
+
+It does not permit a page route beneath `/purchasing` unless `/purchasing` is also declared as a page root.
+
+Page-route visibility is managed independently after installation. Hiding a package's page routes prevents direct access to its registered pages. Hiding its top-navigation items is a separate setting and does not hide its pages.
+
+#### API root paths
+
+`voyzu.apiRootPaths` contains the package's API namespaces relative to Voyzu's shared `/api` prefix. Every API route registered by the package must equal one of these roots or be a child of one.
+
+For example, this declaration:
+
+```json
+{
+  "voyzu": {
+    "apiRootPaths": ["/warehousing"]
+  }
+}
+```
+
+permits module API paths such as `/warehousing/stock` and `/warehousing/stock/{code}`. Callers use the external URLs `/api/warehousing/stock` and `/api/warehousing/stock/{code}`.
+
+API routes have no package visibility setting. Hiding top navigation or page routes does not disable a package's APIs.
+
+#### Uniqueness and overlap
 
 Page and API roots are separate routing spaces and may use the same value within one package. Across packages, roots in the same routing space must not overlap. Installation and development linking reject both exact duplicates and nested collisions such as `/warehousing` and `/warehousing/reports`. A package with no routes of a given kind must declare an empty array.
 
