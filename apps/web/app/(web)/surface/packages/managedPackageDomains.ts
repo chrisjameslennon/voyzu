@@ -10,7 +10,7 @@ export async function managedPackageDomains(
     const installedPackages = await listInstalledPackages();
     const settings = new Map(installedPackages.map((item) => [item.code, item]));
     return domains
-      .filter((domain) => settings.get(domain.packageName)?.status !== "INACTIVE")
+      .filter((domain) => settings.get(domain.packageName)?.topNavigationVisible !== false)
       .sort((left, right) => {
         const leftOrder = settings.get(left.packageName)?.navOrder ?? Number.MAX_SAFE_INTEGER;
         const rightOrder = settings.get(right.packageName)?.navOrder ?? Number.MAX_SAFE_INTEGER;

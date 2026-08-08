@@ -1,0 +1,110 @@
+{
+  "operationId": "installed-package-reconciliation-post",
+  "method": "post",
+  "path": "/api/installed-package-reconciliation",
+  "summary": "Refresh Package Inventory",
+  "description": "Reconciles package-management records with packages installed on the filesystem.",
+  "tags": [
+    "Package Management"
+  ],
+  "responses": {
+    "200": {
+      "description": "The reconciled package inventory.",
+      "schemaRef": {
+        "type": "array",
+        "items": "InstalledPackageResponseDto"
+      },
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "code": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "repository": {
+              "type": "string"
+            },
+            "topNavigationVisible": {
+              "type": "boolean"
+            },
+            "pageRoutesVisible": {
+              "type": "boolean"
+            },
+            "navOrder": {
+              "type": "number"
+            },
+            "preinstalled": {
+              "type": "boolean"
+            },
+            "hasTopNavigation": {
+              "type": "boolean"
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "pageRootPaths": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "apiRootPaths": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "id",
+            "code",
+            "description",
+            "repository",
+            "topNavigationVisible",
+            "pageRoutesVisible",
+            "navOrder",
+            "preinstalled",
+            "hasTopNavigation",
+            "required",
+            "pageRootPaths",
+            "apiRootPaths"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "example": [
+        {
+          "id": 0,
+          "code": "string",
+          "description": "string",
+          "repository": "string",
+          "topNavigationVisible": true,
+          "pageRoutesVisible": true,
+          "navOrder": 0,
+          "preinstalled": true,
+          "hasTopNavigation": true,
+          "required": true,
+          "pageRootPaths": [
+            "string"
+          ],
+          "apiRootPaths": [
+            "string"
+          ]
+        }
+      ]
+    },
+    "403": {
+      "description": "Administrator access is required."
+    },
+    "500": {
+      "description": "An unexpected server error occurred."
+    }
+  }
+}

@@ -63,7 +63,8 @@ Create `package.json` at the package root. The `voyzu.voyzu-package` flag marks 
     "voyzu-package": true,
     "allowInstall": true,
     "dependencies": [],
-    "rootPaths": ["/ice-creams"],
+    "pageRootPaths": ["/ice-creams"],
+    "apiRootPaths": ["/ice-creams"],
     "settings": {
       "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
     }

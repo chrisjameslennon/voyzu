@@ -84,15 +84,15 @@ function mutableRoute(
 
 function packagePageRoutes(
   definition: PreinstalledPackage,
-  rootPaths: readonly string[],
+  pageRootPaths: readonly string[],
   packageName: string,
   helpBaseUrl: string,
 ): VoyzuSurfaceRoute[] {
   return definition.modules.flatMap((module) => {
     const hasApiDefinitions = Object.keys(module.apiDefinitions).length > 0;
     return Object.values(module.pageRoutes).map((route) => {
-      if (!rootPaths.some((rootPath) => route.path === rootPath || route.path.startsWith(`${rootPath}/`))) {
-        throw new Error(`Package ${packageName} route ${route.path} is outside its declared root paths.`);
+      if (!pageRootPaths.some((rootPath) => route.path === rootPath || route.path.startsWith(`${rootPath}/`))) {
+        throw new Error(`Package ${packageName} route ${route.path} is outside its declared page root paths.`);
       }
       return mutableRoute(route, helpBaseUrl, packageName, hasApiDefinitions);
     });
@@ -120,43 +120,43 @@ function mutableLeftNav(
 
 const authPageRoutes = packagePageRoutes(
   voyzuAuthPackage,
-  authPackage.voyzu.rootPaths,
+  authPackage.voyzu.pageRootPaths,
   authPackage.name,
   authPackage.voyzu.settings.helpBaseUrl,
 );
 const auditPageRoutes = packagePageRoutes(
   voyzuAuditPackage,
-  auditPackage.voyzu.rootPaths,
+  auditPackage.voyzu.pageRootPaths,
   auditPackage.name,
   auditPackage.voyzu.settings.helpBaseUrl,
 );
 const welcomePageRoutes = packagePageRoutes(
   welcomePackage,
-  welcomePackageJson.voyzu.rootPaths,
+  welcomePackageJson.voyzu.pageRootPaths,
   welcomePackageJson.name,
   welcomePackageJson.voyzu.settings.helpBaseUrl,
 );
 const uiReferencePageRoutes = packagePageRoutes(
   uiReferencePackage,
-  uiReferencePackageJson.voyzu.rootPaths,
+  uiReferencePackageJson.voyzu.pageRootPaths,
   uiReferencePackageJson.name,
   uiReferencePackageJson.voyzu.settings.helpBaseUrl,
 );
 const apiReferencePageRoutes = packagePageRoutes(
   apiReferencePackage,
-  apiReferencePackageJson.voyzu.rootPaths,
+  apiReferencePackageJson.voyzu.pageRootPaths,
   apiReferencePackageJson.name,
   apiReferencePackageJson.voyzu.settings.helpBaseUrl,
 );
 const packageManagementPageRoutes = packagePageRoutes(
   voyzuPackageManagementPackage,
-  packageManagementPackageJson.voyzu.rootPaths,
+  packageManagementPackageJson.voyzu.pageRootPaths,
   packageManagementPackageJson.name,
   packageManagementPackageJson.voyzu.settings.helpBaseUrl,
 );
 const systemInfoPageRoutes = packagePageRoutes(
   systemInfoPackage,
-  systemInfoPackageJson.voyzu.rootPaths,
+  systemInfoPackageJson.voyzu.pageRootPaths,
   systemInfoPackageJson.name,
   systemInfoPackageJson.voyzu.settings.helpBaseUrl,
 );

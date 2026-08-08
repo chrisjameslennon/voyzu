@@ -23,7 +23,7 @@ npm namespace:
 An included package must:
 
 - set `voyzu.voyzu-package` to `true`;
-- declare `voyzu.dependencies` and `voyzu.rootPaths` arrays;
+- declare `voyzu.dependencies`, `voyzu.pageRootPaths` and `voyzu.apiRootPaths` arrays;
 - declare a repository URL matching the source Git checkout;
 - export `./voyzu-package`;
 - contain `voyzu.package.ts` with at least one module or database installation file.

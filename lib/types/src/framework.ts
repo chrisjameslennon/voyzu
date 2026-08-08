@@ -10,7 +10,8 @@ export interface VoyzuPackageMetadata {
   "voyzu-package": true;
   allowInstall: boolean;
   dependencies: readonly string[];
-  rootPaths: readonly string[];
+  pageRootPaths: readonly string[];
+  apiRootPaths: readonly string[];
   preinstalled?: boolean;
   settings?: VoyzuPackageSettings;
 }

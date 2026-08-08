@@ -15,7 +15,7 @@ import {
   listInstalledPackages,
   moveInstalledPackage,
   reconcileInstalledPackages,
-  updateInstalledPackageStatus,
+  updateInstalledPackageVisibility,
   updateHomePageRoute,
 } from "../lib/installed-package.service";
 
@@ -61,7 +61,11 @@ export async function handleUpdate(
   try {
     const { id } = await params;
     const body = await parseBody<InstalledPackageUpdateRequestDto>(request);
-    return ok(await updateInstalledPackageStatus(Number(id), body.status));
+    return ok(await updateInstalledPackageVisibility(
+      Number(id),
+      body.topNavigationVisible,
+      body.pageRoutesVisible,
+    ));
   } catch (error) {
     if (error instanceof BusinessRuleError) return businessRuleError(error.message);
     if (error instanceof NotFoundError) return notFoundError(error.message);

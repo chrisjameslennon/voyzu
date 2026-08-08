@@ -180,15 +180,14 @@ Selecting a domain opens its default route. Selecting a left-navigation item nav
 
 Packages do not implement a separate mobile menu. The composer and shared application surface derive desktop and mobile navigation from the same domain declarations.
 
-## Hidden packages
+## Package UI visibility
 
-Package visibility is controlled through Package Management and applies to the whole package. When a package is inactive:
+Package Management provides two independent controls:
 
-* all of its UI domains are removed from desktop top navigation;
-* all of its UI domains are removed from the mobile drawer; and
-* its page routes are unavailable, including direct URLs.
+* **Show top navigation** controls the package's UI-domain items in the desktop top navigation and mobile drawer.
+* **Show page routes** controls whether package pages can be opened, including through direct URLs.
 
-Hiding a package does not uninstall it, run uninstall scripts or delete its data. Reactivating it restores its composed routes and navigation. Package code does not need special visibility checks; Voyzu applies the setting at the shared application surface.
+These controls do not affect API routes, uninstall the package, run uninstall scripts or delete data. Package code does not need special visibility checks; Voyzu applies both controls at the shared application surface.
 
 ## Compose after installation
 

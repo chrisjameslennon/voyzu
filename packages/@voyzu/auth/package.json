@@ -9,7 +9,8 @@
     "voyzu-package": true,
     "allowInstall": true,
     "dependencies": [],
-    "rootPaths": ["/login", "/settings/users"],
+    "pageRootPaths": ["/login", "/settings/users"],
+    "apiRootPaths": ["/auth", "/users", "/user-queries", "/user-search-results", "/user-selections", "/user-batches"],
     "preinstalled": true,
     "settings": {
       "helpBaseUrl": "https://voyzu.gitbook.io/docs/"

@@ -64,11 +64,11 @@ export function InstalledPackageList({
     { key: "description", label: "Description", render: (row) => row.description || "-" },
     { key: "installation", label: "Installation", width: "8rem", render: (row) => row.preinstalled ? "Preinstalled" : "Installed" },
     {
-      key: "status",
-      label: "Status",
-      width: "7rem",
+      key: "pageRoutesVisible",
+      label: "Page routes",
+      width: "8rem",
       align: "center",
-      render: (row) => <Badge variant="soft" size="x-small" color={row.status === "ACTIVE" ? "success" : "neutral"}>{row.status}</Badge>,
+      render: (row) => <Badge variant="soft" size="x-small" color={row.pageRoutesVisible ? "success" : "neutral"}>{row.pageRoutesVisible ? "VISIBLE" : "HIDDEN"}</Badge>,
     },
     {
       key: "order",
@@ -80,6 +80,7 @@ export function InstalledPackageList({
         const index = navigationIndex.get(row.code) ?? -1;
         return (
           <div className={localStyles.orderActions} onClick={(event) => event.stopPropagation()}>
+            <Badge variant="soft" size="x-small" color={row.topNavigationVisible ? "success" : "neutral"}>{row.topNavigationVisible ? "VISIBLE" : "HIDDEN"}</Badge>
             <Button variant="plain" size="small" icon="arrow_upward" title="Move up" disabled={index <= 0} onClick={() => { void move(row, "up"); }} />
             <Button variant="plain" size="small" icon="arrow_downward" title="Move down" disabled={index < 0 || index >= navigationPackages.length - 1} onClick={() => { void move(row, "down"); }} />
           </div>

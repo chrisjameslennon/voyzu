@@ -1,0 +1,59 @@
+{
+  "operationId": "package-settings-home-page-put",
+  "method": "put",
+  "path": "/api/package-settings/home-page",
+  "summary": "Update Home Page",
+  "description": "Validates and updates the application start-page route.",
+  "tags": [
+    "Package Management"
+  ],
+  "requestBody": {
+    "required": true,
+    "schemaRef": "HomePageRouteUpdateRequestDto",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "route": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "route"
+      ],
+      "additionalProperties": false
+    },
+    "example": {
+      "route": "string"
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "The updated start page.",
+      "schemaRef": "HomePageRouteResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "route": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "route"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "route": "string"
+      }
+    },
+    "403": {
+      "description": "Administrator access is required."
+    },
+    "422": {
+      "description": "The route is invalid or is not a registered Voyzu page."
+    },
+    "500": {
+      "description": "An unexpected server error occurred."
+    }
+  }
+}

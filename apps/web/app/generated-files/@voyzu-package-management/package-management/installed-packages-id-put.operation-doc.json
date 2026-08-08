@@ -1,0 +1,141 @@
+{
+  "operationId": "installed-packages-id-put",
+  "method": "put",
+  "path": "/api/installed-packages/{id}",
+  "summary": "Update Package Visibility",
+  "description": "Controls top-navigation visibility and direct access to an installed package's page routes. API routes are unaffected.",
+  "tags": [
+    "Package Management"
+  ],
+  "requestPathParams": {
+    "id": {
+      "description": "Numeric identifier of the installed package record.",
+      "schema": {
+        "type": "number"
+      },
+      "example": 0
+    }
+  },
+  "requestBody": {
+    "required": true,
+    "schemaRef": "InstalledPackageUpdateRequestDto",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "topNavigationVisible": {
+          "type": "boolean"
+        },
+        "pageRoutesVisible": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "topNavigationVisible",
+        "pageRoutesVisible"
+      ],
+      "additionalProperties": false
+    },
+    "example": {
+      "topNavigationVisible": true,
+      "pageRoutesVisible": true
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "The updated package.",
+      "schemaRef": "InstalledPackageResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "repository": {
+            "type": "string"
+          },
+          "topNavigationVisible": {
+            "type": "boolean"
+          },
+          "pageRoutesVisible": {
+            "type": "boolean"
+          },
+          "navOrder": {
+            "type": "number"
+          },
+          "preinstalled": {
+            "type": "boolean"
+          },
+          "hasTopNavigation": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "pageRootPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "apiRootPaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "description",
+          "repository",
+          "topNavigationVisible",
+          "pageRoutesVisible",
+          "navOrder",
+          "preinstalled",
+          "hasTopNavigation",
+          "required",
+          "pageRootPaths",
+          "apiRootPaths"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "id": 0,
+        "code": "string",
+        "description": "string",
+        "repository": "string",
+        "topNavigationVisible": true,
+        "pageRoutesVisible": true,
+        "navOrder": 0,
+        "preinstalled": true,
+        "hasTopNavigation": true,
+        "required": true,
+        "pageRootPaths": [
+          "string"
+        ],
+        "apiRootPaths": [
+          "string"
+        ]
+      }
+    },
+    "403": {
+      "description": "Administrator access is required."
+    },
+    "404": {
+      "description": "The installed package was not found."
+    },
+    "422": {
+      "description": "The requested visibility change is not permitted."
+    },
+    "500": {
+      "description": "An unexpected server error occurred."
+    }
+  }
+}

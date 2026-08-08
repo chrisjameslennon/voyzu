@@ -1441,12 +1441,11 @@
                       "repository": {
                         "type": "string"
                       },
-                      "status": {
-                        "type": "string",
-                        "enum": [
-                          "ACTIVE",
-                          "INACTIVE"
-                        ]
+                      "topNavigationVisible": {
+                        "type": "boolean"
+                      },
+                      "pageRoutesVisible": {
+                        "type": "boolean"
                       },
                       "navOrder": {
                         "type": "number"
@@ -1460,7 +1459,13 @@
                       "required": {
                         "type": "boolean"
                       },
-                      "rootPaths": {
+                      "pageRootPaths": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "apiRootPaths": {
                         "type": "array",
                         "items": {
                           "type": "string"
@@ -1472,12 +1477,14 @@
                       "code",
                       "description",
                       "repository",
-                      "status",
+                      "topNavigationVisible",
+                      "pageRoutesVisible",
                       "navOrder",
                       "preinstalled",
                       "hasTopNavigation",
                       "required",
-                      "rootPaths"
+                      "pageRootPaths",
+                      "apiRootPaths"
                     ],
                     "additionalProperties": false
                   }
@@ -1488,12 +1495,16 @@
                     "code": "string",
                     "description": "string",
                     "repository": "string",
-                    "status": "ACTIVE",
+                    "topNavigationVisible": true,
+                    "pageRoutesVisible": true,
                     "navOrder": 0,
                     "preinstalled": true,
                     "hasTopNavigation": true,
                     "required": true,
-                    "rootPaths": [
+                    "pageRootPaths": [
+                      "string"
+                    ],
+                    "apiRootPaths": [
                       "string"
                     ]
                   }
@@ -1540,12 +1551,11 @@
                       "repository": {
                         "type": "string"
                       },
-                      "status": {
-                        "type": "string",
-                        "enum": [
-                          "ACTIVE",
-                          "INACTIVE"
-                        ]
+                      "topNavigationVisible": {
+                        "type": "boolean"
+                      },
+                      "pageRoutesVisible": {
+                        "type": "boolean"
                       },
                       "navOrder": {
                         "type": "number"
@@ -1559,7 +1569,13 @@
                       "required": {
                         "type": "boolean"
                       },
-                      "rootPaths": {
+                      "pageRootPaths": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "apiRootPaths": {
                         "type": "array",
                         "items": {
                           "type": "string"
@@ -1571,12 +1587,14 @@
                       "code",
                       "description",
                       "repository",
-                      "status",
+                      "topNavigationVisible",
+                      "pageRoutesVisible",
                       "navOrder",
                       "preinstalled",
                       "hasTopNavigation",
                       "required",
-                      "rootPaths"
+                      "pageRootPaths",
+                      "apiRootPaths"
                     ],
                     "additionalProperties": false
                   }
@@ -1587,12 +1605,16 @@
                     "code": "string",
                     "description": "string",
                     "repository": "string",
-                    "status": "ACTIVE",
+                    "topNavigationVisible": true,
+                    "pageRoutesVisible": true,
                     "navOrder": 0,
                     "preinstalled": true,
                     "hasTopNavigation": true,
                     "required": true,
-                    "rootPaths": [
+                    "pageRootPaths": [
+                      "string"
+                    ],
+                    "apiRootPaths": [
                       "string"
                     ]
                   }
@@ -1649,12 +1671,11 @@
                     "repository": {
                       "type": "string"
                     },
-                    "status": {
-                      "type": "string",
-                      "enum": [
-                        "ACTIVE",
-                        "INACTIVE"
-                      ]
+                    "topNavigationVisible": {
+                      "type": "boolean"
+                    },
+                    "pageRoutesVisible": {
+                      "type": "boolean"
                     },
                     "navOrder": {
                       "type": "number"
@@ -1668,7 +1689,13 @@
                     "required": {
                       "type": "boolean"
                     },
-                    "rootPaths": {
+                    "pageRootPaths": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "apiRootPaths": {
                       "type": "array",
                       "items": {
                         "type": "string"
@@ -1680,12 +1707,14 @@
                     "code",
                     "description",
                     "repository",
-                    "status",
+                    "topNavigationVisible",
+                    "pageRoutesVisible",
                     "navOrder",
                     "preinstalled",
                     "hasTopNavigation",
                     "required",
-                    "rootPaths"
+                    "pageRootPaths",
+                    "apiRootPaths"
                   ],
                   "additionalProperties": false
                 },
@@ -1694,12 +1723,16 @@
                   "code": "string",
                   "description": "string",
                   "repository": "string",
-                  "status": "ACTIVE",
+                  "topNavigationVisible": true,
+                  "pageRoutesVisible": true,
                   "navOrder": 0,
                   "preinstalled": true,
                   "hasTopNavigation": true,
                   "required": true,
-                  "rootPaths": [
+                  "pageRootPaths": [
+                    "string"
+                  ],
+                  "apiRootPaths": [
                     "string"
                   ]
                 }
@@ -1719,8 +1752,8 @@
       },
       "put": {
         "operationId": "installed-packages-id-put",
-        "summary": "Update Package Status",
-        "description": "Activates or deactivates an installed package.",
+        "summary": "Update Package Visibility",
+        "description": "Controls top-navigation visibility and direct access to an installed package's page routes. API routes are unaffected.",
         "tags": [
           "Package Management"
         ],
@@ -1743,21 +1776,22 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "status": {
-                    "type": "string",
-                    "enum": [
-                      "ACTIVE",
-                      "INACTIVE"
-                    ]
+                  "topNavigationVisible": {
+                    "type": "boolean"
+                  },
+                  "pageRoutesVisible": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
-                  "status"
+                  "topNavigationVisible",
+                  "pageRoutesVisible"
                 ],
                 "additionalProperties": false
               },
               "example": {
-                "status": "ACTIVE"
+                "topNavigationVisible": true,
+                "pageRoutesVisible": true
               }
             }
           }
@@ -1782,12 +1816,11 @@
                     "repository": {
                       "type": "string"
                     },
-                    "status": {
-                      "type": "string",
-                      "enum": [
-                        "ACTIVE",
-                        "INACTIVE"
-                      ]
+                    "topNavigationVisible": {
+                      "type": "boolean"
+                    },
+                    "pageRoutesVisible": {
+                      "type": "boolean"
                     },
                     "navOrder": {
                       "type": "number"
@@ -1801,7 +1834,13 @@
                     "required": {
                       "type": "boolean"
                     },
-                    "rootPaths": {
+                    "pageRootPaths": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "apiRootPaths": {
                       "type": "array",
                       "items": {
                         "type": "string"
@@ -1813,12 +1852,14 @@
                     "code",
                     "description",
                     "repository",
-                    "status",
+                    "topNavigationVisible",
+                    "pageRoutesVisible",
                     "navOrder",
                     "preinstalled",
                     "hasTopNavigation",
                     "required",
-                    "rootPaths"
+                    "pageRootPaths",
+                    "apiRootPaths"
                   ],
                   "additionalProperties": false
                 },
@@ -1827,12 +1868,16 @@
                   "code": "string",
                   "description": "string",
                   "repository": "string",
-                  "status": "ACTIVE",
+                  "topNavigationVisible": true,
+                  "pageRoutesVisible": true,
                   "navOrder": 0,
                   "preinstalled": true,
                   "hasTopNavigation": true,
                   "required": true,
-                  "rootPaths": [
+                  "pageRootPaths": [
+                    "string"
+                  ],
+                  "apiRootPaths": [
                     "string"
                   ]
                 }
@@ -1846,7 +1891,7 @@
             "description": "The installed package was not found."
           },
           "422": {
-            "description": "The requested status change is not permitted."
+            "description": "The requested visibility change is not permitted."
           },
           "500": {
             "description": "An unexpected server error occurred."
@@ -1920,12 +1965,11 @@
                     "repository": {
                       "type": "string"
                     },
-                    "status": {
-                      "type": "string",
-                      "enum": [
-                        "ACTIVE",
-                        "INACTIVE"
-                      ]
+                    "topNavigationVisible": {
+                      "type": "boolean"
+                    },
+                    "pageRoutesVisible": {
+                      "type": "boolean"
                     },
                     "navOrder": {
                       "type": "number"
@@ -1939,7 +1983,13 @@
                     "required": {
                       "type": "boolean"
                     },
-                    "rootPaths": {
+                    "pageRootPaths": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "apiRootPaths": {
                       "type": "array",
                       "items": {
                         "type": "string"
@@ -1951,12 +2001,14 @@
                     "code",
                     "description",
                     "repository",
-                    "status",
+                    "topNavigationVisible",
+                    "pageRoutesVisible",
                     "navOrder",
                     "preinstalled",
                     "hasTopNavigation",
                     "required",
-                    "rootPaths"
+                    "pageRootPaths",
+                    "apiRootPaths"
                   ],
                   "additionalProperties": false
                 },
@@ -1965,12 +2017,16 @@
                   "code": "string",
                   "description": "string",
                   "repository": "string",
-                  "status": "ACTIVE",
+                  "topNavigationVisible": true,
+                  "pageRoutesVisible": true,
                   "navOrder": 0,
                   "preinstalled": true,
                   "hasTopNavigation": true,
                   "required": true,
-                  "rootPaths": [
+                  "pageRootPaths": [
+                    "string"
+                  ],
+                  "apiRootPaths": [
                     "string"
                   ]
                 }

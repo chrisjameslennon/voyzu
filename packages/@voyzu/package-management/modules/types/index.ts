@@ -1,20 +1,21 @@
-export type InstalledPackageStatus = "ACTIVE" | "INACTIVE";
-
 export interface InstalledPackageResponseDto {
   id: number;
   code: string;
   description: string;
   repository: string;
-  status: InstalledPackageStatus;
+  topNavigationVisible: boolean;
+  pageRoutesVisible: boolean;
   navOrder: number;
   preinstalled: boolean;
   hasTopNavigation: boolean;
   required: boolean;
-  rootPaths: string[];
+  pageRootPaths: string[];
+  apiRootPaths: string[];
 }
 
 export interface InstalledPackageUpdateRequestDto {
-  status: InstalledPackageStatus;
+  topNavigationVisible: boolean;
+  pageRoutesVisible: boolean;
 }
 
 export interface InstalledPackageMoveRequestDto {

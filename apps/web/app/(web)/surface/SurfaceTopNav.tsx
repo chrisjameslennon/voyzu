@@ -4,7 +4,7 @@ import {
   type VoyzuSurfaceSlots,
 } from "@voyzu/ui-surface/types";
 import { resolveExternalUrl } from "@voyzu/ui-surface";
-import { isInstalledPackageActive } from "@voyzu/package-management/server";
+import { isInstalledPackageTopNavigationVisible } from "@voyzu/package-management/server";
 
 import styles from "@voyzu/ui-surface/css-modules/surface.module.css";
 import { DeveloperButton } from "./top-nav/DeveloperButton";
@@ -21,7 +21,7 @@ export async function SurfaceTopNav({ slots, activeRoute }: SurfaceTopNavProps) 
     ? resolveExternalUrl(activeRoute.helpBaseUrl, activeRoute.helpPath)
     : undefined;
   const apiDocsUrl = activeRoute?.apiDocsUrl
-    && await isInstalledPackageActive("@voyzu/api-reference")
+    && await isInstalledPackageTopNavigationVisible("@voyzu/api-reference")
     ? activeRoute.apiDocsUrl
     : undefined;
 

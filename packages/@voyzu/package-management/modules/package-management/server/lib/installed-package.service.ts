@@ -4,11 +4,10 @@ import { checkResponse } from "@voyzu/capability/validation";
 
 import type {
   InstalledPackageResponseDto,
-  InstalledPackageStatus,
 } from "../../../types";
 import { InstalledPackageRepo } from "../db/installed-package.repo";
 import type { InstalledPackageRow } from "../db/installed-package.row.types";
-import { ChangeVisibility, isRequiredPackage } from "../../domain/operation-policy";
+import { ChangePageRouteVisibility, isRequiredPackage } from "../../domain/operation-policy";
 import { discoverInstalledPackages, type DiscoveredPackage } from "./package-inventory";
 import { validateResponse } from "./installed-package.validator";
 
@@ -21,12 +20,14 @@ function response(
     code: row.code,
     description: row.description,
     repository: discovered?.repository ?? "",
-    status: row.status,
+    topNavigationVisible: row.top_navigation_visible,
+    pageRoutesVisible: row.page_routes_visible,
     navOrder: row.nav_order,
     preinstalled: discovered?.preinstalled ?? false,
     hasTopNavigation: discovered?.hasTopNavigation ?? false,
     required: isRequiredPackage(row.code),
-    rootPaths: discovered?.rootPaths ?? [],
+    pageRootPaths: discovered?.pageRootPaths ?? [],
+    apiRootPaths: discovered?.apiRootPaths ?? [],
   };
   return checkResponse(dto, validateResponse(dto), `installed package (id=${dto.id})`);
 }
@@ -42,13 +43,12 @@ export async function reconcileInstalledPackages(): Promise<InstalledPackageResp
     for (const packageInfo of inventory) {
       const previous = existingByCode.get(packageInfo.code);
       await db.query(
-        `INSERT INTO installed_packages (code, description, status, nav_order)
-         VALUES ($1, $2, $3, $4)
+        `INSERT INTO installed_packages (code, description, nav_order)
+         VALUES ($1, $2, $3)
          ON CONFLICT (code) DO UPDATE SET description = EXCLUDED.description`,
         [
           packageInfo.code,
           packageInfo.description,
-          "ACTIVE",
           previous?.nav_order ?? nextOrder++,
         ],
       );
@@ -82,29 +82,30 @@ export async function getInstalledPackage(id: number): Promise<InstalledPackageR
   return response(row, inventory.find((item) => item.code === row.code));
 }
 
-export async function updateInstalledPackageStatus(
+export async function updateInstalledPackageVisibility(
   id: number,
-  status: InstalledPackageStatus,
+  topNavigationVisible: boolean,
+  pageRoutesVisible: boolean,
 ): Promise<InstalledPackageResponseDto> {
-  if (status !== "ACTIVE" && status !== "INACTIVE") {
-    throw new BusinessRuleError("Status must be ACTIVE or INACTIVE");
+  if (typeof topNavigationVisible !== "boolean" || typeof pageRoutesVisible !== "boolean") {
+    throw new BusinessRuleError("Top-navigation and page-route visibility must be boolean values");
   }
   const repo = new InstalledPackageRepo(getDb());
   const existing = await repo.getById(id);
   if (!existing) throw new NotFoundError(`Package id ${id} not found`);
-  const visibilityBlockers = ChangeVisibility(existing, status);
+  const visibilityBlockers = ChangePageRouteVisibility(existing, pageRoutesVisible);
   if (visibilityBlockers.length) {
     throw new BusinessRuleError(visibilityBlockers.map(({ message }) => message).join("; "));
   }
-  if (status === "INACTIVE") {
+  if (!pageRoutesVisible) {
     const inventory = await discoverInstalledPackages();
     const packageInfo = inventory.find(({ code }) => code === existing.code);
     const homeSegment = firstPathSegment(await getHomePageRoute());
-    if (homeSegment && packageInfo?.rootPaths.some((path) => firstPathSegment(path) === homeSegment)) {
-      throw new BusinessRuleError(`${existing.code} contains the configured home page and cannot be deactivated`);
+    if (homeSegment && packageInfo?.pageRootPaths.some((path) => firstPathSegment(path) === homeSegment)) {
+      throw new BusinessRuleError(`${existing.code} contains the configured home page and its page routes cannot be hidden`);
     }
   }
-  const row = await repo.updateStatus(id, status);
+  const row = await repo.updateVisibility(id, topNavigationVisible, pageRoutesVisible);
   const inventory = await discoverInstalledPackages();
   return response(row, inventory.find((item) => item.code === row.code));
 }
@@ -160,11 +161,22 @@ export async function moveInstalledPackage(
   return listInstalledPackages();
 }
 
-export async function isInstalledPackageActive(code: string | undefined): Promise<boolean> {
+export async function areInstalledPackagePageRoutesVisible(code: string | undefined): Promise<boolean> {
   if (!code) return true;
   try {
     const row = await new InstalledPackageRepo(getDb()).get(code);
-    return row?.status !== "INACTIVE";
+    return row?.page_routes_visible !== false;
+  } catch (error) {
+    if ((error as { code?: string }).code === "42P01") return true;
+    throw error;
+  }
+}
+
+export async function isInstalledPackageTopNavigationVisible(code: string | undefined): Promise<boolean> {
+  if (!code) return true;
+  try {
+    const row = await new InstalledPackageRepo(getDb()).get(code);
+    return row?.top_navigation_visible !== false;
   } catch (error) {
     if ((error as { code?: string }).code === "42P01") return true;
     throw error;

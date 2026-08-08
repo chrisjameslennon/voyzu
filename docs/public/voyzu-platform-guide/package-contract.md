@@ -63,7 +63,8 @@ Example:
     "voyzu-package": true,
     "allowInstall": true,
     "dependencies": [],
-    "rootPaths": ["/warehousing"],
+    "pageRootPaths": ["/warehousing"],
+    "apiRootPaths": ["/warehousing"],
     "settings": {
       "helpBaseUrl": "https://docs.example.com/"
     }
@@ -140,16 +141,19 @@ Example:
 }
 ```
 
-### Root paths
+### Page and API root paths
 
-A package must declare every URL namespace it owns in `voyzu.rootPaths` in `package.json`. Every page route registered by the package must be the root path itself or a child of one of these paths. Voyzu does not honour these routes while the package is inactive. A package with no pages must declare an empty array.
+A package must declare every URL namespace it owns in `voyzu.pageRootPaths` and `voyzu.apiRootPaths`. Every registered route must be its corresponding root path or a child of it. API roots are relative to the shared `/api` base, so `/warehousing` owns external API paths beneath `/api/warehousing`.
+
+Page and API roots are separate routing spaces and may use the same value within one package. Across packages, roots in the same routing space must not overlap. Installation and development linking reject both exact duplicates and nested collisions such as `/warehousing` and `/warehousing/reports`. A package with no routes of a given kind must declare an empty array.
 
 Example:
 
 ```json
 {
   "voyzu": {
-    "rootPaths": ["/warehousing", "/stock-reports"]
+    "pageRootPaths": ["/warehousing", "/stock-reports"],
+    "apiRootPaths": ["/warehousing"]
   }
 }
 ```

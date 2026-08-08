@@ -1,9 +1,10 @@
 export {
   getHomePageRoute,
   getInstalledPackage,
-  isInstalledPackageActive,
+  isInstalledPackageTopNavigationVisible,
+  areInstalledPackagePageRoutesVisible,
   listInstalledPackages,
   moveInstalledPackage,
   reconcileInstalledPackages,
-  updateInstalledPackageStatus,
+  updateInstalledPackageVisibility,
 } from "./lib/installed-package.service";

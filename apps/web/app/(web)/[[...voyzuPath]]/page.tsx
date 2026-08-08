@@ -1,6 +1,6 @@
 import { createVoyzuSurfaceRouter } from "@voyzu/ui-surface/server";
 import { getCurrentUser } from "@voyzu/auth/users/server";
-import { getHomePageRoute, isInstalledPackageActive } from "@voyzu/package-management/server";
+import { areInstalledPackagePageRoutesVisible, getHomePageRoute } from "@voyzu/package-management/server";
 
 import { voyzuSurfaceConfig } from "../voyzu.surface.config";
 import { authorizeSurfaceRoute } from "../surface/auth";
@@ -13,7 +13,7 @@ const router = createVoyzuSurfaceRouter({
   Frame: SurfaceFrame,
   getCurrentUser,
   authorize: authorizeSurfaceRoute,
-  isRouteEnabled: (route) => isInstalledPackageActive(route.packageName),
+  isRouteEnabled: (route) => areInstalledPackagePageRoutesVisible(route.packageName),
   AccessDenied,
 });
 

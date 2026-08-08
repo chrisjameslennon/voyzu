@@ -10,7 +10,8 @@ interface PackageManifest {
     "voyzu-package"?: boolean;
     allowInstall?: boolean;
     dependencies?: string[];
-    rootPaths?: string[];
+    pageRootPaths?: string[];
+    apiRootPaths?: string[];
     preinstalled?: boolean;
   };
 }
@@ -21,7 +22,8 @@ export interface DiscoveredPackage {
   repository: string;
   preinstalled: boolean;
   hasTopNavigation: boolean;
-  rootPaths: string[];
+  pageRootPaths: string[];
+  apiRootPaths: string[];
 }
 
 export interface InstalledPackageFiles {
@@ -117,7 +119,8 @@ export async function discoverInstalledPackages(): Promise<DiscoveredPackage[]> 
         hasTopNavigation:
           hasExport(manifest, "./navigation/top-nav")
           || hasExport(manifest, "./navigation/domains"),
-        rootPaths: manifest.voyzu.rootPaths ?? [],
+        pageRootPaths: manifest.voyzu.pageRootPaths ?? [],
+        apiRootPaths: manifest.voyzu.apiRootPaths ?? [],
       });
     }
   }

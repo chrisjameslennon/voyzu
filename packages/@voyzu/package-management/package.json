@@ -9,7 +9,8 @@
     "voyzu-package": true,
     "allowInstall": true,
     "dependencies": [],
-    "rootPaths": ["/settings/packages"],
+    "pageRootPaths": ["/settings/packages"],
+    "apiRootPaths": ["/installed-packages", "/installed-package-reconciliation", "/package-settings"],
     "preinstalled": true,
     "settings": {
       "helpBaseUrl": "https://voyzu.gitbook.io/docs/"

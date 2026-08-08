@@ -1,0 +1,5 @@
+{
+  "name": "HomePageRouteUpdateRequestDto",
+  "sourceFile": "packages/@voyzu/package-management/modules/types/index.ts",
+  "typescript": "export interface InstalledPackageResponseDto {\n  id: number;\n  code: string;\n  description: string;\n  repository: string;\n  topNavigationVisible: boolean;\n  pageRoutesVisible: boolean;\n  navOrder: number;\n  preinstalled: boolean;\n  hasTopNavigation: boolean;\n  required: boolean;\n  pageRootPaths: string[];\n  apiRootPaths: string[];\n}\n\nexport interface InstalledPackageUpdateRequestDto {\n  topNavigationVisible: boolean;\n  pageRoutesVisible: boolean;\n}\n\nexport interface InstalledPackageMoveRequestDto {\n  direction: \"up\" | \"down\";\n}\n\nexport interface HomePageRouteResponseDto {\n  route: string;\n}\n\nexport interface HomePageRouteUpdateRequestDto {\n  route: string;\n}\n"
+}

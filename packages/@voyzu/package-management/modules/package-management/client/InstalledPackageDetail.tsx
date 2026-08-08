@@ -3,21 +3,16 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import type { InstalledPackageResponseDto, InstalledPackageStatus } from "../../types";
-import { Badge, Breadcrumbs, Button, DropdownMenu, SearchableSelect, Toast, ValidationAlert, type DropdownMenuItem } from "@voyzu/ui-components";
+import type { InstalledPackageResponseDto } from "../../types";
+import { Badge, Breadcrumbs, Button, DropdownMenu, Toast, ToggleSwitch, ValidationAlert, type DropdownMenuItem } from "@voyzu/ui-components";
 import { DetailBackButton } from "@voyzu/ui-surface/client";
 import layout from "@voyzu/ui-layout/css-modules/detail.layout.module.css";
 import detail from "@voyzu/ui-style/css-modules/detail.module.css";
 import typography from "@voyzu/ui-style/css-modules/typography.module.css";
 import localStyles from "./package-management.module.css";
 
-import { ChangeVisibility } from "../domain/operation-policy";
+import { ChangePageRouteVisibility } from "../domain/operation-policy";
 import { PackageAccessDenied } from "./PackageAccessDenied";
-
-const STATUS_OPTIONS = [
-  { value: "ACTIVE", label: "Active" },
-  { value: "INACTIVE", label: "Inactive" },
-];
 
 interface InstalledPackageFiles {
   packageJson: string;
@@ -41,7 +36,8 @@ export function InstalledPackageDetail({
 }) {
   const router = useRouter();
   const [installedPackage, setInstalledPackage] = useState(initialPackage);
-  const [status, setStatus] = useState<InstalledPackageStatus>(initialPackage?.status ?? "ACTIVE");
+  const [topNavigationVisible, setTopNavigationVisible] = useState(initialPackage?.topNavigationVisible ?? true);
+  const [pageRoutesVisible, setPageRoutesVisible] = useState(initialPackage?.pageRoutesVisible ?? true);
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
   const [fileView, setFileView] = useState<PackageFileView | null>(null);
@@ -49,8 +45,8 @@ export function InstalledPackageDetail({
   if (!canManage) return <PackageAccessDenied pageTitle={pageTitle} />;
   if (!installedPackage) return null;
 
-  const visibilityBlockers = ChangeVisibility(installedPackage, "INACTIVE");
-  const visibilityLocked = visibilityBlockers.length > 0;
+  const pageRouteVisibilityBlockers = ChangePageRouteVisibility(installedPackage, false);
+  const pageRouteVisibilityLocked = pageRouteVisibilityBlockers.length > 0;
   const viewItems: DropdownMenuItem[] = [
     {
       value: "package-json",
@@ -73,7 +69,7 @@ export function InstalledPackageDetail({
     const response = await fetch(`/api/installed-packages/${installedPackage.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify({ topNavigationVisible, pageRoutesVisible }),
     });
     if (!response.ok) {
       const body = await response.json().catch(() => null) as { message?: string; error?: string } | null;
@@ -82,7 +78,8 @@ export function InstalledPackageDetail({
     }
     const updated = await response.json() as InstalledPackageResponseDto;
     setInstalledPackage(updated);
-    setStatus(updated.status);
+    setTopNavigationVisible(updated.topNavigationVisible);
+    setPageRoutesVisible(updated.pageRoutesVisible);
     setToast(`Updated ${updated.code}`);
     router.refresh();
   };
@@ -105,8 +102,8 @@ export function InstalledPackageDetail({
       <aside className={layout.statusSection}>
         <div className={detail.card}>
           <div className={detail.fieldGroup}>
-            <span className={typography.fieldLabel}>Status</span>
-            <Badge variant="soft" size="x-large" color={status === "ACTIVE" ? "success" : "neutral"}>{status}</Badge>
+            <span className={typography.fieldLabel}>Page routes</span>
+            <Badge variant="soft" size="x-large" color={pageRoutesVisible ? "success" : "neutral"}>{pageRoutesVisible ? "VISIBLE" : "HIDDEN"}</Badge>
           </div>
         </div>
         <div className={detail.systemCard}>
@@ -132,7 +129,6 @@ export function InstalledPackageDetail({
               <Button
                 variant="secondary"
                 icon="save"
-                disabled={installedPackage.required}
                 onClick={() => { void save(); }}
               >
                 Save
@@ -159,20 +155,30 @@ export function InstalledPackageDetail({
                 : <p className={typography.bodyText}>-</p>}
             </div>
             <div className={detail.fieldGroup}>
-              <span className={typography.fieldLabel}>Root paths</span>
-              <p className={typography.bodyText}>{installedPackage.rootPaths.join(", ") || "None"}</p>
+              <span className={typography.fieldLabel}>Page root paths</span>
+              <p className={typography.bodyText}>{installedPackage.pageRootPaths.join(", ") || "None"}</p>
+            </div>
+            <div className={detail.fieldGroup}>
+              <span className={typography.fieldLabel}>API root paths</span>
+              <p className={typography.bodyText}>{installedPackage.apiRootPaths.join(", ") || "None"}</p>
             </div>
             <label className={detail.fieldGroup}>
-              <span className={typography.fieldLabel}>Visibility</span>
-              <SearchableSelect
-                value={status}
-                onChange={(value) => setStatus(value as InstalledPackageStatus)}
-                options={STATUS_OPTIONS}
-                searchable={false}
-                codeBadge={false}
-                disabled={visibilityLocked}
+              <span className={typography.fieldLabel}>Show top navigation</span>
+              <ToggleSwitch
+                checked={topNavigationVisible}
+                onChange={setTopNavigationVisible}
+                disabled={!installedPackage.hasTopNavigation}
               />
-              {visibilityLocked && <span className={typography.fieldHelp}>{visibilityBlockers[0]?.message}.</span>}
+              {!installedPackage.hasTopNavigation && <span className={typography.fieldHelp}>This package does not provide top-navigation items.</span>}
+            </label>
+            <label className={detail.fieldGroup}>
+              <span className={typography.fieldLabel}>Show page routes</span>
+              <ToggleSwitch
+                checked={pageRoutesVisible}
+                onChange={setPageRoutesVisible}
+                disabled={pageRouteVisibilityLocked}
+              />
+              {pageRouteVisibilityLocked && <span className={typography.fieldHelp}>{pageRouteVisibilityBlockers[0]?.message}.</span>}
             </label>
           </div>
         </section>

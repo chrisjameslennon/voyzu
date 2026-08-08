@@ -57,7 +57,8 @@ It must also list the package in `voyzu.dependencies` in `package.json`:
 {
   "voyzu": {
     "dependencies": ["@acme/inventory"],
-    "rootPaths": ["/purchasing"]
+    "pageRootPaths": ["/purchasing"],
+    "apiRootPaths": ["/purchasing"]
   }
 }
 ```

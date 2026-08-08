@@ -1,0 +1,37 @@
+{
+  "operationId": "package-settings-home-page-get",
+  "method": "get",
+  "path": "/api/package-settings/home-page",
+  "summary": "Get Home Page",
+  "description": "Gets the application start-page route.",
+  "tags": [
+    "Package Management"
+  ],
+  "responses": {
+    "200": {
+      "description": "The configured start page.",
+      "schemaRef": "HomePageRouteResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "route": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "route"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "route": "string"
+      }
+    },
+    "403": {
+      "description": "Administrator access is required."
+    },
+    "500": {
+      "description": "An unexpected server error occurred."
+    }
+  }
+}
