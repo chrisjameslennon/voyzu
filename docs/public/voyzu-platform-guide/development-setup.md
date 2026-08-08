@@ -187,7 +187,7 @@ You must have Git access to the repository when the package is not public.
 
 ## 12. Publish your package
 
-Voyzu packages are installed directly from GitHub, so they do not require an npm publishing step. All that is required to publish your package is to make your directory public.
+Voyzu packages are installed directly from GitHub, so they do not require an npm publishing step. All that is required to publish your package is to make your GitHub repository public.
 
 If you think your package may benefit other users of the Voyzu platform, raise a Github issue.
 
