@@ -1,7 +1,5 @@
 # Roadmap
 
-The proposed roadmap below.
-
 ## Feature Complete Core ERP
 
 * Accounts Receivable: Customers, Orders, Invoicing
