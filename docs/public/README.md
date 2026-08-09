@@ -4,12 +4,6 @@ description: Open. Modular. Business Application Platform
 
 # Welcome
 
-{% hint style="info" %}
-We are taking the probably quite unusual step of publishing the documentation before the application. If you are interested in this project, which will be released mid to late 2026, drop a line to chris@voyzu.com.
-
-Note that emails that do not concern the project directly, such as marketing emails, will be deleted without reply.
-{% endhint %}
-
 Voyzu is an Open Source and modular Platform on which business applications can be built.
 
 The Voyzu platform provides capabilities for building high-quality packages, including:
@@ -25,6 +19,10 @@ The Voyzu platform provides capabilities for building high-quality packages, inc
 * Consistent layout, styling, and public CSS variables.
 
 To install Voyzu see [installation-and-setup.md](installation-and-operation/installation-and-setup.md "mention")
+
+{% hint style="info" %}
+[Star us on github](https://github.com/chrisjameslennon/voyzu)
+{% endhint %}
 
 ## Packages
 
