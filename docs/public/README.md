@@ -54,6 +54,8 @@ The Voyzu Ice-creams package is a best practice package that illustrates many of
 
 It is not intended to be an actual ice-creams management module :-)
 
+Read more at [voyzu-ice-creams.md](other-voyzu-packages/voyzu-ice-creams.md "mention")
+
 ### Voyzu Ugly Package `(@voyzu/ugly-package)`
 
 ```shell
@@ -63,3 +65,5 @@ npm run voyzu:install -- https://github.com/chrisjameslennon/voyzu-packages.git 
 The Voyzu Ugly package is designed to illustrate the freedom you have as a Voyzu package developer. It deliberately doesn't use Voyzu components or follow Voyzu patterns.
 
 If you are independently minded and are wondering just how far you can push the system and still remain compliant, this is the package for you!
+
+Read more at [voyzu-ugly-package.md](other-voyzu-packages/voyzu-ugly-package.md "mention")
