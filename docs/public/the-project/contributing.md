@@ -17,3 +17,7 @@ If you have a package in mind that would extend the core product then we would w
 * Become familiar with the Rapid Application Development (RAD) Framework aspects of Voyzu by developing a small module. Start by reading how to [develop a new package](../voyzu-platform-guide/develop-a-new-package.md).
 * Take a look at the [roadmap.md](roadmap.md "mention")
 * Then contact us at chris@voyzu.com
+
+{% hint style="info" %}
+[Star us on Github](https://github.com/chrisjameslennon/voyzu)
+{% endhint %}
