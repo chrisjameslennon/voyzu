@@ -45,6 +45,7 @@
 
 ## Voyzu Core Concepts
 
+* [Introduction](voyzu-core-concepts/introduction.md)
 * [What is a Financial Ledger?](voyzu-core-concepts/what-is-a-financial-ledger.md)
 * [Definitions](voyzu-core-concepts/definitions.md)
 * [Organizations and Companies](voyzu-core-concepts/organizations-and-companies.md)
