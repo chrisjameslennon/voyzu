@@ -1,5 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { notFound } from "next/navigation";
 
 import { OperationDoc } from "@voyzu/api-reference/client/components";
 import type { DtoDoc, OperationDoc as OperationDocData } from "@voyzu/api-reference/types";
@@ -15,6 +16,8 @@ interface GeneratedOperationsPageProps {
 
 function readOperationDocs(packageFolder: string, moduleFolder: string): OperationDocData[] {
   const docsDir = path.join(generatedFilesRoot(), packageFolder, moduleFolder);
+  if (!fs.existsSync(docsDir)) notFound();
+
   const fileNames = fs
     .readdirSync(docsDir)
     .filter((fileName) => fileName.endsWith(".operation-doc.json"))

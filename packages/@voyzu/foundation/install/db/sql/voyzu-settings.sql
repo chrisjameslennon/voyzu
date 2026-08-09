@@ -6,4 +6,5 @@ CREATE TABLE IF NOT EXISTS voyzu_settings (
 
 INSERT INTO voyzu_settings (code, value)
 VALUES ('HOME_PAGE_ROUTE', '/welcome')
-ON CONFLICT (code) DO NOTHING;
+ON CONFLICT (code) DO UPDATE
+SET value = EXCLUDED.value;
