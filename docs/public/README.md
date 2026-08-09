@@ -44,6 +44,8 @@ The Voyzu Core package provides Core and Financial Ledger Capability including:
   * Taxation
   * Inventory Ledger
 
+Start exploring the documentation at [introduction.md](voyzu-core-concepts/introduction.md "mention")
+
 ### Voyzu Ice-creams `(@voyzu/ice-creams)`
 
 ```shell
