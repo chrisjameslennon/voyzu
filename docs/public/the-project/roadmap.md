@@ -1,34 +1,35 @@
 # Roadmap
 
-There a number of axis along which the product can be extended. At this stage there is a commitment to maintain and extend the product but there is no commitment to a particular direction. Future development focus will depend to a certain extent on the demand for the product and the support it receives.
+The proposed roadmap below.
 
-## Add ERP Features
-
-As a Financial Ledger Voyzu includes core financial capabilities behind key areas of functionality such as Accounts Payable, Accounts Receivable and Inventory. However these are _financial_ capabilities not operational capabilities. For more on this concept see [what-is-a-financial-ledger.md](../voyzu-core-concepts/what-is-a-financial-ledger.md "mention")
-
-To add full ERP Features including:
+## Feature Complete Core ERP
 
 * Accounts Receivable: Customers, Orders, Invoicing
 * Accounts Payable: Suppliers, Purchase Orders, Bills
 * Bank reconciliation including automated bank transaction importing
 * Inventory Management: Stock and Logistics
+* Headless Website and e-commerce
 
-## Extend Framework Capabilities
+## Extend Platform Capabilities
 
-Strengthen Voyzu as a Rapid Application Development (RAD) tool by improving the support and documentation for developing Voyzu packages.
+* Extend package management capabilities
+* Add new capabilities that can be leveraged by packages:
+  * Data Import
+  * Email
+  * File platform / storage
 
-## Add E-commerce functionality
+## Longer Term
 
-Build on the existing financial and inventory features to develop e-commerce functionality. Some ERP features such as Inventory Management and Accounts Receivable would be pre-requisites here
+The below functionality is not currently planned
 
-## Deepen Financial Ledger Functionality
+### Deepen Financial Ledger Functionality
 
 Introduce advanced Accounting features such as:
 
 * Multi currency
 * International Tax
 
-## Widen Financial Ledger Integration
+### Widen Financial Ledger Integration
 
 Extend the Financial Ledger to accommodate other domains. \`This would mainly involve the addition of additional families of Financial Domains and their associated accounting formulas
 
