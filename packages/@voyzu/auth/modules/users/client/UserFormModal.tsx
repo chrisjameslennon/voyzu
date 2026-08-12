@@ -167,7 +167,15 @@ export function UserFormModal({ isOpen, title, companies, initial, onClose, onSu
 
   return (
     <div className={styles.backdrop}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <form
+        className={styles.modal}
+        autoComplete="off"
+        onClick={(e) => e.stopPropagation()}
+        onSubmit={(e) => {
+          e.preventDefault();
+          void submit();
+        }}
+      >
         <div className={styles.header}>
           <h3 className={typography.contentTitle}>{title}</h3>
           <Button variant="plain" icon="close" onClick={onClose} type="button" title="Close" />
@@ -187,6 +195,8 @@ export function UserFormModal({ isOpen, title, companies, initial, onClose, onSu
           <label className={styles.fieldGroup}>
             <span className={typography.fieldLabel}>Code</span>
             <Input
+              name="code"
+              autoComplete="off"
               invalid={validation.hasError("code")}
               value={value.code}
               onChange={(e) => setField("code", e.target.value.toUpperCase())}
@@ -197,6 +207,8 @@ export function UserFormModal({ isOpen, title, companies, initial, onClose, onSu
           <label className={styles.fieldGroup}>
             <span className={typography.fieldLabel}>Display name</span>
             <Input
+              name="displayName"
+              autoComplete="off"
               invalid={validation.hasError("displayName")}
               value={value.displayName}
               onChange={(e) => setField("displayName", e.target.value)}
@@ -205,7 +217,13 @@ export function UserFormModal({ isOpen, title, companies, initial, onClose, onSu
           </label>
           <label className={styles.fieldGroup}>
             <span className={typography.fieldLabel}>Email (optional)</span>
-            <Input value={value.email} onChange={(e) => setField("email", e.target.value)} />
+            <Input
+              name="email"
+              type="email"
+              autoComplete="off"
+              value={value.email}
+              onChange={(e) => setField("email", e.target.value)}
+            />
           </label>
           <label className={styles.fieldGroup}>
             <span className={typography.fieldLabel}>Role</span>
@@ -238,7 +256,9 @@ export function UserFormModal({ isOpen, title, companies, initial, onClose, onSu
             <label className={styles.fieldGroup}>
               <span className={typography.fieldLabel}>Password</span>
               <Input
+                name="password"
                 password
+                autoComplete="new-password"
                 invalid={validation.hasError("password")}
                 value={value.password}
                 onChange={(e) => setField("password", e.target.value)}
@@ -252,7 +272,9 @@ export function UserFormModal({ isOpen, title, companies, initial, onClose, onSu
             <label className={styles.fieldGroup}>
               <span className={typography.fieldLabel}>Confirm Password</span>
               <Input
+                name="confirmPassword"
                 password
+                autoComplete="new-password"
                 invalid={validation.hasError("confirmPassword")}
                 value={value.confirmPassword}
                 onChange={(e) => setField("confirmPassword", e.target.value)}
@@ -282,10 +304,10 @@ export function UserFormModal({ isOpen, title, companies, initial, onClose, onSu
         </div>
 
         <div className={styles.footer}>
-          <Button variant="cancel" onClick={onClose}>Cancel</Button>
-          <Button variant="primary" onClick={() => { void submit(); }} disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
+          <Button variant="cancel" type="button" onClick={onClose}>Cancel</Button>
+          <Button variant="primary" type="submit" disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
