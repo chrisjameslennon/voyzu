@@ -20,6 +20,8 @@ The Voyzu platform provides capabilities for building high-quality packages, inc
 
 To install Voyzu see [installation-and-setup.md](installation-and-operation/installation-and-setup.md "mention")
 
+{% embed url="https://youtu.be/OqacqjuGXxg?si=3zH9H4OSuCgSRFJI" %}
+
 {% hint style="info" %}
 [Star us on github](https://github.com/chrisjameslennon/voyzu)
 {% endhint %}
