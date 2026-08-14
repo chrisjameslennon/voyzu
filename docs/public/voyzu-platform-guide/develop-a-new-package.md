@@ -10,6 +10,12 @@ Before starting, create a Voyzu development environment by following [Developmen
 
 Create the package beneath the development workspace using its npm scope and package name:
 
+```shell
+npm run voyzu:create-package -- "@acme/customer orders"
+```
+
+The command creates `packages/@acme/customer-orders` from the Ice Creams reference package and links it into the development runtime. It replaces spaces with dashes and rewrites the `ice-creams` and `ice-cream` file names, directory names and file contents. You can instead create the structure manually as shown below.
+
 ```
 # Development workspace root
 packages/

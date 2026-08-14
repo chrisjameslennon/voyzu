@@ -34,6 +34,7 @@
     "voyzu:add-repo": "node lib/runtime-tools/commands/voyzu.mjs add repo",
     "voyzu:build-api-reference": "tsx packages/@voyzu/api-reference/scripts/build-api-reference.cli.ts",
     "voyzu:compose": "node lib/runtime-tools/commands/voyzu.mjs compose",
+    "voyzu:create-package": "node lib/runtime-tools/commands/voyzu.mjs create-package",
     "voyzu:dev": "node lib/runtime-tools/commands/dev.mjs",
     "voyzu:initialize": "node lib/runtime-tools/commands/voyzu.mjs initialize",
     "voyzu:install": "node lib/runtime-tools/commands/voyzu.mjs install",

@@ -130,6 +130,14 @@ With the development environment set up, it is time to write your package. All p
 
 The directory structure and `package.json` name are both authoritative. For example, `packages/@acme/warehousing` must declare `"name": "@acme/warehousing"`.
 
+Create a package from the Ice Creams reference implementation with:
+
+```shell
+npm run voyzu:create-package -- "@acme/customer orders"
+```
+
+This creates `packages/@acme/customer-orders`, replaces spaces with dashes, removes the template repository's Git metadata, renames the Ice Creams paths and references, and links the package into the development runtime. The command refuses to overwrite an existing package. Review the generated business terminology and package metadata before developing it further.
+
 Follow [Develop a new package](develop-a-new-package.md) for a practical walkthrough based on the Voyzu Ice Creams reference package.
 
 ## 9. Link your package into the Voyzu Platform
