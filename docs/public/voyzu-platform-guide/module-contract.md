@@ -267,7 +267,7 @@ import { StockService } from "@acme/warehousing/modules/stock/server";
 
 ### Testing
 
-A module should test its domain rules, validation, services, repositories, handlers and critical page behaviour at the narrowest useful boundary. Tests should reside within the module or in the repository's corresponding package test area.
+A module should test its domain rules, request and response validation, and exposed service behaviour at the narrowest useful boundary. Repository outcomes should be verified through services rather than by testing private repositories directly. Tests should reside within the module or in the repository's corresponding package test area.
 
 Example:
 
@@ -285,7 +285,7 @@ A module should follow the established Voyzu patterns for data, APIs, applicatio
 
 Example:
 
-[Voyzu patterns](/broken/pages/bSCehvktGgLRrzvG1EaC)
+See the patterns for [data](../voyzu-platform-patterns/data.md), [APIs](../voyzu-platform-patterns/api-patterns.md), [application surfaces](../voyzu-platform-patterns/app-surface.md), [validation](../voyzu-platform-patterns/validation-layers.md), [auditing](../voyzu-platform-patterns/auditing-patterns.md), and [testing](../voyzu-platform-patterns/tests.md).
 
 ### Reference package
 

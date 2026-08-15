@@ -31,7 +31,7 @@ const auth = {
   minRole: "COMPANY_USER",
 } as const;
 
-const helpPath = "extending-voyzu/patterns/ui-reference";
+const helpPath = "voyzu-platform-patterns/ui-reference";
 
 export const uiReferenceModule = {
   pageRoutes: {

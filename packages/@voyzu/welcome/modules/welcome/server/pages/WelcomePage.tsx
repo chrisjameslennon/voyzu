@@ -3,8 +3,8 @@ import typography from "@voyzu/ui-style/css-modules/typography.module.css";
 
 import styles from "./welcome-page.module.css";
 
-const HELP_URL = "https://voyzu.gitbook.io/docs/extending-voyzu/commands";
-const DEVELOPMENT_HELP_URL = "https://voyzu.gitbook.io/docs/extending-voyzu/develop-a-new-package";
+const HELP_URL = "https://voyzu.gitbook.io/docs/voyzu-platform-guide/commands";
+const DEVELOPMENT_HELP_URL = "https://voyzu.gitbook.io/docs/voyzu-platform-guide/develop-a-new-package";
 
 export function WelcomePage() {
   return (

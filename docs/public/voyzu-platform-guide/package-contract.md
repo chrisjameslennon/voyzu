@@ -460,7 +460,7 @@ A package should follow the established Voyzu patterns for data, APIs, applicati
 
 Example:
 
-[Voyzu patterns](/broken/pages/bSCehvktGgLRrzvG1EaC)
+See the patterns for [data](../voyzu-platform-patterns/data.md), [APIs](../voyzu-platform-patterns/api-patterns.md), [application surfaces](../voyzu-platform-patterns/app-surface.md), [validation](../voyzu-platform-patterns/validation-layers.md), [auditing](../voyzu-platform-patterns/auditing-patterns.md), and [testing](../voyzu-platform-patterns/tests.md).
 
 ### Reference package
 

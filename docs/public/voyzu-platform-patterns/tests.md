@@ -30,9 +30,13 @@ import {
 } from "../server";
 ```
 
-The package must declare its chosen test runner as a development dependency and
-provide a package script that runs the suite. Voyzu's reference packages use
-Playwright's test runner for database integration tests.
+The package repository must provide and configure the test runner used by the
+suite. This may be a repository-level development dependency and script shared
+by its packages, or package-local configuration when the package is developed
+and tested independently. Test-only tooling must not be declared as a runtime
+dependency. The reference test files below use Playwright's test API for
+database integration tests. The Voyzu runtime does not provide Playwright, so
+a repository that runs these files must install and configure it explicitly.
 
 ## Test exposed behavior
 

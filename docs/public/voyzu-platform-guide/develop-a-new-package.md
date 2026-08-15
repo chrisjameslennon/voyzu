@@ -14,7 +14,7 @@ Create the package beneath the development workspace using its npm scope and pac
 npm run voyzu:create-package -- "@acme/customer orders"
 ```
 
-The command creates `packages/@acme/customer-orders` from the Ice Creams reference package and links it into the development runtime. It replaces spaces with dashes and rewrites the `ice-creams` and `ice-cream` file names, directory names and file contents. You can instead create the structure manually as shown below.
+The command creates `packages/@acme/customer-orders` from the Ice Creams reference package and links it into the development runtime. It replaces spaces with dashes and derives display labels, code identifiers, file and directory names, and SQL table names from the `customer-orders` package segment. You can instead create the structure manually as shown below.
 
 ```
 # Development workspace root
@@ -161,10 +161,10 @@ DROP TRIGGER IF EXISTS ice_cream_audit_trigger ON ice_cream;
 CREATE TRIGGER ice_cream_audit_trigger
   BEFORE INSERT OR UPDATE OR DELETE ON ice_cream
   FOR EACH ROW
-  EXECUTE FUNCTION audit_trigger_fn('@acme/example-package');
+  EXECUTE FUNCTION audit_trigger_fn('@voyzu/ice-creams');
 ```
 
-Reference seeds belong under `install/db/seed`. Optional demonstration data belongs in a callable package script rather than the database seed.
+Seed data belongs under `install/db/seed`.
 
 ## Create a module
 
@@ -197,7 +197,7 @@ export const iceCreamsModule = {
       path: "/ice-creams",
       Page: IceCreamsListPage,
       pageTitle: "Ice Creams",
-      helpPath: "/extending-voyzu/develop-a-new-package",
+      helpPath: "voyzu-platform-guide/develop-a-new-package",
       auth: { required: true, minRole: "ORGANIZATION_USER" },
     },
     detail: {
@@ -205,7 +205,7 @@ export const iceCreamsModule = {
       path: "/ice-creams/[code]",
       Page: IceCreamDetailPage,
       pageTitle: "Ice Cream",
-      helpPath: "/extending-voyzu/develop-a-new-package",
+      helpPath: "voyzu-platform-guide/develop-a-new-package",
       auth: { required: true, minRole: "ORGANIZATION_USER" },
     },
   },
@@ -424,7 +424,7 @@ npm run voyzu:compose
 
 ## Add tests and documentation
 
-Test domain rules, validation, services, repositories, handlers and critical page behaviour at the narrowest useful boundary. Keep tests with the module they exercise.
+Test domain rules, request and response validation, and exposed service behaviour at the narrowest useful boundary. Keep tests with the module they exercise and use fixtures for database-backed service tests.
 
 Keep the package overview in its root `README.md`. Place all other package documentation under the package-root `docs` directory. Public-facing documentation and online-help source belong under `docs/public`.
 

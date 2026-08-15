@@ -1,6 +1,6 @@
 # Add a Financial Document Processing Engine
 
-Voyzu includes a number of Financial Document Processing [endpoints](/broken/pages/Y5aSBTUlL30kKlV170oB). Developing a new financial document processing engine should follow the pattern established. Following existing conventions will help keep things consistent.
+Voyzu includes a number of Financial Document Processing endpoints in the built-in [API Reference](../api-reference.md). Developing a new financial document processing engine should follow the established pattern and conventions.
 
 ## Naming conventions
 
@@ -16,7 +16,7 @@ document_id
 // Date to enter into the Company Ledger
 posting_date
 // Optional. Caller document reference / memo.
-meno
+memo
 ```
 
 ### Use document-specific event date names

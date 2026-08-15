@@ -64,7 +64,7 @@ A document representing a financial event, for example a company invoice, a supp
 
 **Financial Document Type**
 
-The system classification of the Financial Document, for example `AR_INVOICE`, `AP_BILL` etc. You can see the full list of Financial Documents supported by Voyzu [here](/broken/pages/WH6vot51jiNaqurZoaZk)
+The system classification of the Financial Document, for example `AR_INVOICE`, `AP_BILL` etc. See [Financial Document Types](../help-core/company-ledger/financial-document-types.md) for the supported definitions.
 
 **Financial Document Posting Engine**
 

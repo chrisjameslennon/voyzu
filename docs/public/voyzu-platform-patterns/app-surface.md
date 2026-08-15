@@ -226,29 +226,27 @@ Use this sparingly for routes such as authentication screens and printable docum
 
 ## Back navigation
 
-Use `VoyzuBackButton` for a predictable destination:
+Use `DetailBackButton` for a predictable destination:
 
 ```tsx
 // packages/@acme/warehousing/modules/stock/server/pages/StockDetailPage.tsx
-import { VoyzuBackButton } from "@voyzu/ui-components";
+import { DetailBackButton } from "@voyzu/ui-surface/client";
 
-<VoyzuBackButton href="/stock" label="Stock" />;
+<DetailBackButton fallbackHref="/stock" />;
 ```
 
-Use `VoyzuContextBackButton` when a list page carries meaningful query-string state such as filters, sorting, or paging. The context-aware button may restore the saved list URL; `href` remains the fallback.
+When a list page carries meaningful query-string state such as filters, sorting, or paging, include that state in the detail-page URL and set `preserveSearchParams`. The button returns to the fallback route with the current detail-page query string preserved.
 
 ```tsx
-import { VoyzuContextBackButton } from "@voyzu/ui-components";
+import { DetailBackButton } from "@voyzu/ui-surface/client";
 
-<VoyzuContextBackButton
-  href="/stock"
-  label="Stock"
-  contextKey="stock"
+<DetailBackButton
   fallbackHref="/stock"
+  preserveSearchParams
 />;
 ```
 
-Keep context keys stable and package-specific. Back navigation is not a breadcrumb and should not be used as a second navigation hierarchy.
+For pages that may be opened from more than one known source, pass supported `from` and `fromCode` values or derive a package-owned `fallbackHref` from explicit return context. Back navigation is not a breadcrumb and should not be used as a second navigation hierarchy.
 
 ## Help links
 

@@ -48,32 +48,169 @@ An API-only module may use an empty `pageRoutes` object.
 At runtime the route is prefixed with `/api`, so the example above exposes
 `GET /api/stock`, `POST /api/stock`, and `GET /api/stock/{code}`.
 
-## Follow REST principles
+## Implement the standard API methods
 
-API paths must identify resources, not handler actions. Use HTTP methods to
-express the operation.
+Unless a module has a particular reason to expose a different contract, it
+should implement the following 17 API methods. Using this standard gives Voyzu
+modules predictable CRUD, search, batch, and lifecycle operations.
 
 | Operation | Method and module path |
 |---|---|
-| List stock | `GET /stock` |
-| Create stock | `POST /stock` |
-| Get one item | `GET /stock/[code]` |
-| Replace one item | `PUT /stock/[code]` |
-| Partially update one item | `PATCH /stock/[code]` |
-| Delete one item | `DELETE /stock/[code]` |
-| Activate one item | `PUT /stock/[code]/activation` |
-| Deactivate one item | `DELETE /stock/[code]/activation` |
-| Create a batch | `POST /stock-batches` |
-| Search | `GET /stock-search-results?q=...` |
-| Execute a structured query | `POST /stock-queries` |
+| List ice creams | `GET /ice-creams` |
+| Create an ice cream | `POST /ice-creams` |
+| Filter ice creams | `POST /ice-creams/filter` |
+| Search ice creams | `GET /ice-creams/search?q=...` |
+| Batch create ice creams | `POST /ice-creams/batch/create` |
+| Batch get ice creams | `POST /ice-creams/batch/get` |
+| Batch update ice creams | `PUT /ice-creams/batch/update` |
+| Batch patch ice creams | `PATCH /ice-creams/batch/patch` |
+| Batch delete ice creams | `POST /ice-creams/batch/delete` |
+| Batch activate ice creams | `POST /ice-creams/batch/activate` |
+| Batch deactivate ice creams | `POST /ice-creams/batch/deactivate` |
+| Activate an ice cream | `POST /ice-creams/[code]/activate` |
+| Deactivate an ice cream | `POST /ice-creams/[code]/deactivate` |
+| Get an ice cream | `GET /ice-creams/[code]` |
+| Update an ice cream | `PUT /ice-creams/[code]` |
+| Patch an ice cream | `PATCH /ice-creams/[code]` |
+| Delete an ice cream | `DELETE /ice-creams/[code]` |
 
-Do not create action paths such as `/stock/create`, `/stock/[code]/delete`, or
-`/stock/filter`. A request that does not fit ordinary CRUD should still model
-the result or process as a resource.
+The activate, deactivate, and batch command paths are intentional parts of the
+Voyzu API convention. Do not invent alternative names or HTTP methods for
+these standard operations. A module should omit an operation when its domain
+rules make that operation inappropriate. For example, the Voyzu Audit module
+is read-only: audit events are immutable records and cannot be created,
+updated, activated, deactivated, or deleted through the Audit API. It therefore
+exposes only the read operations that make sense for audit events rather than
+implementing all 17 methods. Document the reason for any such deviation in the
+module.
 
 The combination of method and path must be unique across all composed modules.
 Use the package's domain vocabulary in paths to avoid collisions with other
 packages.
+
+## Document every API operation
+
+Every API definition must include an `apiDoc` object. It is the source for the
+Voyzu API Reference and the combined OpenAPI document. Document the operation's
+purpose, every input, its successful response, and every error response callers
+can receive.
+
+The following Ice Creams example is deliberately exhaustive: it shows every
+supported API documentation field in one definition. A real operation should
+include only the path parameters, query-string parameters, cookies, body, and
+responses that form part of its contract.
+
+```ts
+import { dtoRef } from "@voyzu/types/api";
+
+update: {
+  method: "PUT",
+  path: "/ice-creams/[code]",
+  handler: (request: any, context: any) =>
+    handleUpdate(request, context),
+  apiDoc: {
+    summary: "Update ice cream",
+    description: "Fully replaces the writable fields of an ice cream.",
+    tags: ["Ice Creams"],
+    requestPathParams: {
+      code: {
+        description: "Globally unique ice-cream business code.",
+        schema: { type: "string" },
+      },
+    },
+    requestQuerystringParams: {
+      validateOnly: {
+        description: "Validate the request without saving changes.",
+        schema: { type: "boolean" },
+      },
+    },
+    requestCookies: {
+      "voyzu-session": {
+        description: "Authenticated Voyzu session.",
+        required: true,
+        example: "session-token",
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+        maxAgeSeconds: 3600,
+      },
+    },
+    requestBody: {
+      required: true,
+      schema: dtoRef("IceCreamUpdateRequestDto"),
+    },
+    responses: {
+      "200": {
+        description: "The updated ice cream.",
+        contentType: "application/json",
+        schema: dtoRef("IceCreamResponseDto"),
+        cookies: {
+          "voyzu-session": {
+            description: "Refreshed session cookie.",
+            action: "set",
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+            path: "/",
+            maxAgeSeconds: 3600,
+          },
+        },
+      },
+      "400": {
+        description: "Validation failed.",
+        schema: dtoRef("InputValidationErrorResponseDto"),
+      },
+      "404": {
+        description: "Ice cream not found.",
+        schema: dtoRef("EntityNotFoundErrorResponseDto"),
+      },
+      "409": {
+        description: "The request conflicts with existing data.",
+        schema: dtoRef("ConflictErrorResponseDto"),
+      },
+      "422": {
+        description: "A business rule blocked the update.",
+        schema: dtoRef("BusinessRuleErrorResponseDto"),
+      },
+      "500": {
+        description: "An unexpected server error occurred.",
+        schema: dtoRef("InternalServerErrorResponseDto"),
+      },
+    },
+  },
+}
+```
+
+Use `dtoRef("DtoName")` for one DTO and `arrayOf(dtoRef("DtoName"))` for an
+array response or request. The generator resolves those references to exported
+TypeScript DTOs and derives JSON schemas and representative examples from their
+types.
+
+### Comment DTO fields
+
+Add a concise JSDoc comment immediately above every DTO field. These comments
+become field descriptions in the generated API Reference and OpenAPI schemas.
+Describe meaning or constraints that the TypeScript type alone cannot express.
+
+```ts
+export interface IceCreamUpdateRequestDto {
+  /** Ice-cream display name. */
+  name: string;
+
+  /** Code of the active flavour assigned to the ice cream. */
+  flavorCode: string;
+
+  /** Supplier display name. */
+  supplier: string;
+}
+```
+
+`voyzu:compose` reads the registered modules of every active package, extracts
+their `apiDefinitions`, resolves referenced DTOs, and writes package-grouped
+operation and DTO documents together with the combined OpenAPI document. The
+API Reference UI reads those generated files; it does not inspect handlers at
+runtime.
 
 ## Use dynamic path parameters
 
@@ -118,21 +255,30 @@ HTTP handlers must:
 Handlers must not contain persistence queries or duplicate business rules.
 Services own business operations and repositories own SQL.
 
-Use conventional response statuses:
+## Return standard error responses
 
-* `200` for a successful read or update with a response body.
-* `201` for a successful create.
-* `204` for a successful operation with no response body.
-* `400` for malformed input.
-* `401` for an unauthenticated request.
-* `403` for an authenticated caller without sufficient access.
-* `404` when the requested resource does not exist.
-* `409` for a uniqueness or state conflict.
-* `422` for a valid request blocked by a business rule.
-* `500` for an unexpected server failure.
+Handlers must translate known failures to the shared Voyzu error-response DTOs.
+Every `apiDoc.responses` object must document each error the operation can
+return as well as its successful response.
 
-Use the shared Voyzu error classes and error-response DTOs where they apply.
-Do not expose raw database errors or stack traces.
+| Status | When to return it | Shared response DTO |
+|---|---|---|
+| `400` | The path, query string, or request body is malformed or fails validation. | `InputValidationErrorResponseDto` |
+| `401` | The caller is not authenticated. | `UnauthorizedErrorResponseDto` |
+| `403` | The authenticated caller lacks permission. | Runtime authorization response |
+| `404` | The requested entity does not exist. | `EntityNotFoundErrorResponseDto` |
+| `409` | The request conflicts with an existing value or state, such as a duplicate code. | `ConflictErrorResponseDto` |
+| `422` | The request is valid but a business rule blocks the operation. | `BusinessRuleErrorResponseDto` |
+| `500` | An unexpected server failure occurs. | `InternalServerErrorResponseDto` |
+
+Use the matching shared error classes in services and translate them at the
+HTTP boundary. Authentication and authorization may be handled by the runtime
+before the module handler runs. Unexpected errors must be logged server-side
+and returned as the standard `500` response; never expose raw database errors,
+stack traces, or other implementation details.
+
+Use `200` for successful reads and updates with a response body, `201` for
+successful creates, and `204` for successful operations that return no body.
 
 ## Keep DTOs at the package boundary
 
@@ -144,11 +290,13 @@ standard errors, auditing, and package definitions.
 Do not use database row types as API DTOs. Map rows to explicit response
 objects so that internal schema changes do not silently change the public API.
 
-## Compose installed packages
+## Compose API changes
 
-Package installation and linking run composition. The composer reads each
-active package's `voyzu.package.ts`, collects `apiDefinitions` from its modules,
-and writes the generated API registry consumed by `voyzu.api.config.ts`.
+Run `npm run voyzu:compose` after adding or changing an API definition or DTO.
+Composition reads each active package's `voyzu.package.ts`, rebuilds the runtime
+API registry, generates the package-grouped API documentation and combined
+OpenAPI document, and clears the Next.js cache.
 
-Generated registry files must not be edited. Restart the web server after a
-package is installed, linked, removed, or recomposed.
+Do not edit generated registry or API documentation files. Restart the web
+server after `voyzu:compose` completes so the application loads the regenerated
+routes and documentation.

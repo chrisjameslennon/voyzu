@@ -4,7 +4,7 @@ Voyzu packages may publish documentation with any documentation provider. The pa
 
 ## Organize documentation
 
-Keep documentation source inside the package that it documents. For consistancy across packages, apart from the package's root `README.md`, all package documentation should reside in the package-root `docs` directory. Public-facing documentation, including source published as online help, should reside in `docs/public`.
+Keep documentation source inside the package that it documents. For consistency across packages, apart from the package's root `README.md`, all package documentation should reside in the package-root `docs` directory. Public-facing documentation, including source published as online help, should reside in `docs/public`.
 
 ```
 packages/@acme/warehousing/
@@ -22,7 +22,7 @@ packages/@acme/warehousing/
 
 ## Publishing Help
 
-If your package will publish help online then the recommendation is to to this directly from the package github repository. Configure GitBook, another hosted documentation service, or your own web server to publish those files, then put the resulting public URL in the package metadata as described below
+If your package will publish help online, the recommendation is to publish it directly from the package's GitHub repository. Configure GitBook, another hosted documentation service, or your own web server to publish those files, then put the resulting public URL in the package metadata as described below.
 
 ## Declare the help base
 

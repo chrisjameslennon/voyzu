@@ -6,7 +6,7 @@ PostgreSQL enforces data integrity; application services own business processes.
 
 Business tables should normally have:
 
-* an auto-generated integer `id` used for relationships and auditing. This is generally the primary key ;
+* an auto-generated integer `id` used for relationships and auditing. This is generally the primary key;
 * a stable, human-readable text `code` used as the public business key;
 * the standard creation, update, and deletion audit fields.
 
@@ -20,7 +20,7 @@ Package schema and seed SQL belongs in the package's `install/` directory and is
 
 A Data Transfer Object (DTO) is the definitive definition of data as it is described within the application. DTOs define data exchanged through the application and API boundaries.
 
-DTOs describe the shape of a data object as it applies to a given data operation. There is no attempt for example to define a single "stock object", rather there are many definitions of a stock object, depending on the desired data operation.&#x20;
+DTOs describe the shape of a data object as it applies to a given data operation. There is no attempt, for example, to define a single "stock object"; rather, there are multiple definitions depending on the data operation.
 
 ```ts
 // packages/@acme/warehousing/modules/types/stock.ts
