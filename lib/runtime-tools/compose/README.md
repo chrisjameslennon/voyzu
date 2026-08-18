@@ -28,6 +28,10 @@ An included package must:
 - export `./voyzu-package`;
 - contain `voyzu.package.ts` with at least one module or database installation file.
 
+Packages marked `voyzu.preinstalled` are supplied directly by the platform and
+are excluded when composing the platform source tree. Installed runtime
+packages cannot declare themselves preinstalled.
+
 Packages may export `./navigation/top-nav` and `./navigation/left-nav` when they
 contribute application navigation.
 
