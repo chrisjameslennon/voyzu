@@ -775,7 +775,7 @@ function listTypeSourceFiles(typesRoot: string): string[] {
   if (!fs.existsSync(typesRoot)) return [];
   const results: string[] = [];
   for (const entry of fs.readdirSync(typesRoot, { withFileTypes: true })) {
-    if (["node_modules", ".next", "generated-files"].includes(entry.name)) continue;
+    if (["node_modules", ".next", ".generated"].includes(entry.name)) continue;
     const entryPath = path.join(typesRoot, entry.name);
     if (
       entry.isDirectory()

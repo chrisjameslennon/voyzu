@@ -16,6 +16,6 @@ API definitions can change during development. Rebuild the generated operation d
 npm run voyzu:build-api-reference
 ```
 
-The generated operation documents are grouped by package beneath `apps/web/app/generated-files` in the Voyzu runtime. The combined OpenAPI document is served from `/voyzu/openapi.json`.
+The generated operation documents are grouped by package beneath `apps/web/.generated/api-reference` in the Voyzu runtime. The combined OpenAPI document is served from `/voyzu/openapi.json`.
 
 For more information on defining API documentation in package source, see [API patterns](../voyzu-platform-patterns/api-patterns.md).

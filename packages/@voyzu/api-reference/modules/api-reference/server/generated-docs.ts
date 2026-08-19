@@ -60,7 +60,7 @@ function readOperations(moduleDirectory: string): GeneratedOperationNav[] {
 }
 
 export function generatedFilesRoot(): string {
-  return path.join(findPlatformRoot(process.cwd()), "apps", "web", "app", "generated-files");
+  return path.join(findPlatformRoot(process.cwd()), "apps", "web", ".generated", "api-reference");
 }
 
 export function readGeneratedApiPackages(): GeneratedApiPackage[] {

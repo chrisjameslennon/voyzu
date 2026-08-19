@@ -31,15 +31,15 @@ import apiReferencePackageJson from "@voyzu/api-reference/package.json";
 import apiReferenceTopNav from "@voyzu/api-reference/navigation/top-nav";
 import apiReferenceLeftNavDefinition from "@voyzu/api-reference/navigation/left-nav";
 import {
-  composedLeftNav,
-  composedMainRegistrations,
-  composedPageRoutes,
-  createComposedSurfaceDomains,
-} from "../../../../generated-composition/packages.generated";
-import { VoyzuBrand } from "./surface/top-nav/VoyzuBrand";
-import { SurfaceLeftNav } from "./surface/SurfaceLeftNav";
-import { PackageTopNav } from "./surface/packages/PackageTopNav";
-import { SessionUserMenu } from "./surface/top-nav/SessionUserMenu";
+  createInstalledPackageDomains,
+  installedPackageLeftNav,
+  installedPackageMainRegistrations,
+  installedPackagePageRoutes,
+} from "../../.generated/navigation/packages";
+import { VoyzuBrand } from "./top-nav/VoyzuBrand";
+import { SurfaceLeftNav } from "./SurfaceLeftNav";
+import { PackageTopNav } from "./packages/PackageTopNav";
+import { SessionUserMenu } from "./top-nav/SessionUserMenu";
 
 type PreinstalledRoute = Omit<VoyzuSurfaceRoute, "breadcrumbBase"> & {
   readonly breadcrumbBase?: readonly VoyzuBreadcrumbItem[];
@@ -204,7 +204,7 @@ const apiReferenceSurfaceDomain: VoyzuComposedSurfaceDomain = {
   routePaths: apiReferencePageRoutes.map(({ id, path }) => ({ id, path })),
   leftNav: apiReferenceLeftNav,
 };
-const composedSurfaceDomains = createComposedSurfaceDomains([
+const composedSurfaceDomains = createInstalledPackageDomains([
   ...authPageRoutes,
   ...auditPageRoutes,
   ...welcomePageRoutes,
@@ -228,7 +228,7 @@ const pageRoutes: VoyzuSurfaceRoute[] = [
   ...apiReferencePageRoutes,
   ...packageManagementPageRoutes,
   ...systemInfoPageRoutes,
-  ...composedPageRoutes,
+  ...installedPackagePageRoutes,
 ];
 
 const packageManagementItems = packageManagementSettingsLeftNav.flatMap((group) => group.items);
@@ -268,9 +268,9 @@ export const voyzuSurfaceConfig = {
   leftNav: [
     ...uiReferenceLeftNav,
     ...apiReferenceLeftNav,
-    ...composedLeftNav,
+    ...installedPackageLeftNav,
     ...settingsLeftNav,
   ],
   leftNavRouteIds,
-  mainRegistrations: composedMainRegistrations,
+  mainRegistrations: installedPackageMainRegistrations,
 } satisfies VoyzuSurfaceConfig;

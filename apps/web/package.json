@@ -9,6 +9,7 @@
     "build": "next build",
     "start": "next start -p 3000",
     "start:port": "next start",
+    "pretypecheck": "node ../../lib/runtime-tools/compose/voyzu-compose.mjs --runtime ../.. --empty-if-missing",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {

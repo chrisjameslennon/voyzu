@@ -48,7 +48,7 @@ The same API endpoint may receive an external request or a request from the Voyz
 
 This allows browser code to call Voyzu APIs normally after the user signs in, while scripts, integrations, test clients, and other external systems use Basic authentication. An endpoint requiring a user returns `401 Unauthorized` if neither method establishes an identity.
 
-The catch-all API router installs the authenticated user in the request context before invoking a package handler. Services can therefore use the same current-user and audit helpers for application and API requests:
+The shared handler used by each generated API route installs the authenticated user in the request context before invoking a package handler. Services can therefore use the same current-user and audit helpers for application and API requests:
 
 ```ts
 import { getCurrentUser } from "@voyzu/auth/users/server";

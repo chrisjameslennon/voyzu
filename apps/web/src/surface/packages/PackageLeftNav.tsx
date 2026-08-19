@@ -8,9 +8,9 @@ import { useIsTablet } from "@voyzu/ui-layout";
 import styles from "@voyzu/ui-surface/css-modules/surface.module.css";
 import type { VoyzuComposedSurfaceDomain } from "@voyzu/ui-surface/types";
 import {
-  ComposedPackageLeftNavHeader,
-  hasComposedPackageLeftNavHeader,
-} from "../../../../../../generated-composition/package-left-nav-headers.generated";
+  PackageLeftNavHeader,
+  hasPackageLeftNavHeader,
+} from "../../../.generated/navigation/left-nav-headers";
 
 import { toNavItem } from "../common/nav";
 
@@ -50,7 +50,7 @@ export function PackageLeftNav({ domains, navigationDomains }: PackageLeftNavPro
     items: group.items.map((item) => toNavItem(item, routePathById)),
   }));
   const hasLeftNavHeader = activeDomain
-    ? hasComposedPackageLeftNavHeader(activeDomain.packageName, pathname)
+    ? hasPackageLeftNavHeader(activeDomain.packageName, pathname)
     : false;
   const handleNavigate = (path: string) => {
     if (!path.startsWith("#")) router.push(path);
@@ -75,7 +75,7 @@ export function PackageLeftNav({ domains, navigationDomains }: PackageLeftNavPro
           setIsCollapsed={setIsCollapsed}
           isCollapseLocked={isTablet}
           headerSlot={hasLeftNavHeader ? (
-            <ComposedPackageLeftNavHeader
+            <PackageLeftNavHeader
               packageName={activeDomain!.packageName}
               isCollapsed={effectiveIsCollapsed}
             />

@@ -38,7 +38,7 @@ export const stockModule = {
 } as const satisfies VoyzuPackageModuleDefinition;
 ```
 
-Voyzu supports static and dynamic path segments. A page component receives the parameters supplied by the Next.js catch-all route. Keep page components in a server-only page entry point when they access the database or other private server functionality.
+Voyzu supports static and dynamic path segments. During composition it generates thin native Next.js pages beneath `apps/web/app/(generated)/(web)`. Next.js matches the route and supplies its parameters; the Voyzu page renderer retains authorization, package visibility, framing, breadcrumbs and help behavior. Keep page components in a server-only page entry point when they access the database or other private server functionality.
 
 The supported route authorization roles are `COMPANY_USER`, `ORGANIZATION_USER`, and `ADMIN`. A public route must set `auth.required` to `false` deliberately; authenticated package pages should normally set it to `true`.
 

@@ -10,11 +10,10 @@ export type {
   VoyzuApiResponseDefinition,
 } from "./voyzu.api.types";
 export {
-  createVoyzuApiRouteHandlers,
-  handleVoyzuApiRequest,
+  handleVoyzuApiRoute,
 } from "./router";
 export type {
-  CreateVoyzuApiRouteHandlersOptions,
+  HandleVoyzuApiRouteOptions,
   VoyzuApiRouteContext,
 } from "./router";
 export { handleGenericPdf } from "./voyzu.pdf.handlers";

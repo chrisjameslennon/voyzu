@@ -57,7 +57,7 @@ export default {
 
 ### User-interface capability
 
-A module exposes its user-interface pages by registering them in the `pageRoutes` collection in the module's `module.ts`. This collection is the module's authoritative list of pages and allows Voyzu to compose routing, authorization, page metadata and navigation references into the application.
+A module exposes its user-interface pages by registering them in the `pageRoutes` collection in the module's `module.ts`. This collection is the module's authoritative list of pages and allows Voyzu to generate native Next.js pages while composing authorization, page metadata and navigation references into the application.
 
 A module with no user-interface pages must define an empty `pageRoutes` object.
 

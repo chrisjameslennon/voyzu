@@ -25,7 +25,7 @@ function findPlatformRoot(startDirectory: string): string {
 
 export async function buildApiReference(): Promise<void> {
   const platformRoot = findPlatformRoot(SCRIPT_DIRECTORY);
-  const generatedFilesDirectory = "apps/web/app/generated-files";
+  const generatedFilesDirectory = "apps/web/.generated/api-reference";
   const writtenFiles = generateOperationDocs({
     workspaceRoot: platformRoot,
     outputDir: generatedFilesDirectory,
@@ -33,7 +33,7 @@ export async function buildApiReference(): Promise<void> {
   const openApiFile = generateOpenApi({
     workspaceRoot: platformRoot,
     operationDocsDir: generatedFilesDirectory,
-    outputFile: "apps/web/public/voyzu/openapi.json",
+    outputFile: "apps/web/.generated/api-reference/openapi.json",
   });
 
   console.log(`Wrote ${writtenFiles.length} generated API reference files.`);

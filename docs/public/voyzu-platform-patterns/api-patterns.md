@@ -1,14 +1,14 @@
 # API patterns
 
-Voyzu exposes package APIs through one Next.js catch-all route:
+Voyzu generates thin native Next.js route handlers from package API definitions during composition:
 
 ```text
-apps/web/app/api/[[...voyzuApiPath]]/route.ts
+apps/web/app/(generated)/api/stock/[code]/route.ts
 ```
 
-Packages do not add files beneath `apps/web/app/api`. Each module declares its
-routes in `apiDefinitions`, and composition adds installed packages to the
-runtime API registry.
+Packages do not maintain these generated files. Each module declares its routes
+in `apiDefinitions`; composition validates the complete route manifest and emits
+one `route.ts` per path, combining multiple HTTP methods in the same file.
 
 ## Define routes in `module.ts`
 
@@ -47,6 +47,8 @@ An API-only module may use an empty `pageRoutes` object.
 
 At runtime the route is prefixed with `/api`, so the example above exposes
 `GET /api/stock`, `POST /api/stock`, and `GET /api/stock/{code}`.
+Next.js performs path matching, parameter extraction and method dispatch. The
+thin Voyzu handler retains authentication plus request and response validation.
 
 ## Implement the standard API methods
 

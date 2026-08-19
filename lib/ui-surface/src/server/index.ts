@@ -1,12 +1,12 @@
 import "server-only";
 
 export {
-  createVoyzuSurfaceRouter,
+  createVoyzuPageRenderer,
 } from "./router";
 export type {
-  CreateVoyzuSurfaceRouterOptions,
+  CreateVoyzuPageRendererOptions,
   SurfaceFrameProps,
-  VoyzuSurfaceRouteContext,
+  VoyzuSurfacePageContext,
 } from "./router";
 
 export type {
