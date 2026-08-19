@@ -1,8 +1,8 @@
-export type {
+export {
   ActorType,
   AuditMetadataDto,
   AuditStampDto,
   AuditUserDto,
-  OperationBlocker,
   Status,
 } from "./core";
+export type { OperationBlocker } from "./core";

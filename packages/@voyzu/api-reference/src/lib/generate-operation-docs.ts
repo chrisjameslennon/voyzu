@@ -1,8 +1,9 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { execFileSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 
 import sampler from "openapi-sampler";
-import { createGenerator } from "ts-json-schema-generator";
 import {
   Node,
   Project,
@@ -15,22 +16,10 @@ import {
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 const DEFAULT_CONTENT_TYPE = "application/json";
 
-type DtoSchemaRef = {
-  $ref: `#/components/schemas/${string}`;
+type SchemaNameRef = {
+  schemaName: string;
 };
-
-type ArraySchema = {
-  type: "array";
-  items: ApiSchema;
-};
-
-type ObjectSchema = {
-  type: "object";
-  properties?: Record<string, ApiSchema>;
-  required?: string[];
-};
-
-type ApiSchema = DtoSchemaRef | ArraySchema | ObjectSchema | Record<string, unknown>;
+type ApiSchema = Record<string, unknown> | SchemaNameRef;
 
 type ApiResponseDefinition = {
   description: string;
@@ -56,6 +45,11 @@ type ApiParameterDefinition = {
   schema: ApiSchema;
 };
 
+type ApiQueryDefinition = {
+  parameters: Record<string, Omit<ApiParameterDefinition, "schema">>;
+  schema: ApiSchema;
+};
+
 type ApiRequestCookieDefinition = {
   description?: string;
   required?: boolean;
@@ -75,7 +69,7 @@ type ApiDefinition = {
   tags?: string[];
   request?: {
     path?: Record<string, ApiParameterDefinition>;
-    query?: Record<string, ApiParameterDefinition>;
+    query?: ApiQueryDefinition;
     cookies?: Record<string, ApiRequestCookieDefinition>;
     contentType?: string;
     body?: ApiSchema;
@@ -155,14 +149,11 @@ export type GenerateOperationDocsOptions = {
 
 const TYPES_FOLDER_NAME = "types";
 
-type SchemaGenerator = ReturnType<typeof createGenerator>;
-
 class DtoRegistry {
   readonly #workspaceRoot: string;
   readonly #sourceByName = new Map<string, string>();
   readonly #sourceContents = new Map<string, string>();
   readonly #schemaByName = new Map<string, Record<string, unknown>>();
-  readonly #generatorByDtoName = new Map<string, SchemaGenerator>();
   #temporaryInputsRoot: string | undefined;
 
   constructor(workspaceRoot: string) {
@@ -182,9 +173,7 @@ class DtoRegistry {
     for (const filePath of sourceRoots.flatMap(listTypeSourceFiles)) {
       const source = fs.readFileSync(filePath, "utf-8");
       this.#sourceContents.set(filePath, source);
-      const declarations = source.matchAll(
-        /export\s+(?:interface|type)\s+([A-Za-z_$][\w$]*)\b/g,
-      );
+      const declarations = source.matchAll(/export\s+const\s+([A-Za-z_$][\w$]*)\b/g);
       for (const match of declarations) {
         const dtoName = match[1];
         if (dtoName && !this.#sourceByName.has(dtoName)) {
@@ -214,61 +203,31 @@ class DtoRegistry {
   prepare(dtoNames: ReadonlySet<string>, temporaryInputsRoot: string): void {
     this.#temporaryInputsRoot = temporaryInputsRoot;
     fs.mkdirSync(temporaryInputsRoot, { recursive: true });
-    const namesByPackageRoot = new Map<string, string[]>();
-
-    for (const dtoName of [...dtoNames].sort()) {
-      const sourceFile = this.sourceFile(dtoName);
-      const packageRoot = findOwningPackageRoot(sourceFile);
-      const names = namesByPackageRoot.get(packageRoot) ?? [];
-      names.push(dtoName);
-      namesByPackageRoot.set(packageRoot, names);
-    }
-
-    let packageIndex = 0;
-    for (const names of namesByPackageRoot.values()) {
-      const inputFile = path.join(
-        temporaryInputsRoot,
-        `package-${packageIndex += 1}.ts`,
-      );
-      const exports = names.map((dtoName) => {
-        const sourceFile = this.sourceFile(dtoName);
-        let modulePath = path.relative(temporaryInputsRoot, sourceFile)
-          .replace(/\\/g, "/")
-          .replace(/\.ts$/, "");
-        if (!modulePath.startsWith(".")) modulePath = `./${modulePath}`;
-        return `export type { ${dtoName} } from ${JSON.stringify(modulePath)};`;
-      });
-      fs.writeFileSync(inputFile, `${exports.join("\n")}\n`, "utf-8");
-      const generator = createGenerator({
-        path: inputFile.replace(/\\/g, "/"),
-        type: "*",
-        tsconfig: path.join(this.#workspaceRoot, "tsconfig.json").replace(/\\/g, "/"),
-        skipTypeCheck: true,
-      });
-      for (const dtoName of names) {
-        this.#generatorByDtoName.set(dtoName, generator);
-      }
+    const names = [...dtoNames].sort();
+    const inputFile = path.join(temporaryInputsRoot, "typebox-schemas.ts");
+    const imports = names.map((dtoName, index) =>
+      `import { ${dtoName} as Schema${index} } from ${JSON.stringify(pathToFileURL(this.sourceFile(dtoName)).href)};`
+    );
+    const entries = names.map((dtoName, index) => `${JSON.stringify(dtoName)}: Schema${index}`);
+    fs.writeFileSync(
+      inputFile,
+      `${imports.join("\n")}\nprocess.stdout.write(JSON.stringify({${entries.join(",")}}));\n`,
+      "utf-8",
+    );
+    const output = execFileSync(process.execPath, ["--import", "tsx", inputFile], {
+      cwd: this.#workspaceRoot,
+      encoding: "utf-8",
+    });
+    const schemas = JSON.parse(output) as Record<string, Record<string, unknown>>;
+    for (const [name, schema] of Object.entries(schemas)) {
+      this.#schemaByName.set(name, rewriteGeneratedSchema(schema) as Record<string, unknown>);
     }
   }
 
   schema(dtoName: string): Record<string, unknown> {
     const cached = this.#schemaByName.get(dtoName);
     if (cached) return cached;
-    const generator = this.#generatorByDtoName.get(dtoName);
-    if (!generator) {
-      throw new Error(`Schema generator was not prepared for DTO ${dtoName}`);
-    }
-    const generated = generator.createSchema(dtoName) as Record<string, unknown>;
-    const definitions = generated.definitions as Record<string, unknown> | undefined;
-    const definition = definitions?.[dtoName];
-    if (!definition || typeof definition !== "object") {
-      throw new Error(`Could not find generated schema definition for ${dtoName}`);
-    }
-    const schema = rewriteGeneratedSchema(
-      dereferenceGeneratedSchema(definition, definitions ?? {}),
-    ) as Record<string, unknown>;
-    this.#schemaByName.set(dtoName, schema);
-    return schema;
+    throw new Error(`Schema registry was not prepared for DTO ${dtoName}`);
   }
 
   dispose(): void {
@@ -276,46 +235,6 @@ class DtoRegistry {
       fs.rmSync(this.#temporaryInputsRoot, { recursive: true, force: true });
     }
   }
-}
-
-function isDtoSchemaRef(schema: ApiSchema): schema is DtoSchemaRef {
-  return typeof schema === "object" && schema !== null && "$ref" in schema && typeof schema.$ref === "string";
-}
-
-function isArraySchema(schema: ApiSchema): schema is ArraySchema {
-  return typeof schema === "object" && schema !== null && (schema as { type?: unknown }).type === "array";
-}
-
-function dtoNameFromRef(ref: string): string {
-  const match = ref.match(/^#\/components\/schemas\/(.+)$/);
-  if (!match?.[1]) throw new Error(`Unsupported schema ref: ${ref}`);
-  return match[1];
-}
-
-function dereferenceGeneratedSchema(value: unknown, definitions: Record<string, unknown>, seenRefs = new Set<string>()): unknown {
-  if (Array.isArray(value)) return value.map((item) => dereferenceGeneratedSchema(item, definitions, seenRefs));
-  if (!value || typeof value !== "object") return value;
-
-  const record = value as Record<string, unknown>;
-  if (typeof record.$ref === "string") {
-    const match = record.$ref.match(/^#\/definitions\/(.+)$/);
-    if (!match?.[1]) return record;
-    if (seenRefs.has(match[1])) return {};
-    const referenced = definitions[match[1]];
-    seenRefs.add(match[1]);
-    const resolved = dereferenceGeneratedSchema(referenced, definitions, seenRefs);
-    seenRefs.delete(match[1]);
-    const siblings = Object.fromEntries(Object.entries(record).filter(([key]) => key !== "$ref" && key !== "$schema"));
-    return resolved && typeof resolved === "object" && !Array.isArray(resolved)
-      ? { ...(resolved as Record<string, unknown>), ...siblings }
-      : resolved;
-  }
-
-  return Object.fromEntries(
-    Object.entries(record)
-      .filter(([key]) => key !== "$schema")
-      .map(([key, item]) => [key, dereferenceGeneratedSchema(item, definitions, seenRefs)]),
-  );
 }
 
 function rewriteGeneratedSchema(value: unknown, seen = new WeakSet<object>()): unknown {
@@ -342,21 +261,32 @@ function rewriteGeneratedSchema(value: unknown, seen = new WeakSet<object>()): u
   return Object.fromEntries(entries);
 }
 
+function isSchemaNameRef(schema: ApiSchema): schema is SchemaNameRef {
+  return typeof schema.schemaName === "string";
+}
+
 function expandSchema(schema: ApiSchema, dtoRegistry: DtoRegistry): Record<string, unknown> {
-  if (isDtoSchemaRef(schema)) return dtoRegistry.schema(dtoNameFromRef(schema.$ref));
-  if (isArraySchema(schema)) {
+  if (isSchemaNameRef(schema)) return dtoRegistry.schema(schema.schemaName);
+  if (schema.type === "array" && schema.items && typeof schema.items === "object") {
+    return { ...schema, items: expandSchema(schema.items as ApiSchema, dtoRegistry) };
+  }
+  if (schema.properties && typeof schema.properties === "object") {
     return {
-      type: "array",
-      items: expandSchema(schema.items, dtoRegistry),
+      ...schema,
+      properties: Object.fromEntries(Object.entries(schema.properties as Record<string, ApiSchema>)
+        .map(([name, property]) => [name, expandSchema(property, dtoRegistry)])),
     };
   }
-  return rewriteGeneratedSchema(schema) as Record<string, unknown>;
+  if (Array.isArray(schema.anyOf)) {
+    return { ...schema, anyOf: schema.anyOf.map((item) => expandSchema(item as ApiSchema, dtoRegistry)) };
+  }
+  return schema;
 }
 
 function schemaRefDoc(schema: ApiSchema): SchemaRefDoc | undefined {
-  if (isDtoSchemaRef(schema)) return dtoNameFromRef(schema.$ref);
-  if (isArraySchema(schema)) {
-    const itemRef = schemaRefDoc(schema.items);
+  if (isSchemaNameRef(schema)) return schema.schemaName;
+  if (schema.type === "array" && schema.items && typeof schema.items === "object") {
+    const itemRef = schemaRefDoc(schema.items as ApiSchema);
     return itemRef ? { type: "array", items: itemRef } : undefined;
   }
   return undefined;
@@ -375,12 +305,6 @@ function collectDefinitionDtoRefs(definition: ApiDefinition, refs: Set<string>):
   const collect = (schema: ApiSchema | undefined) => {
     if (schema) collectSchemaRefs(schemaRefDoc(schema), refs);
   };
-  for (const parameter of Object.values(definition.request?.path ?? {})) {
-    collect(parameter.schema);
-  }
-  for (const parameter of Object.values(definition.request?.query ?? {})) {
-    collect(parameter.schema);
-  }
   collect(definition.request?.body);
   for (const response of Object.values(definition.responses)) {
     collect(response.body);
@@ -460,13 +384,21 @@ function expressionToValue(expression: Expression, seen = new Set<string>()): un
   if (Node.isIdentifier(expression)) {
     const declaration = expression.getSymbol()?.getDeclarations().find(Node.isVariableDeclaration);
     const initializer = declaration?.getInitializer();
-    if (!declaration || !initializer) return undefined;
-    const key = `${declaration.getSourceFile().getFilePath()}:${declaration.getStart()}`;
-    if (seen.has(key)) return undefined;
-    seen.add(key);
-    const value = expressionToValue(initializer, seen);
-    seen.delete(key);
-    return value;
+    if (declaration && initializer) {
+      const key = `${declaration.getSourceFile().getFilePath()}:${declaration.getStart()}`;
+      if (seen.has(key)) return undefined;
+      seen.add(key);
+      const value = expressionToValue(initializer, seen);
+      seen.delete(key);
+      return value;
+    }
+    for (const importDeclaration of expression.getSourceFile().getImportDeclarations()) {
+      const imported = importDeclaration.getNamedImports().find(
+        (item) => (item.getAliasNode()?.getText() ?? item.getName()) === expression.getText(),
+      );
+      if (imported) return { schemaName: imported.getName() } satisfies SchemaNameRef;
+    }
+    return undefined;
   }
   if (Node.isArrayLiteralExpression(expression)) {
     return expression.getElements().map((item) => expressionToValue(item, seen));
@@ -495,12 +427,47 @@ function expressionToValue(expression: Expression, seen = new Set<string>()): un
   }
   if (Node.isCallExpression(expression)) {
     const functionName = expression.getExpression().getText();
-    const [firstArgument] = expression.getArguments();
-    if (functionName === "dtoRef" && firstArgument && Node.isStringLiteral(firstArgument)) {
-      return { $ref: `#/components/schemas/${firstArgument.getLiteralText()}` };
+    const args = expression.getArguments();
+    const options = (index: number) => {
+      const value = args[index] ? expressionToValue(args[index], seen) : undefined;
+      return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    };
+    if (functionName === "Type.String") return { type: "string", ...options(0) };
+    if (functionName === "Type.Number") return { type: "number", ...options(0) };
+    if (functionName === "Type.Integer") return { type: "integer", ...options(0) };
+    if (functionName === "Type.Boolean") return { type: "boolean", ...options(0) };
+    if (functionName === "Type.Null") return { type: "null", ...options(0) };
+    if (functionName === "Type.Unknown") return { ...options(0) };
+    if (functionName === "Type.Literal" && args[0]) {
+      const value = expressionToValue(args[0], seen);
+      return { type: typeof value, enum: [value], ...options(1) };
     }
-    if (functionName === "arrayOf" && firstArgument && Node.isExpression(firstArgument)) {
-      return { type: "array", items: expressionToValue(firstArgument, seen) };
+    if (functionName === "Type.Array" && args[0]) {
+      return { type: "array", items: expressionToValue(args[0], seen), ...options(1) };
+    }
+    if (functionName === "Type.Union" && args[0]) {
+      return { anyOf: expressionToValue(args[0], seen), ...options(1) };
+    }
+    if (functionName === "Type.Optional" && args[0]) {
+      return { __optional: expressionToValue(args[0], seen) };
+    }
+    if ((functionName === "Type.Object" || functionName === "StrictObject") && args[0]) {
+      const properties = expressionToValue(args[0], seen) as Record<string, unknown>;
+      const required: string[] = [];
+      const unwrapped = Object.fromEntries(Object.entries(properties).map(([name, property]) => {
+        if (property && typeof property === "object" && "__optional" in property) {
+          return [name, (property as { __optional: unknown }).__optional];
+        }
+        required.push(name);
+        return [name, property];
+      }));
+      return {
+        type: "object",
+        properties: unwrapped,
+        ...(required.length ? { required } : {}),
+        ...options(1),
+        ...(functionName === "StrictObject" ? { additionalProperties: false } : {}),
+      };
     }
   }
   return undefined;
@@ -684,7 +651,7 @@ function toOperationDoc(
     ? expandParameters(definition.request.path, dtoRegistry)
     : undefined;
   const requestQuerystringParams = definition.request?.query
-    ? expandParameters(definition.request.query, dtoRegistry)
+    ? expandQueryParameters(definition.request.query)
     : undefined;
   const requestSchema = definition.request?.body
     ? expandSchema(definition.request.body, dtoRegistry)
@@ -759,30 +726,27 @@ function expandParameters(
   );
 }
 
-function toValidationSchema(definition: ApiDefinition, dtoRegistry: DtoRegistry) {
-  const request = definition.request
-    ? {
-      ...(definition.request.path
-        ? { path: expandParameters(definition.request.path, dtoRegistry) }
-        : {}),
-      ...(definition.request.query
-        ? { query: expandParameters(definition.request.query, dtoRegistry) }
-        : {}),
-      ...(definition.request.cookies ? { cookies: definition.request.cookies } : {}),
-      ...(definition.request.contentType ? { contentType: definition.request.contentType } : {}),
-      ...(definition.request.body ? { body: expandSchema(definition.request.body, dtoRegistry) } : {}),
-    }
-    : undefined;
-  const responses = Object.fromEntries(
-    Object.entries(definition.responses).map(([status, response]) => [
-      status,
-      {
-        ...(response.contentType ? { contentType: response.contentType } : {}),
-        ...(response.body ? { body: expandSchema(response.body, dtoRegistry) } : {}),
-      },
-    ]),
+function expandQueryParameters(
+  query: ApiQueryDefinition,
+): Record<string, { description?: string; required?: boolean; schema: Record<string, unknown>; example?: unknown }> {
+  const properties = !isSchemaNameRef(query.schema) && query.schema.properties
+    ? query.schema.properties as Record<string, ApiSchema>
+    : {};
+  return Object.fromEntries(
+    Object.entries(query.parameters).map(([name, parameter]) => {
+      const schema = properties[name];
+      if (!schema) throw new Error(`Could not find query parameter ${name} in its TypeBox schema`);
+      return [
+        name,
+        {
+          ...(parameter.description ? { description: parameter.description } : {}),
+          ...(parameter.required !== undefined ? { required: parameter.required } : {}),
+          schema: schema as Record<string, unknown>,
+          example: sampleSchema(schema as Record<string, unknown>),
+        },
+      ];
+    }),
   );
-  return { ...(request ? { request } : {}), responses };
 }
 
 function cleanOutputDir(outputDir: string, extension = ".operation-doc.json"): void {
@@ -823,18 +787,6 @@ function listTypeSourceFiles(typesRoot: string): string[] {
     }
   }
   return results;
-}
-
-function findOwningPackageRoot(sourceFile: string): string {
-  let current = path.dirname(sourceFile);
-  while (true) {
-    if (fs.existsSync(path.join(current, "package.json"))) return current;
-    const parent = path.dirname(current);
-    if (parent === current) {
-      throw new Error(`Could not find owning package for DTO source ${sourceFile}`);
-    }
-    current = parent;
-  }
 }
 
 function dtoDocFor(dtoName: string, workspaceRoot: string, dtoRegistry: DtoRegistry): DtoDoc {
@@ -895,7 +847,6 @@ export function generateOperationDocs(options: GenerateOperationDocsOptions): st
       path.join(outputRoot, ".schema-inputs"),
     );
     const writtenFiles: string[] = [];
-    const validationSchemas: Record<string, unknown> = {};
     for (const packageDefinition of packageDefinitions) {
       const packageOutputDir = path.join(outputRoot, packageDefinition.folderName);
       fs.mkdirSync(packageOutputDir, { recursive: true });
@@ -914,10 +865,6 @@ export function generateOperationDocs(options: GenerateOperationDocsOptions): st
         cleanOutputDir(outputDir);
         for (const definition of definitions) {
           const doc = toOperationDoc(definition, dtoRefs, dtoRegistry);
-          validationSchemas[`${definition.method} ${definition.path}`] = toValidationSchema(
-            definition,
-            dtoRegistry,
-          );
           const outputPath = path.join(outputDir, fileNameForOperation(definition.path, definition.method));
           fs.writeFileSync(outputPath, `${JSON.stringify(doc, null, 2)}\n`, "utf-8");
           writtenFiles.push(outputPath);
@@ -930,13 +877,6 @@ export function generateOperationDocs(options: GenerateOperationDocsOptions): st
         dtoRegistry,
       ));
     }
-    const validationSchemasPath = path.join(outputRoot, "api-validation.generated.json");
-    fs.writeFileSync(
-      validationSchemasPath,
-      `${JSON.stringify(validationSchemas, null, 2)}\n`,
-      "utf-8",
-    );
-    writtenFiles.push(validationSchemasPath);
     return writtenFiles;
   } finally {
     dtoRegistry?.dispose();

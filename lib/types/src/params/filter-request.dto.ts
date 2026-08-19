@@ -1,7 +1,10 @@
-import type { Filter } from "./filter";
-import type { ListOptions } from "./list-options";
+import Type from "typebox";
+import { StrictObject } from "../api";
+import { Filter } from "./filter";
+import { ListOptions } from "./list-options";
 
-export interface FilterRequestDto {
-  filters: Filter[];
-  options?: ListOptions;
-}
+export const FilterRequestDto = StrictObject({
+  filters: Type.Array(Filter),
+  options: Type.Optional(ListOptions),
+});
+export type FilterRequestDto = Type.Static<typeof FilterRequestDto>;

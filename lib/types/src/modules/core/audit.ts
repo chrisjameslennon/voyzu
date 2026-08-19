@@ -1,30 +1,25 @@
-import type { ActorType } from "./enums";
+import Type from "typebox";
+import { StrictObject } from "../../api";
+import { ActorType } from "./enums";
 
-export interface AuditUserDto {
-  /** User id. */
-  id: number;
-  /** User code. */
-  code: string;
-  /** User display name. */
-  displayName: string;
-}
+export const AuditUserDto = StrictObject({
+  id: Type.Integer({ minimum: 1, description: "User id." }),
+  code: Type.String({ pattern: "\\S", description: "User code." }),
+  displayName: Type.String({ pattern: "\\S", description: "User display name." }),
+});
+export type AuditUserDto = Type.Static<typeof AuditUserDto>;
 
-export interface AuditStampDto {
-  /** Date and time for the audit event. */
-  date: string;
-  /** Actor type for the audit event, when available. */
-  actorType?: ActorType | null;
-  /** User id for the audit event, when available. */
-  userId?: string | null;
-  /** Resolved user for the audit event, when available. */
-  user?: AuditUserDto | null;
-  /** Audit mutation id for the audit event, when available. */
-  mutationId?: string | null;
-}
+export const AuditStampDto = StrictObject({
+  date: Type.String({ format: "date-time", description: "Date and time for the audit event." }),
+  actorType: Type.Optional(Type.Union([ActorType, Type.Null()])),
+  userId: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+  user: Type.Optional(Type.Union([AuditUserDto, Type.Null()])),
+  mutationId: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+});
+export type AuditStampDto = Type.Static<typeof AuditStampDto>;
 
-export interface AuditMetadataDto {
-  /** Audit details for creation. */
-  created: AuditStampDto;
-  /** Audit details for the latest update. */
-  updated: AuditStampDto;
-}
+export const AuditMetadataDto = StrictObject({
+  created: AuditStampDto,
+  updated: AuditStampDto,
+});
+export type AuditMetadataDto = Type.Static<typeof AuditMetadataDto>;

@@ -1,32 +1,22 @@
 import Type from "typebox";
 import Schema from "typebox/schema";
 import Value from "typebox/value";
-
-export const IceCreamDto = Type.Object(
-  {
+export const IceCreamDto = Type.Object({
     code: Type.String(),
     name: Type.String(),
     scoops: Type.Number(),
-  },
-  { additionalProperties: false },
-);
-
-export type IceCreamDto = Type.Static<typeof IceCreamDto>;
-
+}, { additionalProperties: false });
 const result = {
-  code: "VANILLA",
-  name: "Vanilla",
-  scoops: 2,
-} satisfies IceCreamDto;
-
-const invalid = {
-  code: "VANILLA",
-  namex: "Vanilla",
-  scoops: "2",
+    code: "VANILLA",
+    name: "Vanilla",
+    scoops: 2,
 };
-
+const invalid = {
+    code: "VANILLA",
+    namex: "Vanilla",
+    scoops: "2",
+};
 const validator = Schema.Compile(IceCreamDto);
-
 console.log("typed result:", result);
 console.log("runtime valid:", validator.Check(result));
 console.log("runtime invalid:", validator.Check(invalid));

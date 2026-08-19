@@ -1,81 +1,85 @@
 import { NextResponse, type NextRequest } from "next/server";
-import Ajv, { type ErrorObject, type ValidateFunction } from "ajv";
+import type { TSchema } from "typebox";
+import Schema, { type Validator } from "typebox/schema";
+import Value from "typebox/value";
 
-import type {
-  VoyzuApiModuleRoute,
-  VoyzuApiValidationSchema,
-} from "./voyzu.api.types";
+import type { VoyzuApiModuleRoute } from "./voyzu.api.types";
 
-type JsonSchema = Record<string, unknown>;
-
-const jsonAjv = new Ajv({ allErrors: true, jsonPointers: true });
-const parameterAjv = new Ajv({ allErrors: true, coerceTypes: true, jsonPointers: true });
-const jsonValidators = new WeakMap<JsonSchema, ValidateFunction>();
-const parameterValidators = new WeakMap<JsonSchema, ValidateFunction>();
+const validators = new WeakMap<TSchema, Validator>();
 
 function mediaType(value: string | null): string | undefined {
   return value?.split(";", 1)[0]?.trim().toLowerCase() || undefined;
 }
 
-function errorMessages(errors: ErrorObject[] | null | undefined, path: string): string[] {
-  return (errors ?? []).map((error) =>
-    `${path}${error.dataPath || ""} ${error.message ?? "is invalid"}`
+function validator(schema: TSchema): Validator {
+  const existing = validators.get(schema);
+  if (existing) return existing;
+  const compiled = Schema.Compile(schema);
+  validators.set(schema, compiled);
+  return compiled;
+}
+
+function validationMessages(schema: TSchema, value: unknown, path: string): string[] {
+  return validator(schema).Errors(value)[1].map((error) =>
+    `${path}${error.instancePath} ${error.message}`.trim(),
   );
-}
-
-function validateSchema(value: unknown, schema: JsonSchema, path: string): string[] {
-  let validate = jsonValidators.get(schema);
-  if (!validate) {
-    validate = jsonAjv.compile(schema);
-    jsonValidators.set(schema, validate);
-  }
-  return validate(value) ? [] : errorMessages(validate.errors, path);
-}
-
-function validateParameter(value: string, schema: JsonSchema, path: string): string[] {
-  let validate = parameterValidators.get(schema);
-  if (!validate) {
-    validate = parameterAjv.compile(schema);
-    parameterValidators.set(schema, validate);
-  }
-  return validate(value) ? [] : errorMessages(validate.errors, path);
 }
 
 function validationError(message: string): NextResponse {
   return NextResponse.json({ code: "INPUT_VALIDATION_ERROR", message }, { status: 400 });
 }
 
-function responseValidationError(route: VoyzuApiModuleRoute, errors: readonly string[]): NextResponse {
+function invalidResponse(
+  response: NextResponse,
+  route: VoyzuApiModuleRoute,
+  errors: readonly string[],
+): NextResponse {
   const message = `Invalid ${route.method} ${route.path} response: ${errors.join("; ")}`;
+  if (process.env.NODE_ENV !== "production") throw new Error(message);
   console.error(message);
-  return NextResponse.json(
-    { code: "INTERNAL_SERVER_ERROR", message: "The API returned an invalid response" },
-    { status: 500 },
-  );
+  return response;
+}
+
+function queryValue(schema: TSchema | undefined, values: string[]): string | string[] | undefined {
+  if (values.length === 0) return undefined;
+  return schema && "type" in schema && schema.type === "array" ? values : values.at(-1);
 }
 
 export async function validateApiRequest(
   request: NextRequest,
   route: VoyzuApiModuleRoute,
   params: Record<string, string>,
-  validation: VoyzuApiValidationSchema,
 ): Promise<NextResponse | null> {
-  const definition = validation.request;
+  const definition = route.request;
   if (!definition) return null;
   const errors: string[] = [];
 
   for (const [name, parameter] of Object.entries(definition.path ?? {})) {
     const value = params[name];
-    if (value === undefined) errors.push(`path.${name} is required`);
-    else errors.push(...validateParameter(value, parameter.schema as JsonSchema, `path.${name}`));
-  }
-  for (const [name, parameter] of Object.entries(definition.query ?? {})) {
-    const values = request.nextUrl.searchParams.getAll(name);
-    if (parameter.required && values.length === 0) errors.push(`query.${name} is required`);
-    for (const value of values) {
-      errors.push(...validateParameter(value, parameter.schema as JsonSchema, `query.${name}`));
+    if (value === undefined) {
+      errors.push(`path.${name} is required`);
+      continue;
+    }
+    const converted = Value.Convert(parameter.schema, value);
+    if (!validator(parameter.schema).Check(converted)) {
+      errors.push(...validationMessages(parameter.schema, converted, `path.${name}`));
     }
   }
+
+  if (definition.query) {
+    const properties = "properties" in definition.query.schema
+      ? definition.query.schema.properties as Record<string, TSchema>
+      : {};
+    const raw = Object.fromEntries(Object.keys(definition.query.parameters).flatMap((name) => {
+      const value = queryValue(properties[name], request.nextUrl.searchParams.getAll(name));
+      return value === undefined ? [] : [[name, value]];
+    }));
+    const converted = Value.Convert(definition.query.schema, raw);
+    if (!validator(definition.query.schema).Check(converted)) {
+      errors.push(...validationMessages(definition.query.schema, converted, "query"));
+    }
+  }
+
   for (const [name, cookie] of Object.entries(definition.cookies ?? {})) {
     if (cookie.required && !request.cookies.has(name)) errors.push(`cookie.${name} is required`);
   }
@@ -88,7 +92,9 @@ export async function validateApiRequest(
     } else if (expectedContentType === "application/json") {
       try {
         const body = await request.clone().json() as unknown;
-        errors.push(...validateSchema(body, definition.body, "body"));
+        if (!validator(definition.body).Check(body)) {
+          errors.push(...validationMessages(definition.body, body, "body"));
+        }
       } catch {
         errors.push("body is required and must be valid JSON");
       }
@@ -104,27 +110,27 @@ export async function validateApiRequest(
 export async function validateApiResponse(
   response: NextResponse,
   route: VoyzuApiModuleRoute,
-  validation: VoyzuApiValidationSchema,
 ): Promise<NextResponse> {
-  const definition = validation.responses[String(response.status)];
-  if (!definition) {
-    return responseValidationError(route, [`status ${response.status} is not declared`]);
-  }
+  const definition = route.responses[String(response.status)];
+  if (!definition) return invalidResponse(response, route, [`status ${response.status} is not declared`]);
+
   const expectedContentType = definition.contentType ?? (definition.body ? "application/json" : undefined);
   if (expectedContentType) {
     const actualContentType = mediaType(response.headers.get("content-type"));
     if (actualContentType !== expectedContentType) {
-      return responseValidationError(route, [`content-type must be ${expectedContentType}`]);
+      return invalidResponse(response, route, [`content-type must be ${expectedContentType}`]);
     }
   }
-  if (!definition.body) return response;
-  if (expectedContentType !== "application/json") return response;
+
+  if (!definition.body || expectedContentType !== "application/json") return response;
 
   try {
     const body = await response.clone().json() as unknown;
-    const errors = validateSchema(body, definition.body, "body");
-    return errors.length > 0 ? responseValidationError(route, errors) : response;
-  } catch {
-    return responseValidationError(route, ["body must be valid JSON"]);
+    return validator(definition.body).Check(body)
+      ? response
+      : invalidResponse(response, route, validationMessages(definition.body, body, "body"));
+  } catch (error) {
+    if (error instanceof SyntaxError) return invalidResponse(response, route, ["body must be valid JSON"]);
+    throw error;
   }
 }

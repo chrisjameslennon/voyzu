@@ -14,6 +14,9 @@
       "schemaRef": "AuthSessionResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "authenticated"
+        ],
         "properties": {
           "authenticated": {
             "type": "boolean",
@@ -23,25 +26,45 @@
             "anyOf": [
               {
                 "type": "object",
-                "properties": {
-                  "code": {
-                    "type": "string",
-                    "description": "User business code."
-                  },
-                  "displayName": {
-                    "type": "string",
-                    "description": "User display name."
-                  },
-                  "role": {
-                    "type": "string",
-                    "description": "User role code."
-                  }
-                },
                 "required": [
                   "code",
                   "displayName",
                   "role"
                 ],
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "description": "User business code."
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "pattern": "\\S",
+                    "description": "User display name."
+                  },
+                  "role": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "ADMIN"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "ORGANIZATION_USER"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "COMPANY_USER"
+                        ]
+                      }
+                    ]
+                  }
+                },
                 "additionalProperties": false
               },
               {
@@ -51,9 +74,6 @@
             "description": "Authenticated user, when a session exists."
           }
         },
-        "required": [
-          "authenticated"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -61,7 +81,7 @@
         "user": {
           "code": "string",
           "displayName": "string",
-          "role": "string"
+          "role": "ADMIN"
         }
       },
       "cookies": {
@@ -82,6 +102,10 @@
       "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -93,10 +117,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -110,6 +130,10 @@
       "schemaRef": "UnauthorizedErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -121,10 +145,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -138,6 +158,10 @@
       "schemaRef": "ForbiddenErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -149,10 +173,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -166,6 +186,10 @@
       "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -177,10 +201,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {

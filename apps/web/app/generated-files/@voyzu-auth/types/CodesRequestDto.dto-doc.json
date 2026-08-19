@@ -1,5 +1,5 @@
 {
   "name": "CodesRequestDto",
   "sourceFile": "lib/types/src/params/codes-request.dto.ts",
-  "typescript": "export interface CodesRequestDto {\n  /** Business codes identifying the records to act on. */\n  codes: string[];\n}\n"
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"../api\";\n\nexport const CodesRequestDto = StrictObject({\n  codes: Type.Array(Type.String({ pattern: \"\\\\S\" }), {\n    minItems: 1,\n    description: \"One or more non-blank business codes identifying the records to act on.\",\n  }),\n});\nexport type CodesRequestDto = Type.Static<typeof CodesRequestDto>;\n"
 }

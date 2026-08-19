@@ -100,15 +100,8 @@ export async function handleRefresh(_request: NextRequest) {
   }
 }
 
-function normalizeHomePageRoute(value: unknown): string {
-  if (typeof value !== "string") throw new BusinessRuleError("Home page route is required");
+function normalizeHomePageRoute(value: string): string {
   const route = value.trim();
-  if (!route.startsWith("/") || route.startsWith("//") || route === "/") {
-    throw new BusinessRuleError("Home page route must be a relative application path such as /welcome");
-  }
-  if (route.includes("?") || route.includes("#") || route.includes("\\")) {
-    throw new BusinessRuleError("Home page route cannot contain a query string, fragment, or backslash");
-  }
   return route.length > 1 ? route.replace(/\/+$/, "") : route;
 }
 

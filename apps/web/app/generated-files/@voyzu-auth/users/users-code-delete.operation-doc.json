@@ -11,7 +11,10 @@
     "code": {
       "description": "Business code of the requested record.",
       "schema": {
-        "type": "string"
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 20,
+        "pattern": "^[A-Z0-9_-]+$"
       },
       "example": "string"
     }
@@ -27,6 +30,10 @@
       "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -38,10 +45,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -55,6 +58,10 @@
       "schemaRef": "UnauthorizedErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -66,10 +73,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -83,6 +86,10 @@
       "schemaRef": "ForbiddenErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -94,10 +101,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -111,6 +114,10 @@
       "schemaRef": "EntityNotFoundErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -122,10 +129,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -139,6 +142,10 @@
       "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -150,10 +157,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {

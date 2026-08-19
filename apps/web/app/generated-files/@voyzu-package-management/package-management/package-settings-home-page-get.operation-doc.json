@@ -14,14 +14,16 @@
       "schemaRef": "HomePageRouteResponseDto",
       "schema": {
         "type": "object",
-        "properties": {
-          "route": {
-            "type": "string"
-          }
-        },
         "required": [
           "route"
         ],
+        "properties": {
+          "route": {
+            "type": "string",
+            "pattern": "^/(?!/)(?!$)(?!.*[?#\\\\])\\S(?:.*\\S)?$",
+            "description": "A non-root relative application path without a query string, fragment, or backslash."
+          }
+        },
         "additionalProperties": false
       },
       "example": {
@@ -34,6 +36,10 @@
       "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -45,10 +51,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -62,6 +64,10 @@
       "schemaRef": "UnauthorizedErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -73,10 +79,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -90,6 +92,10 @@
       "schemaRef": "ForbiddenErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -101,10 +107,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -118,6 +120,10 @@
       "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -129,10 +135,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {

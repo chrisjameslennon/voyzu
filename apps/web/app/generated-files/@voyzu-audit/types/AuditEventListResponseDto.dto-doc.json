@@ -1,5 +1,5 @@
 {
   "name": "AuditEventListResponseDto",
   "sourceFile": "packages/@voyzu/audit/modules/types/audit-event.list.response.dto.ts",
-  "typescript": "import type { AuditEventResponseDto } from \"./audit-event.response.dto\";\n\nexport interface AuditEventListResponseDto {\n  items: AuditEventResponseDto[];\n  nextCursor: string | null;\n  totalMatching: number;\n}\n\r\n"
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { AuditEventResponseDto } from \"./audit-event.response.dto\";\nexport const AuditEventListResponseDto = StrictObject({\n  items: Type.Array(AuditEventResponseDto),\n  nextCursor: Type.Union([Type.String({ pattern: \"\\\\S\" }), Type.Null()]),\n  totalMatching: Type.Integer({ minimum: 0 }),\n});\nexport type AuditEventListResponseDto = Type.Static<typeof AuditEventListResponseDto>;\n"
 }

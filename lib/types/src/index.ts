@@ -7,7 +7,7 @@ export type {
   VoyzuPackageScript,
   VoyzuPackageScripts,
 } from "./framework";
-export type {
+export {
   CodesRequestDto,
   CsvExportColumnDto,
   CsvExportRequestDto,
@@ -19,15 +19,14 @@ export type {
   OrderBy,
   Pagination,
 } from "./params";
-export type {
+export {
   BusinessRuleErrorResponseDto,
-  CapabilityErrorParams,
   ConflictErrorResponseDto,
   EntityNotFoundErrorResponseDto,
   ErrorResponseBaseDto,
   ForbiddenErrorResponseDto,
   InputValidationErrorResponseDto,
   InternalServerErrorResponseDto,
-  MessageErrorParams,
   UnauthorizedErrorResponseDto,
 } from "./errors";
+export type { CapabilityErrorParams, MessageErrorParams } from "./errors";

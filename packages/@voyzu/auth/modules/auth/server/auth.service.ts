@@ -1,5 +1,5 @@
 import { getDb } from "@voyzu/capability/db";
-import { BusinessRuleError, UnauthorizedError } from "@voyzu/capability/errors";
+import { UnauthorizedError } from "@voyzu/capability/errors";
 import { verifyPassword } from "../../users/server/lib/password-hash";
 
 interface AuthenticatedUser {
@@ -33,10 +33,6 @@ function mapAuthUser(row: Record<string, unknown>): AuthUserRow {
 
 export async function authenticateUser(identifier: string, password: string): Promise<AuthenticatedUser> {
   const login = identifier.trim();
-  if (!login || !password) {
-    throw new BusinessRuleError("Email or user code and password are required");
-  }
-
   const { rows } = await getDb().query(
     `SELECT id, code, email, display_name, password_hash, role, status
      FROM app_user

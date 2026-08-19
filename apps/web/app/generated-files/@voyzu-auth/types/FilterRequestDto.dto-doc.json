@@ -1,5 +1,5 @@
 {
   "name": "FilterRequestDto",
   "sourceFile": "lib/types/src/params/filter-request.dto.ts",
-  "typescript": "import type { Filter } from \"./filter\";\nimport type { ListOptions } from \"./list-options\";\n\nexport interface FilterRequestDto {\n  filters: Filter[];\n  options?: ListOptions;\n}\n"
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"../api\";\nimport { Filter } from \"./filter\";\nimport { ListOptions } from \"./list-options\";\n\nexport const FilterRequestDto = StrictObject({\n  filters: Type.Array(Filter),\n  options: Type.Optional(ListOptions),\n});\nexport type FilterRequestDto = Type.Static<typeof FilterRequestDto>;\n"
 }

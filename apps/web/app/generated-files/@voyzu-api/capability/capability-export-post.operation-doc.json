@@ -13,47 +13,53 @@
     "schemaRef": "CsvExportRequestDto",
     "schema": {
       "type": "object",
+      "required": [
+        "filename",
+        "columns",
+        "rows"
+      ],
       "properties": {
         "filename": {
           "type": "string",
-          "description": "Download filename without extension."
+          "pattern": "\\S",
+          "description": "Non-blank download filename without extension."
         },
         "columns": {
           "type": "array",
           "items": {
             "type": "object",
-            "properties": {
-              "key": {
-                "type": "string",
-                "description": "Source field key to read from each row."
-              },
-              "label": {
-                "type": "string",
-                "description": "Column heading to write in the CSV file."
-              }
-            },
             "required": [
               "key",
               "label"
             ],
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "\\S",
+                "description": "Non-blank source field key to read from each row."
+              },
+              "label": {
+                "type": "string",
+                "pattern": "\\S",
+                "description": "Non-blank column heading to write in the CSV file."
+              }
+            },
             "additionalProperties": false
           },
+          "minItems": 1,
           "description": "CSV columns to include in output order."
         },
         "rows": {
           "type": "array",
           "items": {
             "type": "object",
-            "additionalProperties": {}
+            "patternProperties": {
+              "^.*$": {}
+            }
           },
           "description": "Rows to write to the CSV file."
         }
       },
-      "required": [
-        "filename",
-        "columns",
-        "rows"
-      ],
       "additionalProperties": false
     },
     "example": {
@@ -65,10 +71,7 @@
         }
       ],
       "rows": [
-        {
-          "property1": null,
-          "property2": null
-        }
+        {}
       ]
     }
   },
@@ -84,6 +87,10 @@
       "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -95,10 +102,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -112,6 +115,10 @@
       "schemaRef": "UnauthorizedErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -123,10 +130,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -140,6 +143,10 @@
       "schemaRef": "ForbiddenErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -151,10 +158,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -168,6 +171,10 @@
       "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -179,10 +186,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {

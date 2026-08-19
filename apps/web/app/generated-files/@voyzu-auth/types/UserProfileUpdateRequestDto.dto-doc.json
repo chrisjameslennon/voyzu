@@ -1,5 +1,5 @@
 {
   "name": "UserProfileUpdateRequestDto",
   "sourceFile": "packages/@voyzu/auth/modules/types/user-profile.update.request.dto.ts",
-  "typescript": "export interface UserProfileUpdateRequestDto {\n  email?: string | null;\n  displayName: string;\n}\n"
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { UserDisplayName, UserEmail } from \"./user.fields\";\nexport const UserProfileUpdateRequestDto = StrictObject({\n  email: Type.Optional(UserEmail),\n  displayName: UserDisplayName,\n});\nexport type UserProfileUpdateRequestDto = Type.Static<typeof UserProfileUpdateRequestDto>;\n"
 }

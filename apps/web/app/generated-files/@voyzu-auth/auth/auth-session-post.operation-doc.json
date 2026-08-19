@@ -13,20 +13,22 @@
     "schemaRef": "AuthLoginRequestDto",
     "schema": {
       "type": "object",
-      "properties": {
-        "identifier": {
-          "type": "string",
-          "description": "User code, email address, or other configured login identifier."
-        },
-        "password": {
-          "type": "string",
-          "description": "User password."
-        }
-      },
       "required": [
         "identifier",
         "password"
       ],
+      "properties": {
+        "identifier": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "Non-blank user code, email address, or other configured login identifier."
+        },
+        "password": {
+          "type": "string",
+          "minLength": 1,
+          "description": "User password."
+        }
+      },
       "additionalProperties": false
     },
     "example": {
@@ -41,42 +43,61 @@
       "schemaRef": "AuthLoginResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "user"
+        ],
         "properties": {
           "user": {
             "type": "object",
-            "properties": {
-              "code": {
-                "type": "string",
-                "description": "User business code."
-              },
-              "displayName": {
-                "type": "string",
-                "description": "User display name."
-              },
-              "role": {
-                "type": "string",
-                "description": "User role code."
-              }
-            },
             "required": [
               "code",
               "displayName",
               "role"
             ],
-            "additionalProperties": false,
-            "description": "Authenticated user."
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "\\S",
+                "description": "User business code."
+              },
+              "displayName": {
+                "type": "string",
+                "pattern": "\\S",
+                "description": "User display name."
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "ADMIN"
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "ORGANIZATION_USER"
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "COMPANY_USER"
+                    ]
+                  }
+                ]
+              }
+            },
+            "additionalProperties": false
           }
         },
-        "required": [
-          "user"
-        ],
         "additionalProperties": false
       },
       "example": {
         "user": {
           "code": "string",
           "displayName": "string",
-          "role": "string"
+          "role": "ADMIN"
         }
       },
       "cookies": {
@@ -97,6 +118,10 @@
       "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -108,10 +133,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -125,6 +146,10 @@
       "schemaRef": "UnauthorizedErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -136,10 +161,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -153,6 +174,10 @@
       "schemaRef": "ForbiddenErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -164,10 +189,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -181,6 +202,10 @@
       "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -192,10 +217,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {

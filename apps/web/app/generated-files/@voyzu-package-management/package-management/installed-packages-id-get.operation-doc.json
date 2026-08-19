@@ -11,9 +11,10 @@
     "id": {
       "description": "Numeric identifier of the installed package record.",
       "schema": {
-        "type": "number"
+        "type": "integer",
+        "minimum": 1
       },
-      "example": 0
+      "example": 1
     }
   },
   "responses": {
@@ -23,50 +24,6 @@
       "schemaRef": "InstalledPackageResponseDto",
       "schema": {
         "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "code": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "repository": {
-            "type": "string"
-          },
-          "topNavigationVisible": {
-            "type": "boolean"
-          },
-          "pageRoutesVisible": {
-            "type": "boolean"
-          },
-          "navOrder": {
-            "type": "number"
-          },
-          "preinstalled": {
-            "type": "boolean"
-          },
-          "hasTopNavigation": {
-            "type": "boolean"
-          },
-          "required": {
-            "type": "boolean"
-          },
-          "pageRootPaths": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "apiRootPaths": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
         "required": [
           "id",
           "code",
@@ -81,10 +38,59 @@
           "pageRootPaths",
           "apiRootPaths"
         ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "code": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "description": {
+            "type": "string"
+          },
+          "repository": {
+            "type": "string"
+          },
+          "topNavigationVisible": {
+            "type": "boolean"
+          },
+          "pageRoutesVisible": {
+            "type": "boolean"
+          },
+          "navOrder": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "preinstalled": {
+            "type": "boolean"
+          },
+          "hasTopNavigation": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "pageRootPaths": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^/(?!/)"
+            }
+          },
+          "apiRootPaths": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^/(?!/)"
+            }
+          }
+        },
         "additionalProperties": false
       },
       "example": {
-        "id": 0,
+        "id": 1,
         "code": "string",
         "description": "string",
         "repository": "string",
@@ -108,6 +114,10 @@
       "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -119,10 +129,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -136,6 +142,10 @@
       "schemaRef": "UnauthorizedErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -147,10 +157,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -164,6 +170,10 @@
       "schemaRef": "ForbiddenErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -175,10 +185,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -196,6 +202,10 @@
       "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -207,10 +217,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {

@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { businessRuleError, ok, serverError, unauthorizedError } from "@voyzu/capability/http";
-import { BusinessRuleError, UnauthorizedError } from "@voyzu/capability/errors";
+import { ok, serverError, unauthorizedError } from "@voyzu/capability/http";
+import { UnauthorizedError } from "@voyzu/capability/errors";
+import type { AuthLoginRequestDto } from "@voyzu/auth/types";
 import { authenticateUser } from "./auth.service";
 import {
   AUTH_COOKIE_NAME,
@@ -9,11 +10,6 @@ import {
   createAuthSessionToken,
   verifyAuthSessionToken,
 } from "./session";
-
-interface LoginRequestDto {
-  identifier?: string;
-  password?: string;
-}
 
 function toSafeUser(user: { code: string; displayName: string; role: string }) {
   return {
@@ -25,8 +21,8 @@ function toSafeUser(user: { code: string; displayName: string; role: string }) {
 
 export async function handleLogin(request: NextRequest): Promise<NextResponse> {
   try {
-    const body = await request.json() as LoginRequestDto;
-    const user = await authenticateUser(body.identifier ?? "", body.password ?? "");
+    const body = await request.json() as AuthLoginRequestDto;
+    const user = await authenticateUser(body.identifier, body.password);
     const token = await createAuthSessionToken({
       userId: user.id,
       code: user.code,
@@ -38,7 +34,6 @@ export async function handleLogin(request: NextRequest): Promise<NextResponse> {
     return response;
   } catch (error) {
     if (error instanceof UnauthorizedError) return unauthorizedError(error.message);
-    if (error instanceof BusinessRuleError) return businessRuleError(error.message);
     return serverError(error);
   }
 }

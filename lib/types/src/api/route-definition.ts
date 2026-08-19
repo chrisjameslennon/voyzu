@@ -1,10 +1,15 @@
 import type { ApiMethod } from "./api-method";
-import type { ApiSchema } from "./schema-ref";
+import type { TSchema } from "typebox";
 
 export interface ApiParameterDefinition {
   description?: string;
   required?: boolean;
-  schema: ApiSchema;
+  schema: TSchema;
+}
+
+export interface ApiQueryDefinition {
+  parameters: Record<string, Omit<ApiParameterDefinition, "schema">>;
+  schema: TSchema;
 }
 
 export interface ApiCookieDefinition {
@@ -20,16 +25,16 @@ export interface ApiCookieDefinition {
 
 export interface ApiRequestDefinition {
   path?: Record<string, ApiParameterDefinition>;
-  query?: Record<string, ApiParameterDefinition>;
+  query?: ApiQueryDefinition;
   cookies?: Record<string, ApiCookieDefinition>;
   contentType?: string;
-  body?: ApiSchema;
+  body?: TSchema;
 }
 
 export interface ApiResponseDefinition {
   description: string;
   contentType?: string;
-  body?: ApiSchema;
+  body?: TSchema;
   cookies?: Record<string, ApiCookieDefinition & { action?: "set" | "clear" }>;
 }
 

@@ -42,10 +42,8 @@ export class AuditEventRepo {
     }
     if (filters.companyId) {
       const companyId = Number(filters.companyId);
-      if (Number.isFinite(companyId)) {
-        filterParams.push(companyId);
-        filterParts.push(`audit_event.company_id = $${filterParams.length}`);
-      }
+      filterParams.push(companyId);
+      filterParts.push(`audit_event.company_id = $${filterParams.length}`);
     }
     if (filters.entityType) {
       filterParams.push(filters.entityType);
@@ -143,10 +141,8 @@ export class AuditEventRepo {
     }
     if (filters.companyId) {
       const companyId = Number(filters.companyId);
-      if (Number.isFinite(companyId)) {
-        filterParams.push(companyId);
-        filterParts.push(`audit_event.company_id = $${filterParams.length}`);
-      }
+      filterParams.push(companyId);
+      filterParts.push(`audit_event.company_id = $${filterParams.length}`);
     }
     if (filters.entityType) {
       filterParams.push(filters.entityType);

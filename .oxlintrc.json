@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": [
+    "**/.next/**",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/coverage/**",
+    "internal/**",
+    "docs/**",
+    "infra/**"
+  ],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["@voyzu/*/src/*"],
+            "message": "Import from package exports, not package source paths."
+          }
+        ]
+      }
+    ]
+  }
+}

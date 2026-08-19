@@ -1,7 +1,5 @@
 import type { AuditChangeRow, AuditEventRow } from "../db/audit-event.row.types";
 import type { AuditChangeResponseDto, AuditEventResponseDto } from "@voyzu/audit/types";
-import { checkResponse } from "@voyzu/capability/validation";
-import { validateResponse } from "./audit-event.validator";
 
 export function mapAuditChange(row: AuditChangeRow): AuditChangeResponseDto {
   return {
@@ -34,5 +32,5 @@ export function mapAuditEvent(
     creationDate: row.creation_date,
     changes: (changes ?? []).map(mapAuditChange),
   };
-  return checkResponse(dto, validateResponse(dto), `audit event (id=${dto.id})`);
+  return dto;
 }

@@ -188,7 +188,9 @@ The module's `module.ts` is the authoritative registry of its application pages 
 
 ```ts
 // packages/@voyzu/ice-creams/modules/ice-creams/module.ts
+import Type from "typebox";
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
+import { IceCreamResponseDto } from "../types";
 
 export const iceCreamsModule = {
   pageRoutes: {
@@ -220,7 +222,7 @@ export const iceCreamsModule = {
       responses: {
         "200": {
           description: "All ice creams.",
-          body: arrayOf(dtoRef("IceCreamResponseDto")),
+          body: Type.Array(IceCreamResponseDto),
         },
       },
     },

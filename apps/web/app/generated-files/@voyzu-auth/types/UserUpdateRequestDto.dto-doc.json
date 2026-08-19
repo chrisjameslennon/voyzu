@@ -1,5 +1,5 @@
 {
   "name": "UserUpdateRequestDto",
   "sourceFile": "packages/@voyzu/auth/modules/types/user.update.request.dto.ts",
-  "typescript": "import type { UserAccessMode, UserRole, UserStatus } from \"./user.response.dto\";\n\nexport interface UserUpdateRequestDto {\n  code: string;\n  email?: string | null;\n  displayName: string;\n  role: UserRole;\n  accessMode: UserAccessMode;\n  showDeveloperLinks?: boolean;\n  status: UserStatus;\n  companyIds?: number[];\n}\n"
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { UserAccessMode, UserRole, UserStatus } from \"./user.response.dto\";\nimport { PositiveId, UserCode, UserDisplayName, UserEmail } from \"./user.fields\";\n\nexport const UserUpdateRequestDto = StrictObject({\n  code: UserCode,\n  email: Type.Optional(UserEmail),\n  displayName: UserDisplayName,\n  role: UserRole, accessMode: UserAccessMode,\n  showDeveloperLinks: Type.Optional(Type.Boolean()), status: UserStatus,\n  companyIds: Type.Optional(Type.Array(PositiveId)),\n});\nexport type UserUpdateRequestDto = Type.Static<typeof UserUpdateRequestDto>;\n"
 }

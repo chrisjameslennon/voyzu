@@ -24,10 +24,6 @@
       "types": "./src/runtime/index.ts",
       "import": "./src/runtime/index.ts"
     },
-    "./validation": {
-      "types": "./src/validation/index.ts",
-      "import": "./src/validation/index.ts"
-    },
     "./export": {
       "types": "./src/export/index.ts",
       "import": "./src/export/index.ts"

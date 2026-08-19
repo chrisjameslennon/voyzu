@@ -1,12 +1,14 @@
-import type { UserAccessMode, UserRole, UserStatus } from "./user.response.dto";
+import Type from "typebox";
+import { StrictObject } from "@voyzu/types/api";
+import { UserAccessMode, UserRole, UserStatus } from "./user.response.dto";
+import { PositiveId, UserCode, UserDisplayName, UserEmail } from "./user.fields";
 
-export interface UserUpdateRequestDto {
-  code: string;
-  email?: string | null;
-  displayName: string;
-  role: UserRole;
-  accessMode: UserAccessMode;
-  showDeveloperLinks?: boolean;
-  status: UserStatus;
-  companyIds?: number[];
-}
+export const UserUpdateRequestDto = StrictObject({
+  code: UserCode,
+  email: Type.Optional(UserEmail),
+  displayName: UserDisplayName,
+  role: UserRole, accessMode: UserAccessMode,
+  showDeveloperLinks: Type.Optional(Type.Boolean()), status: UserStatus,
+  companyIds: Type.Optional(Type.Array(PositiveId)),
+});
+export type UserUpdateRequestDto = Type.Static<typeof UserUpdateRequestDto>;

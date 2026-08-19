@@ -11,9 +11,10 @@
     "id": {
       "description": "Audit event identifier.",
       "schema": {
-        "type": "string"
+        "type": "integer",
+        "minimum": 1
       },
-      "example": "string"
+      "example": 1
     }
   },
   "responses": {
@@ -23,109 +24,6 @@
       "schemaRef": "AuditEventResponseDto",
       "schema": {
         "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "code": {
-            "type": "string"
-          },
-          "packageCode": {
-            "type": "string"
-          },
-          "companyId": {
-            "type": [
-              "number",
-              "null"
-            ]
-          },
-          "companyCode": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "actorType": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "APP",
-                  "API",
-                  "SYSTEM"
-                ]
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "actorId": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "actorCode": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "actorDisplayName": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "action": {
-            "type": "string"
-          },
-          "entityType": {
-            "type": "string"
-          },
-          "entityId": {
-            "type": "string"
-          },
-          "entityCode": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "mutationId": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "creationDate": {
-            "type": "string"
-          },
-          "changes": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "number"
-                },
-                "fieldPath": {
-                  "type": "string"
-                },
-                "oldValue": {},
-                "newValue": {}
-              },
-              "required": [
-                "id",
-                "fieldPath",
-                "oldValue",
-                "newValue"
-              ],
-              "additionalProperties": false
-            }
-          }
-        },
         "required": [
           "id",
           "code",
@@ -143,13 +41,174 @@
           "mutationId",
           "creationDate"
         ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "code": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "packageCode": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "companyId": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "companyCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actorType": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "APP"
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "API"
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "SYSTEM"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actorId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actorCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actorDisplayName": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "action": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "entityType": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "entityId": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "entityCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mutationId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "changes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "fieldPath",
+                "oldValue",
+                "newValue"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "fieldPath": {
+                  "type": "string",
+                  "pattern": "\\S"
+                },
+                "oldValue": {},
+                "newValue": {}
+              },
+              "additionalProperties": false
+            }
+          }
+        },
         "additionalProperties": false
       },
       "example": {
-        "id": 0,
+        "id": 1,
         "code": "string",
         "packageCode": "string",
-        "companyId": 0,
+        "companyId": 1,
         "companyCode": "string",
         "actorType": "APP",
         "actorId": "string",
@@ -160,10 +219,10 @@
         "entityId": "string",
         "entityCode": "string",
         "mutationId": "string",
-        "creationDate": "string",
+        "creationDate": "2019-08-24T14:15:22Z",
         "changes": [
           {
-            "id": 0,
+            "id": 1,
             "fieldPath": "string",
             "oldValue": null,
             "newValue": null
@@ -177,6 +236,10 @@
       "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -188,10 +251,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -205,6 +264,10 @@
       "schemaRef": "UnauthorizedErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -216,10 +279,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -233,6 +292,10 @@
       "schemaRef": "ForbiddenErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -244,10 +307,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -261,6 +320,10 @@
       "schemaRef": "EntityNotFoundErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -272,10 +335,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -289,6 +348,10 @@
       "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -300,10 +363,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {

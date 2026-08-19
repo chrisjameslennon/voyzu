@@ -49,13 +49,18 @@ function installationMode(instanceRoot: string): "development" | "production" {
       readFileSync(join(instanceRoot, "package.json"), "utf8"),
     ) as { voyzu?: { mode?: string } };
     if (
-      instancePackage.voyzu?.mode === "development"
-      || instancePackage.voyzu?.mode === "production"
-    ) return instancePackage.voyzu.mode;
+      instancePackage.voyzu?.mode === "development" ||
+      instancePackage.voyzu?.mode === "production"
+    )
+      return instancePackage.voyzu.mode;
   } catch (error) {
-    throw new Error(`Unable to read Voyzu configuration from ${instanceRoot}`, { cause: error });
+    throw new Error(`Unable to read Voyzu configuration from ${instanceRoot}`, {
+      cause: error,
+    });
   }
-  throw new Error("The root package.json must declare voyzu.mode as development or production.");
+  throw new Error(
+    "The root package.json must declare voyzu.mode as development or production.",
+  );
 }
 
 export default function nextConfig(phase: string): NextConfig {
@@ -67,7 +72,9 @@ export default function nextConfig(phase: string): NextConfig {
   const runtimeRoot = installationRoot
     ? findRuntimeRoot(installationRoot)
     : undefined;
-  const mode = installationRoot ? installationMode(installationRoot) : undefined;
+  const mode = installationRoot
+    ? installationMode(installationRoot)
+    : undefined;
   if (instanceRoot) {
     loadEnvConfig(
       instanceRoot,
@@ -80,9 +87,10 @@ export default function nextConfig(phase: string): NextConfig {
   return {
     turbopack: runtimeRoot
       ? {
-          root: installationRoot && mode === "development"
-            ? installationRoot
-            : runtimeRoot,
+          root:
+            installationRoot && mode === "development"
+              ? installationRoot
+              : runtimeRoot,
         }
       : sourceRoot
         ? { root: sourceRoot }
@@ -105,6 +113,10 @@ export default function nextConfig(phase: string): NextConfig {
     devIndicators: {
       position: "bottom-right",
     },
-    serverExternalPackages: ["@sparticuz/chromium-min", "puppeteer", "puppeteer-core"],
+    serverExternalPackages: [
+      "@sparticuz/chromium-min",
+      "puppeteer",
+      "puppeteer-core",
+    ],
   };
 }

@@ -23,18 +23,4 @@ export interface VoyzuApiModule {
 export interface VoyzuApiConfig {
   basePath: "/api";
   modules: VoyzuApiModule[];
-  validationSchemas: VoyzuApiValidationRegistry;
 }
-
-export interface VoyzuApiValidationSchema {
-  request?: {
-    path?: Record<string, VoyzuApiParameterDefinition>;
-    query?: Record<string, VoyzuApiParameterDefinition>;
-    cookies?: Record<string, VoyzuApiCookieDefinition>;
-    contentType?: string;
-    body?: Record<string, unknown>;
-  };
-  responses: Record<string, { contentType?: string; body?: Record<string, unknown> }>;
-}
-
-export type VoyzuApiValidationRegistry = Record<string, VoyzuApiValidationSchema>;

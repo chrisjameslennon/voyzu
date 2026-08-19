@@ -9,8 +9,18 @@
     "voyzu-package": true,
     "allowInstall": true,
     "dependencies": [],
-    "pageRootPaths": ["/login", "/settings/users"],
-    "apiRootPaths": ["/auth", "/users", "/user-queries", "/user-search-results", "/user-selections", "/user-batches"],
+    "pageRootPaths": [
+      "/login",
+      "/settings/users"
+    ],
+    "apiRootPaths": [
+      "/auth",
+      "/users",
+      "/user-queries",
+      "/user-search-results",
+      "/user-selections",
+      "/user-batches"
+    ],
     "preinstalled": true,
     "settings": {
       "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
@@ -38,6 +48,7 @@
     "@voyzu/ui-surface": "^0.1.0",
     "next": "^16",
     "react": "^19",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "typebox": "^1.3.7"
   }
 }

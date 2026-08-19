@@ -2,7 +2,7 @@ export type {
   CapabilityErrorParams,
   MessageErrorParams,
 } from "./application-errors";
-export type {
+export {
   BusinessRuleErrorResponseDto,
   ConflictErrorResponseDto,
   EntityNotFoundErrorResponseDto,

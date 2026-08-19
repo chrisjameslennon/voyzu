@@ -1,5 +1,5 @@
 {
   "name": "UserCompanyAccessUpdateRequestDto",
   "sourceFile": "packages/@voyzu/auth/modules/types/user-company-access.update.request.dto.ts",
-  "typescript": "export interface UserCompanyAccessUpdateRequestDto {\n  companyIds: number[];\n}\n"
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { PositiveId } from \"./user.fields\";\nexport const UserCompanyAccessUpdateRequestDto = StrictObject({ companyIds: Type.Array(PositiveId) });\nexport type UserCompanyAccessUpdateRequestDto = Type.Static<typeof UserCompanyAccessUpdateRequestDto>;\n"
 }

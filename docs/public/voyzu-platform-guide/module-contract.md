@@ -160,24 +160,29 @@ Example:
 
 ```ts
 // packages/@acme/warehousing/modules/types/stock.ts
-export interface StockItemCreateRequestDto {
-  code: string;
-  name: string;
-}
+import Type from "typebox";
+import { StrictObject } from "@voyzu/types/api";
 
-export interface StockItemResponseDto {
-  id: number;
-  code: string;
-  name: string;
-  status: "ACTIVE" | "INACTIVE";
-}
+export const StockItemCreateRequestDto = StrictObject({
+  code: Type.String({ pattern: "^[A-Z0-9_-]+$" }),
+  name: Type.String({ minLength: 1 }),
+});
+export type StockItemCreateRequestDto = Type.Static<typeof StockItemCreateRequestDto>;
+
+export const StockItemResponseDto = StrictObject({
+  id: Type.Integer({ minimum: 1 }),
+  code: Type.String({ pattern: "^[A-Z0-9_-]+$" }),
+  name: Type.String({ minLength: 1 }),
+  status: Type.Union([Type.Literal("ACTIVE"), Type.Literal("INACTIVE")]),
+});
+export type StockItemResponseDto = Type.Static<typeof StockItemResponseDto>;
 ```
 
 ## Module implementation
 
 ### Validation
 
-A module must validate data at the appropriate transport, service and persistence boundaries. Validation failures must use the standard Voyzu error contracts. Business-input validators belong under `server/lib`; handler-level parsing belongs under `server/api`.
+A module declares TypeBox request and response schemas in its API definition; the router validates them at the transport perimeter. Cross-field and domain validators belong under `server/lib`, while database-dependent rules belong in services or operation policies. Validators must not repeat object constraints already declared by DTO schemas.
 
 Example:
 

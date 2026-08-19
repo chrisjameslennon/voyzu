@@ -10,10 +10,7 @@ function safeFilename(raw: string | null): string {
 
 function buildPrintableUrl(request: NextRequest): URL {
   const sourceUrl = new URL(request.url);
-  const printablePath = sourceUrl.searchParams.get("path");
-  if (!printablePath || !printablePath.startsWith("/")) {
-    throw new Error("path query parameter is required");
-  }
+  const printablePath = sourceUrl.searchParams.get("path")!;
 
   const printableUrl = new URL(printablePath, sourceUrl.origin);
   sourceUrl.searchParams.forEach((value, key) => {
@@ -61,17 +58,7 @@ export async function handleGenericPdf(
         "Content-Disposition": `${disposition}; filename="${filename}.pdf"`,
       },
     });
-  } catch (error) {
-    if (error instanceof Error && error.message === "path query parameter is required") {
-      return NextResponse.json(
-        {
-          code: "INPUT_VALIDATION_ERROR",
-          message: error.message,
-        },
-        { status: 400 },
-      );
-    }
-
+  } catch {
     return NextResponse.json(
       {
         code: "INTERNAL_SERVER_ERROR",

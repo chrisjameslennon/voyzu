@@ -1,6 +1,6 @@
-import type { AuthUserDto } from "./auth-user.dto";
+import Type from "typebox";
+import { StrictObject } from "@voyzu/types/api";
+import { AuthUserDto } from "./auth-user.dto";
 
-export interface AuthLoginResponseDto {
-  /** Authenticated user. */
-  user: AuthUserDto;
-}
+export const AuthLoginResponseDto = StrictObject({ user: AuthUserDto });
+export type AuthLoginResponseDto = Type.Static<typeof AuthLoginResponseDto>;

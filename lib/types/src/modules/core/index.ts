@@ -1,9 +1,9 @@
-export type {
+export {
   AuditMetadataDto,
   AuditStampDto,
   AuditUserDto,
 } from "./audit";
-export type {
+export {
   ActorType,
   Status,
 } from "./enums";

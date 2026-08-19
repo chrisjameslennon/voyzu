@@ -101,7 +101,15 @@ include only the path parameters, query-string parameters, cookies, body, and
 responses that form part of its contract.
 
 ```ts
-import { dtoRef } from "@voyzu/types/api";
+import Type from "typebox";
+import {
+  BusinessRuleErrorResponseDto,
+  ConflictErrorResponseDto,
+  EntityNotFoundErrorResponseDto,
+  InputValidationErrorResponseDto,
+  InternalServerErrorResponseDto,
+} from "@voyzu/types";
+import { IceCreamResponseDto, IceCreamUpdateRequestDto } from "../types";
 
 update: {
   method: "PUT",
@@ -115,14 +123,16 @@ update: {
     path: {
       code: {
         description: "Globally unique ice-cream business code.",
-        schema: { type: "string" },
+        schema: Type.String({ pattern: "^[A-Z0-9_-]+$" }),
       },
     },
     query: {
-      validateOnly: {
-        description: "Validate the request without saving changes.",
-        schema: { type: "boolean" },
+      parameters: {
+        validateOnly: {
+          description: "Validate the request without saving changes.",
+        },
       },
+      schema: Type.Object({ validateOnly: Type.Optional(Type.Boolean()) }),
     },
     cookies: {
       "voyzu-session": {
@@ -137,13 +147,13 @@ update: {
       },
     },
     contentType: "application/json",
-    body: dtoRef("IceCreamUpdateRequestDto"),
+    body: IceCreamUpdateRequestDto,
   },
   responses: {
       "200": {
         description: "The updated ice cream.",
         contentType: "application/json",
-        body: dtoRef("IceCreamResponseDto"),
+        body: IceCreamResponseDto,
         cookies: {
           "voyzu-session": {
             description: "Refreshed session cookie.",
@@ -158,50 +168,47 @@ update: {
       },
       "400": {
         description: "Validation failed.",
-        body: dtoRef("InputValidationErrorResponseDto"),
+        body: InputValidationErrorResponseDto,
       },
       "404": {
         description: "Ice cream not found.",
-        body: dtoRef("EntityNotFoundErrorResponseDto"),
+        body: EntityNotFoundErrorResponseDto,
       },
       "409": {
         description: "The request conflicts with existing data.",
-        body: dtoRef("ConflictErrorResponseDto"),
+        body: ConflictErrorResponseDto,
       },
       "422": {
         description: "A business rule blocked the update.",
-        body: dtoRef("BusinessRuleErrorResponseDto"),
+        body: BusinessRuleErrorResponseDto,
       },
       "500": {
         description: "An unexpected server error occurred.",
-        body: dtoRef("InternalServerErrorResponseDto"),
+        body: InternalServerErrorResponseDto,
       },
   },
 }
 ```
 
-Use `dtoRef("DtoName")` for one DTO and `arrayOf(dtoRef("DtoName"))` for an
-array response or request. The generator resolves those references to exported
-TypeScript DTOs and derives JSON schemas and representative examples from their
-types.
+Reference exported TypeBox schemas directly. Use `Type.Array(DtoSchema)` for an
+array response or request. The router validates these same schemas at runtime,
+and the generator uses them for JSON schemas and representative examples.
 
-### Comment DTO fields
+### Describe DTO fields
 
-Add a concise JSDoc comment immediately above every DTO field. These comments
-become field descriptions in the generated API Reference and OpenAPI schemas.
-Describe meaning or constraints that the TypeScript type alone cannot express.
+Add concise `description` metadata to TypeBox properties where their meaning is
+not obvious. Structural constraints belong in the schema itself.
 
 ```ts
-export interface IceCreamUpdateRequestDto {
-  /** Ice-cream display name. */
-  name: string;
-
-  /** Code of the active flavour assigned to the ice cream. */
-  flavorCode: string;
-
-  /** Supplier display name. */
-  supplier: string;
-}
+export const IceCreamUpdateRequestDto = StrictObject({
+  name: Type.String({ minLength: 1, description: "Ice-cream display name." }),
+  flavorCode: Type.String({
+    pattern: "^[A-Z0-9_-]+$",
+    description: "Code of the active flavour assigned to the ice cream.",
+  }),
+  supplier: Type.String({ minLength: 1, description: "Supplier display name." }),
+});
+export type IceCreamUpdateRequestDto = Type.Static<typeof IceCreamUpdateRequestDto>;
 ```
 
 `voyzu:compose` reads the registered modules of every active package, extracts

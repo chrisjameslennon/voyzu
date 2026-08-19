@@ -13,20 +13,29 @@
     "schemaRef": "UserProfileUpdateRequestDto",
     "schema": {
       "type": "object",
-      "properties": {
-        "email": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "displayName": {
-          "type": "string"
-        }
-      },
       "required": [
         "displayName"
       ],
+      "properties": {
+        "email": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\S(?:.*\\S)?$",
+              "description": "A non-blank value without leading or trailing whitespace."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 50,
+          "pattern": "\\S",
+          "description": "Non-blank display name; maximum 50 characters."
+        }
+      },
       "additionalProperties": false
     },
     "example": {
@@ -41,241 +50,6 @@
       "schemaRef": "UserResponseDto",
       "schema": {
         "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "code": {
-            "type": "string"
-          },
-          "email": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "displayName": {
-            "type": "string"
-          },
-          "role": {
-            "type": "string",
-            "enum": [
-              "ADMIN",
-              "ORGANIZATION_USER",
-              "COMPANY_USER"
-            ]
-          },
-          "accessMode": {
-            "type": "string",
-            "enum": [
-              "UI",
-              "API",
-              "UI_AND_API"
-            ]
-          },
-          "showDeveloperLinks": {
-            "type": "boolean"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "ACTIVE",
-              "INACTIVE"
-            ]
-          },
-          "assignments": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "number"
-                },
-                "userId": {
-                  "type": "number"
-                },
-                "companyId": {
-                  "type": "number"
-                },
-                "companyCode": {
-                  "type": "string"
-                },
-                "companyName": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "id",
-                "userId",
-                "companyId",
-                "companyCode",
-                "companyName"
-              ],
-              "additionalProperties": false
-            }
-          },
-          "audit": {
-            "type": "object",
-            "properties": {
-              "created": {
-                "type": "object",
-                "properties": {
-                  "date": {
-                    "type": "string",
-                    "description": "Date and time for the audit event."
-                  },
-                  "actorType": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "enum": [
-                          "APP",
-                          "API",
-                          "SYSTEM"
-                        ]
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ],
-                    "description": "Actor type for the audit event, when available."
-                  },
-                  "userId": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "description": "User id for the audit event, when available."
-                  },
-                  "user": {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "number",
-                            "description": "User id."
-                          },
-                          "code": {
-                            "type": "string",
-                            "description": "User code."
-                          },
-                          "displayName": {
-                            "type": "string",
-                            "description": "User display name."
-                          }
-                        },
-                        "required": [
-                          "id",
-                          "code",
-                          "displayName"
-                        ],
-                        "additionalProperties": false
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ],
-                    "description": "Resolved user for the audit event, when available."
-                  },
-                  "mutationId": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "description": "Audit mutation id for the audit event, when available."
-                  }
-                },
-                "required": [
-                  "date"
-                ],
-                "additionalProperties": false,
-                "description": "Audit details for creation."
-              },
-              "updated": {
-                "type": "object",
-                "properties": {
-                  "date": {
-                    "type": "string",
-                    "description": "Date and time for the audit event."
-                  },
-                  "actorType": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "enum": [
-                          "APP",
-                          "API",
-                          "SYSTEM"
-                        ]
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ],
-                    "description": "Actor type for the audit event, when available."
-                  },
-                  "userId": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "description": "User id for the audit event, when available."
-                  },
-                  "user": {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "number",
-                            "description": "User id."
-                          },
-                          "code": {
-                            "type": "string",
-                            "description": "User code."
-                          },
-                          "displayName": {
-                            "type": "string",
-                            "description": "User display name."
-                          }
-                        },
-                        "required": [
-                          "id",
-                          "code",
-                          "displayName"
-                        ],
-                        "additionalProperties": false
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ],
-                    "description": "Resolved user for the audit event, when available."
-                  },
-                  "mutationId": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "description": "Audit mutation id for the audit event, when available."
-                  }
-                },
-                "required": [
-                  "date"
-                ],
-                "additionalProperties": false,
-                "description": "Audit details for the latest update."
-              }
-            },
-            "required": [
-              "created",
-              "updated"
-            ],
-            "additionalProperties": false,
-            "description": "Audit metadata for creation and latest update."
-          }
-        },
         "required": [
           "id",
           "code",
@@ -288,10 +62,342 @@
           "assignments",
           "audit"
         ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20,
+            "pattern": "^[A-Z0-9_-]+$",
+            "description": "Capital letters, numbers, dashes, and underscores; maximum 20 characters."
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\S(?:.*\\S)?$",
+                "description": "A non-blank value without leading or trailing whitespace."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "displayName": {
+            "type": "string",
+            "maxLength": 50,
+            "pattern": "\\S",
+            "description": "Non-blank display name; maximum 50 characters."
+          },
+          "role": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "ADMIN"
+                ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "ORGANIZATION_USER"
+                ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "COMPANY_USER"
+                ]
+              }
+            ]
+          },
+          "accessMode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "UI"
+                ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "API"
+                ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "UI_AND_API"
+                ]
+              }
+            ]
+          },
+          "showDeveloperLinks": {
+            "type": "boolean"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "ACTIVE"
+                ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "INACTIVE"
+                ]
+              }
+            ]
+          },
+          "assignments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "userId",
+                "companyId",
+                "companyCode",
+                "companyName"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "userId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "companyId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "companyCode": {
+                  "type": "string",
+                  "pattern": "\\S"
+                },
+                "companyName": {
+                  "type": "string",
+                  "pattern": "\\S"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "audit": {
+            "type": "object",
+            "required": [
+              "created",
+              "updated"
+            ],
+            "properties": {
+              "created": {
+                "type": "object",
+                "required": [
+                  "date"
+                ],
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Date and time for the audit event."
+                  },
+                  "actorType": {
+                    "anyOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "APP"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "API"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "SYSTEM"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "userId": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "user": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "code",
+                          "displayName"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "description": "User id."
+                          },
+                          "code": {
+                            "type": "string",
+                            "pattern": "\\S",
+                            "description": "User code."
+                          },
+                          "displayName": {
+                            "type": "string",
+                            "pattern": "\\S",
+                            "description": "User display name."
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "mutationId": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "updated": {
+                "type": "object",
+                "required": [
+                  "date"
+                ],
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Date and time for the audit event."
+                  },
+                  "actorType": {
+                    "anyOf": [
+                      {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "APP"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "API"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "enum": [
+                              "SYSTEM"
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "userId": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "user": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "code",
+                          "displayName"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "description": "User id."
+                          },
+                          "code": {
+                            "type": "string",
+                            "pattern": "\\S",
+                            "description": "User code."
+                          },
+                          "displayName": {
+                            "type": "string",
+                            "pattern": "\\S",
+                            "description": "User display name."
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "mutationId": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        },
         "additionalProperties": false
       },
       "example": {
-        "id": 0,
+        "id": 1,
         "code": "string",
         "email": "string",
         "displayName": "string",
@@ -301,31 +407,31 @@
         "status": "ACTIVE",
         "assignments": [
           {
-            "id": 0,
-            "userId": 0,
-            "companyId": 0,
+            "id": 1,
+            "userId": 1,
+            "companyId": 1,
             "companyCode": "string",
             "companyName": "string"
           }
         ],
         "audit": {
           "created": {
-            "date": "string",
+            "date": "2019-08-24T14:15:22Z",
             "actorType": "APP",
             "userId": "string",
             "user": {
-              "id": 0,
+              "id": 1,
               "code": "string",
               "displayName": "string"
             },
             "mutationId": "string"
           },
           "updated": {
-            "date": "string",
+            "date": "2019-08-24T14:15:22Z",
             "actorType": "APP",
             "userId": "string",
             "user": {
-              "id": 0,
+              "id": 1,
               "code": "string",
               "displayName": "string"
             },
@@ -340,6 +446,10 @@
       "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -351,10 +461,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -368,6 +474,10 @@
       "schemaRef": "UnauthorizedErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -379,10 +489,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -396,6 +502,10 @@
       "schemaRef": "ForbiddenErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -407,10 +517,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {
@@ -424,6 +530,10 @@
       "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "string",
@@ -435,10 +545,6 @@
             "type": "string"
           }
         },
-        "required": [
-          "code",
-          "message"
-        ],
         "additionalProperties": false
       },
       "example": {

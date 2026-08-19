@@ -8,8 +8,6 @@ export type {
   VoyzuApiParameterDefinition,
   VoyzuApiRequestDefinition,
   VoyzuApiResponseDefinition,
-  VoyzuApiValidationRegistry,
-  VoyzuApiValidationSchema,
 } from "./voyzu.api.types";
 export {
   createVoyzuApiRouteHandlers,

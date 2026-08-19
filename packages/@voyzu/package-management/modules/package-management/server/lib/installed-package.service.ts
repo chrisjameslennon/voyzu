@@ -1,6 +1,5 @@
 import { getDb, withTransaction } from "@voyzu/capability/db";
 import { BusinessRuleError, NotFoundError } from "@voyzu/capability/errors";
-import { checkResponse } from "@voyzu/capability/validation";
 
 import type {
   InstalledPackageResponseDto,
@@ -9,7 +8,6 @@ import { InstalledPackageRepo } from "../db/installed-package.repo";
 import type { InstalledPackageRow } from "../db/installed-package.row.types";
 import { ChangePageRouteVisibility, isRequiredPackage } from "../../domain/operation-policy";
 import { discoverInstalledPackages, type DiscoveredPackage } from "./package-inventory";
-import { validateResponse } from "./installed-package.validator";
 
 function response(
   row: InstalledPackageRow,
@@ -29,7 +27,7 @@ function response(
     pageRootPaths: discovered?.pageRootPaths ?? [],
     apiRootPaths: discovered?.apiRootPaths ?? [],
   };
-  return checkResponse(dto, validateResponse(dto), `installed package (id=${dto.id})`);
+  return dto;
 }
 
 export async function reconcileInstalledPackages(): Promise<InstalledPackageResponseDto[]> {
@@ -87,9 +85,6 @@ export async function updateInstalledPackageVisibility(
   topNavigationVisible: boolean,
   pageRoutesVisible: boolean,
 ): Promise<InstalledPackageResponseDto> {
-  if (typeof topNavigationVisible !== "boolean" || typeof pageRoutesVisible !== "boolean") {
-    throw new BusinessRuleError("Top-navigation and page-route visibility must be boolean values");
-  }
   const repo = new InstalledPackageRepo(getDb());
   const existing = await repo.getById(id);
   if (!existing) throw new NotFoundError(`Package id ${id} not found`);
@@ -138,9 +133,6 @@ export async function moveInstalledPackage(
   id: number,
   direction: "up" | "down",
 ): Promise<InstalledPackageResponseDto[]> {
-  if (direction !== "up" && direction !== "down") {
-    throw new BusinessRuleError("Direction must be up or down");
-  }
   await withTransaction(async (db) => {
     await db.query("SELECT pg_advisory_xact_lock(hashtext('voyzu.installed-packages'))");
     const repo = new InstalledPackageRepo(db);

@@ -1,7 +1,5 @@
 import type { UserCompanyAssignmentDto, UserResponseDto } from "@voyzu/auth/types";
-import { checkResponse } from "@voyzu/capability/validation";
 import type { UserAssignmentRow, UserRow } from "../db/user.row.types";
-import { validateResponse } from "./user.validator";
 
 interface UserAuditActors {
   creationUser?: UserResponseDto["audit"]["created"]["user"];
@@ -50,5 +48,5 @@ export function toDto(
       },
     },
   };
-  return checkResponse(dto, validateResponse(dto), `user (id=${dto.id})`);
+  return dto;
 }

@@ -98,8 +98,6 @@ export async function getUser(code: string): Promise<UserResponseDto | null> {
 export async function updateCurrentUserProfile(input: UserProfileUpdateRequestDto): Promise<UserResponseDto> {
   const currentUser = await requireCurrentUser();
   const normalized = normalizeProfileUpdate(input);
-  const errors = validateUserProfileInput(normalized);
-  if (errors.length) throw new InputValidationError(errors.join("; "));
 
   try {
     const repo = new UserRepo(getDb());
@@ -290,7 +288,6 @@ export async function deactivateUser(code: string): Promise<UserResponseDto> {
 export async function batchDeleteUsers(codes: string[]): Promise<void> {
   const currentUser = await requireCurrentAdmin();
   const normalizedCodes = normalizeCodes(codes);
-  if (normalizedCodes.length === 0) throw new InputValidationError("At least one user code is required");
   if (normalizedCodes.includes(currentUser.code)) throw new BusinessRuleError("You cannot delete your own user");
 
   const repo = new UserRepo(getDb());
@@ -310,7 +307,6 @@ export async function deactivateUsers(codes: string[]): Promise<UserResponseDto[
 async function transitionUserStatus(codes: string[], targetStatus: "ACTIVE" | "INACTIVE"): Promise<UserResponseDto[]> {
   const currentUser = await requireCurrentAdmin();
   const normalizedCodes = normalizeCodes(codes);
-  if (normalizedCodes.length === 0) throw new InputValidationError("At least one user code is required");
 
   return await withTransaction(async (client) => {
     const repo = new UserRepo(client);
@@ -396,15 +392,3 @@ function normalizeProfileUpdate(input: UserProfileUpdateRequestDto): UserProfile
     displayName: input.displayName?.trim(),
   };
 }
-
-function validateUserProfileInput(input: UserProfileUpdateRequestDto): string[] {
-  const errors: string[] = [];
-  if (!input.displayName?.trim()) errors.push("displayName is required");
-  if (input.displayName && input.displayName.trim().length > 50) {
-    errors.push("displayName must be 50 characters or fewer");
-  }
-  if (input.email != null && input.email.trim() === "") errors.push("email must be null or non-blank");
-  if (input.email && input.email !== input.email.trim()) errors.push("email must not have leading or trailing spaces");
-  return errors;
-}
-

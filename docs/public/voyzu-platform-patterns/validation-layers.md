@@ -8,12 +8,13 @@ The overall flow, from the origin request is:
 
 ```
 1. API surface
-2. Request DTO
-3. Request validation
-4. Service prerequisites
-5. Operation policy
-6. Database integrity
-7. Return data DTO
+2. API contract schemas
+3. Request perimeter validation
+4. Business validation
+5. Service prerequisites
+6. Operation policy
+7. Database integrity
+8. Response perimeter validation
 ```
 
 A rule should be enforced at the earliest appropriate layer. Do not add an operation-policy blocker for an operation that should not exist in the API at all.
@@ -59,15 +60,15 @@ Creation and deletion are therefore not operations that need to be rejected by b
 
 ***
 
-### 2. Request DTO
+### 2. API contract schemas
 
 #### Question
 
-**Which properties may be supplied or changed through the operation?**
+**What request and response objects does this endpoint accept and produce?**
 
 #### Implementation
 
-Implemented in the request DTOs, typically in:
+Implemented as TypeBox schemas in the owning package's exported types and referenced directly by the module API definition.
 
 ```
 the owning package's exported types
@@ -76,10 +77,15 @@ the owning package's exported types
 For example:
 
 ```ts
-interface ControlAccountPatchRequestDto {
-  glAccountId: number;
-}
+export const ControlAccountPatchRequestDto = StrictObject({
+  glAccountId: Type.Integer({ minimum: 1 }),
+});
+export type ControlAccountPatchRequestDto = Type.Static<
+  typeof ControlAccountPatchRequestDto
+>;
 ```
+
+The exported value is the runtime schema. The same-name exported type is inferred from that schema for compile-time use. Do not maintain a separate interface and runtime validator for the same DTO.
 
 This DTO allows the linked GL account to be changed.
 
@@ -94,19 +100,101 @@ status
 
 Those changes are therefore not supported by the PATCH operation.
 
-The DTO defines the writable surface of the API. A property that is not present in the request DTO is not available for modification.
+The schema defines both the writable surface and object validity. Use `StrictObject` for every DTO object, including nested DTOs, so undeclared properties are rejected. TypeBox properties are required by default; use `Type.Optional(...)` only when omission is part of the contract.
+
+Object-level rules belong in these schemas, including:
+
+```
+primitive types
+required and optional properties
+literal and enum membership
+string length, pattern and format
+integer and numeric bounds
+array element types and cardinality
+nested object shape
+additional-property rejection
+```
+
+Route definitions reference schemas directly:
+
+```ts
+request: {
+  path: {
+    code: {
+      description: "Control-account code.",
+      schema: Type.String({ pattern: "^[A-Z0-9_-]+$" }),
+    },
+  },
+  contentType: "application/json",
+  body: ControlAccountPatchRequestDto,
+},
+responses: {
+  "200": {
+    description: "Updated control account.",
+    body: ControlAccountResponseDto,
+  },
+},
+```
+
+The same schemas drive routing validation, generated API documentation and the combined OpenAPI document.
 
 #### Principle
 
-> The API method defines the broad operation. The request DTO defines which changes are possible within that operation.
+> Define each API object once as an executable TypeBox schema and derive its TypeScript type from that schema.
 
 ***
 
-### 3. Request validation
+### 3. Request perimeter validation
 
 #### Question
 
-**Is the supplied request correctly formed?**
+**Does this incoming request conform to the endpoint contract?**
+
+#### Implementation
+
+The shared API router validates the declared path parameters, query string, cookies, content type and body before invoking the handler.
+
+Path and query values arrive from HTTP as strings. The router uses TypeBox `Value.Convert` when checking them so a numeric parameter can be declared as `Type.Integer(...)`. Converted values are discarded after validation: handlers continue to receive the original string values and perform their normal parsing when using them.
+
+Query definitions keep presentation metadata alongside one schema for the complete query object:
+
+```ts
+query: {
+  parameters: {
+    companyId: { description: "Company identifier." },
+    search: { description: "Free-text search." },
+  },
+  schema: Type.Object({
+    companyId: Type.Optional(Type.Integer({ minimum: 1 })),
+    search: Type.Optional(Type.String({ pattern: "\\S" })),
+  }),
+},
+```
+
+When `request.body` is declared, the body is required. A JSON body must contain valid JSON and conform to its schema. When no request content type is declared, `application/json` is the default. Non-JSON bodies require an explicit content type and must be non-empty.
+
+The router returns HTTP `400` without calling the handler when validation fails:
+
+```json
+{
+  "code": "INPUT_VALIDATION_ERROR",
+  "message": "body/code must not have more than 20 characters"
+}
+```
+
+Handlers and services must not repeat these structural checks. Normalization may still occur after perimeter validation, but it must not be used as a substitute for declaring the accepted input in the schema.
+
+#### Principle
+
+> Reject malformed API input once, before application code runs.
+
+***
+
+### 4. Business validation
+
+#### Question
+
+**Is this well-formed request internally consistent with business rules?**
 
 #### Implementation
 
@@ -119,42 +207,36 @@ Implemented in:
 For example:
 
 ```
-control-account.validator.ts
+user.validator.ts
 ```
 
-This layer validates the shape and basic values of the request:
+This layer validates rules that are not merely properties of an individual DTO field, for example:
 
 ```
-glAccountId is present
-glAccountId is an integer
-glAccountId is greater than zero
+a password and confirmation must match
+a password length depends on the selected access mode
+company assignments are only valid for company users
+a developer-only option may only be enabled for administrators
 ```
 
-Every DTO validator must define an exhaustive field-validator map. This is non-negotiable:
+For example:
 
 ```ts
-type FieldValidator<T> = (value: T) => string | null;
-
-function createPatchValidator() {
-  return {
-    glAccountId: validateGlAccountId,
-  } satisfies {
-    [K in keyof ControlAccountPatchRequestDto]-?: FieldValidator<ControlAccountPatchRequestDto[K]>;
-  };
+export function validateUserInput(input: UserCreateRequestDto): string[] {
+  const errors: string[] = [];
+  if (input.showDeveloperLinks === true && input.role !== "ADMIN") {
+    errors.push("showDeveloperLinks can only be enabled for admin users");
+  }
+  if (input.role !== "COMPANY_USER" && input.companyIds?.length) {
+    errors.push("company assignments are only valid for company users");
+  }
+  return errors;
 }
 ```
 
-The mapped type ties the validator to the DTO at compile time. Adding, removing, or renaming a DTO property therefore requires the validator to be updated in the same change. The `-?` is required: optional DTO properties must still have an explicit validator that decides how `undefined` is handled.
+Validators must not repeat checks already expressed by TypeBox, such as required fields, primitive types, enum membership, string length or pattern, integer bounds, array cardinality, or additional properties. They receive typed DTOs after perimeter validation and contain only cross-field or domain rules that do not require database state.
 
-Nested and cross-field rules may run after the field map, but they do not replace it. Validators that first narrow an `unknown` request must still declare the exhaustive typed map alongside their structural checks.
-
-Typical failures produce:
-
-```
-InputValidationError
-```
-
-This layer does not determine:
+This layer also does not determine:
 
 ```
 whether the GL account exists
@@ -167,11 +249,11 @@ Those checks require application data and belong later in the flow.
 
 #### Principle
 
-> `validator.ts` validates the request object, not the business circumstances surrounding the request.
+> DTO schemas validate objects. `validator.ts` validates business relationships within an already valid object.
 
 ***
 
-### 4. Service prerequisites
+### 5. Service prerequisites
 
 #### Question
 
@@ -236,7 +318,7 @@ The operation policy is like a medical consultant: the service must provide a co
 
 ***
 
-### 5. Operation policy
+### 6. Operation policy
 
 #### Question
 
@@ -332,7 +414,7 @@ Server use:
 
 ***
 
-### 6. Database integrity
+### 7. Database integrity
 
 #### Question
 
@@ -369,7 +451,7 @@ Not every business rule belongs in the database, but structural integrity should
 
 ***
 
-### 7. Return data DTO
+### 8. Response perimeter validation
 
 #### Question
 
@@ -377,28 +459,14 @@ Not every business rule belongs in the database, but structural integrity should
 
 #### Implementation
 
-The repository returns a database row, and the module mapper converts that row into the response DTO. Before the service returns the DTO, it validates the mapped response using `validateResponse` from the entity's validator:
+The repository returns a database row and the module mapper converts it into a response DTO. The API router validates the final HTTP response against the response definition declared by the route:
 
 ```text
 database row
   -> <entity>.mapper.ts
   -> response DTO
-  -> validateResponse
-  -> service caller or API response
-```
-
-For example:
-
-```ts
-import { checkResponse } from "@voyzu/capability/validation";
-
-function checkedResponse(dto: CompanyResponseDto): CompanyResponseDto {
-  return checkResponse(
-    dto,
-    validateResponse(dto),
-    `company (id=${dto.id})`,
-  );
-}
+  -> HTTP response
+  -> router TypeBox validation
 ```
 
 An invalid response indicates a defect or data-integrity problem rather than invalid caller input. Possible causes include:
@@ -411,15 +479,15 @@ a response DTO and mapper that have drifted apart
 missing system-generated audit information
 ```
 
-In development, response validation must throw an error so the mismatch is found and corrected immediately. In production, it must log the validation error and return the response so a validation diagnostic does not itself cause an application outage.
+The router checks that the status is declared, that the response content type is correct, and, for JSON responses with a body schema, that the body conforms to that schema. A response with a body schema defaults to `application/json`; PDF, CSV and other response types must declare their content type explicitly.
 
-Entity response validators should use the same exhaustive field-map pattern as request validation. Every property in the response DTO, including nested audit metadata, must be accounted for. All service paths that return the entity—including reads and the results of create, update, patch, and state transitions—must pass through the checked response.
+In development, an invalid response throws so the mismatch is found immediately. In production, it logs the validation error and returns the response so a validation diagnostic does not itself cause an application outage.
 
-Large composed report and posting DTOs must also be checked at the final service boundary. They may use `withResponseValidation` from `@voyzu/capability/validation`, which checks the complete returned object recursively for invalid DTO values and applies the same development and production policy. Their typed construction remains the compile-time contract; reusable entity DTOs nested within them should still use their entity's exhaustive validator when mapped.
+Response object constraints belong in the response TypeBox schema, including nested DTOs and audit metadata. Do not add `validateResponse`, `checkResponse`, `withResponseValidation`, or field-map validation to mappers and services. Those duplicate the contract and can drift away from the schema enforced by the router.
 
 #### Principle
 
-> Validate the mapped response DTO at the final service boundary: fail fast in development and report the mismatch without interrupting production.
+> Validate the final response once at the API perimeter: fail fast in development and report the mismatch without interrupting production.
 
 ***
 
@@ -465,8 +533,8 @@ API surface:
 Request DTO:
   glAccountId is writable.
 
-control-account.validator.ts:
-  validates that glAccountId is a positive integer.
+ControlAccountPatchRequestDto:
+  validates at the router perimeter that glAccountId is a positive integer.
 
 control-account.service.ts:
   resolves scope;
@@ -481,9 +549,9 @@ domain/operation-policy.ts:
 control-account.repo.ts / database:
   performs the update and protects persistence integrity.
 
-control-account.mapper.ts / validateResponse:
+control-account.mapper.ts / response DTO:
   maps the stored row into ControlAccountResponseDto;
-  validates the complete response, including audit metadata;
+  the router validates the complete response, including audit metadata;
   throws in development or logs an error in production if it is invalid.
 ```
 

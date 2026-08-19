@@ -81,14 +81,7 @@ export async function handleVoyzuApiRequest(
   }
 
   const { route, params } = match;
-  const validation = config.validationSchemas[`${route.method} ${route.path}`];
-  if (!validation) {
-    return NextResponse.json(
-      { code: "INTERNAL_SERVER_ERROR", message: `Validation schema for ${route.method} ${route.path} was not found` },
-      { status: 500 },
-    );
-  }
-  const invalidRequest = await validateApiRequest(request, route, params, validation);
+  const invalidRequest = await validateApiRequest(request, route, params);
   if (invalidRequest) return invalidRequest;
 
   const handle = () => route.handler(request, { params: Promise.resolve(params) });
@@ -104,7 +97,7 @@ export async function handleVoyzuApiRequest(
       { status: 500 },
     );
   }
-  return validateApiResponse(response, route, validation);
+  return validateApiResponse(response, route);
 }
 
 export function createVoyzuApiRouteHandlers(

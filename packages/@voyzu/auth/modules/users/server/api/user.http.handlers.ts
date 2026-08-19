@@ -211,9 +211,7 @@ export async function handleSearch(req: NextRequest) {
   const denied = await requireAdmin();
   if (denied) return denied;
   try {
-    const q = req.nextUrl.searchParams.get("q");
-    if (!q) return inputValidationError("Query parameter 'q' is required");
-    return ok(await searchUsers(q));
+    return ok(await searchUsers(req.nextUrl.searchParams.get("q")!));
   } catch (err) {
     return serverError(err);
   }
