@@ -7,6 +7,7 @@
     "test": "tsc && node dist/index.js"
   },
   "dependencies": {
+    "ts-morph": "28.0.0",
     "typia": "12.1.1"
   },
   "devDependencies": {
