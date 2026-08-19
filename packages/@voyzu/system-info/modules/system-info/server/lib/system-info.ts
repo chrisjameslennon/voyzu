@@ -359,7 +359,12 @@ export async function getSystemInformation(): Promise<SystemInformation> {
       {
         title: "Install",
         items: [
-          { label: "Workspace mode", value: (await readJson(join(paths.runtimeRoot, "package.json")))?.voyzu?.mode ?? "Source" },
+          {
+            label: "Workspace mode",
+            value: paths.installed
+              ? (await readJson(join(paths.instanceRoot, "package.json")))?.voyzu?.mode ?? "Unavailable"
+              : "Source",
+          },
           { label: "Voyzu version", value: platformManifest?.version ?? "Unavailable" },
           { label: "Node.js version", value: process.version },
           { label: "Next.js version", value: nextVersion },

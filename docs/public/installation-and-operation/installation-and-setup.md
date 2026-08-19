@@ -162,8 +162,9 @@ To update the Voyzu Platform itself, run:
 npm run voyzu:update
 ```
 
-The update fast-forwards the installed platform from `main`. It will refuse to
-update a platform checkout on another branch.
+Production updates always fast-forward the installed platform from `main`.
+Development updates use `voyzu.platform.branch` from the installation's root
+`package.json`, switching the transient checkout to that branch when needed.
 
 Restart Voyzu after the update:
 

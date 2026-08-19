@@ -604,12 +604,15 @@ function installedPackagesRoot(workspaceRoot: string): string | undefined {
   const runtimeRoot = path.dirname(workspaceRoot);
   const runtimeManifest = path.join(runtimeRoot, "package.json");
   if (path.basename(workspaceRoot) !== "voyzu" || !fs.existsSync(runtimeManifest)) return undefined;
-  try {
-    const manifest = JSON.parse(fs.readFileSync(runtimeManifest, "utf-8")) as { voyzu?: { mode?: string } };
-    return manifest.voyzu?.mode ? path.join(runtimeRoot, "packages") : undefined;
-  } catch {
-    return undefined;
+  const instanceManifest = path.join(path.dirname(runtimeRoot), "package.json");
+  if (!fs.existsSync(instanceManifest)) {
+    throw new Error("A Voyzu installation must have a root package.json.");
   }
+  const manifest = JSON.parse(fs.readFileSync(instanceManifest, "utf-8")) as { voyzu?: { mode?: string } };
+  if (manifest.voyzu?.mode !== "development" && manifest.voyzu?.mode !== "production") {
+    throw new Error("The root package.json must declare voyzu.mode as development or production.");
+  }
+  return path.join(runtimeRoot, "packages");
 }
 
 function packageFolderName(packageName: string): string {

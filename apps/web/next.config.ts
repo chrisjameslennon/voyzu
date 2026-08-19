@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 import { loadEnvConfig } from "@next/env";
@@ -8,7 +8,10 @@ import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 function findInstallationRoot(start: string): string | undefined {
   let current = resolve(start);
   while (true) {
-    if (runtimeMode(join(current, ".run"))) return current;
+    if (existsSync(join(current, ".run", "package.json"))) {
+      installationMode(current);
+      return current;
+    }
     const parent = dirname(current);
     if (parent === current) return undefined;
     current = parent;
@@ -40,18 +43,19 @@ function findRuntimeRoot(instanceRoot: string): string {
   return join(instanceRoot, ".run");
 }
 
-function runtimeMode(runtimeRoot: string): "development" | "production" | undefined {
+function installationMode(instanceRoot: string): "development" | "production" {
   try {
-    const runtimePackage = JSON.parse(
-      readFileSync(join(runtimeRoot, "package.json"), "utf8"),
+    const instancePackage = JSON.parse(
+      readFileSync(join(instanceRoot, "package.json"), "utf8"),
     ) as { voyzu?: { mode?: string } };
-    return runtimePackage.voyzu?.mode === "development"
-      || runtimePackage.voyzu?.mode === "production"
-      ? runtimePackage.voyzu.mode
-      : undefined;
-  } catch {
-    return undefined;
+    if (
+      instancePackage.voyzu?.mode === "development"
+      || instancePackage.voyzu?.mode === "production"
+    ) return instancePackage.voyzu.mode;
+  } catch (error) {
+    throw new Error(`Unable to read Voyzu configuration from ${instanceRoot}`, { cause: error });
   }
+  throw new Error("The root package.json must declare voyzu.mode as development or production.");
 }
 
 export default function nextConfig(phase: string): NextConfig {
@@ -63,7 +67,7 @@ export default function nextConfig(phase: string): NextConfig {
   const runtimeRoot = installationRoot
     ? findRuntimeRoot(installationRoot)
     : undefined;
-  const mode = runtimeRoot ? runtimeMode(runtimeRoot) : undefined;
+  const mode = installationRoot ? installationMode(installationRoot) : undefined;
   if (instanceRoot) {
     loadEnvConfig(
       instanceRoot,
