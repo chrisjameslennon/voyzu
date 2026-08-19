@@ -20,7 +20,7 @@
   "scripts": {
     "build": "npm run build -w @voyzu/web",
     "deploy": "tsx scripts/deploy/deploy.ts",
-    "deps:check": "npm outdated --workspaces",
+    "deps:check": "npm outdated",
     "deps:update-major": "npx npm-check-updates --workspaces -x @types/node -u && npm install",
     "deps:update-minor": "npx npm-check-updates --workspaces --target minor -u && npm install",
     "dev": "npm run dev:next",
