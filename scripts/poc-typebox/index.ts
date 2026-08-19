@@ -1,5 +1,6 @@
 import Type from "typebox";
 import Schema from "typebox/schema";
+import Value from "typebox/value";
 
 export const IceCreamDto = Type.Object(
   {
@@ -18,12 +19,17 @@ const result = {
   scoops: 2,
 } satisfies IceCreamDto;
 
+const invalid = {
+  code: "VANILLA",
+  name: "Vanilla",
+  scoops: "2",
+  junk: true,
+};
+
 const validator = Schema.Compile(IceCreamDto);
 
 console.log("typed result:", result);
 console.log("runtime valid:", validator.Check(result));
-console.log(
-  "runtime invalid:",
-  validator.Check({ code: "VANILLA", name: "Vanilla", scoops: 2, junk: true }),
-);
+console.log("runtime invalid:", validator.Check(invalid));
+console.log("validation errors:", [...Value.Errors(IceCreamDto, invalid)]);
 console.log("JSON Schema:", JSON.stringify(IceCreamDto, null, 2));
