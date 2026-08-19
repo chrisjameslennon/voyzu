@@ -79,7 +79,7 @@ export async function launchPdfBrowser(): Promise<PdfBrowser> {
   }
 
   const puppeteer = await import("puppeteer");
-  return puppeteer.launch({ headless: "shell" });
+  return puppeteer.launch({ headless: true });
 }
 
 export async function renderHtmlToPdf({
