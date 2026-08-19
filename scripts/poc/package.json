@@ -1,0 +1,16 @@
+{
+  "name": "voyzu-typia-dto-poc",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare": "ts-patch install",
+    "test": "tsc && node dist/index.js"
+  },
+  "dependencies": {
+    "typia": "12.1.1"
+  },
+  "devDependencies": {
+    "ts-patch": "^4.0.0",
+    "typescript": "6.0.3"
+  }
+}
