@@ -25,6 +25,7 @@ export type {
   ConflictErrorResponseDto,
   EntityNotFoundErrorResponseDto,
   ErrorResponseBaseDto,
+  ForbiddenErrorResponseDto,
   InputValidationErrorResponseDto,
   InternalServerErrorResponseDto,
   MessageErrorParams,

@@ -18,8 +18,8 @@ function dtoRef(dtoName: string): DtoSchemaRef {
 
 const commonResponses = {
   "400": { description: "Validation failed.", body: dtoRef("InputValidationErrorResponseDto") },
-  "401": { description: "Authentication failed." },
-  "403": { description: "Access is forbidden." },
+  "401": { description: "Authentication failed.", body: dtoRef("UnauthorizedErrorResponseDto") },
+  "403": { description: "Access is forbidden.", body: dtoRef("ForbiddenErrorResponseDto") },
   "500": { description: "An unexpected server error occurred.", body: dtoRef("InternalServerErrorResponseDto") },
 } as const;
 

@@ -4,6 +4,7 @@ import type {
   BusinessRuleErrorResponseDto,
   ConflictErrorResponseDto,
   EntityNotFoundErrorResponseDto,
+  ForbiddenErrorResponseDto,
   InputValidationErrorResponseDto,
   InternalServerErrorResponseDto,
   UnauthorizedErrorResponseDto,
@@ -26,6 +27,16 @@ export function unauthorizedError(message: string): NextResponse<UnauthorizedErr
       message,
     } satisfies UnauthorizedErrorResponseDto,
     { status: 401 },
+  );
+}
+
+export function forbiddenError(message: string): NextResponse<ForbiddenErrorResponseDto> {
+  return NextResponse.json(
+    {
+      code: "FORBIDDEN",
+      message,
+    } satisfies ForbiddenErrorResponseDto,
+    { status: 403 },
   );
 }
 

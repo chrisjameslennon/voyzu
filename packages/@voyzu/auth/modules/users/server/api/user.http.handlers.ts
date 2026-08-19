@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 import type { CodesRequestDto, FilterRequestDto } from "@voyzu/types/params";
 import type { UserCreateRequestDto } from "@voyzu/auth/types";
@@ -7,7 +7,7 @@ import type { UserProfileUpdateRequestDto } from "@voyzu/auth/types";
 import type { UserUpdateRequestDto } from "@voyzu/auth/types";
 import type { UserCompanyAccessUpdateRequestDto } from "@voyzu/auth/types";
 import type { UserBatchPatchRequestDto, UserBatchUpdateRequestDto, UserPatchRequestDto } from "@voyzu/auth/types";
-import { businessRuleError, conflictError, notFoundError, serverError, inputValidationError } from "@voyzu/capability/http";
+import { businessRuleError, conflictError, forbiddenError, notFoundError, serverError, inputValidationError, unauthorizedError } from "@voyzu/capability/http";
 import { created, noContent, ok } from "@voyzu/capability/http";
 import { parseBody } from "@voyzu/capability/http";
 import { BusinessRuleError, ConflictError, NotFoundError, InputValidationError } from "@voyzu/capability/errors";
@@ -17,7 +17,7 @@ import { getCurrentUser } from "../lib/current-user.service";
 
 async function requireAdmin() {
   if (!(await currentUserCanManageUsers())) {
-    return NextResponse.json({ error: "You do not have access" }, { status: 403 });
+    return forbiddenError("You do not have access");
   }
   return null;
 }
@@ -76,7 +76,7 @@ export async function handleUpdate(req: NextRequest, { params }: { params: Promi
 export async function handleCurrentProfile(_req: NextRequest) {
   try {
     const currentUser = await getCurrentUser();
-    if (!currentUser) return NextResponse.json({ error: "You do not have access" }, { status: 401 });
+    if (!currentUser) return unauthorizedError("You do not have access");
     const user = await getUser(currentUser.code);
     return ok(user ?? currentUser);
   } catch (err) {

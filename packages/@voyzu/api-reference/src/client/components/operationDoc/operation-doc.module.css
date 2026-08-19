@@ -65,6 +65,14 @@
   gap: 0.65rem;
 }
 
+.bodyContentType {
+  margin-left: 0.4rem;
+  color: #667085;
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
 .responseDetails {
   display: grid;
   gap: 0.65rem;

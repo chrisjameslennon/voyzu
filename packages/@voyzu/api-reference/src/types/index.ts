@@ -13,7 +13,7 @@ export interface ResponseExampleData {
   status: "200" | "201" | "204" | "400" | "409" | "500";
   code: string;
   contentType?: string;
-  format?: "json";
+  format?: "json" | "text";
 }
 
 export interface ApiPropertiesPanelData {
@@ -61,6 +61,7 @@ export interface DtoDoc {
 
 export interface OperationDocRequestBody {
   required?: boolean;
+  contentType?: string;
   schemaRef?: SchemaRefDoc;
   schema: JsonSchema;
   example?: unknown;
@@ -89,7 +90,6 @@ export interface OperationDocResponse {
   schemaRef?: SchemaRefDoc;
   schema?: JsonSchema;
   example?: unknown;
-  modelReference?: string;
   cookies?: Record<
     string,
     {

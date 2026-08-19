@@ -9,6 +9,7 @@
   ],
   "requestBody": {
     "required": true,
+    "contentType": "application/json",
     "schemaRef": "HomePageRouteUpdateRequestDto",
     "schema": {
       "type": "object",
@@ -29,6 +30,7 @@
   "responses": {
     "200": {
       "description": "The updated start page.",
+      "contentType": "application/json",
       "schemaRef": "HomePageRouteResponseDto",
       "schema": {
         "type": "object",
@@ -48,6 +50,7 @@
     },
     "400": {
       "description": "Validation failed.",
+      "contentType": "application/json",
       "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
@@ -74,16 +77,68 @@
       }
     },
     "401": {
-      "description": "Authentication failed."
+      "description": "Authentication failed.",
+      "contentType": "application/json",
+      "schemaRef": "UnauthorizedErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "UNAUTHORIZED"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "UNAUTHORIZED",
+        "message": "string"
+      }
     },
     "403": {
-      "description": "Administrator access is required."
+      "description": "Administrator access is required.",
+      "contentType": "application/json",
+      "schemaRef": "ForbiddenErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "FORBIDDEN"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "FORBIDDEN",
+        "message": "string"
+      }
     },
     "422": {
-      "description": "The route is invalid or is not a registered Voyzu page."
+      "description": "The route is invalid or is not a registered Voyzu page.",
+      "contentType": "application/json"
     },
     "500": {
       "description": "An unexpected server error occurred.",
+      "contentType": "application/json",
       "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",

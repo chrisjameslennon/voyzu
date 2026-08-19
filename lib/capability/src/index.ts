@@ -22,6 +22,7 @@ export {
 export {
   businessRuleError,
   conflictError,
+  forbiddenError,
   inputValidationError,
   notFoundError,
   ok,

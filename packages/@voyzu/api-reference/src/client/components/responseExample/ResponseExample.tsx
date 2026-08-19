@@ -3,7 +3,7 @@ import { highlightCode } from "../highlight";
 import styles from "../example-panel.module.css";
 
 export async function ResponseExample({ example }: { example: ResponseExampleData }) {
-  const html = await highlightCode(example.code, "json");
+  const html = await highlightCode(example.code, example.format ?? "json");
   const hasBody = example.code.trim().length > 0;
 
   return (

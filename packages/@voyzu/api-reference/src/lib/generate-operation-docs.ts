@@ -13,6 +13,7 @@ import {
 } from "ts-morph";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+const DEFAULT_CONTENT_TYPE = "application/json";
 
 type DtoSchemaRef = {
   $ref: `#/components/schemas/${string}`;
@@ -121,6 +122,7 @@ export type OperationDoc = {
   requestCookies?: Record<string, ApiRequestCookieDefinition>;
   requestBody?: {
     required?: boolean;
+    contentType?: string;
     schemaRef?: SchemaRefDoc;
     schema: Record<string, unknown>;
     example?: unknown;
@@ -387,6 +389,14 @@ function collectDefinitionDtoRefs(definition: ApiDefinition, refs: Set<string>):
 
 function sampleSchema(schema: Record<string, unknown>): unknown {
   return sampler.sample(schema as never, { skipNonRequired: false });
+}
+
+function sampleContent(contentType: string): string | undefined {
+  if (contentType === DEFAULT_CONTENT_TYPE || contentType.endsWith("+json")) return undefined;
+  if (contentType === "application/pdf") return "%PDF-1.7\n% … binary PDF data …";
+  if (contentType === "text/csv") return "column_1,column_2\nvalue_1,value_2";
+  if (contentType.startsWith("text/")) return `Example ${contentType} response body`;
+  return `… binary ${contentType} data …`;
 }
 
 function routePathToDocPath(routePath: string): string {
@@ -683,6 +693,7 @@ function toOperationDoc(
   collectSchemaRefs(requestSchemaRef, dtoRefs);
   const responses = Object.fromEntries(
     Object.entries(definition.responses).map(([status, response]) => {
+      const contentType = response.contentType ?? DEFAULT_CONTENT_TYPE;
       const responseSchema = response.body ? expandSchema(response.body, dtoRegistry) : undefined;
       const responseSchemaRef = response.body ? schemaRefDoc(response.body) : undefined;
       collectSchemaRefs(responseSchemaRef, dtoRefs);
@@ -690,9 +701,13 @@ function toOperationDoc(
         status,
         {
           description: response.description,
-          ...(response.contentType ? { contentType: response.contentType } : {}),
+          contentType,
           ...(responseSchemaRef ? { schemaRef: responseSchemaRef } : {}),
-          ...(responseSchema ? { schema: responseSchema, example: sampleSchema(responseSchema) } : {}),
+          ...(responseSchema
+            ? { schema: responseSchema, example: sampleSchema(responseSchema) }
+            : status !== "204" && sampleContent(contentType) !== undefined
+              ? { example: sampleContent(contentType) }
+              : {}),
           ...(response.cookies ? { cookies: response.cookies } : {}),
         },
       ];
@@ -713,6 +728,7 @@ function toOperationDoc(
       ? {
         requestBody: {
           required: true,
+          contentType: definition.request.contentType ?? DEFAULT_CONTENT_TYPE,
           ...(requestSchemaRef ? { schemaRef: requestSchemaRef } : {}),
           schema: requestSchema,
           example: sampleSchema(requestSchema),

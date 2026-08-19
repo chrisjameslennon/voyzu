@@ -10,6 +10,7 @@
   "responses": {
     "200": {
       "description": "Matching audit events.",
+      "contentType": "application/json",
       "schemaRef": {
         "type": "array",
         "items": "AuditEventResponseDto"
@@ -171,6 +172,7 @@
     },
     "400": {
       "description": "Validation failed.",
+      "contentType": "application/json",
       "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
@@ -197,13 +199,64 @@
       }
     },
     "401": {
-      "description": "Authentication failed."
+      "description": "Authentication failed.",
+      "contentType": "application/json",
+      "schemaRef": "UnauthorizedErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "UNAUTHORIZED"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "UNAUTHORIZED",
+        "message": "string"
+      }
     },
     "403": {
-      "description": "Access is forbidden."
+      "description": "Access is forbidden.",
+      "contentType": "application/json",
+      "schemaRef": "ForbiddenErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "FORBIDDEN"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "FORBIDDEN",
+        "message": "string"
+      }
     },
     "500": {
       "description": "An unexpected server error occurred.",
+      "contentType": "application/json",
       "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",

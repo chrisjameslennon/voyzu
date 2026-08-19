@@ -1,8 +1,8 @@
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 import { currentUserCanManageUsers } from "@voyzu/auth/users/server";
 import { BusinessRuleError, NotFoundError } from "@voyzu/capability/errors";
-import { businessRuleError, notFoundError, ok, parseBody, serverError } from "@voyzu/capability/http";
+import { businessRuleError, forbiddenError, notFoundError, ok, parseBody, serverError } from "@voyzu/capability/http";
 
 import type {
   HomePageRouteUpdateRequestDto,
@@ -22,7 +22,7 @@ import {
 async function requireAdmin() {
   return await currentUserCanManageUsers()
     ? null
-    : NextResponse.json({ error: "You do not have access" }, { status: 403 });
+    : forbiddenError("You do not have access");
 }
 
 export async function handleList(_request: NextRequest) {

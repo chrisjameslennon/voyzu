@@ -36,6 +36,10 @@ function formatJson(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
+function isJsonContentType(contentType: string): boolean {
+  return contentType === "application/json" || contentType.endsWith("+json");
+}
+
 function MethodTag({ method }: { method: ApiMethod }) {
   return <span className={`${styles.methodTag} ${styles[`method${method}`]}`}>{method}</span>;
 }
@@ -59,14 +63,23 @@ function isSuccessResponse(status: string): boolean {
 
 function responseMessage(status: string, response: OperationDocResponse): string | undefined {
   if (response.schema) return undefined;
-  if (response.modelReference) return response.modelReference;
-  return isSuccessResponse(status) ? undefined : "See Error Response Model";
+  return isSuccessResponse(status) ? undefined : "This response does not include a response body.";
 }
 
 function ResponseHeading({ status, response }: { status: string; response: OperationDocResponse }) {
+  const contentType = status === "204" ? "No content" : response.contentType ?? "application/json";
   return (
     <>
-      <span className={responseStatusClass(status)}>{status}</span> {response.description}
+      <span className={responseStatusClass(status)}>{status}</span> {response.description}{" "}
+      <code className={styles.bodyContentType}>{contentType}</code>
+    </>
+  );
+}
+
+function BodyHeading({ contentType }: { contentType: string }) {
+  return (
+    <>
+      BODY <code className={styles.bodyContentType}>{contentType}</code>
     </>
   );
 }
@@ -195,9 +208,13 @@ function buildRequestExample(doc: OperationDocData): RequestExampleData {
   }
 
   if (doc.requestBody?.example !== undefined) {
+    const contentType = doc.requestBody.contentType ?? "application/json";
     lines[lines.length - 1] = `${lines[lines.length - 1]} \\`;
-    lines.push("  --header 'Content-Type: application/json' \\");
-    lines.push(`  --data '${formatJson(omitAuditFromExample(doc.requestBody.example))}'`);
+    lines.push(`  --header 'Content-Type: ${contentType}' \\`);
+    const requestBody = isJsonContentType(contentType)
+      ? formatJson(omitAuditFromExample(doc.requestBody.example))
+      : String(doc.requestBody.example);
+    lines.push(`  --data-binary '${requestBody}'`);
   }
 
   return {
@@ -209,11 +226,18 @@ function buildRequestExample(doc: OperationDocData): RequestExampleData {
 
 function buildResponseExample(doc: OperationDocData): ResponseExampleData {
   const [status, response] = getSuccessResponse(doc);
+  const contentType = response.contentType ?? "application/json";
+  const isJson = isJsonContentType(contentType);
 
   return {
     status: status as ResponseExampleData["status"],
-    code: status === "204" ? "" : formatJson(omitAuditFromExample(response.example ?? {})),
-    contentType: status === "204" ? "No content" : undefined,
+    code: status === "204"
+      ? ""
+      : isJson
+        ? formatJson(omitAuditFromExample(response.example ?? {}))
+        : String(response.example ?? ""),
+    contentType: status === "204" ? "No content" : contentType,
+    format: isJson ? "json" : "text",
   };
 }
 
@@ -258,7 +282,7 @@ function DocumentationTabs({ fields, typeScriptDocs }: { fields: ReactNode; type
 }
 
 function RequestPanels({ doc, dtoDocs }: { doc: OperationDocData; dtoDocs: Record<string, DtoDoc> }) {
-  const panels: Array<{ key: string; heading: string; schema?: JsonSchema; message?: string }> = [];
+  const panels: Array<{ key: string; heading: ReactNode; schema?: JsonSchema; message?: string }> = [];
 
   if (doc.requestPathParams && Object.keys(doc.requestPathParams).length > 0) {
     panels.push({ key: "path", heading: "PATH PARAMETERS", schema: paramsToSchema(doc.requestPathParams) });
@@ -270,7 +294,11 @@ function RequestPanels({ doc, dtoDocs }: { doc: OperationDocData; dtoDocs: Recor
 
   panels.push(
     doc.requestBody
-      ? { key: "body", heading: "BODY", schema: omitAuditFromSchema(doc.requestBody.schema) }
+      ? {
+        key: "body",
+        heading: <BodyHeading contentType={doc.requestBody.contentType ?? "application/json"} />,
+        schema: omitAuditFromSchema(doc.requestBody.schema),
+      }
       : { key: "body", heading: "BODY", message: "This endpoint does not require a request body." },
   );
 

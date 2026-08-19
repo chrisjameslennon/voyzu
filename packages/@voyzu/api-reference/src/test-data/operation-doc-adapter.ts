@@ -27,14 +27,22 @@ function formatJson(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
+function isJsonContentType(contentType: string): boolean {
+  return contentType === "application/json" || contentType.endsWith("+json");
+}
+
 function buildCurlExample(doc: OperationDoc): RequestExampleData {
   const method = toApiMethod(doc.method);
   const lines = [`curl --request ${method} \\`, `  --url ${doc.path} \\`, "  --header 'Authorization: Basic ...'"];
 
   if (doc.requestBody?.example !== undefined) {
+    const contentType = doc.requestBody.contentType ?? "application/json";
     lines[lines.length - 1] = `${lines[lines.length - 1]} \\`;
-    lines.push("  --header 'Content-Type: application/json' \\");
-    lines.push(`  --data '${formatJson(omitAuditFromExample(doc.requestBody.example))}'`);
+    lines.push(`  --header 'Content-Type: ${contentType}' \\`);
+    const requestBody = isJsonContentType(contentType)
+      ? formatJson(omitAuditFromExample(doc.requestBody.example))
+      : String(doc.requestBody.example);
+    lines.push(`  --data-binary '${requestBody}'`);
   }
 
   return {
@@ -60,10 +68,18 @@ function getSuccessResponse(doc: OperationDoc): [string, OperationDocResponse] {
 
 function buildResponseExample(doc: OperationDoc): ResponseExampleData {
   const [status, response] = getSuccessResponse(doc);
+  const contentType = response.contentType ?? "application/json";
+  const isJson = isJsonContentType(contentType);
 
   return {
     status: status as ResponseExampleData["status"],
-    code: formatJson(omitAuditFromExample(response.example ?? {})),
+    code: status === "204"
+      ? ""
+      : isJson
+        ? formatJson(omitAuditFromExample(response.example ?? {}))
+        : String(response.example ?? ""),
+    contentType: status === "204" ? "No content" : contentType,
+    format: isJson ? "json" : "text",
   };
 }
 
@@ -72,7 +88,7 @@ function buildResponsePanels(doc: OperationDoc): ApiResponsePanelData[] {
     status: status as ApiResponsePanelData["status"],
     heading: response.description,
     schema: omitAuditFromSchema(response.schema),
-    message: response.schema ? undefined : response.modelReference ?? "See Error Response Model",
+    message: response.schema ? undefined : "This response does not include a response body.",
   }));
 }
 

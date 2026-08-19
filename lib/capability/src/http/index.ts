@@ -1,6 +1,7 @@
 export {
   businessRuleError,
   conflictError,
+  forbiddenError,
   inputValidationError,
   notFoundError,
   serverError,

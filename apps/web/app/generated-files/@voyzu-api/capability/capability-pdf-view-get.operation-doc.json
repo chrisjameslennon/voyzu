@@ -20,10 +20,12 @@
   "responses": {
     "200": {
       "description": "Generated PDF.",
-      "contentType": "application/pdf"
+      "contentType": "application/pdf",
+      "example": "%PDF-1.7\n% … binary PDF data …"
     },
     "400": {
       "description": "The printable path was not supplied.",
+      "contentType": "application/json",
       "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
@@ -50,13 +52,64 @@
       }
     },
     "401": {
-      "description": "Authentication failed."
+      "description": "Authentication failed.",
+      "contentType": "application/json",
+      "schemaRef": "UnauthorizedErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "UNAUTHORIZED"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "UNAUTHORIZED",
+        "message": "string"
+      }
     },
     "403": {
-      "description": "Access is forbidden."
+      "description": "Access is forbidden.",
+      "contentType": "application/json",
+      "schemaRef": "ForbiddenErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "FORBIDDEN"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "FORBIDDEN",
+        "message": "string"
+      }
     },
     "500": {
       "description": "An unexpected server error occurred.",
+      "contentType": "application/json",
       "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
@@ -83,7 +136,8 @@
       }
     },
     "502": {
-      "description": "The printable route failed."
+      "description": "The printable route failed.",
+      "contentType": "application/json"
     }
   }
 }

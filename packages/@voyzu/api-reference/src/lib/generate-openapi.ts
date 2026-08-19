@@ -160,7 +160,7 @@ function toOpenApiOperation(doc: OperationDoc): OpenApiOperation {
         requestBody: {
           required: doc.requestBody.required,
           content: {
-            "application/json": {
+            [doc.requestBody.contentType ?? "application/json"]: {
               schema: doc.requestBody.schema as OpenApiSchema,
               ...(doc.requestBody.example !== undefined ? { example: doc.requestBody.example } : {}),
             },

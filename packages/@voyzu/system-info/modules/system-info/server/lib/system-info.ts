@@ -9,12 +9,19 @@ import { promisify } from "node:util";
 import { getDb, getPool } from "@voyzu/capability/db";
 
 const execFileAsync = promisify(execFile);
+const DEFAULT_VOYZU_REPOSITORY = "https://github.com/chrisjameslennon/voyzu.git";
 
 interface PackageManifest {
   name?: string;
   version?: string;
   dependencies?: Record<string, string>;
-  voyzu?: { mode?: string };
+  voyzu?: {
+    mode?: string;
+    platform?: {
+      repository?: string;
+      branch?: string;
+    };
+  };
 }
 
 export interface InfoItem {
@@ -323,10 +330,20 @@ export async function getSystemInformation(): Promise<SystemInformation> {
   const paths = installationPaths(platformRoot);
   const platformManifestPath = join(paths.platformRoot, "package.json");
   const webManifestPath = join(paths.webRoot, "package.json");
-  const [platformManifest, locks] = await Promise.all([
+  const [platformManifest, instanceManifest, locks] = await Promise.all([
     readJson(platformManifestPath),
+    paths.installed
+      ? readJson(join(paths.instanceRoot, "package.json"))
+      : Promise.resolve(undefined),
     readLocks(paths.webRoot),
   ]);
+  const workspaceMode = paths.installed
+    ? instanceManifest?.voyzu?.mode ?? "Unavailable"
+    : "Source";
+  const platformRepository = instanceManifest?.voyzu?.platform?.repository
+    ?? (workspaceMode === "production" ? DEFAULT_VOYZU_REPOSITORY : "Unavailable");
+  const platformBranch = instanceManifest?.voyzu?.platform?.branch
+    ?? (workspaceMode === "production" ? "main" : "Unavailable");
   const resolutionRoots = [paths.webRoot, paths.platformRoot, paths.runtimeRoot];
   const [nextVersion, reactVersion] = await Promise.all([
     resolvedPackageVersion("next", resolutionRoots),
@@ -361,14 +378,14 @@ export async function getSystemInformation(): Promise<SystemInformation> {
         items: [
           {
             label: "Workspace mode",
-            value: paths.installed
-              ? (await readJson(join(paths.instanceRoot, "package.json")))?.voyzu?.mode ?? "Unavailable"
-              : "Source",
+            value: workspaceMode,
           },
           { label: "Voyzu version", value: platformManifest?.version ?? "Unavailable" },
           { label: "Node.js version", value: process.version },
           { label: "Next.js version", value: nextVersion },
           { label: "React version", value: reactVersion },
+          { label: "Voyzu repository", value: platformRepository, mono: true },
+          { label: "Voyzu branch", value: platformBranch, mono: true },
           { label: "Instance root", value: paths.instanceRoot, mono: true },
           { label: "Runtime workspace (.run)", value: paths.runtimeRoot, mono: true },
           { label: "Voyzu platform root", value: paths.platformRoot, mono: true },

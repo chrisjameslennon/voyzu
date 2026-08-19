@@ -247,10 +247,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -493,10 +547,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "404": {
             "description": "Audit event not found.",
@@ -624,10 +732,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -863,10 +1025,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -1008,10 +1224,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -1143,10 +1413,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -1333,7 +1657,34 @@
             }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -1451,7 +1802,8 @@
                 "schema": {
                   "type": "string",
                   "format": "binary"
-                }
+                },
+                "example": "column_1,column_2\nvalue_1,value_2"
               }
             }
           },
@@ -1486,10 +1838,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -1552,7 +1958,8 @@
                 "schema": {
                   "type": "string",
                   "format": "binary"
-                }
+                },
+                "example": "%PDF-1.7\n% … binary PDF data …"
               }
             }
           },
@@ -1587,10 +1994,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -1656,7 +2117,8 @@
                 "schema": {
                   "type": "string",
                   "format": "binary"
-                }
+                },
+                "example": "%PDF-1.7\n% … binary PDF data …"
               }
             }
           },
@@ -1691,10 +2153,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -1864,10 +2380,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Administrator access is required."
+            "description": "Administrator access is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -2034,10 +2604,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Administrator access is required."
+            "description": "Administrator access is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -2211,10 +2835,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Administrator access is required."
+            "description": "Administrator access is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "404": {
             "description": "The installed package was not found."
@@ -2416,10 +3094,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Administrator access is required."
+            "description": "Administrator access is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "404": {
             "description": "The installed package was not found."
@@ -2625,10 +3357,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Administrator access is required."
+            "description": "Administrator access is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "404": {
             "description": "The installed package was not found."
@@ -2731,10 +3517,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Administrator access is required."
+            "description": "Administrator access is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -2851,10 +3691,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Administrator access is required."
+            "description": "Administrator access is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "422": {
             "description": "The route is invalid or is not a registered Voyzu page."
@@ -2963,10 +3857,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -3414,10 +4362,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -3886,10 +4888,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -4349,10 +5405,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -4761,10 +5871,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -5171,10 +6335,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -5703,10 +6921,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -6099,10 +7371,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -6511,10 +7837,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -6895,10 +8275,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -7357,10 +8791,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "409": {
             "description": "Conflict.",
@@ -7480,10 +8968,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "404": {
             "description": "Entity not found.",
@@ -7899,10 +9441,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "404": {
             "description": "Entity not found.",
@@ -8375,10 +9971,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -8840,10 +10490,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "404": {
             "description": "Entity not found.",
@@ -9261,10 +10965,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -9650,10 +11408,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -9770,10 +11582,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "404": {
             "description": "Entity not found.",
@@ -9920,10 +11786,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "404": {
             "description": "Entity not found.",
@@ -10329,10 +12249,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -10735,10 +12709,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",
@@ -10843,10 +12871,64 @@
             }
           },
           "401": {
-            "description": "Authentication failed."
+            "description": "Authentication failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "UNAUTHORIZED"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "UNAUTHORIZED",
+                  "message": "string"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Access is forbidden."
+            "description": "Access is forbidden.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "FORBIDDEN"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ],
+                  "additionalProperties": false
+                },
+                "example": {
+                  "code": "FORBIDDEN",
+                  "message": "string"
+                }
+              }
+            }
           },
           "500": {
             "description": "An unexpected server error occurred.",

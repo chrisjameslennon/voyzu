@@ -22,8 +22,8 @@ const idPathParameter = {
 } as const;
 const commonResponses = {
   "400": { description: "Validation failed.", body: dtoRef("InputValidationErrorResponseDto") },
-  "401": { description: "Authentication failed." },
-  "403": { description: "Administrator access is required." },
+  "401": { description: "Authentication failed.", body: dtoRef("UnauthorizedErrorResponseDto") },
+  "403": { description: "Administrator access is required.", body: dtoRef("ForbiddenErrorResponseDto") },
   "500": { description: "An unexpected server error occurred.", body: dtoRef("InternalServerErrorResponseDto") },
 } as const;
 

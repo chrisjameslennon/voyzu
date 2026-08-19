@@ -15,6 +15,10 @@ export interface UnauthorizedErrorResponseDto extends ErrorResponseBaseDto {
   code: "UNAUTHORIZED";
 }
 
+export interface ForbiddenErrorResponseDto extends ErrorResponseBaseDto {
+  code: "FORBIDDEN";
+}
+
 export interface ConflictErrorResponseDto extends ErrorResponseBaseDto {
   code: "CONFLICT";
 }
