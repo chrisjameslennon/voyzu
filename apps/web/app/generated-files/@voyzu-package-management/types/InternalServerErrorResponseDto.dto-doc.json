@@ -1,0 +1,5 @@
+{
+  "name": "InternalServerErrorResponseDto",
+  "sourceFile": "lib/types/src/errors/error-response.dto.ts",
+  "typescript": "export interface ErrorResponseBaseDto {\n  code: string;\n  message: string;\n}\n\nexport interface InputValidationErrorResponseDto extends ErrorResponseBaseDto {\n  code: \"INPUT_VALIDATION_ERROR\";\n}\n\nexport interface EntityNotFoundErrorResponseDto extends ErrorResponseBaseDto {\n  code: \"ENTITY_NOT_FOUND\";\n}\n\nexport interface UnauthorizedErrorResponseDto extends ErrorResponseBaseDto {\n  code: \"UNAUTHORIZED\";\n}\n\nexport interface ConflictErrorResponseDto extends ErrorResponseBaseDto {\n  code: \"CONFLICT\";\n}\n\nexport interface BusinessRuleErrorResponseDto extends ErrorResponseBaseDto {\n  code: \"BUSINESS_RULE\";\n}\n\nexport interface InternalServerErrorResponseDto extends ErrorResponseBaseDto {\n  code: \"INTERNAL_SERVER_ERROR\";\n}\n"
+}

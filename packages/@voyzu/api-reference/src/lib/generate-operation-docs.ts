@@ -34,7 +34,7 @@ type ApiSchema = DtoSchemaRef | ArraySchema | ObjectSchema | Record<string, unkn
 type ApiResponseDefinition = {
   description: string;
   contentType?: string;
-  schema?: ApiSchema;
+  body?: ApiSchema;
   cookies?: Record<
     string,
     {
@@ -49,13 +49,9 @@ type ApiResponseDefinition = {
   >;
 };
 
-type ApiRequestBodyDefinition = {
-  required?: boolean;
-  schema: ApiSchema;
-};
-
 type ApiParameterDefinition = {
   description?: string;
+  required?: boolean;
   schema: ApiSchema;
 };
 
@@ -73,16 +69,17 @@ type ApiRequestCookieDefinition = {
 type ApiDefinition = {
   method: HttpMethod;
   path: string;
-  apiDoc: {
-    summary: string;
-    description: string;
-    tags?: string[];
-    requestPathParams?: Record<string, ApiParameterDefinition>;
-    requestQuerystringParams?: Record<string, ApiParameterDefinition>;
-    requestCookies?: Record<string, ApiRequestCookieDefinition>;
-    requestBody?: ApiRequestBodyDefinition;
-    responses: Record<string, ApiResponseDefinition>;
+  summary: string;
+  description: string;
+  tags?: string[];
+  request?: {
+    path?: Record<string, ApiParameterDefinition>;
+    query?: Record<string, ApiParameterDefinition>;
+    cookies?: Record<string, ApiRequestCookieDefinition>;
+    contentType?: string;
+    body?: ApiSchema;
   };
+  responses: Record<string, ApiResponseDefinition>;
 };
 
 type ModuleApiDefinitions = {
@@ -107,6 +104,7 @@ export type OperationDoc = {
     string,
     {
       description?: string;
+      required?: boolean;
       schema: Record<string, unknown>;
       example?: unknown;
     }
@@ -115,6 +113,7 @@ export type OperationDoc = {
     string,
     {
       description?: string;
+      required?: boolean;
       schema: Record<string, unknown>;
       example?: unknown;
     }
@@ -374,15 +373,15 @@ function collectDefinitionDtoRefs(definition: ApiDefinition, refs: Set<string>):
   const collect = (schema: ApiSchema | undefined) => {
     if (schema) collectSchemaRefs(schemaRefDoc(schema), refs);
   };
-  for (const parameter of Object.values(definition.apiDoc.requestPathParams ?? {})) {
+  for (const parameter of Object.values(definition.request?.path ?? {})) {
     collect(parameter.schema);
   }
-  for (const parameter of Object.values(definition.apiDoc.requestQuerystringParams ?? {})) {
+  for (const parameter of Object.values(definition.request?.query ?? {})) {
     collect(parameter.schema);
   }
-  collect(definition.apiDoc.requestBody?.schema);
-  for (const response of Object.values(definition.apiDoc.responses)) {
-    collect(response.schema);
+  collect(definition.request?.body);
+  for (const response of Object.values(definition.responses)) {
+    collect(response.body);
   }
 }
 
@@ -507,19 +506,14 @@ function readStringProperty(object: ObjectLiteralExpression, key: string): strin
 function readApiDefinition(routeObject: ObjectLiteralExpression): ApiDefinition | undefined {
   const method = readStringProperty(routeObject, "method") as HttpMethod | undefined;
   const routePath = readStringProperty(routeObject, "path");
-  const apiDocExpression = getObjectProperty(routeObject, "apiDoc");
-  if (!method || !routePath || !apiDocExpression || !Node.isObjectLiteralExpression(apiDocExpression)) return undefined;
-
-  const apiDoc = expressionToValue(apiDocExpression) as ApiDefinition["apiDoc"] | undefined;
-  if (!apiDoc?.responses) return undefined;
+  const parsed = expressionToValue(routeObject) as ApiDefinition | undefined;
+  if (!method || !routePath || !parsed?.responses) return undefined;
   return {
+    ...parsed,
     method,
     path: routePath,
-    apiDoc: {
-      ...apiDoc,
-      summary: apiDoc.summary ?? method,
-      description: apiDoc.description ?? apiDoc.summary ?? method,
-    },
+    summary: parsed.summary ?? method,
+    description: parsed.description ?? parsed.summary ?? method,
   };
 }
 
@@ -673,21 +667,21 @@ function toOperationDoc(
   dtoRefs: Set<string>,
   dtoRegistry: DtoRegistry,
 ): OperationDoc {
-  const requestPathParams = definition.apiDoc.requestPathParams
-    ? expandParameters(definition.apiDoc.requestPathParams, dtoRegistry)
+  const requestPathParams = definition.request?.path
+    ? expandParameters(definition.request.path, dtoRegistry)
     : undefined;
-  const requestQuerystringParams = definition.apiDoc.requestQuerystringParams
-    ? expandParameters(definition.apiDoc.requestQuerystringParams, dtoRegistry)
+  const requestQuerystringParams = definition.request?.query
+    ? expandParameters(definition.request.query, dtoRegistry)
     : undefined;
-  const requestSchema = definition.apiDoc.requestBody
-    ? expandSchema(definition.apiDoc.requestBody.schema, dtoRegistry)
+  const requestSchema = definition.request?.body
+    ? expandSchema(definition.request.body, dtoRegistry)
     : undefined;
-  const requestSchemaRef = definition.apiDoc.requestBody ? schemaRefDoc(definition.apiDoc.requestBody.schema) : undefined;
+  const requestSchemaRef = definition.request?.body ? schemaRefDoc(definition.request.body) : undefined;
   collectSchemaRefs(requestSchemaRef, dtoRefs);
   const responses = Object.fromEntries(
-    Object.entries(definition.apiDoc.responses).map(([status, response]) => {
-      const responseSchema = response.schema ? expandSchema(response.schema, dtoRegistry) : undefined;
-      const responseSchemaRef = response.schema ? schemaRefDoc(response.schema) : undefined;
+    Object.entries(definition.responses).map(([status, response]) => {
+      const responseSchema = response.body ? expandSchema(response.body, dtoRegistry) : undefined;
+      const responseSchemaRef = response.body ? schemaRefDoc(response.body) : undefined;
       collectSchemaRefs(responseSchemaRef, dtoRefs);
       return [
         status,
@@ -706,16 +700,16 @@ function toOperationDoc(
     operationId: operationName(definition.path, definition.method),
     method: definition.method.toLowerCase() as Lowercase<HttpMethod>,
     path: routePathToDocPath(definition.path),
-    summary: definition.apiDoc.summary,
-    description: definition.apiDoc.description,
-    ...(definition.apiDoc.tags ? { tags: definition.apiDoc.tags } : {}),
+    summary: definition.summary,
+    description: definition.description,
+    ...(definition.tags ? { tags: definition.tags } : {}),
     ...(requestPathParams ? { requestPathParams } : {}),
     ...(requestQuerystringParams ? { requestQuerystringParams } : {}),
-    ...(definition.apiDoc.requestCookies ? { requestCookies: definition.apiDoc.requestCookies } : {}),
-    ...(definition.apiDoc.requestBody && requestSchema
+    ...(definition.request?.cookies ? { requestCookies: definition.request.cookies } : {}),
+    ...(definition.request?.body && requestSchema
       ? {
         requestBody: {
-          required: definition.apiDoc.requestBody.required,
+          required: true,
           ...(requestSchemaRef ? { schemaRef: requestSchemaRef } : {}),
           schema: requestSchema,
           example: sampleSchema(requestSchema),
@@ -729,7 +723,7 @@ function toOperationDoc(
 function expandParameters(
   parameters: Record<string, ApiParameterDefinition>,
   dtoRegistry: DtoRegistry,
-): Record<string, { description?: string; schema: Record<string, unknown>; example?: unknown }> {
+): Record<string, { description?: string; required?: boolean; schema: Record<string, unknown>; example?: unknown }> {
   return Object.fromEntries(
     Object.entries(parameters).map(([name, parameter]) => {
       const schema = expandSchema(parameter.schema, dtoRegistry);
@@ -737,12 +731,39 @@ function expandParameters(
         name,
         {
           ...(parameter.description ? { description: parameter.description } : {}),
+          ...(parameter.required !== undefined ? { required: parameter.required } : {}),
           schema,
           example: sampleSchema(schema),
         },
       ];
     }),
   );
+}
+
+function toValidationSchema(definition: ApiDefinition, dtoRegistry: DtoRegistry) {
+  const request = definition.request
+    ? {
+      ...(definition.request.path
+        ? { path: expandParameters(definition.request.path, dtoRegistry) }
+        : {}),
+      ...(definition.request.query
+        ? { query: expandParameters(definition.request.query, dtoRegistry) }
+        : {}),
+      ...(definition.request.cookies ? { cookies: definition.request.cookies } : {}),
+      ...(definition.request.contentType ? { contentType: definition.request.contentType } : {}),
+      ...(definition.request.body ? { body: expandSchema(definition.request.body, dtoRegistry) } : {}),
+    }
+    : undefined;
+  const responses = Object.fromEntries(
+    Object.entries(definition.responses).map(([status, response]) => [
+      status,
+      {
+        ...(response.contentType ? { contentType: response.contentType } : {}),
+        ...(response.body ? { body: expandSchema(response.body, dtoRegistry) } : {}),
+      },
+    ]),
+  );
+  return { ...(request ? { request } : {}), responses };
 }
 
 function cleanOutputDir(outputDir: string, extension = ".operation-doc.json"): void {
@@ -855,6 +876,7 @@ export function generateOperationDocs(options: GenerateOperationDocsOptions): st
       path.join(outputRoot, ".schema-inputs"),
     );
     const writtenFiles: string[] = [];
+    const validationSchemas: Record<string, unknown> = {};
     for (const packageDefinition of packageDefinitions) {
       const packageOutputDir = path.join(outputRoot, packageDefinition.folderName);
       fs.mkdirSync(packageOutputDir, { recursive: true });
@@ -873,6 +895,10 @@ export function generateOperationDocs(options: GenerateOperationDocsOptions): st
         cleanOutputDir(outputDir);
         for (const definition of definitions) {
           const doc = toOperationDoc(definition, dtoRefs, dtoRegistry);
+          validationSchemas[`${definition.method} ${definition.path}`] = toValidationSchema(
+            definition,
+            dtoRegistry,
+          );
           const outputPath = path.join(outputDir, fileNameForOperation(definition.path, definition.method));
           fs.writeFileSync(outputPath, `${JSON.stringify(doc, null, 2)}\n`, "utf-8");
           writtenFiles.push(outputPath);
@@ -885,6 +911,13 @@ export function generateOperationDocs(options: GenerateOperationDocsOptions): st
         dtoRegistry,
       ));
     }
+    const validationSchemasPath = path.join(outputRoot, "api-validation.generated.json");
+    fs.writeFileSync(
+      validationSchemasPath,
+      `${JSON.stringify(validationSchemas, null, 2)}\n`,
+      "utf-8",
+    );
+    writtenFiles.push(validationSchemasPath);
     return writtenFiles;
   } finally {
     dtoRegistry?.dispose();

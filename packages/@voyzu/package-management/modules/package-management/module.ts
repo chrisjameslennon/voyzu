@@ -20,8 +20,11 @@ const idPathParameter = {
     schema: { type: "number" },
   },
 } as const;
-const serverErrorResponse = {
-  "500": { description: "An unexpected server error occurred." },
+const commonResponses = {
+  "400": { description: "Validation failed.", body: dtoRef("InputValidationErrorResponseDto") },
+  "401": { description: "Authentication failed." },
+  "403": { description: "Administrator access is required." },
+  "500": { description: "An unexpected server error occurred.", body: dtoRef("InternalServerErrorResponseDto") },
 } as const;
 
 export const packageManagementModule = {
@@ -53,118 +56,95 @@ export const packageManagementModule = {
       method: "GET",
       path: "/installed-packages",
       handler: handleList,
-      apiDoc: {
-        summary: "List Packages",
-        description: "Lists the packages currently recorded as installed in this Voyzu instance.",
-        tags: tag,
-        responses: {
-          "200": { description: "Installed packages.", schema: arrayOf(dtoRef("InstalledPackageResponseDto")) },
-          "403": { description: "Administrator access is required." },
-          ...serverErrorResponse,
-        },
-      },
+      summary: "List Packages",
+      description: "Lists the packages currently recorded as installed in this Voyzu instance.",
+      tags: tag,
+      responses: {
+        "200": { description: "Installed packages.", body: arrayOf(dtoRef("InstalledPackageResponseDto")) },
+        ...commonResponses,
+      }
     },
     get: {
       method: "GET",
       path: "/installed-packages/[id]",
       handler: handleGet,
-      apiDoc: {
-        summary: "Get Package",
-        description: "Gets one installed package record.",
-        tags: tag,
-        requestPathParams: idPathParameter,
-        responses: {
-          "200": { description: "The installed package.", schema: dtoRef("InstalledPackageResponseDto") },
-          "403": { description: "Administrator access is required." },
-          "404": { description: "The installed package was not found." },
-          ...serverErrorResponse,
-        },
-      },
+      request: { path: idPathParameter },
+      summary: "Get Package",
+      description: "Gets one installed package record.",
+      tags: tag,
+      responses: {
+        "200": { description: "The installed package.", body: dtoRef("InstalledPackageResponseDto") },
+        "404": { description: "The installed package was not found." },
+        ...commonResponses,
+      }
     },
     update: {
       method: "PUT",
       path: "/installed-packages/[id]",
       handler: handleUpdate,
-      apiDoc: {
-        summary: "Update Package Visibility",
-        description: "Controls top-navigation visibility and direct access to an installed package's page routes. API routes are unaffected.",
-        tags: tag,
-        requestPathParams: idPathParameter,
-        requestBody: { required: true, schema: dtoRef("InstalledPackageUpdateRequestDto") },
-        responses: {
-          "200": { description: "The updated package.", schema: dtoRef("InstalledPackageResponseDto") },
-          "403": { description: "Administrator access is required." },
-          "404": { description: "The installed package was not found." },
-          "422": { description: "The requested visibility change is not permitted." },
-          ...serverErrorResponse,
-        },
-      },
+      request: { path: idPathParameter, contentType: "application/json", body: dtoRef("InstalledPackageUpdateRequestDto") },
+      summary: "Update Package Visibility",
+      description: "Controls top-navigation visibility and direct access to an installed package's page routes. API routes are unaffected.",
+      tags: tag,
+      responses: {
+        "200": { description: "The updated package.", body: dtoRef("InstalledPackageResponseDto") },
+        "404": { description: "The installed package was not found." },
+        "422": { description: "The requested visibility change is not permitted." },
+        ...commonResponses,
+      }
     },
     move: {
       method: "PUT",
       path: "/installed-packages/[id]/navigation-order",
       handler: handleMove,
-      apiDoc: {
-        summary: "Move Package Navigation",
-        description: "Moves a package up or down in top-navigation order.",
-        tags: tag,
-        requestPathParams: idPathParameter,
-        requestBody: { required: true, schema: dtoRef("InstalledPackageMoveRequestDto") },
-        responses: {
-          "200": { description: "The reordered package.", schema: dtoRef("InstalledPackageResponseDto") },
-          "403": { description: "Administrator access is required." },
-          "404": { description: "The installed package was not found." },
-          "422": { description: "The package cannot be moved in that direction." },
-          ...serverErrorResponse,
-        },
-      },
+      request: { path: idPathParameter, contentType: "application/json", body: dtoRef("InstalledPackageMoveRequestDto") },
+      summary: "Move Package Navigation",
+      description: "Moves a package up or down in top-navigation order.",
+      tags: tag,
+      responses: {
+        "200": { description: "The reordered package.", body: dtoRef("InstalledPackageResponseDto") },
+        "404": { description: "The installed package was not found." },
+        "422": { description: "The package cannot be moved in that direction." },
+        ...commonResponses,
+      }
     },
     refresh: {
       method: "POST",
       path: "/installed-package-reconciliation",
       handler: handleRefresh,
-      apiDoc: {
-        summary: "Refresh Package Inventory",
-        description: "Reconciles package-management records with packages installed on the filesystem.",
-        tags: tag,
-        responses: {
-          "200": { description: "The reconciled package inventory.", schema: arrayOf(dtoRef("InstalledPackageResponseDto")) },
-          "403": { description: "Administrator access is required." },
-          ...serverErrorResponse,
-        },
-      },
+      summary: "Refresh Package Inventory",
+      description: "Reconciles package-management records with packages installed on the filesystem.",
+      tags: tag,
+      responses: {
+        "200": { description: "The reconciled package inventory.", body: arrayOf(dtoRef("InstalledPackageResponseDto")) },
+        ...commonResponses,
+      }
     },
     getHomePage: {
       method: "GET",
       path: "/package-settings/home-page",
       handler: handleGetHomePage,
-      apiDoc: {
-        summary: "Get Home Page",
-        description: "Gets the application start-page route.",
-        tags: tag,
-        responses: {
-          "200": { description: "The configured start page.", schema: dtoRef("HomePageRouteResponseDto") },
-          "403": { description: "Administrator access is required." },
-          ...serverErrorResponse,
-        },
-      },
+      summary: "Get Home Page",
+      description: "Gets the application start-page route.",
+      tags: tag,
+      responses: {
+        "200": { description: "The configured start page.", body: dtoRef("HomePageRouteResponseDto") },
+        ...commonResponses,
+      }
     },
     updateHomePage: {
       method: "PUT",
       path: "/package-settings/home-page",
       handler: handleUpdateHomePage,
-      apiDoc: {
-        summary: "Update Home Page",
-        description: "Validates and updates the application start-page route.",
-        tags: tag,
-        requestBody: { required: true, schema: dtoRef("HomePageRouteUpdateRequestDto") },
-        responses: {
-          "200": { description: "The updated start page.", schema: dtoRef("HomePageRouteResponseDto") },
-          "403": { description: "Administrator access is required." },
-          "422": { description: "The route is invalid or is not a registered Voyzu page." },
-          ...serverErrorResponse,
-        },
-      },
+      request: { contentType: "application/json", body: dtoRef("HomePageRouteUpdateRequestDto") },
+      summary: "Update Home Page",
+      description: "Validates and updates the application start-page route.",
+      tags: tag,
+      responses: {
+        "200": { description: "The updated start page.", body: dtoRef("HomePageRouteResponseDto") },
+        "422": { description: "The route is invalid or is not a registered Voyzu page." },
+        ...commonResponses,
+      }
     },
   },
 } as const satisfies VoyzuPackageModuleDefinition;

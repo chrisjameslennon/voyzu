@@ -20,6 +20,39 @@
     "204": {
       "description": "User deleted successfully."
     },
+    "400": {
+      "description": "Validation failed.",
+      "schemaRef": "InputValidationErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INPUT_VALIDATION_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INPUT_VALIDATION_ERROR",
+        "message": "string"
+      }
+    },
+    "401": {
+      "description": "Authentication failed."
+    },
+    "403": {
+      "description": "Access is forbidden."
+    },
     "404": {
       "description": "Entity not found.",
       "schemaRef": "EntityNotFoundErrorResponseDto",

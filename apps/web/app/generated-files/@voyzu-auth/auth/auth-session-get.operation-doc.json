@@ -64,6 +64,39 @@
         }
       }
     },
+    "400": {
+      "description": "Validation failed.",
+      "schemaRef": "InputValidationErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INPUT_VALIDATION_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INPUT_VALIDATION_ERROR",
+        "message": "string"
+      }
+    },
+    "401": {
+      "description": "Authentication failed."
+    },
+    "403": {
+      "description": "Access is forbidden."
+    },
     "500": {
       "description": "An unexpected server error occurred.",
       "schemaRef": "InternalServerErrorResponseDto",

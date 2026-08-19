@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { listAuditEvents, exportAuditEvents, getAuditEvent } from "../lib/audit-event.service";
 import type { AuditEventCountResponseDto } from "@voyzu/audit/types";
+import { notFoundError, serverError } from "@voyzu/capability/http";
 
 function filtersFromRequest(req: NextRequest) {
   const { searchParams } = req.nextUrl;
@@ -25,8 +26,7 @@ export async function handleCount(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(response);
   } catch (err) {
     console.error("[audit] handleCount error:", err);
-    const message = err instanceof Error ? err.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return serverError(err);
   }
 }
 
@@ -40,8 +40,7 @@ export async function handleList(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(list);
   } catch (err) {
     console.error("[audit] handleList error:", err);
-    const message = err instanceof Error ? err.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return serverError(err);
   }
 }
 
@@ -51,8 +50,7 @@ export async function handleExportAll(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(rows);
   } catch (err) {
     console.error("[audit] handleExportAll error:", err);
-    const message = err instanceof Error ? err.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return serverError(err);
   }
 }
 
@@ -63,12 +61,11 @@ export async function handleGetById(
   try {
     const { id } = await params;
     const event = await getAuditEvent(Number(id));
-    if (!event) return NextResponse.json({ error: "Audit event not found" }, { status: 404 });
+    if (!event) return notFoundError("Audit event not found");
     return NextResponse.json(event);
   } catch (err) {
     console.error("[audit] handleGetById error:", err);
-    const message = err instanceof Error ? err.message : "Internal server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return serverError(err);
   }
 }
 

@@ -201,8 +201,8 @@ in its `modules` array. Each registered module must provide `pageRoutes` and
 
 Depending on the package exports, composition may also consume navigation,
 static assets, styles, documentation settings, and other package metadata. API
-documentation generation reads `apiDoc` objects and referenced DTOs from the
-package source. Generated composition and API documentation files must never be
+documentation generation reads API route definitions and referenced DTOs from
+the package source. Generated composition and API documentation files must never be
 edited directly.
 
 Run composition after changing package contracts, dependencies, routes,

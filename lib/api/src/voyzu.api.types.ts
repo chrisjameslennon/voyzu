@@ -1,12 +1,20 @@
 import type { NextRequest, NextResponse } from "next/server";
-import type { ApiMethod } from "@voyzu/types/api";
+import type {
+  ApiCookieDefinition,
+  ApiParameterDefinition,
+  ApiRequestDefinition,
+  ApiResponseDefinition,
+  ApiRouteDefinition,
+} from "@voyzu/types/api";
 
-export interface VoyzuApiModuleRoute {
-  method: ApiMethod;
-  path: string;
+export interface VoyzuApiModuleRoute extends Omit<ApiRouteDefinition, "handler"> {
   handler: (request: NextRequest, context: { params: Promise<any> }) => Promise<NextResponse>;
-  apiDoc?: unknown;
 }
+
+export type VoyzuApiParameterDefinition = ApiParameterDefinition;
+export type VoyzuApiCookieDefinition = ApiCookieDefinition;
+export type VoyzuApiRequestDefinition = ApiRequestDefinition;
+export type VoyzuApiResponseDefinition = ApiResponseDefinition;
 
 export interface VoyzuApiModule {
   apiDefinitions: Record<string, VoyzuApiModuleRoute>;
@@ -15,4 +23,18 @@ export interface VoyzuApiModule {
 export interface VoyzuApiConfig {
   basePath: "/api";
   modules: VoyzuApiModule[];
+  validationSchemas: VoyzuApiValidationRegistry;
 }
+
+export interface VoyzuApiValidationSchema {
+  request?: {
+    path?: Record<string, VoyzuApiParameterDefinition>;
+    query?: Record<string, VoyzuApiParameterDefinition>;
+    cookies?: Record<string, VoyzuApiCookieDefinition>;
+    contentType?: string;
+    body?: Record<string, unknown>;
+  };
+  responses: Record<string, { contentType?: string; body?: Record<string, unknown> }>;
+}
+
+export type VoyzuApiValidationRegistry = Record<string, VoyzuApiValidationSchema>;

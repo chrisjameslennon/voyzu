@@ -415,6 +415,12 @@
         "message": "string"
       }
     },
+    "401": {
+      "description": "Authentication failed."
+    },
+    "403": {
+      "description": "Access is forbidden."
+    },
     "409": {
       "description": "Conflict.",
       "schemaRef": "ConflictErrorResponseDto",

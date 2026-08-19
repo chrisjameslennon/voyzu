@@ -7,6 +7,16 @@
   "tags": [
     "Capability"
   ],
+  "requestQuerystringParams": {
+    "path": {
+      "description": "Application path to render as a PDF.",
+      "required": true,
+      "schema": {
+        "type": "string"
+      },
+      "example": "string"
+    }
+  },
   "responses": {
     "200": {
       "description": "Generated PDF.",
@@ -38,6 +48,12 @@
         "code": "INPUT_VALIDATION_ERROR",
         "message": "string"
       }
+    },
+    "401": {
+      "description": "Authentication failed."
+    },
+    "403": {
+      "description": "Access is forbidden."
     },
     "500": {
       "description": "An unexpected server error occurred.",

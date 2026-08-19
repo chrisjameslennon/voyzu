@@ -6,6 +6,7 @@ import { welcomePackage } from "@voyzu/welcome/voyzu-package";
 import { voyzuPackageManagementPackage } from "@voyzu/package-management/voyzu-package";
 
 import { composedApiModules } from "../../../../generated-composition/packages.generated";
+import validationSchemas from "../generated-files/api-validation.generated.json";
 
 export const voyzuApiConfig = {
   basePath: "/api",
@@ -17,4 +18,5 @@ export const voyzuApiConfig = {
     capabilityModule,
     ...composedApiModules,
   ],
+  validationSchemas,
 } satisfies VoyzuApiConfig;

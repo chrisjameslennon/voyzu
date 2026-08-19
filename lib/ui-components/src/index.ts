@@ -23,6 +23,17 @@ export type {
   DropdownMenuItem,
   DropdownMenuWidth,
 } from "./dropdown-menu/dropdown-menu";
+export { EditableGrid } from "./editable-grid/editable-grid";
+export type {
+  EditableGridCellType,
+  EditableGridColumn,
+  EditableGridHandle,
+  EditableGridOption,
+  EditableGridProps,
+  EditableGridRow,
+  EditableGridRowId,
+  EditableGridValidationResult,
+} from "./editable-grid/editable-grid";
 export {
   FilterChips,
   FilterPanel,

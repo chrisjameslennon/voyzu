@@ -13,6 +13,7 @@ const leftNav = [
       { label: "Data Table", icon: "table_chart", routeId: uiReferenceModule.pageRoutes.dataTable.id },
       { label: "Date Picker", icon: "calendar_today", routeId: uiReferenceModule.pageRoutes.datePicker.id },
       { label: "Dropdown Menu", icon: "arrow_drop_down_circle", routeId: uiReferenceModule.pageRoutes.dropdownMenu.id },
+      { label: "Editable Grid", icon: "grid_on", routeId: uiReferenceModule.pageRoutes.editableGrid.id },
       { label: "Filter Panel", icon: "filter_list", routeId: uiReferenceModule.pageRoutes.filterPanel.id },
       { label: "Input", icon: "input", routeId: uiReferenceModule.pageRoutes.input.id },
       { label: "Left Nav", icon: "left_panel_open", routeId: uiReferenceModule.pageRoutes.leftNav.id },

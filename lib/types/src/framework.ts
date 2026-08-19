@@ -1,6 +1,8 @@
+import type { ApiRouteDefinition } from "./api";
+
 export interface VoyzuPackageModuleDefinition {
   pageRoutes: Readonly<Record<string, unknown>>;
-  apiDefinitions: Readonly<Record<string, unknown>>;
+  apiDefinitions: Readonly<Record<string, ApiRouteDefinition>>;
 }
 
 /**

@@ -90,8 +90,8 @@ packages.
 
 ## Document every API operation
 
-Every API definition must include an `apiDoc` object. It is the source for the
-Voyzu API Reference and the combined OpenAPI document. Document the operation's
+Every API definition is the source for routing, runtime request and response
+validation, the Voyzu API Reference, and the combined OpenAPI document. Document the operation's
 purpose, every input, its successful response, and every error response callers
 can receive.
 
@@ -108,23 +108,23 @@ update: {
   path: "/ice-creams/[code]",
   handler: (request: any, context: any) =>
     handleUpdate(request, context),
-  apiDoc: {
-    summary: "Update ice cream",
-    description: "Fully replaces the writable fields of an ice cream.",
-    tags: ["Ice Creams"],
-    requestPathParams: {
+  summary: "Update ice cream",
+  description: "Fully replaces the writable fields of an ice cream.",
+  tags: ["Ice Creams"],
+  request: {
+    path: {
       code: {
         description: "Globally unique ice-cream business code.",
         schema: { type: "string" },
       },
     },
-    requestQuerystringParams: {
+    query: {
       validateOnly: {
         description: "Validate the request without saving changes.",
         schema: { type: "boolean" },
       },
     },
-    requestCookies: {
+    cookies: {
       "voyzu-session": {
         description: "Authenticated Voyzu session.",
         required: true,
@@ -136,15 +136,14 @@ update: {
         maxAgeSeconds: 3600,
       },
     },
-    requestBody: {
-      required: true,
-      schema: dtoRef("IceCreamUpdateRequestDto"),
-    },
-    responses: {
+    contentType: "application/json",
+    body: dtoRef("IceCreamUpdateRequestDto"),
+  },
+  responses: {
       "200": {
         description: "The updated ice cream.",
         contentType: "application/json",
-        schema: dtoRef("IceCreamResponseDto"),
+        body: dtoRef("IceCreamResponseDto"),
         cookies: {
           "voyzu-session": {
             description: "Refreshed session cookie.",
@@ -159,25 +158,24 @@ update: {
       },
       "400": {
         description: "Validation failed.",
-        schema: dtoRef("InputValidationErrorResponseDto"),
+        body: dtoRef("InputValidationErrorResponseDto"),
       },
       "404": {
         description: "Ice cream not found.",
-        schema: dtoRef("EntityNotFoundErrorResponseDto"),
+        body: dtoRef("EntityNotFoundErrorResponseDto"),
       },
       "409": {
         description: "The request conflicts with existing data.",
-        schema: dtoRef("ConflictErrorResponseDto"),
+        body: dtoRef("ConflictErrorResponseDto"),
       },
       "422": {
         description: "A business rule blocked the update.",
-        schema: dtoRef("BusinessRuleErrorResponseDto"),
+        body: dtoRef("BusinessRuleErrorResponseDto"),
       },
       "500": {
         description: "An unexpected server error occurred.",
-        schema: dtoRef("InternalServerErrorResponseDto"),
+        body: dtoRef("InternalServerErrorResponseDto"),
       },
-    },
   },
 }
 ```
@@ -258,7 +256,7 @@ Services own business operations and repositories own SQL.
 ## Return standard error responses
 
 Handlers must translate known failures to the shared Voyzu error-response DTOs.
-Every `apiDoc.responses` object must document each error the operation can
+Every `responses` object must document each error the operation can
 return as well as its successful response.
 
 | Status | When to return it | Shared response DTO |

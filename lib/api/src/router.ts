@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import type { VoyzuApiConfig, VoyzuApiModuleRoute } from "./voyzu.api.types";
+import { validateApiRequest, validateApiResponse } from "./validation";
 
 export interface VoyzuApiRouteContext {
   params: Promise<{
@@ -80,10 +81,30 @@ export async function handleVoyzuApiRequest(
   }
 
   const { route, params } = match;
-  const handle = () => route.handler(request, {
-    params: Promise.resolve(params),
-  });
-  return options.withRequestContext ? options.withRequestContext(request, route, handle) : handle();
+  const validation = config.validationSchemas[`${route.method} ${route.path}`];
+  if (!validation) {
+    return NextResponse.json(
+      { code: "INTERNAL_SERVER_ERROR", message: `Validation schema for ${route.method} ${route.path} was not found` },
+      { status: 500 },
+    );
+  }
+  const invalidRequest = await validateApiRequest(request, route, params, validation);
+  if (invalidRequest) return invalidRequest;
+
+  const handle = () => route.handler(request, { params: Promise.resolve(params) });
+  let response: NextResponse;
+  try {
+    response = options.withRequestContext
+      ? await options.withRequestContext(request, route, handle)
+      : await handle();
+  } catch (error) {
+    console.error(`Unhandled ${route.method} ${route.path} error`, error);
+    response = NextResponse.json(
+      { code: "INTERNAL_SERVER_ERROR", message: "Internal server error" },
+      { status: 500 },
+    );
+  }
+  return validateApiResponse(response, route, validation);
 }
 
 export function createVoyzuApiRouteHandlers(

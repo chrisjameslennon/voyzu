@@ -9,6 +9,7 @@ import ConfirmDialogPage from "./server/pages/components/confirm-dialog/page";
 import DataTablePage from "./server/pages/components/data-table/page";
 import DatePickerPage from "./server/pages/components/date-picker/page";
 import DropdownMenuPage from "./server/pages/components/dropdown-menu/page";
+import EditableGridPage from "./server/pages/components/editable-grid/page";
 import FilterPanelPage from "./server/pages/components/filter-panel/page";
 import InputPage from "./server/pages/components/input/page";
 import LeftNavPage from "./server/pages/components/left-nav/page";
@@ -44,6 +45,7 @@ export const uiReferenceModule = {
     dataTable: { id: "voyzu.ui-reference.page.data-table", path: "/ui-reference/components/data-table", pageTitle: "Data Table", Page: DataTablePage, helpPath, auth },
     datePicker: { id: "voyzu.ui-reference.page.date-picker", path: "/ui-reference/components/date-picker", pageTitle: "Date Picker", Page: DatePickerPage, helpPath, auth },
     dropdownMenu: { id: "voyzu.ui-reference.page.dropdown-menu", path: "/ui-reference/components/dropdown-menu", pageTitle: "Dropdown Menu", Page: DropdownMenuPage, helpPath, auth },
+    editableGrid: { id: "voyzu.ui-reference.page.editable-grid", path: "/ui-reference/components/editable-grid", pageTitle: "Editable Grid", Page: EditableGridPage, helpPath, auth },
     filterPanel: { id: "voyzu.ui-reference.page.filter-panel", path: "/ui-reference/components/filter-panel", pageTitle: "Filter Panel", Page: FilterPanelPage, helpPath, auth },
     input: { id: "voyzu.ui-reference.page.input", path: "/ui-reference/components/input", pageTitle: "Input", Page: InputPage, helpPath, auth },
     leftNav: { id: "voyzu.ui-reference.page.left-nav", path: "/ui-reference/components/left-nav", pageTitle: "Left Nav", Page: LeftNavPage, helpPath, auth },

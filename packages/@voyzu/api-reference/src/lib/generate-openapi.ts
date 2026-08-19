@@ -94,6 +94,7 @@ function toParameters(doc: OperationDoc): OpenApiParameter[] | undefined {
   const queryParams = Object.entries(doc.requestQuerystringParams ?? {}).map(([name, param]) => ({
     name,
     in: "query" as const,
+    ...(param.required !== undefined ? { required: param.required } : {}),
     ...(param.description ? { description: param.description } : {}),
     schema: param.schema as OpenApiSchema,
     ...(param.example !== undefined ? { example: param.example } : {}),

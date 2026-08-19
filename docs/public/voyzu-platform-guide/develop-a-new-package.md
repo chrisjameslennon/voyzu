@@ -214,15 +214,13 @@ export const iceCreamsModule = {
       method: "GET",
       path: "/ice-creams",
       handler: (request: any) => handleList(request),
-      apiDoc: {
-        summary: "List",
-        description: "Lists all ice creams.",
-        tags: ["Ice Creams"],
-        responses: {
-          "200": {
-            description: "All ice creams.",
-            schema: arrayOf(dtoRef("IceCreamResponseDto")),
-          },
+      summary: "List",
+      description: "Lists all ice creams.",
+      tags: ["Ice Creams"],
+      responses: {
+        "200": {
+          description: "All ice creams.",
+          body: arrayOf(dtoRef("IceCreamResponseDto")),
         },
       },
     },
