@@ -18,19 +18,19 @@
     "packages/@voyzu/ui-reference"
   ],
   "scripts": {
-    "build": "npm run build -w @voyzu/web",
+    "build": "node lib/runtime-tools/run-npm.mjs run build -w @voyzu/web",
     "deploy": "tsx scripts/deploy/deploy.ts",
-    "deps:check": "npm outdated",
-    "deps:update-major": "npx npm-check-updates --workspaces -x @types/node -u && npm install",
-    "deps:update-minor": "npx npm-check-updates --workspaces --target minor -u && npm install",
-    "dev": "npm run dev:next",
-    "dev:next": "npm run dev -w @voyzu/web",
+    "deps:check": "node lib/runtime-tools/run-npm.mjs outdated",
+    "deps:update-major": "node lib/runtime-tools/run-npm.mjs exec --yes npm-check-updates -- --workspaces -x @types/node -u && node lib/runtime-tools/run-npm.mjs install",
+    "deps:update-minor": "node lib/runtime-tools/run-npm.mjs exec --yes npm-check-updates -- --workspaces --target minor -u && node lib/runtime-tools/run-npm.mjs install",
+    "dev": "node lib/runtime-tools/run-npm.mjs run dev:next",
+    "dev:next": "node lib/runtime-tools/run-npm.mjs run dev -w @voyzu/web",
     "lint": "oxlint .",
     "postinstall": "node scripts/postinstall.mjs",
     "prebuild": "node lib/runtime-tools/compose/voyzu-compose.mjs --runtime . --empty-if-missing",
     "predev": "node lib/runtime-tools/compose/voyzu-compose.mjs --runtime . --empty-if-missing",
-    "start": "npm run start -w @voyzu/web",
-    "typecheck": "npm run typecheck -w @voyzu/web",
+    "start": "node lib/runtime-tools/run-npm.mjs run start -w @voyzu/web",
+    "typecheck": "node lib/runtime-tools/run-npm.mjs run typecheck -w @voyzu/web",
     "voyzu:add-repo": "node lib/runtime-tools/commands/voyzu.mjs add repo",
     "voyzu:build-api-reference": "tsx packages/@voyzu/api-reference/scripts/build-api-reference.cli.ts",
     "voyzu:compose": "node lib/runtime-tools/commands/voyzu.mjs compose",
@@ -44,10 +44,14 @@
     "voyzu:link-packages": "node lib/runtime-tools/commands/voyzu.mjs link-packages",
     "voyzu:list-packages": "node lib/runtime-tools/commands/voyzu.mjs list-packages",
     "voyzu:run-script": "node lib/runtime-tools/commands/voyzu.mjs run-script",
-    "voyzu:start": "npm run start",
+    "voyzu:start": "node lib/runtime-tools/run-npm.mjs run start",
     "voyzu:update": "node lib/runtime-tools/commands/voyzu.mjs update",
     "voyzu:update-repo": "node lib/runtime-tools/commands/voyzu.mjs update repo",
     "voyzu:update-repos": "node lib/runtime-tools/commands/voyzu.mjs update-repos"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "puppeteer@25.8.0": true
   },
   "dependencies": {
     "@sparticuz/chromium-min": "149.0.0",

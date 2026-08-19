@@ -37,8 +37,5 @@ export async function buildApiReference(): Promise<void> {
   });
 
   console.log(`Wrote ${writtenFiles.length} generated API reference files.`);
-  for (const filePath of writtenFiles) {
-    console.log(`  ${path.relative(platformRoot, filePath)}`);
-  }
   console.log(`Wrote ${path.relative(platformRoot, openApiFile)}.`);
 }
