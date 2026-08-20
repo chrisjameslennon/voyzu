@@ -98,7 +98,7 @@ At this point you have successfully installed the Voyzu platform!
 The next step is to install the Core Voyzu Organization and Finance package.
 
 ```shell
-npm run voyzu:install -- https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/core
+npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/core
 ```
 
 The install command downloads the Voyzu Packages repository into `.package-sources`, copies Core into `.run/packages/@voyzu/core`, applies its database installation, installs its npm dependencies and recomposes the application.
@@ -143,7 +143,7 @@ If you are hosting a Voyzu instance you will want to run Voyzu behind your hosti
 To update an installed package, run its original install command again. For example, to update Voyzu Core:
 
 ```shell
-npm run voyzu:install -- https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/core
+npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/core
 ```
 
 The command refreshes the downloaded repository, replaces the installed package copy, applies its installation steps, installs its dependencies and recomposes the application.

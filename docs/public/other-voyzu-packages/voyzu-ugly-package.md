@@ -17,7 +17,7 @@ Use Ice Creams as the implementation reference; use Ugly Package to understand h
 ## Install
 
 ```shell
-npm run voyzu:install -- https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/ugly-package
+npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/ugly-package
 ```
 
 [View the source on GitHub](https://github.com/chrisjameslennon/voyzu-packages/tree/main/packages/%40voyzu/ugly-package).

@@ -11,7 +11,7 @@ Before starting, create a Voyzu development environment by following [Developmen
 Create the package beneath the development workspace using its npm scope and package name:
 
 ```shell
-npm run voyzu:create-package -- "@acme/customer orders"
+npm run voyzu:create-package "@acme/customer orders"
 ```
 
 The command creates `packages/@acme/customer-orders` from the Ice Creams reference package and links it into the development runtime. It replaces spaces with dashes and derives display labels, code identifiers, file and directory names, and SQL table names from the `customer-orders` package segment. You can instead create the structure manually as shown below.
@@ -399,7 +399,7 @@ Packages must use their own scoped public path and must not write directly to th
 Link the local package into the development runtime:
 
 ```shell
-npm run voyzu:link-package -- @voyzu/ice-creams
+npm run voyzu:link-package @voyzu/ice-creams
 ```
 
 The command installs a physical package copy beneath `.run/packages`, applies its database installation, installs workspace dependencies and composes its modules into Voyzu. The command name is retained for compatibility.

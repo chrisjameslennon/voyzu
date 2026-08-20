@@ -31,7 +31,7 @@ To install Voyzu see [installation-and-setup.md](installation-and-operation/inst
 ### Voyzu Core `@voyzu/core`
 
 ```shell
-npm run voyzu:install -- https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/core
+npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/core
 ```
 
 The Voyzu Core package provides Core and Financial Ledger Capability including:
@@ -51,7 +51,7 @@ Start exploring the documentation at [introduction.md](voyzu-core-concepts/intro
 ### Voyzu Ice-creams `(@voyzu/ice-creams)`
 
 ```shell
-npm run voyzu:install -- https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/ice-creams
+npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/ice-creams
 ```
 
 The Voyzu Ice-creams package is a best practice package that illustrates many of the Voyzu Platform patterns in use. If you are intending to develop a Voyzu package you can install this package and then use its source code as a best practice example for you or you AI agent to follow.
@@ -63,7 +63,7 @@ Read more at [voyzu-ice-creams.md](other-voyzu-packages/voyzu-ice-creams.md "men
 ### Voyzu Ugly Package `(@voyzu/ugly-package)`
 
 ```shell
-npm run voyzu:install -- https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/ugly-package
+npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/ugly-package
 ```
 
 The Voyzu Ugly package is designed to illustrate the freedom you have as a Voyzu package developer. It deliberately doesn't use Voyzu components or follow Voyzu patterns.

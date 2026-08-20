@@ -19,5 +19,5 @@ Voyzu must be installed and configured before installing Voyzu Core. See [Produc
 From the root of the installed Voyzu instance, run:
 
 ```shell
-npm run voyzu:install -- https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/core
+npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/core
 ```

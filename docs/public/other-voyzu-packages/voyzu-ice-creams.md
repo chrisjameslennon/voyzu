@@ -15,7 +15,7 @@ Use this package as a working example when following [Develop a new package](../
 ## Install
 
 ```shell
-npm run voyzu:install -- https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/ice-creams
+npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/ice-creams
 ```
 
 [View the source on GitHub](https://github.com/chrisjameslennon/voyzu-packages/tree/main/packages/%40voyzu/ice-creams).

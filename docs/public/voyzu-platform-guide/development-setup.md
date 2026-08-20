@@ -105,7 +105,7 @@ Voyzu Ice Creams is a simple package for managing ice cream flavours. It is a be
 Install it from the official package repository:
 
 ```shell
-npm run voyzu:install -- https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/ice-creams
+npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/ice-creams
 ```
 
 The repository is downloaded into `.package-sources/voyzu-packages`. The package is copied into `.run/packages/@voyzu/ice-creams`; it is not linked into the local `packages/` development workspace.
@@ -133,7 +133,7 @@ The directory structure and `package.json` name are both authoritative. For exam
 Create a package from the Ice Creams reference implementation with:
 
 ```shell
-npm run voyzu:create-package -- "@acme/customer orders"
+npm run voyzu:create-package "@acme/customer orders"
 ```
 
 This creates `packages/@acme/customer-orders`, replaces spaces with dashes, removes the template repository's Git metadata, derives display labels, code identifiers, paths and SQL table names from `customer-orders`, and links the package into the development runtime. The command refuses to overwrite an existing package. Review the generated business terminology and package metadata before developing it further.
@@ -145,7 +145,7 @@ Follow [Develop a new package](develop-a-new-package.md) for a practical walkthr
 Install a package being developed locally into the runtime:
 
 ```shell
-npm run voyzu:link-package -- @acme/warehousing
+npm run voyzu:link-package @acme/warehousing
 ```
 
 The command retains its existing name, but creates an ordinary physical runtime copy:
@@ -186,7 +186,7 @@ Voyzu packages are installed directly from GitHub, so they do not require an npm
 Then rom the root of an existing [production Voyzu installation](../installation-and-operation/installation-and-setup.md), you can install it with:
 
 ```shell
-npm run voyzu:install -- https://github.com/{owner}/{repository}.git @publisher/package-name
+npm run voyzu:install https://github.com/{owner}/{repository}.git @publisher/package-name
 ```
 
 The command downloads or refreshes the repository, copies the selected package into `.run/packages`, applies its database installation and composes it into Voyzu.

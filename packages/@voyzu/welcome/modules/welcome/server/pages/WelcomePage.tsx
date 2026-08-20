@@ -29,7 +29,7 @@ export function WelcomePage() {
         <div className={detail.fieldGroup}>
           <p className={typography.bodyText}>
             Package installation is controlled from the instance root using Voyzu&apos;s package scripts. Download and
-            install a package with <code>npm run voyzu:install -- &lt;github-address&gt; &lt;package-name&gt;</code>, then
+            install a package with <code>npm run voyzu:install &lt;github-address&gt; &lt;package-name&gt;</code>, then
             restart the web server so the composed application can load it.
           </p>
           <p className={typography.bodyText}>

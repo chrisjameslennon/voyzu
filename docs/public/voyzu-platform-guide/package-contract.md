@@ -303,7 +303,7 @@ scripts: {
 ```
 
 ```shell
-npm run voyzu:run-script -- @acme/warehousing sampleData
+npm run voyzu:run-script @acme/warehousing sampleData
 ```
 
 ## Navigation

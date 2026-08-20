@@ -14,13 +14,13 @@ reference and operator instructions.
 
 | Command | How the package participates |
 |---|---|
-| `npm run voyzu:install -- <github-address> <package-name>` | Voyzu downloads or refreshes the repository, copies the named package into the runtime, installs its dependencies, applies its declared installation SQL, and composes the application. |
-| `npm run voyzu:install-package -- <package-name>` | Performs the same package installation lifecycle using a repository already downloaded beneath `.package-sources`. |
-| `npm run voyzu:link-package -- <package-name>` | In a development runtime, copies one local package from `packages`, applies its installation SQL, composes it, and enables source mirroring while the development server runs. |
+| `npm run voyzu:install <github-address> <package-name>` | Voyzu downloads or refreshes the repository, copies the named package into the runtime, installs its dependencies, applies its declared installation SQL, and composes the application. |
+| `npm run voyzu:install-package <package-name>` | Performs the same package installation lifecycle using a repository already downloaded beneath `.package-sources`. |
+| `npm run voyzu:link-package <package-name>` | In a development runtime, copies one local package from `packages`, applies its installation SQL, composes it, and enables source mirroring while the development server runs. |
 | `npm run voyzu:link-packages` | Links every installable local package, installs dependencies, applies each package's SQL, and composes once. |
-| `npm run voyzu:uninstall-package -- <package-name>` | Applies declared uninstall SQL in one transaction, removes the runtime package copy, and recomposes the application. |
+| `npm run voyzu:uninstall-package <package-name>` | Applies declared uninstall SQL in one transaction, removes the runtime package copy, and recomposes the application. |
 | `npm run voyzu:compose` | Reads installed package contracts and regenerates dependencies, navigation, routes, assets, API documentation, and the OpenAPI document. |
-| `npm run voyzu:run-script -- <package-name> <script-name> [parameters...]` | Loads and runs a TypeScript function exposed by the package's `scripts` contract. |
+| `npm run voyzu:run-script <package-name> <script-name> [parameters...]` | Loads and runs a TypeScript function exposed by the package's `scripts` contract. |
 | `npm run voyzu:build-api-reference` | Reads package API definitions and DTOs to regenerate API operation documents, DTO documents, and the combined OpenAPI document. |
 | `npm run voyzu:list-packages` | Reads the installed package's `package.json` name and version for display. |
 | `npm run voyzu:build` and `npm run voyzu:start` | Build and run the composed application, including the package's registered pages, APIs, and dependencies. |
@@ -177,11 +177,12 @@ export const iceCreamsPackage = {
 Run a declared script against the installed package copy:
 
 ```shell
-npm run voyzu:run-script -- @voyzu/ice-creams sampleData
+npm run voyzu:run-script @voyzu/ice-creams sampleData
 ```
 
 Additional command-line values are forwarded to the script through
-`process.argv`:
+`process.argv`. Ordinary positional values need no separator. Use npm's `--`
+separator only when a forwarded value is itself dash-prefixed:
 
 ```shell
 npm run voyzu:run-script -- @acme/importer import ./customers.csv --replace

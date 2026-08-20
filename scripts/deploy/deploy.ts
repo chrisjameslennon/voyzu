@@ -276,7 +276,7 @@ if [ "$platform_initialized" != "t" ]; then
 fi
 
 log "Installing or updating $CORE_PACKAGE_NAME"
-npm run voyzu:install -- "$CORE_REPOSITORY_URL" "$CORE_PACKAGE_NAME"
+npm run voyzu:install "$CORE_REPOSITORY_URL" "$CORE_PACKAGE_NAME"
 
 log "Building the composed Voyzu application"
 npm run voyzu:build
