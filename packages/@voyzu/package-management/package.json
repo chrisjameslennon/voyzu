@@ -26,6 +26,7 @@
     "./package.json": "./package.json",
     "./voyzu-package": "./voyzu.package.ts",
     "./navigation/settings": "./navigation/settings.left-nav.ts",
+    "./package-management/operations": "./modules/package-management/operations.ts",
     "./server": "./modules/package-management/server/index.ts",
     "./types": "./modules/types/index.ts"
   },

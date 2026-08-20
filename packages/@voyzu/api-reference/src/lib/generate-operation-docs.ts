@@ -360,6 +360,9 @@ function getPropertyName(property: PropertyAssignment): string | null {
 
 function getObjectProperty(object: ObjectLiteralExpression, key: string): Expression | undefined {
   for (const property of object.getProperties()) {
+    if (Node.isShorthandPropertyAssignment(property) && property.getName() === key) {
+      return property.getNameNode();
+    }
     if (!Node.isPropertyAssignment(property)) continue;
     if (getPropertyName(property) === key) return property.getInitializer();
   }
@@ -494,11 +497,38 @@ function readApiDefinition(routeObject: ObjectLiteralExpression): ApiDefinition 
   };
 }
 
-function unwrapObjectLiteral(expression: Expression | undefined): ObjectLiteralExpression | undefined {
+function unwrapObjectLiteral(
+  expression: Expression | undefined,
+  sourceFile = expression?.getSourceFile(),
+  project?: Project,
+): ObjectLiteralExpression | undefined {
   if (!expression) return undefined;
+  sourceFile = expression.getSourceFile() ?? sourceFile;
   if (Node.isObjectLiteralExpression(expression)) return expression;
   if (Node.isAsExpression(expression) || Node.isSatisfiesExpression(expression) || Node.isParenthesizedExpression(expression)) {
-    return unwrapObjectLiteral(expression.getExpression());
+    return unwrapObjectLiteral(expression.getExpression(), sourceFile, project);
+  }
+  if (Node.isIdentifier(expression) && sourceFile) {
+    const localDeclaration = sourceFile.getVariableDeclaration(expression.getText());
+    if (localDeclaration) return unwrapObjectLiteral(localDeclaration.getInitializer(), sourceFile, project);
+    if (project) {
+      for (const importDeclaration of sourceFile.getImportDeclarations()) {
+        const imported = importDeclaration.getNamedImports().find(
+          (item) => (item.getAliasNode()?.getText() ?? item.getName()) === expression.getText(),
+        );
+        if (!imported) continue;
+        const importedPath = resolveTypeScriptModule(
+          path.dirname(sourceFile.getFilePath()),
+          importDeclaration.getModuleSpecifierValue(),
+        );
+        const importedSource = project.addSourceFileAtPath(importedPath);
+        return unwrapObjectLiteral(
+          importedSource.getVariableDeclaration(imported.getName())?.getInitializer(),
+          importedSource,
+          project,
+        );
+      }
+    }
   }
   return undefined;
 }
@@ -549,11 +579,12 @@ function moduleApiDefinitions(
 ): ModuleApiDefinitions | undefined {
   const sourceFile = project.addSourceFileAtPath(filePath);
   const declaration = sourceFile.getVariableDeclaration(moduleName);
-  const objectInitializer = unwrapObjectLiteral(declaration?.getInitializer());
+  const objectInitializer = unwrapObjectLiteral(declaration?.getInitializer(), sourceFile, project);
   if (!objectInitializer) throw new Error(`Could not read module ${moduleName} from ${filePath}`);
   const apiDefinitionsExpression = getObjectProperty(objectInitializer, "apiDefinitions");
-  if (!apiDefinitionsExpression || !Node.isObjectLiteralExpression(apiDefinitionsExpression)) return undefined;
-  const definitions = apiDefinitionsExpression.getProperties().flatMap((property) => {
+  const apiDefinitionsObject = unwrapObjectLiteral(apiDefinitionsExpression, sourceFile, project);
+  if (!apiDefinitionsObject) return undefined;
+  const definitions = apiDefinitionsObject.getProperties().flatMap((property) => {
     if (!Node.isPropertyAssignment(property)) return [];
     const routeObject = property.getInitializerIfKind(SyntaxKind.ObjectLiteralExpression);
     if (!routeObject) return [];

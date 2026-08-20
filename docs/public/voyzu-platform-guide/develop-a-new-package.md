@@ -181,53 +181,46 @@ The primary Ice Creams module owns the CRUD interface and APIs:
 │  └─ pages/           # Server-rendered page components
 ├─ tests/
 ├─ index.ts
+├─ api.routes.ts
+├─ pages.routes.ts
+├─ operations.ts       # Public facade over server/lib services
 └─ module.ts
 ```
 
-The module's `module.ts` is the authoritative registry of its application pages and REST endpoints. This abbreviated excerpt shows one API route:
+The route files are the authoritative registries of application pages and REST endpoints. `module.ts` composes them with the module's optional public operations facade:
 
 ```ts
-// packages/@voyzu/ice-creams/modules/ice-creams/module.ts
+// pages.routes.ts
+export const pageRoutes = {
+  list: {
+    id: "voyzu.ice-creams.page.list",
+    path: "/ice-creams",
+    Page: IceCreamsListPage,
+    pageTitle: "Ice Creams",
+    auth: { required: true, minRole: "ORGANIZATION_USER" },
+  },
+} as const;
+
+// api.routes.ts
 import Type from "typebox";
-import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 import { IceCreamResponseDto } from "../types";
 
-export const iceCreamsModule = {
-  pageRoutes: {
-    list: {
-      id: "voyzu.ice-creams.page.list",
-      path: "/ice-creams",
-      Page: IceCreamsListPage,
-      pageTitle: "Ice Creams",
-      helpPath: "voyzu-platform-guide/develop-a-new-package",
-      auth: { required: true, minRole: "ORGANIZATION_USER" },
-    },
-    detail: {
-      id: "voyzu.ice-creams.page.detail",
-      path: "/ice-creams/[code]",
-      Page: IceCreamDetailPage,
-      pageTitle: "Ice Cream",
-      helpPath: "voyzu-platform-guide/develop-a-new-package",
-      auth: { required: true, minRole: "ORGANIZATION_USER" },
-    },
-  },
-  apiDefinitions: {
-    list: {
-      method: "GET",
-      path: "/ice-creams",
-      handler: (request: any) => handleList(request),
-      summary: "List",
-      description: "Lists all ice creams.",
-      tags: ["Ice Creams"],
-      responses: {
-        "200": {
-          description: "All ice creams.",
-          body: Type.Array(IceCreamResponseDto),
-        },
+export const apiDefinitions = {
+  list: {
+    method: "GET",
+    path: "/ice-creams",
+    handler: (request: any) => handleList(request),
+    summary: "List",
+    description: "Lists all ice creams.",
+    tags: ["Ice Creams"],
+    responses: {
+      "200": {
+        description: "All ice creams.",
+        body: Type.Array(IceCreamResponseDto),
       },
     },
   },
-} as const satisfies VoyzuPackageModuleDefinition;
+} as const;
 ```
 
 Page paths are relative to the application root. API paths are relative to Voyzu's `/api` base path and must follow REST principles. Route IDs must be stable and unique across the composed Voyzu instance.
@@ -236,15 +229,16 @@ Page paths are relative to the application root. API paths are relative to Voyzu
 
 The Ice Creams module follows the standard Voyzu implementation layers:
 
-| Location       | Responsibility                                      |
-| -------------- | --------------------------------------------------- |
-| `client`       | Forms, lists, details and client-side interaction   |
-| `domain`       | Pure operation policies shared by client and server |
-| `server/api`   | HTTP input extraction and response mapping          |
-| `server/db`    | SQL access and persisted row mapping                |
-| `server/lib`   | Validation, business rules and orchestration        |
-| `server/pages` | Server-side page data loading                       |
-| `tests`        | Domain, service, validation and integration tests   |
+| Location        | Responsibility                                      |
+| --------------- | --------------------------------------------------- |
+| `client`        | Forms, lists, details and client-side interaction   |
+| `domain`        | Pure operation policies shared by client and server |
+| `server/api`    | HTTP input extraction and response mapping          |
+| `server/db`     | SQL access and persisted row mapping                |
+| `server/lib`    | Validation, business rules and orchestration        |
+| `server/pages`  | Server-side page data loading                       |
+| `operations.ts` | Public wrappers over service methods                |
+| `tests`         | Domain, service, validation and integration tests   |
 
 Business rules must be enforced in the server service layer. Client-side use of the same policy may improve feedback, but it must not replace server-side enforcement.
 

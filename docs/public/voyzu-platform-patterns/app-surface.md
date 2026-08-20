@@ -9,33 +9,29 @@ The application surface supplies the desktop and mobile application frame, navig
 A UI-capable package exposes page routes through the modules listed in its `voyzu.package.ts`. A route is the source of truth for its URL, page component, title, authorization, breadcrumbs and help link. Modules remain a way to organize code inside the package; the installed package is the unit that Voyzu composes and manages.
 
 ```tsx
-// packages/@acme/warehousing/modules/stock/module.ts
-import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
+// packages/@acme/warehousing/modules/stock/pages.routes.ts
 import { StockDetailPage, StockListPage } from "./server/pages";
 
-export const stockModule = {
-  pageRoutes: {
-    list: {
-      id: "acme.stock.page.list",
-      path: "/stock",
-      pageTitle: "Stock",
-      Page: StockListPage,
-      breadcrumbBase: [{ label: "Warehousing", href: "/stock" }],
-      helpPath: "packages/warehousing/stock",
-      auth: { required: true, minRole: "COMPANY_USER" },
-    },
-    detail: {
-      id: "acme.stock.page.detail",
-      path: "/stock/[code]",
-      pageTitle: "Stock item",
-      Page: StockDetailPage,
-      breadcrumbBase: [{ label: "Warehousing", href: "/stock" }],
-      helpPath: "packages/warehousing/stock",
-      auth: { required: true, minRole: "COMPANY_USER" },
-    },
+export const pageRoutes = {
+  list: {
+    id: "acme.stock.page.list",
+    path: "/stock",
+    pageTitle: "Stock",
+    Page: StockListPage,
+    breadcrumbBase: [{ label: "Warehousing", href: "/stock" }],
+    helpPath: "packages/warehousing/stock",
+    auth: { required: true, minRole: "COMPANY_USER" },
   },
-  apiDefinitions: {},
-} as const satisfies VoyzuPackageModuleDefinition;
+  detail: {
+    id: "acme.stock.page.detail",
+    path: "/stock/[code]",
+    pageTitle: "Stock item",
+    Page: StockDetailPage,
+    breadcrumbBase: [{ label: "Warehousing", href: "/stock" }],
+    helpPath: "packages/warehousing/stock",
+    auth: { required: true, minRole: "COMPANY_USER" },
+  },
+} as const;
 ```
 
 Voyzu supports static and dynamic path segments. During composition it generates thin native Next.js pages beneath `apps/web/app/(generated)/(web)`. Next.js matches the route and supplies its parameters; the Voyzu page renderer retains authorization, package visibility, framing, breadcrumbs and help behavior. Keep page components in a server-only page entry point when they access the database or other private server functionality.
@@ -209,8 +205,8 @@ By default, the application frame owns the top navigation and optional left navi
 Set `unframed: true` only when a route must bypass the complete application frame. This removes the top navigation, left navigation, normal main wrapper, and breadcrumb provider; the page component is responsible for the entire response layout.
 
 ```tsx
-// packages/@acme/analytics/modules/dashboard/module.ts
-pageRoutes: {
+// packages/@acme/analytics/modules/dashboard/pages.routes.ts
+export const pageRoutes = {
   dashboard: {
     id: "acme.dashboard.page.main",
     path: "/dashboard",
@@ -219,7 +215,7 @@ pageRoutes: {
     unframed: true,
     auth: { required: true, minRole: "COMPANY_USER" },
   },
-}
+} as const;
 ```
 
 Use this sparingly for routes such as authentication screens and printable documents. The current package contract does not let a package replace the platform's top navigation or register a right-hand application slot.

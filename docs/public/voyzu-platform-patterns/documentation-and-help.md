@@ -50,20 +50,17 @@ The Voyzu platform UI surface provides a help icon on the top right. It will be 
 Set `helpPath` on each page route that has contextual documentation. The path is resolved against the owning package's `helpBaseUrl`.
 
 ```ts
-// packages/@acme/warehousing/modules/stock/module.ts
-export const stockModule = {
-  pageRoutes: {
-    list: {
-      id: "acme.stock.page.list",
-      path: "/stock",
-      Page: StockListPage,
-      pageTitle: "Stock",
-      helpPath: "/stock/stock-items",
-      auth: { required: true, minRole: "COMPANY_USER" },
-    },
+// packages/@acme/warehousing/modules/stock/pages.routes.ts
+export const pageRoutes = {
+  list: {
+    id: "acme.stock.page.list",
+    path: "/stock",
+    Page: StockListPage,
+    pageTitle: "Stock",
+    helpPath: "/stock/stock-items",
+    auth: { required: true, minRole: "COMPANY_USER" },
   },
-  apiDefinitions: {},
-};
+} as const;
 ```
 
 With the example settings, Voyzu opens:

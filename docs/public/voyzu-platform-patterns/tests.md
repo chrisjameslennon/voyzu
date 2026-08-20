@@ -148,26 +148,26 @@ restore any shared reference data the test changed.
 Use unique, recognizable codes for every test and worker. Tests must not depend
 on execution order or data left behind by another run.
 
-## Keep service entry points Node-safe
+## Test through module operations
 
-Tests and package scripts may execute outside Next.js. Their service entry
-point must not transitively load SSR pages that import `server-only`.
+Module tests should import the public operations facade rather than repositories,
+HTTP handlers, or internal service files. Each operation delegates directly to
+the service that owns validation and business behavior.
 
 ```ts
-// modules/stock/server/index.ts
-export { createStock, getStock, patchStock } from "./lib/stock.service";
-
-// modules/stock/server/pages/index.ts
-export { StockListPage } from "./StockListPage";
+// modules/stock/operations.ts
+export const createStock = operation(stockService.createStock);
+export const getStock = operation(stockService.getStock);
 ```
 
-Import SSR pages directly from the page entry point in `module.ts`; do not
-re-export them from the Node-safe service barrel.
+Expose the facade through a stable package subpath such as
+`@acme/warehousing/stock/operations`. The module's HTTP handlers continue to
+call services directly and do not depend on the operations facade.
 
 ## Checklist
 
 1. Keep tests below the owning module.
-2. Call public services, not repositories or HTTP handlers.
+2. Call public operations, not repositories, service internals, or HTTP handlers.
 3. Cover successful behavior and important business-rule failures.
 4. Assert persisted outcomes and rejected side effects.
 5. Use unique fixture data and make teardown idempotent.

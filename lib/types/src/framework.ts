@@ -1,8 +1,11 @@
 import type { ApiRouteDefinition } from "./api";
 
+export type VoyzuModuleOperation = (...args: any[]) => any;
+
 export interface VoyzuPackageModuleDefinition {
   pageRoutes: Readonly<Record<string, unknown>>;
   apiDefinitions: Readonly<Record<string, ApiRouteDefinition>>;
+  operations?: Readonly<Record<string, VoyzuModuleOperation>>;
 }
 
 /**

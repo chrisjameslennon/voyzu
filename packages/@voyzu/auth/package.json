@@ -31,11 +31,13 @@
     "./voyzu-package": "./voyzu.package.ts",
     "./navigation/settings": "./navigation/settings.left-nav.ts",
     "./auth": "./modules/auth/module.ts",
+    "./auth/operations": "./modules/auth/operations.ts",
     "./auth/client": "./modules/auth/client/index.ts",
     "./auth/server": "./modules/auth/server/index.ts",
     "./auth/server/session": "./modules/auth/server/session.ts",
     "./types": "./modules/types/index.ts",
     "./users": "./modules/users/module.ts",
+    "./users/operations": "./modules/users/operations.ts",
     "./users/client": "./modules/users/client/index.ts",
     "./users/server": "./modules/users/server/index.ts"
   },

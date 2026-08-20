@@ -6,7 +6,7 @@ The locations below are relative to the package repository root. Each rule state
 
 ### Source location
 
-A module should reside beneath the owning package's `modules/module-name` directory. Its entry point must be `module.ts`; supporting client, domain and server code belongs beneath the same module directory.
+A module should reside beneath the owning package's `modules/module-name` directory. Its entry point is `module.ts`, with page and API registration in sibling route files. An optional `operations.ts` exposes the module's public programmatic interface. Supporting client, domain and server code belongs beneath the same module directory.
 
 Example:
 
@@ -16,6 +16,9 @@ packages/@acme/warehousing/
 └─ modules/
    └─ stock/
       ├─ module.ts
+      ├─ pages.routes.ts
+      ├─ api.routes.ts
+      ├─ operations.ts       # optional public service facade
       ├─ client/
       ├─ domain/
       └─ server/
@@ -23,17 +26,21 @@ packages/@acme/warehousing/
 
 ### Module definition
 
-A module definition must provide `pageRoutes` and `apiDefinitions`. The route collections must be objects and may be empty. The definition belongs in `modules/module-name/module.ts`.
+A module definition must compose the `pageRoutes` and `apiDefinitions` exported by its route files. The route collections must be objects and may be empty. A service-backed module may also expose an `operations` object. The composition belongs in `modules/module-name/module.ts`.
 
 Example:
 
 ```ts
 // packages/@acme/warehousing/modules/stock/module.ts
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
+import { apiDefinitions } from "./api.routes";
+import { pageRoutes } from "./pages.routes";
+import { operations } from "./operations";
 
 export const stockModule = {
-  pageRoutes: {},
-  apiDefinitions: {},
+  pageRoutes,
+  apiDefinitions,
+  operations,
 } as const satisfies VoyzuPackageModuleDefinition;
 ```
 
@@ -57,19 +64,19 @@ export default {
 
 ### User-interface capability
 
-A module exposes its user-interface pages by registering them in the `pageRoutes` collection in the module's `module.ts`. This collection is the module's authoritative list of pages and allows Voyzu to generate native Next.js pages while composing authorization, page metadata and navigation references into the application.
+A module exposes its user-interface pages through the `pageRoutes` collection in `pages.routes.ts`. This collection is the module's authoritative list of pages and allows Voyzu to generate native Next.js pages while composing authorization, page metadata and navigation references into the application.
 
 A module with no user-interface pages must define an empty `pageRoutes` object.
 
 ### Route definitions
 
-Each page route must define a stable `id`, a unique application `path`, a `pageTitle` and a React `Page` component. Dynamic URL segments must use the Next.js bracket convention. Page-route registration belongs in the module's `module.ts`; page components normally belong under the module's `server/pages` or client directory.
+Each page route must define a stable `id`, a unique application `path`, a `pageTitle` and a React `Page` component. Dynamic URL segments must use the Next.js bracket convention. Page-route registration belongs in `pages.routes.ts`; page components normally belong under the module's `server/pages` or client directory.
 
 Example:
 
 ```ts
-// packages/@acme/warehousing/modules/stock/module.ts
-pageRoutes: {
+// packages/@acme/warehousing/modules/stock/pages.routes.ts
+export const pageRoutes = {
   detail: {
     id: "acme.warehousing.stock.page.detail",
     path: "/stock/[code]",
@@ -77,17 +84,17 @@ pageRoutes: {
     Page: StockDetailPage,
     auth: { required: true, minRole: "ORGANIZATION_USER" },
   },
-},
+} as const;
 ```
 
 ### Authorization
 
-A page route should declare its authentication and minimum-role requirements explicitly. A protected page must use one of the Voyzu surface roles. Authorization metadata belongs on the page-route entry in the module's `module.ts`.
+A page route should declare its authentication and minimum-role requirements explicitly. A protected page must use one of the Voyzu surface roles. Authorization metadata belongs on the page-route entry in `pages.routes.ts`.
 
 Example:
 
 ```ts
-// packages/@acme/warehousing/modules/stock/module.ts
+// packages/@acme/warehousing/modules/stock/pages.routes.ts
 auth: {
   required: true,
   minRole: "ORGANIZATION_USER",
@@ -96,12 +103,12 @@ auth: {
 
 ### Metadata
 
-A page route may provide breadcrumbs, help, and framing metadata. These values must describe the route without introducing navigation paths that conflict with the route definition. This metadata belongs on the page-route entry in the module's `module.ts`. A `helpPath` must be relative to the `voyzu.settings.helpBaseUrl` declared by the owning package.
+A page route may provide breadcrumbs, help, and framing metadata. These values must describe the route without introducing navigation paths that conflict with the route definition. This metadata belongs on the page-route entry in `pages.routes.ts`. A `helpPath` must be relative to the `voyzu.settings.helpBaseUrl` declared by the owning package.
 
 Example:
 
 ```ts
-// packages/@acme/warehousing/modules/stock/module.ts
+// packages/@acme/warehousing/modules/stock/pages.routes.ts
 {
   breadcrumbBase: [{ label: "Stock", href: "/stock" }],
   helpPath: "packages/warehousing/stock",
@@ -129,7 +136,7 @@ Example:
 
 ### API capability
 
-A module exposes its HTTP API by registering its routes in the `apiDefinitions` collection in the module's `module.ts`. This collection is the module's authoritative list of endpoints and allows Voyzu to compose handlers and route matching into the application.
+A module exposes its HTTP API through the `apiDefinitions` collection in `api.routes.ts`. This collection is the module's authoritative list of endpoints and allows Voyzu to compose handlers and route matching into the application.
 
 A module with no HTTP API must define an empty `apiDefinitions` object.
 
@@ -137,19 +144,19 @@ A module with no HTTP API must define an empty `apiDefinitions` object.
 
 Each entry in `apiDefinitions` defines one HTTP endpoint. It must specify an HTTP `method`, a path relative to Voyzu's `/api` base path and an asynchronous `handler`. The combination of method and path must be unique across the composed application.
 
-API routes must follow REST principles. Paths must identify resources using nouns, HTTP methods must express the operation using their standard semantics, and handlers must return appropriate HTTP status codes. Route registration belongs in the module's `module.ts`; handler implementations belong under `server/api`.
+API routes must follow REST principles. Paths must identify resources using nouns, HTTP methods must express the operation using their standard semantics, and handlers must return appropriate HTTP status codes. Route registration belongs in `api.routes.ts`; handler implementations belong under `server/api`.
 
 Example:
 
 ```ts
-// packages/@acme/warehousing/modules/stock/module.ts
-apiDefinitions: {
+// packages/@acme/warehousing/modules/stock/api.routes.ts
+export const apiDefinitions = {
   get: {
     method: "GET",
     path: "/stock/[code]",
     handler: handleGetStock,
   },
-},
+} as const;
 ```
 
 ### Request and response contracts
@@ -179,6 +186,24 @@ export type StockItemResponseDto = Type.Static<typeof StockItemResponseDto>;
 ```
 
 ## Module implementation
+
+### Operations
+
+A service-backed module may expose an `operations` object from `operations.ts`. Operations are thin, server-only wrappers over the module's services. They contain no validation, business rules, persistence logic, or HTTP concerns; those remain in the underlying services and HTTP handlers.
+
+Operations form the stable boundary used by module tests and by other modules. Nothing inside the owning module needs to call them. Export the file through an explicit package subpath such as `@acme/warehousing/stock/operations`.
+
+```ts
+// packages/@acme/warehousing/modules/stock/operations.ts
+import "server-only";
+import { getStock as getStockService } from "./server/lib/stock.service";
+
+export const getStock = (
+  ...args: Parameters<typeof getStockService>
+): ReturnType<typeof getStockService> => getStockService(...args);
+
+export const operations = { getStock } as const;
+```
 
 ### Validation
 

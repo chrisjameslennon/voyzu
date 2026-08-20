@@ -10,37 +10,33 @@ Packages do not maintain these generated files. Each module declares its routes
 in `apiDefinitions`; composition validates the complete route manifest and emits
 one `route.ts` per path, combining multiple HTTP methods in the same file.
 
-## Define routes in `module.ts`
+## Define routes in `api.routes.ts`
 
 Each API definition must provide an HTTP method, a path, and an asynchronous
 handler. Keep the handler implementation in the module's server boundary.
 
 ```ts
-// packages/@acme/warehousing/modules/stock/module.ts
-import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
+// packages/@acme/warehousing/modules/stock/api.routes.ts
 import { handleCreate, handleGet, handleList } from "./server";
 
-export const stockModule = {
-  pageRoutes: {},
-  apiDefinitions: {
-    list: {
-      method: "GET",
-      path: "/stock",
-      handler: (request: any) => handleList(request),
-    },
-    create: {
-      method: "POST",
-      path: "/stock",
-      handler: (request: any) => handleCreate(request),
-    },
-    get: {
-      method: "GET",
-      path: "/stock/[code]",
-      handler: (request: any, context: any) =>
-        handleGet(request, context),
-    },
+export const apiDefinitions = {
+  list: {
+    method: "GET",
+    path: "/stock",
+    handler: (request: any) => handleList(request),
   },
-} as const satisfies VoyzuPackageModuleDefinition;
+  create: {
+    method: "POST",
+    path: "/stock",
+    handler: (request: any) => handleCreate(request),
+  },
+  get: {
+    method: "GET",
+    path: "/stock/[code]",
+    handler: (request: any, context: any) =>
+      handleGet(request, context),
+  },
+} as const;
 ```
 
 An API-only module may use an empty `pageRoutes` object.
@@ -221,10 +217,10 @@ runtime.
 
 ## Use dynamic path parameters
 
-Dynamic segments use Next.js bracket syntax in `module.ts`:
+Dynamic segments use Next.js bracket syntax in `api.routes.ts`:
 
 ```ts
-// packages/@acme/warehousing/modules/stock/module.ts
+// packages/@acme/warehousing/modules/stock/api.routes.ts
 {
   method: "GET",
   path: "/stock/[code]",

@@ -56,7 +56,7 @@ import { getCurrentUser } from "@voyzu/auth/users/server";
 const user = await getCurrentUser();
 if (!user) {
   throw new Error("An authenticated user is required");
-}
+} as const;
 ```
 
 API requests are recorded with the API actor type. Packages must not parse authentication headers or construct their own request identity context.
@@ -81,8 +81,8 @@ Logging out through `POST /api/auth/logout` expires the cookie. Packages must no
 Authentication and minimum role requirements belong on the page route registered by the package module:
 
 ```ts
-// packages/@acme/inventory/modules/items/module.ts
-pageRoutes: {
+// packages/@acme/inventory/modules/items/pages.routes.ts
+export const pageRoutes = {
   list: {
     id: "acme.inventory-items.page.list",
     path: "/inventory/items",

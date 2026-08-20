@@ -22,6 +22,7 @@
     "./package.json": "./package.json",
     "./voyzu-package": "./voyzu.package.ts",
     "./audit": "./modules/audit/module.ts",
+    "./audit/operations": "./modules/audit/operations.ts",
     "./common": "./modules/common/module.ts",
     "./types": "./modules/types/index.ts",
     "./client": "./modules/common/client/index.ts",
