@@ -311,8 +311,46 @@ function collectDefinitionDtoRefs(definition: ApiDefinition, refs: Set<string>):
   }
 }
 
+function inlineLocalSchemaRefs(
+  value: unknown,
+  definitions = new Map<string, Record<string, unknown>>(),
+  referenceDepth = new Map<string, number>(),
+): unknown {
+  if (Array.isArray(value)) {
+    return value.map((item) => inlineLocalSchemaRefs(item, definitions, referenceDepth));
+  }
+  if (!value || typeof value !== "object") return value;
+
+  const schema = value as Record<string, unknown>;
+  const localDefinitions = schema.$defs;
+  if (localDefinitions && typeof localDefinitions === "object" && !Array.isArray(localDefinitions)) {
+    for (const [name, definition] of Object.entries(localDefinitions)) {
+      if (definition && typeof definition === "object" && !Array.isArray(definition)) {
+        definitions.set(name, definition as Record<string, unknown>);
+      }
+    }
+  }
+
+  if (typeof schema.$ref === "string") {
+    const definition = definitions.get(schema.$ref);
+    if (definition) {
+      const depth = referenceDepth.get(schema.$ref) ?? 0;
+      if (depth > 0) return { type: "object" };
+      const nestedDepth = new Map(referenceDepth);
+      nestedDepth.set(schema.$ref, depth + 1);
+      return inlineLocalSchemaRefs(definition, definitions, nestedDepth);
+    }
+  }
+
+  return Object.fromEntries(
+    Object.entries(schema)
+      .filter(([key]) => key !== "$defs")
+      .map(([key, item]) => [key, inlineLocalSchemaRefs(item, definitions, referenceDepth)]),
+  );
+}
+
 function sampleSchema(schema: Record<string, unknown>): unknown {
-  return sampler.sample(schema as never, { skipNonRequired: false });
+  return sampler.sample(inlineLocalSchemaRefs(schema) as never, { skipNonRequired: false });
 }
 
 function sampleContent(contentType: string): string | undefined {
