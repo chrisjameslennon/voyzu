@@ -1,0 +1,5 @@
+{
+  "name": "CurrencyUpdateRequestDto",
+  "sourceFile": "packages/@voyzu/organization/types/modules/currencies/currency.update.request.dto.ts",
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { NonBlankText } from \"@voyzu/organization/types/constraints\";\n\nexport const CurrencyUpdateRequestDto = StrictObject({\n  name: NonBlankText,\n  symbol: Type.Optional(Type.Union([Type.String(), Type.Null()])),\n});\nexport type CurrencyUpdateRequestDto = Type.Static<typeof CurrencyUpdateRequestDto>;\n"
+}

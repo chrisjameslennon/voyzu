@@ -1,0 +1,5 @@
+{
+  "name": "CountryUpdateRequestDto",
+  "sourceFile": "packages/@voyzu/organization/types/modules/countries/country.update.request.dto.ts",
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { CurrencyCode, NonBlankText, TaxFilingAnchorMonth } from \"@voyzu/organization/types/constraints\";\n\nexport const CountryUpdateRequestDto = StrictObject({\n  name: NonBlankText,\n  currencyCode: CurrencyCode,\n  taxFilingAnchorMonth: Type.Optional(TaxFilingAnchorMonth),\n  taxFilingIntervalMonths: Type.Optional(Type.Union([Type.Literal(1), Type.Literal(2), Type.Literal(3), Type.Literal(6), Type.Literal(12)])),\n});\nexport type CountryUpdateRequestDto = Type.Static<typeof CountryUpdateRequestDto>;\n"
+}

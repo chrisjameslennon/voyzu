@@ -1,0 +1,5 @@
+{
+  "name": "CompanySelectionUpdateResponseDto",
+  "sourceFile": "packages/@voyzu/organization/types/modules/company-switcher/company-selection.update.response.dto.ts",
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { PositiveId } from \"@voyzu/organization/types/constraints\";\n\nexport const CompanySelectionUpdateResponseDto = StrictObject({\n  selectedCompanyId: PositiveId,\n});\nexport type CompanySelectionUpdateResponseDto = Type.Static<typeof CompanySelectionUpdateResponseDto>;\n"
+}

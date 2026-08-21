@@ -1,0 +1,5 @@
+{
+  "name": "CompanyBatchUpdateRequestDto",
+  "sourceFile": "packages/@voyzu/organization/types/modules/companies/company.batch-update.request.dto.ts",
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { CompanyUpdateRequestDto } from \"./company.update.request.dto\";\nimport { BusinessCode14 } from \"@voyzu/organization/types/constraints\";\n\nexport const CompanyBatchUpdateRequestDto = StrictObject({\n  ...CompanyUpdateRequestDto.properties,\n  code: BusinessCode14,\n});\nexport type CompanyBatchUpdateRequestDto = Type.Static<typeof CompanyBatchUpdateRequestDto>;\n"
+}

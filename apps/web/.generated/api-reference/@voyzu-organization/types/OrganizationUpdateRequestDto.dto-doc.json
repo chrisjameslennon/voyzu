@@ -1,0 +1,5 @@
+{
+  "name": "OrganizationUpdateRequestDto",
+  "sourceFile": "packages/@voyzu/organization/types/modules/organization/organization.update.request.dto.ts",
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { BusinessCode40, NonBlankText } from \"@voyzu/organization/types/constraints\";\n\nexport const OrganizationUpdateRequestDto = StrictObject({\n  code: Type.Optional(BusinessCode40),\n  organizationName: NonBlankText,\n});\nexport type OrganizationUpdateRequestDto = Type.Static<typeof OrganizationUpdateRequestDto>;\n"
+}

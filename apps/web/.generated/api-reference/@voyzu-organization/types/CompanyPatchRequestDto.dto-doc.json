@@ -1,0 +1,5 @@
+{
+  "name": "CompanyPatchRequestDto",
+  "sourceFile": "packages/@voyzu/organization/types/modules/companies/company.patch.request.dto.ts",
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { BusinessCode14, CountryCode, CurrencyCode, NonBlankText, TaxFilingAnchorMonth } from \"@voyzu/organization/types/constraints\";\n\nexport const CompanyPatchRequestDto = StrictObject({\n  code: Type.Optional(BusinessCode14),\n  name: Type.Optional(NonBlankText),\n  countryCode: Type.Optional(CountryCode),\n  baseCurrencyCode: Type.Optional(CurrencyCode),\n  taxFilingAnchorMonth: Type.Optional(TaxFilingAnchorMonth),\n  taxFilingIntervalMonths: Type.Optional(Type.Union([Type.Literal(1), Type.Literal(2), Type.Literal(3), Type.Literal(6), Type.Literal(12)])),\n  useOrganizationStandardSettings: Type.Optional(Type.Boolean()),\n  reportLine1: Type.Optional(Type.String()),\n  reportLine2: Type.Optional(Type.String()),\n  reportFooter: Type.Optional(Type.String()),\n}, { minProperties: 1 });\nexport type CompanyPatchRequestDto = Type.Static<typeof CompanyPatchRequestDto>;\n"
+}

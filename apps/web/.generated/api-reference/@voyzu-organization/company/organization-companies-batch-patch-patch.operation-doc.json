@@ -1,0 +1,637 @@
+{
+  "operationId": "organization-companies-batch-patch-patch",
+  "method": "patch",
+  "path": "/api/organization/companies/batch/patch",
+  "summary": "Batch patch companies",
+  "description": "Partially updates multiple company records in a single request. Executed as a single database transaction; if any item fails, all changes are rolled back.",
+  "tags": [
+    "Companies"
+  ],
+  "requestBody": {
+    "required": true,
+    "contentType": "application/json",
+    "schemaRef": {
+      "type": "array",
+      "items": "CompanyBatchPatchRequestDto"
+    },
+    "schema": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z0-9][A-Z0-9_-]{0,13}$",
+            "description": "An uppercase business code of at most 14 letters, numbers, underscores or hyphens."
+          },
+          "name": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "countryCode": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          },
+          "baseCurrencyCode": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "taxFilingAnchorMonth": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "taxFilingIntervalMonths": {
+            "anyOf": [
+              {
+                "type": "number",
+                "enum": [
+                  1
+                ]
+              },
+              {
+                "type": "number",
+                "enum": [
+                  2
+                ]
+              },
+              {
+                "type": "number",
+                "enum": [
+                  3
+                ]
+              },
+              {
+                "type": "number",
+                "enum": [
+                  6
+                ]
+              },
+              {
+                "type": "number",
+                "enum": [
+                  12
+                ]
+              }
+            ]
+          },
+          "useOrganizationStandardSettings": {
+            "type": "boolean"
+          },
+          "reportLine1": {
+            "type": "string"
+          },
+          "reportLine2": {
+            "type": "string"
+          },
+          "reportFooter": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "example": [
+      {
+        "code": "string",
+        "name": "string",
+        "countryCode": "string",
+        "baseCurrencyCode": "string",
+        "taxFilingAnchorMonth": 1,
+        "taxFilingIntervalMonths": 1,
+        "useOrganizationStandardSettings": true,
+        "reportLine1": "string",
+        "reportLine2": "string",
+        "reportFooter": "string"
+      }
+    ]
+  },
+  "responses": {
+    "200": {
+      "description": "The patched companies.",
+      "contentType": "application/json",
+      "schemaRef": {
+        "type": "array",
+        "items": "CompanyResponseDto"
+      },
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "id",
+            "code",
+            "name",
+            "countryCode",
+            "baseCurrencyCode",
+            "taxFilingAnchorMonth",
+            "taxFilingIntervalMonths",
+            "useOrganizationStandardSettings",
+            "status",
+            "hasPostings",
+            "audit"
+          ],
+          "properties": {
+            "id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "code": {
+              "type": "string",
+              "pattern": "^[A-Z0-9][A-Z0-9_-]*$",
+              "description": "An uppercase business code containing letters, numbers, underscores or hyphens."
+            },
+            "name": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "countryCode": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            },
+            "country": {
+              "type": "object",
+              "required": [
+                "code",
+                "name"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "pattern": "^[A-Z0-9][A-Z0-9_-]*$",
+                  "description": "An uppercase business code containing letters, numbers, underscores or hyphens."
+                },
+                "name": {
+                  "type": "string",
+                  "pattern": "\\S"
+                }
+              },
+              "additionalProperties": false
+            },
+            "baseCurrencyCode": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "baseCurrency": {
+              "type": "object",
+              "required": [
+                "code",
+                "name"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "pattern": "^[A-Z0-9][A-Z0-9_-]*$",
+                  "description": "An uppercase business code containing letters, numbers, underscores or hyphens."
+                },
+                "name": {
+                  "type": "string",
+                  "pattern": "\\S"
+                }
+              },
+              "additionalProperties": false
+            },
+            "taxFilingAnchorMonth": {
+              "type": "number",
+              "description": "Tax filing anchor month."
+            },
+            "taxFilingIntervalMonths": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "enum": [
+                    1
+                  ]
+                },
+                {
+                  "type": "number",
+                  "enum": [
+                    2
+                  ]
+                },
+                {
+                  "type": "number",
+                  "enum": [
+                    3
+                  ]
+                },
+                {
+                  "type": "number",
+                  "enum": [
+                    6
+                  ]
+                },
+                {
+                  "type": "number",
+                  "enum": [
+                    12
+                  ]
+                }
+              ]
+            },
+            "useOrganizationStandardSettings": {
+              "type": "boolean",
+              "description": "Whether this company inherits organization standard settings."
+            },
+            "reportLine1": {
+              "type": "string"
+            },
+            "reportLine2": {
+              "type": "string"
+            },
+            "reportFooter": {
+              "type": "string"
+            },
+            "status": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "ACTIVE"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "INACTIVE"
+                  ]
+                }
+              ]
+            },
+            "hasPostings": {
+              "type": "boolean",
+              "description": "Whether the company has posted journal entries."
+            },
+            "audit": {
+              "type": "object",
+              "required": [
+                "created",
+                "updated"
+              ],
+              "properties": {
+                "created": {
+                  "type": "object",
+                  "required": [
+                    "date"
+                  ],
+                  "properties": {
+                    "date": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Date and time for the audit event."
+                    },
+                    "actorType": {
+                      "anyOf": [
+                        {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "APP"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "API"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "SYSTEM"
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "userId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "user": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "code",
+                            "displayName"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "description": "User id."
+                            },
+                            "code": {
+                              "type": "string",
+                              "pattern": "\\S",
+                              "description": "User code."
+                            },
+                            "displayName": {
+                              "type": "string",
+                              "pattern": "\\S",
+                              "description": "User display name."
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "mutationId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "updated": {
+                  "type": "object",
+                  "required": [
+                    "date"
+                  ],
+                  "properties": {
+                    "date": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Date and time for the audit event."
+                    },
+                    "actorType": {
+                      "anyOf": [
+                        {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "APP"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "API"
+                              ]
+                            },
+                            {
+                              "type": "string",
+                              "enum": [
+                                "SYSTEM"
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "userId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "user": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "code",
+                            "displayName"
+                          ],
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "description": "User id."
+                            },
+                            "code": {
+                              "type": "string",
+                              "pattern": "\\S",
+                              "description": "User code."
+                            },
+                            "displayName": {
+                              "type": "string",
+                              "pattern": "\\S",
+                              "description": "User display name."
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "mutationId": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "example": [
+        {
+          "id": 1,
+          "code": "string",
+          "name": "string",
+          "countryCode": "string",
+          "country": {
+            "code": "string",
+            "name": "string"
+          },
+          "baseCurrencyCode": "string",
+          "baseCurrency": {
+            "code": "string",
+            "name": "string"
+          },
+          "taxFilingAnchorMonth": 0,
+          "taxFilingIntervalMonths": 1,
+          "useOrganizationStandardSettings": true,
+          "reportLine1": "string",
+          "reportLine2": "string",
+          "reportFooter": "string",
+          "status": "ACTIVE",
+          "hasPostings": true,
+          "audit": {
+            "created": {
+              "date": "2019-08-24T14:15:22Z",
+              "actorType": "APP",
+              "userId": "string",
+              "user": {
+                "id": 1,
+                "code": "string",
+                "displayName": "string"
+              },
+              "mutationId": "string"
+            },
+            "updated": {
+              "date": "2019-08-24T14:15:22Z",
+              "actorType": "APP",
+              "userId": "string",
+              "user": {
+                "id": 1,
+                "code": "string",
+                "displayName": "string"
+              },
+              "mutationId": "string"
+            }
+          }
+        }
+      ]
+    },
+    "400": {
+      "description": "Validation failed.",
+      "contentType": "application/json",
+      "schemaRef": "InputValidationErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INPUT_VALIDATION_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INPUT_VALIDATION_ERROR",
+        "message": "string"
+      }
+    },
+    "404": {
+      "description": "One or more companies not found.",
+      "contentType": "application/json",
+      "schemaRef": "EntityNotFoundErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "ENTITY_NOT_FOUND"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "ENTITY_NOT_FOUND",
+        "message": "string"
+      }
+    },
+    "409": {
+      "description": "One or more target codes already exist.",
+      "contentType": "application/json",
+      "schemaRef": "ConflictErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "CONFLICT"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "CONFLICT",
+        "message": "string"
+      }
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "contentType": "application/json",
+      "schemaRef": "InternalServerErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

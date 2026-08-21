@@ -1,0 +1,5 @@
+{
+  "name": "OrganizationResponseDto",
+  "sourceFile": "packages/@voyzu/organization/types/modules/organization/organization.response.dto.ts",
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { AuditMetadataDto } from \"@voyzu/organization/types/modules/core\";\nimport { Status } from \"@voyzu/organization/types/modules/core\";\nimport { BusinessCode, NonBlankText, PositiveId } from \"@voyzu/organization/types/constraints\";\n\nexport const OrganizationResponseDto = StrictObject({\n  id: PositiveId,\n  code: BusinessCode,\n  organizationName: NonBlankText,\n  status: Status,\n  hasPostings: Type.Boolean({ description: \"True when one or more posted journal headers exist for any company in this organization.\" }),\n  audit: AuditMetadataDto,\n});\nexport type OrganizationResponseDto = Type.Static<typeof OrganizationResponseDto>;\n"
+}
