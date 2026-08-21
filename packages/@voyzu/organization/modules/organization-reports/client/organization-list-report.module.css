@@ -1,0 +1,72 @@
+.documentHeader {
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #222;
+}
+
+.organizationName {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.hideOrganization .organizationName {
+  display: none;
+}
+
+.checkboxOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.inlineCheckboxOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.toolbarLeftBottom {
+  align-items: flex-end;
+}
+
+.reportTitle {
+  margin: 0.125rem 0 0;
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.reportTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+}
+
+.reportTable th {
+  padding: 0.35rem 0.45rem;
+  text-align: left;
+  border-bottom: 1px solid #222;
+  color: #333;
+  font-weight: 700;
+}
+
+.reportTable td {
+  padding: 0.35rem 0.45rem;
+  border-bottom: 1px solid #d4d4d4;
+  vertical-align: top;
+}
+
+.emptyCell {
+  text-align: center;
+  color: #777;
+}
+
+.documentFooter {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #ddd;
+  font-size: 0.7rem;
+  color: #666;
+}

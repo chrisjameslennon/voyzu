@@ -111,6 +111,7 @@ export interface VoyzuComposedSurfaceDomain {
   defaultPath: string;
   routePaths: Array<{ id: string; path: string }>;
   leftNav: VoyzuSurfaceNavGroup[];
+  topNavigationVisible?: boolean;
 }
 
 export interface VoyzuSurfaceConfig {

@@ -4,6 +4,7 @@ const REQUIRED_PACKAGE_NAMES = new Set([
   "@voyzu/audit",
   "@voyzu/auth",
   "@voyzu/foundation",
+  "@voyzu/organization",
   "@voyzu/package-management",
 ]);
 

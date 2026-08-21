@@ -13,6 +13,10 @@ import authPackage from "@voyzu/auth/package.json";
 import { settingsLeftNav as authSettingsLeftNav } from "@voyzu/auth/navigation/settings";
 import { voyzuAuditPackage } from "@voyzu/audit/voyzu-package";
 import auditPackage from "@voyzu/audit/package.json";
+import { auditSettingsLeftNav } from "@voyzu/audit/navigation/settings";
+import { voyzuOrganizationPackage } from "@voyzu/organization/voyzu-package";
+import organizationPackage from "@voyzu/organization/package.json";
+import organizationDomains from "@voyzu/organization/navigation/domains";
 import { welcomePackage } from "@voyzu/welcome/voyzu-package";
 import welcomePackageJson from "@voyzu/welcome/package.json";
 import welcomeTopNav from "@voyzu/welcome/navigation/top-nav";
@@ -99,7 +103,11 @@ function packagePageRoutes(
   });
 }
 
-function mutableNavItem(item: Readonly<VoyzuSurfaceNavItem>): VoyzuSurfaceNavItem {
+type ReadonlyNavItem = Omit<Readonly<VoyzuSurfaceNavItem>, "children"> & {
+  readonly children?: readonly ReadonlyNavItem[];
+};
+
+function mutableNavItem(item: ReadonlyNavItem): VoyzuSurfaceNavItem {
   return {
     ...item,
     children: item.children?.map(mutableNavItem),
@@ -109,7 +117,7 @@ function mutableNavItem(item: Readonly<VoyzuSurfaceNavItem>): VoyzuSurfaceNavIte
 function mutableLeftNav(
   definition: readonly {
     readonly label?: string;
-    readonly items: readonly Readonly<VoyzuSurfaceNavItem>[];
+    readonly items: readonly ReadonlyNavItem[];
   }[],
 ): VoyzuSurfaceNavGroup[] {
   return definition.map((group) => ({
@@ -129,6 +137,12 @@ const auditPageRoutes = packagePageRoutes(
   auditPackage.voyzu.pageRootPaths,
   auditPackage.name,
   auditPackage.voyzu.settings.helpBaseUrl,
+);
+const organizationPageRoutes = packagePageRoutes(
+  voyzuOrganizationPackage,
+  organizationPackage.voyzu.pageRootPaths,
+  organizationPackage.name,
+  organizationPackage.voyzu.settings.helpBaseUrl,
 );
 const welcomePageRoutes = packagePageRoutes(
   welcomePackage,
@@ -204,6 +218,24 @@ const apiReferenceSurfaceDomain: VoyzuComposedSurfaceDomain = {
   routePaths: apiReferencePageRoutes.map(({ id, path }) => ({ id, path })),
   leftNav: apiReferenceLeftNav,
 };
+const organizationDomainDefinition = organizationDomains[0];
+const organizationDefaultRoute = organizationPageRoutes.find(
+  ({ id }) => id === organizationDomainDefinition.routeId,
+);
+if (!organizationDefaultRoute) {
+  throw new Error("Organization top-nav route was not found.");
+}
+const organizationRouteIds = new Set(organizationDomainDefinition.routeIds);
+const organizationSurfaceDomain: VoyzuComposedSurfaceDomain = {
+  id: organizationDomainDefinition.routeId,
+  packageName: organizationPackage.name,
+  label: organizationDomainDefinition.label,
+  defaultPath: organizationDefaultRoute.path,
+  routePaths: organizationPageRoutes
+    .filter(({ id }) => organizationRouteIds.has(id))
+    .map(({ id, path }) => ({ id, path })),
+  leftNav: mutableLeftNav(organizationDomainDefinition.leftNav),
+};
 const composedSurfaceDomains = createInstalledPackageDomains([
   ...authPageRoutes,
   ...auditPageRoutes,
@@ -212,11 +244,13 @@ const composedSurfaceDomains = createInstalledPackageDomains([
   ...apiReferencePageRoutes,
   ...packageManagementPageRoutes,
   ...systemInfoPageRoutes,
+  ...organizationPageRoutes,
 ]);
 const packageSurfaceDomains = [
   welcomeSurfaceDomain,
   uiReferenceSurfaceDomain,
   apiReferenceSurfaceDomain,
+  organizationSurfaceDomain,
   ...composedSurfaceDomains,
 ];
 
@@ -228,18 +262,20 @@ const pageRoutes: VoyzuSurfaceRoute[] = [
   ...apiReferencePageRoutes,
   ...packageManagementPageRoutes,
   ...systemInfoPageRoutes,
+  ...organizationPageRoutes,
   ...installedPackagePageRoutes,
 ];
 
 const packageManagementItems = packageManagementSettingsLeftNav.flatMap((group) => group.items);
 const systemInfoItems = systemInfoSettingsLeftNav.flatMap((group) => group.items);
+const auditItems = auditSettingsLeftNav.flatMap((group) => group.items);
 const settingsLeftNav: VoyzuSurfaceNavGroup[] = authSettingsLeftNav.map(
   (group, index) => ({
     ...group,
-    items: index === 0 ? [...group.items, ...packageManagementItems, ...systemInfoItems] : [...group.items],
+    items: index === 0 ? [...group.items, ...packageManagementItems, ...systemInfoItems, ...auditItems] : [...group.items],
   }),
 );
-const settingsPageRoutes = [...authPageRoutes, ...packageManagementPageRoutes, ...systemInfoPageRoutes].filter(
+const settingsPageRoutes = [...authPageRoutes, ...packageManagementPageRoutes, ...systemInfoPageRoutes, ...auditPageRoutes].filter(
   ({ path }) => path.startsWith("/settings/"),
 );
 const settingsRoutePaths = settingsPageRoutes.map(({ id, path }) => ({ id, path }));

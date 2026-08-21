@@ -49,6 +49,7 @@ export interface VoyzuPackageNavigationDomain {
   routeId: string;
   routeIds: readonly string[];
   leftNav: readonly VoyzuPackageNavigationGroup[];
+  topNavigationVisible?: boolean;
 }
 
 export interface VoyzuPackageInstallDefinition {

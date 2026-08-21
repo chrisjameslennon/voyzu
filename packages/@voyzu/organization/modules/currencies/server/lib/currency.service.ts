@@ -1,0 +1,212 @@
+import { getDb, withTransaction } from "@voyzu/capability/db";
+import { BusinessRuleError, ConflictError, DataError, InputValidationError, NotFoundError } from "@voyzu/capability/errors";
+import { createCreationAuditStamp, createUpdateAuditStamp, withAuditActors, withCreationAudit, withUpdateAudit } from "@voyzu/organization/common/server";
+import type { CurrencyBatchPatchRequestDto, CurrencyBatchUpdateRequestDto, CurrencyCreateRequestDto, CurrencyPatchRequestDto, CurrencyResponseDto, CurrencyUpdateRequestDto } from "@voyzu/organization/types/modules/currencies";
+import type { Filter, ListOptions } from "@voyzu/types/params";
+
+import { Deactivate, Delete } from "../../domain/operation-policy";
+import { CurrencyRepo } from "../db/currency.repo";
+import type { CurrencyRow } from "../db/currency.row.types";
+
+import { toDto, toInsertRow, toPatchRow, toUpdateRow } from "./currency.mapper";
+
+async function enrichRow(row: CurrencyRow): Promise<CurrencyResponseDto> {
+  return await withAuditActors(toDto(row), row);
+}
+
+function enrichRows(rows: CurrencyRow[]): Promise<CurrencyResponseDto[]> {
+  return Promise.all(rows.map((r) => enrichRow(r)));
+}
+
+function normalizeCodes(codes: string[]): string[] {
+  return [...new Set(codes.map((code) => code.trim().toUpperCase()).filter(Boolean))];
+}
+
+function throwIfBlocked(blockers: ReturnType<typeof Delete>): void {
+  if (blockers.length) throw new BusinessRuleError(blockers.map((blocker) => blocker.message).join("; "));
+}
+
+
+export async function listCurrencies(): Promise<CurrencyResponseDto[]> {
+  const rows = await new CurrencyRepo(getDb()).listAll();
+  return enrichRows(rows);
+}
+
+export async function filterCurrencies(filters: Filter[], options?: ListOptions): Promise<CurrencyResponseDto[]> {
+  const rows = await new CurrencyRepo(getDb()).filter(filters, options);
+  return enrichRows(rows);
+}
+
+export async function searchCurrencies(phrase: string, options?: ListOptions): Promise<CurrencyResponseDto[]> {
+  const rows = await new CurrencyRepo(getDb()).search(phrase, options);
+  return enrichRows(rows);
+}
+
+
+export async function getCurrency(code: string): Promise<CurrencyResponseDto | null> {
+  const row = await new CurrencyRepo(getDb()).get(code);
+  if (!row) return null;
+  return enrichRow(row);
+}
+
+export async function createCurrency(input: CurrencyCreateRequestDto): Promise<CurrencyResponseDto> {
+  try {
+    const row = await new CurrencyRepo(getDb()).insert(withCreationAudit(toInsertRow(input), await createCreationAuditStamp()));
+    return enrichRow(row);
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("duplicate key value")) {
+      throw new ConflictError("A currency with this code already exists");
+    }
+    throw err;
+  }
+}
+
+export async function updateCurrency(code: string, input: CurrencyUpdateRequestDto): Promise<CurrencyResponseDto> {
+  try {
+    const row = await new CurrencyRepo(getDb()).update(code, withUpdateAudit(toUpdateRow(input), await createUpdateAuditStamp()));
+    return enrichRow(row);
+  } catch (err) {
+    if (err instanceof DataError) {
+      throw new NotFoundError(`Currency ${code} not found`);
+    }
+    throw err;
+  }
+}
+
+export async function patchCurrency(code: string, input: CurrencyPatchRequestDto): Promise<CurrencyResponseDto> {
+  try {
+    const row = await new CurrencyRepo(getDb()).patch(code, withUpdateAudit(toPatchRow(input), await createUpdateAuditStamp()));
+    return enrichRow(row);
+  } catch (err) {
+    if (err instanceof DataError) {
+      throw new NotFoundError(`Currency ${code} not found`);
+    }
+    throw err;
+  }
+}
+
+export async function deleteCurrency(code: string): Promise<void> {
+  const repo = new CurrencyRepo(getDb());
+  const existing = await repo.get(code);
+  if (!existing) throw new NotFoundError(`Currency ${code} not found`);
+  throwIfBlocked(Delete({ code: existing.code, linkedBy: existing.linked_by }));
+  await repo.delete(code);
+}
+
+
+export async function batchCreateCurrencies(inputs: CurrencyCreateRequestDto[]): Promise<CurrencyResponseDto[]> {
+  try {
+    return await withTransaction(async (client) => {
+      const repo = new CurrencyRepo(client);
+      const results: CurrencyResponseDto[] = [];
+      const audit = await createCreationAuditStamp();
+      for (const input of inputs) {
+        const row = await repo.insert(withCreationAudit(toInsertRow(input), audit));
+        results.push(await enrichRow(row));
+      }
+      return results;
+    });
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("duplicate key value")) {
+      throw new ConflictError("One or more codes already exist");
+    }
+    throw err;
+  }
+}
+
+export async function batchGetCurrencies(codes: string[]): Promise<CurrencyResponseDto[]> {
+  const rows = await new CurrencyRepo(getDb()).batchGet(codes);
+  return enrichRows(rows);
+}
+
+export async function batchUpdateCurrencies(inputs: CurrencyBatchUpdateRequestDto[]): Promise<CurrencyResponseDto[]> {
+  try {
+    return await withTransaction(async (client) => {
+      const repo = new CurrencyRepo(client);
+      const results: CurrencyResponseDto[] = [];
+      const audit = await createUpdateAuditStamp();
+      for (const input of inputs) {
+        const row = await repo.update(input.code, withUpdateAudit(toUpdateRow(input), audit));
+        results.push(await enrichRow(row));
+      }
+      return results;
+    });
+  } catch (err) {
+    if (err instanceof DataError) {
+      throw new NotFoundError("One or more currencies not found");
+    }
+    throw err;
+  }
+}
+
+export async function batchPatchCurrencies(inputs: CurrencyBatchPatchRequestDto[]): Promise<CurrencyResponseDto[]> {
+  try {
+    return await withTransaction(async (client) => {
+      const repo = new CurrencyRepo(client);
+      const results: CurrencyResponseDto[] = [];
+      const audit = await createUpdateAuditStamp();
+      for (const input of inputs) {
+        const row = await repo.patch(input.code, withUpdateAudit(toPatchRow(input), audit));
+        results.push(await enrichRow(row));
+      }
+      return results;
+    });
+  } catch (err) {
+    if (err instanceof DataError) {
+      throw new NotFoundError("One or more currencies not found");
+    }
+    throw err;
+  }
+}
+
+export async function batchDeleteCurrencies(codes: string[]): Promise<void> {
+  const normalizedCodes = normalizeCodes(codes);
+  if (normalizedCodes.length === 0) throw new InputValidationError("At least one currency code is required");
+
+  const repo = new CurrencyRepo(getDb());
+  const existing = await repo.batchGet(normalizedCodes);
+  const found = new Set(existing.map((currency) => currency.code));
+  const missing = normalizedCodes.filter((code) => !found.has(code));
+  if (missing.length > 0) throw new NotFoundError(`Currency ${missing.join(", ")} not found`);
+
+  for (const currency of existing) throwIfBlocked(Delete({ code: currency.code, linkedBy: currency.linked_by }));
+
+  await repo.batchDelete(normalizedCodes);
+}
+
+export async function activateCurrency(code: string): Promise<CurrencyResponseDto> {
+  const [currency] = await activateCurrencies([code]);
+  return currency;
+}
+
+export async function deactivateCurrency(code: string): Promise<CurrencyResponseDto> {
+  const [currency] = await deactivateCurrencies([code]);
+  return currency;
+}
+
+export async function activateCurrencies(codes: string[]): Promise<CurrencyResponseDto[]> {
+  return transitionCurrencyStatus(codes, "ACTIVE");
+}
+
+export async function deactivateCurrencies(codes: string[]): Promise<CurrencyResponseDto[]> {
+  return transitionCurrencyStatus(codes, "INACTIVE");
+}
+
+async function transitionCurrencyStatus(codes: string[], targetStatus: "ACTIVE" | "INACTIVE"): Promise<CurrencyResponseDto[]> {
+  const normalizedCodes = normalizeCodes(codes);
+  if (normalizedCodes.length === 0) throw new InputValidationError("At least one currency code is required");
+
+  const audit = await createUpdateAuditStamp();
+  return withTransaction(async (client) => {
+    const repo = new CurrencyRepo(client);
+    const existing = await repo.batchGet(normalizedCodes);
+    const found = new Set(existing.map((currency) => currency.code));
+    const missing = normalizedCodes.filter((code) => !found.has(code));
+    if (missing.length > 0) throw new NotFoundError(`Currency ${missing.join(", ")} not found`);
+    if (targetStatus === "INACTIVE") {
+      for (const currency of existing) throwIfBlocked(Deactivate({ code: currency.code, linkedBy: currency.linked_by }));
+    }
+    const rows = await repo.batchUpdateStatus(normalizedCodes, targetStatus, audit);
+    return enrichRows(rows);
+  });
+}

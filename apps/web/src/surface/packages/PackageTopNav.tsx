@@ -8,9 +8,10 @@ export async function PackageTopNav({
 }: {
   domains: VoyzuComposedSurfaceDomain[];
 }) {
+  const managedDomains = await managedPackageDomains(domains);
   return (
     <PackageTopNavClient
-      domains={await managedPackageDomains(domains)}
+      domains={managedDomains.filter((domain) => domain.topNavigationVisible !== false)}
       allDomains={domains}
     />
   );

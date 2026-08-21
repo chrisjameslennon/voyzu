@@ -1,7 +1,7 @@
 /* ── Page shell ── */
 
 .page {
-  font-family: "Inter", sans-serif;
+  font-family: var(--voyzu-font-family);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -10,8 +10,8 @@
 /* ── Event sub-title (entityType · entityCode) ── */
 
 .headerSub {
-  font-size: 0.8125rem;
-  color: #6b7280;
+  font-size: var(--voyzu-font-size-body-small);
+  color: var(--voyzu-color-text-secondary);
   margin: 0;
   margin-top: 0.125rem;
 }
@@ -29,26 +29,26 @@
 /* ── Changes card ── */
 
 .changesCard {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  background: var(--voyzu-color-surface);
+  border: var(--voyzu-border-width) solid var(--voyzu-color-border);
+  border-radius: var(--voyzu-radius-surface);
+  box-shadow: var(--voyzu-shadow-surface);
   overflow: hidden;
 }
 
 .changesTitle {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #1f2937;
+  font-size: var(--voyzu-font-size-section-heading);
+  font-weight: var(--voyzu-font-weight-section-heading);
+  color: var(--voyzu-color-text-heading);
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: var(--voyzu-border-width) solid var(--voyzu-color-border);
   margin: 0;
 }
 
 .noChanges {
   padding: 1.5rem 1.25rem;
-  font-size: 0.875rem;
-  color: #6b7280;
+  font-size: var(--voyzu-font-size-body);
+  color: var(--voyzu-color-text-secondary);
   margin: 0;
 }
 
@@ -57,27 +57,27 @@
 .changesTable {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  font-size: var(--voyzu-font-size-body);
 }
 
 .th {
   padding: 0.625rem 1.25rem;
   text-align: left;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: #6b7280;
+  font-size: var(--voyzu-font-size-field-label);
+  font-weight: var(--voyzu-font-weight-field-label);
+  color: var(--voyzu-color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #f9fafb;
-  border-bottom: 1px solid #f3f4f6;
+  background: var(--voyzu-color-surface-muted);
+  border-bottom: var(--voyzu-border-width) solid var(--voyzu-color-border);
 }
 
 .tr:not(:last-child) {
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: var(--voyzu-border-width) solid var(--voyzu-color-border);
 }
 
 .tr:hover {
-  background: #f9fafb;
+  background: var(--voyzu-color-surface-muted);
 }
 
 .td {
@@ -87,18 +87,18 @@
 
 .tdField {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--voyzu-color-text-heading);
   width: 200px;
   white-space: nowrap;
 }
 
 .tdOld {
-  color: #dc2626;
+  color: var(--voyzu-color-danger-text);
   word-break: break-all;
 }
 
 .tdNew {
-  color: #15803d;
+  color: var(--voyzu-color-success-text);
   word-break: break-all;
 }
 
@@ -111,10 +111,10 @@
 }
 
 .infoCard {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  background: var(--voyzu-color-surface);
+  border: var(--voyzu-border-width) solid var(--voyzu-color-border);
+  border-radius: var(--voyzu-radius-surface);
+  box-shadow: var(--voyzu-shadow-surface);
   overflow: hidden;
 }
 
@@ -127,13 +127,13 @@
   line-height: var(--voyzu-line-height-heading);
   color: var(--voyzu-color-text-heading);
   padding: 0.875rem 1rem;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: var(--voyzu-border-width) solid var(--voyzu-color-border);
   margin: 0;
 }
 
 .infoTitle .material-symbols-outlined {
   font-size: 16px;
-  color: #9ca3af;
+  color: var(--voyzu-color-text-tertiary);
 }
 
 .infoBody {
@@ -146,7 +146,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  font-size: 0.8125rem;
+  font-size: var(--voyzu-font-size-body-small);
 }
 
 .infoRowStacked {
@@ -156,14 +156,14 @@
 }
 
 .infoLabel {
-  color: #6b7280;
-  font-weight: 500;
+  color: var(--voyzu-color-text-secondary);
+  font-weight: var(--voyzu-font-weight-body);
   flex-shrink: 0;
 }
 
 .infoValue {
-  color: #1f2937;
-  font-weight: 600;
+  color: var(--voyzu-color-text);
+  font-weight: var(--voyzu-font-weight-action);
   text-align: right;
   word-break: break-all;
 }
