@@ -11,9 +11,17 @@ import localStyles from "./company-switcher.module.css";
 
 interface CompanySwitcherProps {
   isCollapsed: boolean;
+  isTemplateMode?: boolean;
+  companyPath?: string;
+  templatePath?: string;
 }
 
-export function CompanySwitcher({ isCollapsed }: CompanySwitcherProps) {
+export function CompanySwitcher({
+  isCollapsed,
+  isTemplateMode = false,
+  companyPath = "/finance/journals",
+  templatePath = "/finance",
+}: CompanySwitcherProps) {
   const router = useRouter();
   const rootRef = useRef<HTMLDivElement>(null);
   const [companies, setCompanies] = useState<CompanyResponseDto[]>([]);
@@ -62,7 +70,7 @@ export function CompanySwitcher({ isCollapsed }: CompanySwitcherProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
-  const displayName = selectedCompany?.name ?? "Select Company";
+  const displayName = isTemplateMode ? "Finance Template" : selectedCompany?.name ?? "Select Company";
 
   const selectCompany = async (company: CompanyResponseDto) => {
     setIsSelectingCompanyId(company.id);
@@ -80,7 +88,7 @@ export function CompanySwitcher({ isCollapsed }: CompanySwitcherProps) {
 
       setSelectedCompany(company);
       setIsOpen(false);
-      router.refresh();
+      router.push(companyPath);
     } finally {
       setIsSelectingCompanyId(null);
     }
@@ -97,7 +105,7 @@ export function CompanySwitcher({ isCollapsed }: CompanySwitcherProps) {
       >
         <span className={localStyles.triggerLeft}>
           <span
-            className={`${localStyles.dot} ${selectedCompany?.status === "INACTIVE" ? localStyles.dotArchived : ""}`}
+            className={`${localStyles.dot} ${isTemplateMode ? localStyles.dotTemplate : selectedCompany?.status === "INACTIVE" ? localStyles.dotArchived : ""}`}
           />
           {!isCollapsed && <span className={localStyles.name}>{displayName}</span>}
         </span>
@@ -115,7 +123,7 @@ export function CompanySwitcher({ isCollapsed }: CompanySwitcherProps) {
             type="button"
             onClick={() => {
               setIsOpen(false);
-              router.push("/finance");
+              router.push(templatePath);
             }}
           >
             <span className={`material-symbols-outlined ${localStyles.templateIcon}`}>account_balance</span>
@@ -129,7 +137,7 @@ export function CompanySwitcher({ isCollapsed }: CompanySwitcherProps) {
           <div className={localStyles.panelLabel}>Select Company</div>
           <div className={localStyles.grid}>
             {companies.map((company) => {
-              const isActive = selectedCompany?.id === company.id;
+              const isActive = !isTemplateMode && selectedCompany?.id === company.id;
               const color = getAvatarColor(company.code);
               return (
                 <button

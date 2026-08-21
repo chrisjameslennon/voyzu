@@ -90,6 +90,7 @@ export interface VoyzuSurfaceMainRegistration {
 
 export interface VoyzuSurfaceLeftNavHeaderProps {
   isCollapsed: boolean;
+  domainId: string;
 }
 
 export interface VoyzuUiDomain {

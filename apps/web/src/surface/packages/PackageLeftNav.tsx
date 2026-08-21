@@ -77,6 +77,7 @@ export function PackageLeftNav({ domains, navigationDomains }: PackageLeftNavPro
           headerSlot={hasLeftNavHeader ? (
             <PackageLeftNavHeader
               packageName={activeDomain!.packageName}
+              domainId={activeDomain!.id}
               isCollapsed={effectiveIsCollapsed}
             />
           ) : undefined}
