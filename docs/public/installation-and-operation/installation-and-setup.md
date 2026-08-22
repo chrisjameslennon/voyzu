@@ -43,10 +43,14 @@ Record the database host, port, database name, username and password. The instal
 Choose a parent directory, then run:
 
 ```shell
-npm exec --yes --package=github:chrisjameslennon/create-voyzu -- create-voyzu install my-voyzu
+npm exec --allow-git=all --yes --package=github:chrisjameslennon/create-voyzu -- create-voyzu install my-voyzu
 ```
 
 The command is the same in PowerShell, macOS and Linux shells.
+
+The `--allow-git=all` option permits this command to download the installer from GitHub. npm 12 blocks Git-based packages by default. The permission applies to this invocation and does not change your persistent npm configuration.
+
+Production installation creates a new project and requires an empty target directory. The install command does not use `--force`; that option is reserved for recreating a development `.run` runtime.
 
 `create-voyzu` always downloads the Voyzu Platform from its `main` branch.
 Platform branch and tag overrides are not supported.

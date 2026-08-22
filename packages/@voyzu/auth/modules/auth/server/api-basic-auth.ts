@@ -78,7 +78,7 @@ export async function authenticateApiBasicRequest(request: NextRequest): Promise
 
   return {
     kind: "authenticated",
-    user: toDto(row, await repo.listAssignments(row.id)),
+    user: toDto(row),
   };
 }
 

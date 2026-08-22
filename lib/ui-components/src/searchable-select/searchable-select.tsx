@@ -121,6 +121,7 @@ export function SearchableSelect({
   return (
     <div ref={wrapRef} style={{ position: "relative" }}>
       <button
+        type="button"
         ref={triggerRef}
         onClick={toggleOpen}
         disabled={disabled}
@@ -165,6 +166,7 @@ export function SearchableSelect({
                 const isSelected = o.value === value;
                 return (
                   <button
+                    type="button"
                     key={o.value}
                     ref={isSelected ? selectedRefCallback : undefined}
                     className={`${styles.option} ${isSelected ? styles.optionSelected : ""}`}

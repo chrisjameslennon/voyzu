@@ -17,7 +17,6 @@ export const createUser = operation(userService.createUser);
 export const changeUserPassword = operation(userService.changeUserPassword);
 export const updateUser = operation(userService.updateUser);
 export const patchUser = operation(userService.patchUser);
-export const replaceUserCompanyAccess = operation(userService.replaceUserCompanyAccess);
 export const deleteUser = operation(userService.deleteUser);
 export const batchGetUsers = operation(userService.batchGetUsers);
 export const batchCreateUsers = operation(userService.batchCreateUsers);
@@ -43,7 +42,6 @@ export const operations = {
   changeUserPassword,
   updateUser,
   patchUser,
-  replaceUserCompanyAccess,
   deleteUser,
   batchGetUsers,
   batchCreateUsers,

@@ -5,8 +5,7 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
     CREATE TYPE user_role AS ENUM (
       'ADMIN',
-      'ORGANIZATION_USER',
-      'COMPANY_USER'
+      'STANDARD'
     );
   END IF;
 
@@ -27,7 +26,7 @@ CREATE TABLE app_user (
     password_hash TEXT NOT NULL,
     role user_role NOT NULL,
     access_mode user_access_mode NOT NULL DEFAULT 'UI',
-    show_developer_links BOOLEAN NOT NULL DEFAULT false,
+    implementer_access BOOLEAN NOT NULL DEFAULT false,
     status active_status,
 
     creation_date audit_timestamp,
@@ -47,5 +46,5 @@ CREATE TABLE app_user (
 
     CONSTRAINT app_user_email_trim CHECK (email IS NULL OR email = btrim(email)),
     CONSTRAINT app_user_email_not_blank CHECK (email IS NULL OR length(email) > 0),
-    CONSTRAINT app_user_developer_links_admin_only CHECK (show_developer_links = false OR role = 'ADMIN')
+    CONSTRAINT app_user_implementer_access_admin_only CHECK (implementer_access = false OR role = 'ADMIN')
 );

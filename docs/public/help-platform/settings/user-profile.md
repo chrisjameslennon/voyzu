@@ -24,7 +24,7 @@ Voyzu has no password-reset email. If you cannot sign in, an administrator must 
 
 ## Access changes
 
-You cannot change your role, UI/API access mode, status, or company assignments from this screen. An administrator manages those settings from Users. Admin and organization roles have all-company access; company users see only assigned companies.
+You cannot change your role, UI/API access mode, or status from this screen. An administrator manages those settings from Users. Installed business packages manage their own scope assignments separately.
 
 ## See also
 

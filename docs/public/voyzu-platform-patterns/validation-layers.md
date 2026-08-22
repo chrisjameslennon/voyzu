@@ -215,8 +215,7 @@ This layer validates rules that are not merely properties of an individual DTO f
 ```
 a password and confirmation must match
 a password length depends on the selected access mode
-company assignments are only valid for company users
-a developer-only option may only be enabled for administrators
+implementer access may only be enabled for administrators
 ```
 
 For example:
@@ -224,11 +223,8 @@ For example:
 ```ts
 export function validateUserInput(input: UserCreateRequestDto): string[] {
   const errors: string[] = [];
-  if (input.showDeveloperLinks === true && input.role !== "ADMIN") {
-    errors.push("showDeveloperLinks can only be enabled for admin users");
-  }
-  if (input.role !== "COMPANY_USER" && input.companyIds?.length) {
-    errors.push("company assignments are only valid for company users");
+  if (input.implementerAccess === true && input.role !== "ADMIN") {
+    errors.push("implementerAccess can only be enabled for admin users");
   }
   return errors;
 }

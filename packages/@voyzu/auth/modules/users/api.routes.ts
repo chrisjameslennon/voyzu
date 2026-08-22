@@ -1,7 +1,6 @@
 import {
   UserBatchPatchRequestDto,
   UserBatchUpdateRequestDto,
-  UserCompanyAccessUpdateRequestDto,
   UserCreateRequestDto,
   UserPasswordUpdateRequestDto,
   UserPatchRequestDto,
@@ -27,13 +26,13 @@ import {
   handleFilter as handleFilterUsers,
   handleGet as handleGetUser,
   handlePatch as handlePatchUser,
-  handleReplaceCompanyAccess,
   handleSearch as handleSearchUsers,
   handleUpdateCurrentProfile,
   handleUpdate as handleUpdateUser,
   handleList as handleUsersList,
 } from "@voyzu/auth/users/server";
 import {
+  BusinessRuleErrorResponseDto,
   CodesRequestDto,
   ConflictErrorResponseDto,
   EntityNotFoundErrorResponseDto,
@@ -57,6 +56,10 @@ const commonResponses = {
   "403": {
     description: "Access is forbidden.",
     body: ForbiddenErrorResponseDto,
+  },
+  "422": {
+    description: "A business rule prevented the operation.",
+    body: BusinessRuleErrorResponseDto,
   },
   "500": {
     description: "An unexpected server error occurred.",
@@ -505,41 +508,6 @@ export const apiDefinitions = {
     responses: {
       ...commonResponses,
       "204": { description: "Password changed successfully." },
-      "400": {
-        description: "Validation failed.",
-        body: InputValidationErrorResponseDto,
-      },
-      "404": {
-        description: "Entity not found.",
-        body: EntityNotFoundErrorResponseDto,
-      },
-      "500": {
-        description: "An unexpected server error occurred.",
-        body: InternalServerErrorResponseDto,
-      },
-    },
-  },
-  replaceCompanyAccess: {
-    method: "PUT",
-    path: "/users/[code]/companies",
-    handler: (request: any, context: any) =>
-      handleReplaceCompanyAccess(request, context),
-    request: {
-      path: {
-        code: {
-          description: "Business code of the requested record.",
-          schema: userCodePath,
-        },
-      },
-      contentType: "application/json",
-      body: UserCompanyAccessUpdateRequestDto,
-    },
-    summary: "Replace Company Access",
-    description: "Replace Company Access Users.",
-    tags: ["Users"],
-    responses: {
-      ...commonResponses,
-      "204": { description: "Company access replaced successfully." },
       "400": {
         description: "Validation failed.",
         body: InputValidationErrorResponseDto,

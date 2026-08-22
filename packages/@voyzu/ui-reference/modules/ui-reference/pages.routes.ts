@@ -27,7 +27,7 @@ import ValidationPage from "./server/pages/patterns/validation/page";
 
 const auth = {
   required: true,
-  minRole: "COMPANY_USER",
+  minRole: "STANDARD",
 } as const;
 
 const helpPath = "voyzu-platform-patterns/ui-reference";

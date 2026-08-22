@@ -40,11 +40,14 @@ export interface VoyzuSurfaceRoute {
   auth?: VoyzuSurfaceRouteAuth;
 }
 
-export type VoyzuSurfaceRole = "COMPANY_USER" | "ORGANIZATION_USER" | "ADMIN";
+export type VoyzuSurfaceRole = "STANDARD" | "ADMIN";
 
 export interface VoyzuSurfaceRouteAuth {
   required?: boolean;
   minRole?: VoyzuSurfaceRole;
+  authorize?: (
+    context: VoyzuSurfaceAccessContext,
+  ) => VoyzuSurfaceAccessResult | Promise<VoyzuSurfaceAccessResult>;
 }
 
 export interface VoyzuSurfaceUserAccess {

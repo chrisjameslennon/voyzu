@@ -51,13 +51,7 @@
               {
                 "type": "string",
                 "enum": [
-                  "ORGANIZATION_USER"
-                ]
-              },
-              {
-                "type": "string",
-                "enum": [
-                  "COMPANY_USER"
+                  "STANDARD"
                 ]
               }
             ]
@@ -84,15 +78,8 @@
               }
             ]
           },
-          "showDeveloperLinks": {
+          "implementerAccess": {
             "type": "boolean"
-          },
-          "companyIds": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 1
-            }
           },
           "code": {
             "type": "string",
@@ -112,10 +99,7 @@
         "displayName": "string",
         "role": "ADMIN",
         "accessMode": "UI",
-        "showDeveloperLinks": true,
-        "companyIds": [
-          1
-        ],
+        "implementerAccess": true,
         "code": "string"
       }
     ]
@@ -139,9 +123,8 @@
             "displayName",
             "role",
             "accessMode",
-            "showDeveloperLinks",
+            "implementerAccess",
             "status",
-            "assignments",
             "audit"
           ],
           "properties": {
@@ -185,13 +168,7 @@
                 {
                   "type": "string",
                   "enum": [
-                    "ORGANIZATION_USER"
-                  ]
-                },
-                {
-                  "type": "string",
-                  "enum": [
-                    "COMPANY_USER"
+                    "STANDARD"
                   ]
                 }
               ]
@@ -218,7 +195,7 @@
                 }
               ]
             },
-            "showDeveloperLinks": {
+            "implementerAccess": {
               "type": "boolean"
             },
             "status": {
@@ -236,42 +213,6 @@
                   ]
                 }
               ]
-            },
-            "assignments": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "required": [
-                  "id",
-                  "userId",
-                  "companyId",
-                  "companyCode",
-                  "companyName"
-                ],
-                "properties": {
-                  "id": {
-                    "type": "integer",
-                    "minimum": 1
-                  },
-                  "userId": {
-                    "type": "integer",
-                    "minimum": 1
-                  },
-                  "companyId": {
-                    "type": "integer",
-                    "minimum": 1
-                  },
-                  "companyCode": {
-                    "type": "string",
-                    "pattern": "\\S"
-                  },
-                  "companyName": {
-                    "type": "string",
-                    "pattern": "\\S"
-                  }
-                },
-                "additionalProperties": false
-              }
             },
             "audit": {
               "type": "object",
@@ -487,17 +428,8 @@
           "displayName": "string",
           "role": "ADMIN",
           "accessMode": "UI",
-          "showDeveloperLinks": true,
+          "implementerAccess": true,
           "status": "ACTIVE",
-          "assignments": [
-            {
-              "id": 1,
-              "userId": 1,
-              "companyId": 1,
-              "companyCode": "string",
-              "companyName": "string"
-            }
-          ],
           "audit": {
             "created": {
               "date": "2019-08-24T14:15:22Z",
@@ -606,6 +538,34 @@
       },
       "example": {
         "code": "FORBIDDEN",
+        "message": "string"
+      }
+    },
+    "422": {
+      "description": "A business rule prevented the operation.",
+      "contentType": "application/json",
+      "schemaRef": "BusinessRuleErrorResponseDto",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "BUSINESS_RULE"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "BUSINESS_RULE",
         "message": "string"
       }
     },

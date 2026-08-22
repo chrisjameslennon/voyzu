@@ -5,7 +5,7 @@ The Organization screen maintains the identity of the Voyzu organization. A Voyz
 ## Concepts
 
 * [Organizations and Companies](../../voyzu-core-concepts/organizations-and-companies.md) explains the organization boundary, companies, and shared standards.
-* [Users and permissions](../../help-platform/settings/users.md) explains organization-wide roles and company access.
+* [Users and permissions](../../help-platform/settings/users.md) explains platform roles; company assignments are managed from **Organization > Company Access**.
 
 ## Viewing the organization
 

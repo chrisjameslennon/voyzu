@@ -20,7 +20,6 @@ export async function UserDetailPage({ code }: UserDetailPageProps) {
         pageTitle="Users"
         canManageUsers={false}
         user={null}
-        companies={[]}
       />
     );
   }
@@ -34,7 +33,6 @@ export async function UserDetailPage({ code }: UserDetailPageProps) {
       pageTitle="Users"
       canManageUsers
       user={user}
-      companies={[]}
     />
   );
 }

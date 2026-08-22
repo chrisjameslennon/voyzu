@@ -9,7 +9,7 @@ export const pageRoutes = {
     helpPath: "installation-and-operation/installation-and-setup",
     auth: {
       required: true,
-      minRole: "COMPANY_USER",
+      minRole: "STANDARD",
     },
   },
 } as const;

@@ -5,9 +5,8 @@ import { CURRENT_USER_ACCESS_REFRESH_EVENT } from "@voyzu/auth/users/client";
 import type { UserResponseDto, UserRole } from "@voyzu/auth/types";
 
 const ROLE_RANK: Record<UserRole, number> = {
-  COMPANY_USER: 1,
-  ORGANIZATION_USER: 2,
-  ADMIN: 3,
+  STANDARD: 1,
+  ADMIN: 2,
 };
 
 export function canAccessRole(user: UserResponseDto | null, minRole: UserRole): boolean {

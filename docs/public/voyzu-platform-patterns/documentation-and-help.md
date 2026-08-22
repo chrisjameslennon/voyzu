@@ -58,7 +58,7 @@ export const pageRoutes = {
     Page: StockListPage,
     pageTitle: "Stock",
     helpPath: "/stock/stock-items",
-    auth: { required: true, minRole: "COMPANY_USER" },
+    auth: { required: true, minRole: "STANDARD" },
   },
 } as const;
 ```

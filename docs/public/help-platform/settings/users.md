@@ -1,6 +1,6 @@
 # Users and permissions
 
-Users manages identities, authentication channels, roles, status, and company access. Create a separate identity for every person and integration so access can be revoked independently and audit records identify the actual actor.
+Users manages platform identities, authentication channels, roles and status. Create a separate identity for every person and integration so access can be revoked independently and audit records identify the actual actor.
 
 ## Signing in
 
@@ -16,15 +16,14 @@ Access mode controls where the identity can be used:
 
 UI passwords require at least 8 characters. Identities with API access require at least 16 characters.
 
-## Roles and company access
+## Roles
 
-| Role              | Scope                                                                                     |
-| ----------------- | ----------------------------------------------------------------------------------------- |
-| Admin             | Application administration, organization functionality, and all active companies.         |
-| Organization user | Organization functionality and all active companies, without administrator-only settings. |
-| Company user      | Company functionality for explicitly assigned companies only.                             |
+| Role     | Scope                                                                    |
+| -------- | ------------------------------------------------------------------------ |
+| Admin    | Platform administration and unrestricted access to installed applications. |
+| Standard | Normal application access. Business packages may apply additional scope. |
 
-Admin and organization users do not need company assignments. A company user with no assignments has no company available.
+When ERP Core is installed, company assignments are managed separately from platform identity under **Organization > Company Access**. Admin users have access to every company; standard users have access only to assigned companies.
 
 ## Viewing users
 
@@ -36,7 +35,7 @@ Search or filter by role, access mode, and status. Select rows for Activate, Dea
 
 ## Create a new user
 
-Select **Add User**. Enter a stable code, optional email, display name, initial password, role, access mode, status, and company assignments where required.
+Select **Add User**. Enter a stable code, optional email, display name, initial password, role, access mode and status.
 
 Choose **UI**, **API**, or **UI and API** deliberately. UI passwords require at least 8 characters; identities with API access require at least 16. Voyzu sends no email, invitation, or reset message, so supply the password manually through a secure channel.
 
@@ -44,7 +43,7 @@ An email address is an optional UI login identifier, not a recovery mechanism. V
 
 ## Make changes
 
-Open a user to update display name, email, role, access mode, company assignments, or administrator-only options. Use **Change Password** to set a replacement credential. Changing an email changes an optional UI login identifier; API login always uses the user code.
+Open a user to update display name, email, role, access mode, or administrator-only options. Use **Change Password** to set a replacement credential. Changing an email changes an optional UI login identifier; API login always uses the user code.
 
 ## Change status
 
@@ -58,8 +57,8 @@ Use deletion only for an identity created in error with no meaningful history. P
 
 * Give every person and integration its own identity.
 * Use API-only identities for integrations where practical.
-* Assign company users only to companies they need.
-* Reserve organization and admin roles for all-company responsibilities.
+* Grant standard users only the business-package access they need.
+* Reserve the admin role for platform administration.
 * Share passwords outside Voyzu through a secure channel.
 * Deactivate access promptly when it is no longer required.
 

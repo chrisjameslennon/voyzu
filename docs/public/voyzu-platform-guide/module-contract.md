@@ -82,7 +82,7 @@ export const pageRoutes = {
     path: "/stock/[code]",
     pageTitle: "Stock item",
     Page: StockDetailPage,
-    auth: { required: true, minRole: "ORGANIZATION_USER" },
+    auth: { required: true, minRole: "STANDARD" },
   },
 } as const;
 ```
@@ -97,7 +97,7 @@ Example:
 // packages/@acme/warehousing/modules/stock/pages.routes.ts
 auth: {
   required: true,
-  minRole: "ORGANIZATION_USER",
+  minRole: "STANDARD",
 },
 ```
 

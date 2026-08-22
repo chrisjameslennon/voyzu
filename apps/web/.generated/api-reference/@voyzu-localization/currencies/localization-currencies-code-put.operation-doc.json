@@ -60,8 +60,6 @@
           "code",
           "name",
           "status",
-          "hasPostings",
-          "linkedBy",
           "audit"
         ],
         "properties": {
@@ -96,29 +94,6 @@
                 ]
               }
             ]
-          },
-          "hasPostings": {
-            "type": "boolean",
-            "description": "True when at least one company using this base currency has posted journal headers."
-          },
-          "linkedBy": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": [
-                "type",
-                "code"
-              ],
-              "properties": {
-                "type": {
-                  "type": "string"
-                },
-                "code": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false
-            }
           },
           "audit": {
             "type": "object",
@@ -331,13 +306,6 @@
         "name": "string",
         "symbol": "string",
         "status": "ACTIVE",
-        "hasPostings": true,
-        "linkedBy": [
-          {
-            "type": "string",
-            "code": "string"
-          }
-        ],
         "audit": {
           "created": {
             "date": "2019-08-24T14:15:22Z",

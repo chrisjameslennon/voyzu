@@ -35,7 +35,7 @@ export const pageRoutes = {
         label: "Localization",
       },
     ],
-    auth: { required: true, minRole: "ORGANIZATION_USER" }
+    auth: { required: true, minRole: "STANDARD" }
   },
   detail: {
     id: "voyzu.countries.page.detail",
@@ -56,6 +56,6 @@ export const pageRoutes = {
         href: "/settings/localization/countries",
       },
     ],
-    auth: { required: true, minRole: "ORGANIZATION_USER" }
+    auth: { required: true, minRole: "STANDARD" }
   }
 } as const;

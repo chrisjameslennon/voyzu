@@ -7,7 +7,7 @@ The Companies screen manages the separate financial entities held within the org
 Before maintaining companies, understand how Voyzu separates an organization from the financial records owned by each company:
 
 * [Organizations and Companies](../../voyzu-core-concepts/organizations-and-companies.md) explains the organization-to-company model, separate company ledgers, and organization standard settings.
-* [Users and permissions](../../help-platform/settings/users.md) explains which users can access all companies and how company users are assigned access.
+* [Users and permissions](../../help-platform/settings/users.md) explains platform roles; company assignments are managed from **Organization > Company Access**.
 * [Tax](../../voyzu-core-concepts/tax.md) explains the tax settings associated with a company's country and filing profile.
 
 ## Viewing companies

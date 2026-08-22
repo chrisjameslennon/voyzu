@@ -25,7 +25,6 @@ import {
   getUser,
   listUsers,
   patchUser,
-  replaceUserCompanyAccess,
   searchUsers,
   updateCurrentUserProfile,
   updateUser,
@@ -47,9 +46,9 @@ function input(code = uniqueCode(), overrides: Partial<UserCreateRequestDto> = {
     displayName: `Operation test ${code}`,
     password: PASSWORD,
     confirmPassword: PASSWORD,
-    role: "ORGANIZATION_USER",
+    role: "STANDARD",
     accessMode: "UI",
-    showDeveloperLinks: false,
+    implementerAccess: false,
     status: "ACTIVE",
     ...overrides,
   };
@@ -105,24 +104,22 @@ test("current-user operations use the external caller context", async () => {
   assert.equal(await asAdmin(() => currentUserCanManageUsers()), true);
 });
 
-test("createUser, updateUser, patchUser, and replaceUserCompanyAccess mutate through operations", async () => {
-  const created = await create({ role: "COMPANY_USER", companyIds: [] });
+test("createUser, updateUser, and patchUser mutate through operations", async () => {
+  const created = await create({ role: "STANDARD" });
   const updated = await asAdmin(() => updateUser(created.code, {
     code: created.code,
     email: null,
     displayName: "Fully updated",
-    role: "COMPANY_USER",
+    role: "STANDARD",
     accessMode: "UI_AND_API",
-    showDeveloperLinks: false,
+    implementerAccess: false,
     status: "ACTIVE",
-    companyIds: [],
   }));
   assert.equal(updated.displayName, "Fully updated");
   assert.equal(updated.accessMode, "UI_AND_API");
 
   const patched = await asAdmin(() => patchUser(created.code, { displayName: "Partially updated" }));
   assert.equal(patched.displayName, "Partially updated");
-  assert.deepEqual((await asAdmin(() => replaceUserCompanyAccess(created.code, []))).assignments, []);
 });
 
 test("changeUserPassword, activateUser, deactivateUser, and deleteUser expose single-record commands", async () => {
@@ -147,9 +144,8 @@ test("batchCreateUsers, batchGetUsers, batchUpdateUsers, and batchPatchUsers exp
     displayName: `Batch updated ${index}`,
     role: user.role,
     accessMode: user.accessMode,
-    showDeveloperLinks: user.showDeveloperLinks,
+    implementerAccess: user.implementerAccess,
     status: user.status,
-    companyIds: [],
   }))));
   assert.deepEqual(updated.map(({ displayName }) => displayName), ["Batch updated 0", "Batch updated 1"]);
 

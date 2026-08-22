@@ -19,7 +19,7 @@ export const pageRoutes = {
     pageTitle: "User Profile",
     helpPath: "help-platform/settings/user-profile",
     breadcrumbBase: [{ label: "Settings" }, { label: "Users" }],
-    auth: { required: true, minRole: "COMPANY_USER" },
+    auth: { required: true, minRole: "STANDARD" },
   },
   detail: {
     id: "voyzu.users.page.detail",

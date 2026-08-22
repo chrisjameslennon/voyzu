@@ -30,10 +30,12 @@ export function PackageTopNavClient({ domains, allDomains }: PackageTopNavProps)
   const activeDomain = allDomains.find((domain) =>
     domain.routePaths.some(({ path }) => routeMatches(pathname, path))
   );
+  const activeTopNavigationDomain = domains.find((domain) => domain.id === activeDomain?.id)
+    ?? domains.find((domain) => domain.packageName === activeDomain?.packageName);
 
   if (isMobile) {
     const isSettings = pathname.startsWith("/settings");
-    const label = isSettings ? "Settings" : activeDomain?.label;
+    const label = isSettings ? "Settings" : activeTopNavigationDomain?.label;
     if (!label) return null;
 
     return (
@@ -42,7 +44,7 @@ export function PackageTopNavClient({ domains, allDomains }: PackageTopNavProps)
         type="button"
         aria-label={label}
         onClick={() => {
-          if (activeDomain) router.push(activeDomain.defaultPath);
+          if (activeTopNavigationDomain) router.push(activeTopNavigationDomain.defaultPath);
         }}
       >
         {label}
@@ -57,7 +59,7 @@ export function PackageTopNavClient({ domains, allDomains }: PackageTopNavProps)
           key={domain.id}
           className={[
             styles.topNavButton,
-            domain.id === activeDomain?.id
+            domain.id === activeTopNavigationDomain?.id
               ? styles.topNavButtonActive
               : styles.topNavButtonInactive,
           ].join(" ")}

@@ -7,11 +7,8 @@ import type {
 
 export function validateUserInput(input: UserCreateRequestDto | UserUpdateRequestDto): string[] {
   const errors: string[] = [];
-  if (input.showDeveloperLinks === true && input.role !== "ADMIN") {
-    errors.push("showDeveloperLinks can only be enabled for admin users");
-  }
-  if (input.role !== "COMPANY_USER" && input.companyIds?.length) {
-    errors.push("company assignments are only valid for company users");
+  if (input.implementerAccess === true && input.role !== "ADMIN") {
+    errors.push("implementerAccess can only be enabled for admin users");
   }
   return errors;
 }

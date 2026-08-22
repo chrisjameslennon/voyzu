@@ -36,45 +36,6 @@
           "currencyCode": {
             "type": "string",
             "pattern": "^[A-Z]{3}$"
-          },
-          "taxFilingAnchorMonth": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 12
-          },
-          "taxFilingIntervalMonths": {
-            "anyOf": [
-              {
-                "type": "number",
-                "enum": [
-                  1
-                ]
-              },
-              {
-                "type": "number",
-                "enum": [
-                  2
-                ]
-              },
-              {
-                "type": "number",
-                "enum": [
-                  3
-                ]
-              },
-              {
-                "type": "number",
-                "enum": [
-                  6
-                ]
-              },
-              {
-                "type": "number",
-                "enum": [
-                  12
-                ]
-              }
-            ]
           }
         },
         "additionalProperties": false
@@ -84,9 +45,7 @@
       {
         "code": "string",
         "name": "string",
-        "currencyCode": "string",
-        "taxFilingAnchorMonth": 1,
-        "taxFilingIntervalMonths": 1
+        "currencyCode": "string"
       }
     ]
   },
@@ -107,13 +66,8 @@
             "code",
             "name",
             "currencyCode",
-            "financialPeriodStartMonth",
-            "taxFilingAnchorMonth",
-            "taxFilingIntervalMonths",
             "currency",
             "status",
-            "hasPostings",
-            "linkedBy",
             "audit"
           ],
           "properties": {
@@ -133,253 +87,6 @@
             "currencyCode": {
               "type": "string",
               "pattern": "^[A-Z]{3}$"
-            },
-            "financialPeriodStartMonth": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "taxFilingAnchorMonth": {
-              "type": "number",
-              "description": "Anchor month used for tax filing cycles."
-            },
-            "taxFilingIntervalMonths": {
-              "anyOf": [
-                {
-                  "type": "number",
-                  "enum": [
-                    1
-                  ]
-                },
-                {
-                  "type": "number",
-                  "enum": [
-                    2
-                  ]
-                },
-                {
-                  "type": "number",
-                  "enum": [
-                    3
-                  ]
-                },
-                {
-                  "type": "number",
-                  "enum": [
-                    6
-                  ]
-                },
-                {
-                  "type": "number",
-                  "enum": [
-                    12
-                  ]
-                }
-              ]
-            },
-            "taxAuthorities": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "required": [
-                  "id",
-                  "code",
-                  "name",
-                  "jurisdictionLevel",
-                  "status"
-                ],
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "description": "Internal identifier for the tax authority."
-                  },
-                  "code": {
-                    "type": "string",
-                    "pattern": "^[A-Z0-9][A-Z0-9_-]*$",
-                    "description": "An uppercase business code containing letters, numbers, underscores or hyphens."
-                  },
-                  "name": {
-                    "type": "string",
-                    "pattern": "\\S"
-                  },
-                  "regionCode": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "pattern": "^[A-Z0-9][A-Z0-9_-]*$",
-                        "description": "An uppercase business code containing letters, numbers, underscores or hyphens."
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
-                  "jurisdictionLevel": {
-                    "type": "string",
-                    "description": "Jurisdiction level handled by the authority."
-                  },
-                  "status": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "enum": [
-                          "ACTIVE"
-                        ]
-                      },
-                      {
-                        "type": "string",
-                        "enum": [
-                          "INACTIVE"
-                        ]
-                      }
-                    ]
-                  }
-                },
-                "additionalProperties": false
-              }
-            },
-            "taxRules": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "required": [
-                  "id",
-                  "code",
-                  "name",
-                  "invoiceLabel",
-                  "calculationMethod",
-                  "componentCount",
-                  "status"
-                ],
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "description": "Internal identifier for the tax rule."
-                  },
-                  "code": {
-                    "type": "string",
-                    "pattern": "^[A-Z0-9][A-Z0-9_-]*$",
-                    "description": "An uppercase business code containing letters, numbers, underscores or hyphens."
-                  },
-                  "name": {
-                    "type": "string",
-                    "pattern": "\\S"
-                  },
-                  "regionCode": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "pattern": "^[A-Z0-9][A-Z0-9_-]*$",
-                        "description": "An uppercase business code containing letters, numbers, underscores or hyphens."
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
-                  },
-                  "invoiceLabel": {
-                    "type": "string",
-                    "description": "Invoice label used for this tax rule."
-                  },
-                  "calculationMethod": {
-                    "type": "string",
-                    "description": "Calculation method used by this tax rule."
-                  },
-                  "componentCount": {
-                    "type": "number",
-                    "description": "Number of tax components in this tax rule."
-                  },
-                  "status": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "enum": [
-                          "ACTIVE"
-                        ]
-                      },
-                      {
-                        "type": "string",
-                        "enum": [
-                          "INACTIVE"
-                        ]
-                      }
-                    ]
-                  }
-                },
-                "additionalProperties": false
-              }
-            },
-            "taxComponents": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "required": [
-                  "id",
-                  "code",
-                  "taxRuleCode",
-                  "taxAuthorityCode",
-                  "schemeCode",
-                  "invoiceLabel",
-                  "rate",
-                  "status"
-                ],
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "description": "Internal identifier for the tax component."
-                  },
-                  "code": {
-                    "type": "string",
-                    "pattern": "^[A-Z0-9][A-Z0-9_-]*$",
-                    "description": "An uppercase business code containing letters, numbers, underscores or hyphens."
-                  },
-                  "taxRuleCode": {
-                    "type": "string",
-                    "pattern": "^[A-Z0-9][A-Z0-9_-]*$",
-                    "description": "An uppercase business code containing letters, numbers, underscores or hyphens."
-                  },
-                  "taxAuthorityCode": {
-                    "type": "string",
-                    "pattern": "^[A-Z0-9][A-Z0-9_-]*$",
-                    "description": "An uppercase business code containing letters, numbers, underscores or hyphens."
-                  },
-                  "schemeCode": {
-                    "type": "string",
-                    "pattern": "^[A-Z0-9][A-Z0-9_-]*$",
-                    "description": "An uppercase business code containing letters, numbers, underscores or hyphens."
-                  },
-                  "invoiceLabel": {
-                    "type": "string",
-                    "description": "Invoice label used for this tax component."
-                  },
-                  "rate": {
-                    "type": "number",
-                    "description": "Tax rate for this component."
-                  },
-                  "status": {
-                    "anyOf": [
-                      {
-                        "type": "string",
-                        "enum": [
-                          "ACTIVE"
-                        ]
-                      },
-                      {
-                        "type": "string",
-                        "enum": [
-                          "INACTIVE"
-                        ]
-                      }
-                    ]
-                  }
-                },
-                "additionalProperties": false
-              }
             },
             "currency": {
               "type": "object",
@@ -415,29 +122,6 @@
                   ]
                 }
               ]
-            },
-            "hasPostings": {
-              "type": "boolean",
-              "description": "True when at least one company in this country has posted journal headers."
-            },
-            "linkedBy": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "required": [
-                  "type",
-                  "code"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  },
-                  "code": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false
-              }
             },
             "audit": {
               "type": "object",
@@ -651,55 +335,11 @@
           "code": "string",
           "name": "string",
           "currencyCode": "string",
-          "financialPeriodStartMonth": "string",
-          "taxFilingAnchorMonth": 0,
-          "taxFilingIntervalMonths": 1,
-          "taxAuthorities": [
-            {
-              "id": "string",
-              "code": "string",
-              "name": "string",
-              "regionCode": "string",
-              "jurisdictionLevel": "string",
-              "status": "ACTIVE"
-            }
-          ],
-          "taxRules": [
-            {
-              "id": "string",
-              "code": "string",
-              "name": "string",
-              "regionCode": "string",
-              "invoiceLabel": "string",
-              "calculationMethod": "string",
-              "componentCount": 0,
-              "status": "ACTIVE"
-            }
-          ],
-          "taxComponents": [
-            {
-              "id": "string",
-              "code": "string",
-              "taxRuleCode": "string",
-              "taxAuthorityCode": "string",
-              "schemeCode": "string",
-              "invoiceLabel": "string",
-              "rate": 0,
-              "status": "ACTIVE"
-            }
-          ],
           "currency": {
             "code": "string",
             "name": "string"
           },
           "status": "ACTIVE",
-          "hasPostings": true,
-          "linkedBy": [
-            {
-              "type": "string",
-              "code": "string"
-            }
-          ],
           "audit": {
             "created": {
               "date": "2019-08-24T14:15:22Z",

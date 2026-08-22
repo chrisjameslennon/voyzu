@@ -14,8 +14,8 @@ export function TopNavMenu() {
   const isFinanceActive = pathname.startsWith("/finance");
   const isSettingsActive = pathname.startsWith("/settings");
   const isOrganizationActive = !isSettingsActive && !isFinanceActive;
-  const canAccessOrganization = isLoaded && canAccessRole(user, "ORGANIZATION_USER");
-  const canAccessFinance = isLoaded && canAccessRole(user, "COMPANY_USER");
+  const canAccessOrganization = isLoaded && canAccessRole(user, "STANDARD");
+  const canAccessFinance = isLoaded && canAccessRole(user, "STANDARD");
 
   if (isMobile) {
     const activeLabel = isSettingsActive

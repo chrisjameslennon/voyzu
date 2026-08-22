@@ -70,7 +70,7 @@ The login page posts the supplied identifier and password to `POST /api/auth/log
 - `SameSite=Lax`.
 - An eight-hour lifetime.
 
-The cookie identifies the user and session expiry. On authenticated application requests, `getCurrentUser()` reloads the complete user record and company assignments from the database. Deactivation, role changes, access-mode changes, and assignment changes therefore take effect without waiting for the cookie to expire.
+The cookie identifies the user and session expiry. On authenticated application requests, `getCurrentUser()` reloads the platform user record from the database. Deactivation, role changes and access-mode changes therefore take effect without waiting for the cookie to expire. Business packages load their own scope assignments at their perimeter.
 
 The installer generates a strong private `VOYZU_AUTH_SECRET` for each installation. Preserve it in every deployed environment. Voyzu refuses to create or verify sessions when the value is missing or decodes to fewer than 32 bytes. Changing the secret invalidates existing UI sessions.
 
@@ -88,7 +88,7 @@ export const pageRoutes = {
     path: "/inventory/items",
     pageTitle: "Inventory items",
     Page: InventoryItemsListPage,
-    auth: { required: true, minRole: "COMPANY_USER" },
+    auth: { required: true, minRole: "STANDARD" },
   },
 }
 ```

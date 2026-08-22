@@ -34,7 +34,7 @@ export async function getCurrentUser(): Promise<UserResponseDto | null> {
 
   const repo = new UserRepo(getDb());
   const row = await repo.get(session.code);
-  return row ? toDto(row, await repo.listAssignments(row.id)) : null;
+  return row ? toDto(row) : null;
 }
 
 export async function currentUserCanManageUsers(): Promise<boolean> {

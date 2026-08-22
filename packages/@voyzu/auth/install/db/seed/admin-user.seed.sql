@@ -5,7 +5,7 @@ INSERT INTO app_user (
     password_hash,
     role,
     access_mode,
-    show_developer_links,
+    implementer_access,
     status,
     creation_actor_type,
     updated_actor_type

@@ -105,6 +105,10 @@
   font-size: 22px;
 }
 
+.iconButtonActive {
+  color: var(--voyzu-color-brand);
+}
+
 .left {
   grid-area: left;
   display: contents;

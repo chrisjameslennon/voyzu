@@ -18,7 +18,7 @@ export function UserAccessDenied({ pageTitle }: { pageTitle: string }) {
           </div>
           <h1 className={`${typography.pageTitle} ${layout.pageTitleResponsive}`}>{pageTitle}</h1>
           <div className={layout.slotTitleByline}>
-            <p className={typography.headingByline}>Manage application users and company access.</p>
+            <p className={typography.headingByline}>Manage application users and platform access.</p>
           </div>
         </div>
       </header>

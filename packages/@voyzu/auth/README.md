@@ -1,7 +1,6 @@
 # Voyzu Auth
 
-Preinstalled Voyzu package providing authentication and user management.
+Preinstalled Voyzu package providing authentication, user identity and user management.
 
-The base installation owns `app_user`. Company assignments are an optional
-integration installed only when a package providing the `company` table is
-present.
+The base installation owns `app_user`. Packages that introduce business scopes,
+such as ERP companies, own their own user-to-scope assignments.

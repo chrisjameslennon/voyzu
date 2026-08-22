@@ -197,7 +197,7 @@ export const pageRoutes = {
     path: "/ice-creams",
     Page: IceCreamsListPage,
     pageTitle: "Ice Creams",
-    auth: { required: true, minRole: "ORGANIZATION_USER" },
+    auth: { required: true, minRole: "STANDARD" },
   },
 } as const;
 

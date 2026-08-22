@@ -17,7 +17,7 @@ export const pageRoutes = {
         label: "Localization",
       },
     ],
-    auth: { required: true, minRole: "ORGANIZATION_USER" }
+    auth: { required: true, minRole: "STANDARD" }
   },
   detail: {
     id: "voyzu.currencies.page.detail",
@@ -38,6 +38,6 @@ export const pageRoutes = {
         href: "/settings/localization/currencies",
       },
     ],
-    auth: { required: true, minRole: "ORGANIZATION_USER" }
+    auth: { required: true, minRole: "STANDARD" }
   }
 } as const;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { UserAccessMode, UserRole, UserStatus } from "@voyzu/auth/types";
 import styles from "@voyzu/ui-style/css-modules/modal.module.css";
 import { Button } from "@voyzu/ui-components";
@@ -11,12 +11,6 @@ import { ValidationAlert } from "@voyzu/ui-components";
 import typography from "@voyzu/ui-style/css-modules/typography.module.css";
 import { maxLength, minLength, pattern, required, useFormValidation } from "@voyzu/ui-components";
 
-export interface UserCompanyOption {
-  id: number;
-  code: string;
-  name: string;
-}
-
 export interface UserFormValue {
   code: string;
   email: string;
@@ -25,15 +19,13 @@ export interface UserFormValue {
   confirmPassword: string;
   role: UserRole;
   accessMode: UserAccessMode;
-  showDeveloperLinks: boolean;
+  implementerAccess: boolean;
   status: UserStatus;
-  companyIds: number[];
 }
 
 interface Props {
   isOpen: boolean;
   title: string;
-  companies: UserCompanyOption[];
   initial?: UserFormValue;
   onClose: () => void;
   onSubmit: (value: UserFormValue) => Promise<string | undefined>;
@@ -45,17 +37,15 @@ const DEFAULT_VALUE: UserFormValue = {
   displayName: "",
   password: "",
   confirmPassword: "",
-  role: "COMPANY_USER",
+  role: "STANDARD",
   accessMode: "UI",
-  showDeveloperLinks: false,
+  implementerAccess: false,
   status: "ACTIVE",
-  companyIds: [],
 };
 
 const ROLE_OPTIONS = [
   { value: "ADMIN", label: "Admin" },
-  { value: "ORGANIZATION_USER", label: "Organization user" },
-  { value: "COMPANY_USER", label: "Company user" },
+  { value: "STANDARD", label: "Standard" },
 ];
 
 const ACCESS_MODE_OPTIONS = [
@@ -71,18 +61,13 @@ const STATUS_OPTIONS = [
 
 const CODE_PATTERN = /^[A-Z0-9_-]*$/;
 
-export function UserFormModal({ isOpen, title, companies, initial, onClose, onSubmit }: Props) {
+export function UserFormModal({ isOpen, title, initial, onClose, onSubmit }: Props) {
   const [value, setValue] = useState<UserFormValue>(initial ?? DEFAULT_VALUE);
   const [saving, setSaving] = useState(false);
   const [serverError, setServerError] = useState("");
   const bodyRef = useRef<HTMLDivElement>(null);
-  const isCompanyUser = value.role === "COMPANY_USER";
   const isAdminUser = value.role === "ADMIN";
   const minimumPasswordLength = value.accessMode === "API" || value.accessMode === "UI_AND_API" ? 16 : 8;
-  const visibleCompanyIds = useMemo(
-    () => isCompanyUser ? new Set(value.companyIds) : new Set(companies.map((company) => company.id)),
-    [companies, isCompanyUser, value.companyIds],
-  );
 
   const validation = useFormValidation(() => ({
     code: {
@@ -128,19 +113,8 @@ export function UserFormModal({ isOpen, title, companies, initial, onClose, onSu
     setValue((current) => ({
       ...current,
       [key]: next,
-      ...(key === "role" && next !== "COMPANY_USER" ? { companyIds: [] } : {}),
-      ...(key === "role" && next !== "ADMIN" ? { showDeveloperLinks: false } : {}),
+      ...(key === "role" && next !== "ADMIN" ? { implementerAccess: false } : {}),
     }));
-  };
-
-  const toggleCompany = (companyId: number) => {
-    if (!isCompanyUser) return;
-    setValue((current) => {
-      const next = new Set(current.companyIds);
-      if (next.has(companyId)) next.delete(companyId);
-      else next.add(companyId);
-      return { ...current, companyIds: [...next] };
-    });
   };
 
   const submit = async () => {
@@ -234,14 +208,14 @@ export function UserFormModal({ isOpen, title, companies, initial, onClose, onSu
             <SearchableSelect value={value.accessMode} onChange={(next) => setField("accessMode", next as UserAccessMode)} options={ACCESS_MODE_OPTIONS} searchable={false} codeBadge={false} hasError={validation.hasError("accessMode")} />
           </label>
           <label className={styles.fieldGroup}>
-            <span className={typography.fieldLabel}>Show Developer Links</span>
+            <span className={typography.fieldLabel}>Implementer Access</span>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", minHeight: "2.75rem" }}>
               <Checkbox
-                checked={isAdminUser && value.showDeveloperLinks}
+                checked={isAdminUser && value.implementerAccess}
                 disabled={!isAdminUser}
-                onChange={() => setField("showDeveloperLinks", !value.showDeveloperLinks)}
+                onChange={() => setField("implementerAccess", !value.implementerAccess)}
               />
-              <span className={typography.bodyText}>{isAdminUser ? "Show developer toolbar links." : "Admin users only."}</span>
+              <span className={typography.bodyText}>{isAdminUser ? "Show implementer tools." : "Admin users only."}</span>
             </div>
           </label>
           <label className={styles.fieldGroup}>
@@ -283,24 +257,6 @@ export function UserFormModal({ isOpen, title, companies, initial, onClose, onSu
           </div>
         </div>
 
-        <div className={styles.section}>
-          <h4 className={`${typography.sectionHeading} ${styles.compactSectionHeading}`}>Company access</h4>
-          <p className={typography.bodyText}>
-            {isCompanyUser
-              ? companies.length === 0
-                ? "This organization has no companies yet."
-                : "Select the companies this user can access."
-              : "This role has access to all companies."}
-          </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", columnGap: "2rem", rowGap: "0.625rem", marginTop: "0.75rem" }}>
-            {companies.map((company) => (
-              <label key={company.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", minWidth: 0 }}>
-                <Checkbox checked={visibleCompanyIds.has(company.id)} disabled={!isCompanyUser} onChange={() => toggleCompany(company.id)} />
-                <span className={typography.bodyText}>{company.code} - {company.name}</span>
-              </label>
-            ))}
-          </div>
-        </div>
         </div>
 
         <div className={styles.footer}>

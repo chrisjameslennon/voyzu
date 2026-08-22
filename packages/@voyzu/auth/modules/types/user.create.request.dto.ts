@@ -1,7 +1,7 @@
 import Type from "typebox";
 import { StrictObject } from "@voyzu/types/api";
 import { UserAccessMode, UserRole, UserStatus } from "./user.response.dto";
-import { PositiveId, UserCode, UserDisplayName, UserEmail, UserPassword } from "./user.fields";
+import { UserCode, UserDisplayName, UserEmail, UserPassword } from "./user.fields";
 
 export const UserCreateRequestDto = StrictObject({
   code: UserCode,
@@ -10,7 +10,6 @@ export const UserCreateRequestDto = StrictObject({
   password: UserPassword,
   confirmPassword: UserPassword,
   role: UserRole, accessMode: UserAccessMode,
-  showDeveloperLinks: Type.Optional(Type.Boolean()), status: Type.Optional(UserStatus),
-  companyIds: Type.Optional(Type.Array(PositiveId)),
+  implementerAccess: Type.Optional(Type.Boolean()), status: Type.Optional(UserStatus),
 });
 export type UserCreateRequestDto = Type.Static<typeof UserCreateRequestDto>;

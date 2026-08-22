@@ -7,8 +7,7 @@ BEGIN
   ) THEN
     CREATE TYPE user_role AS ENUM (
       'ADMIN',
-      'ORGANIZATION_USER',
-      'COMPANY_USER'
+      'STANDARD'
     );
   END IF;
 
@@ -33,7 +32,7 @@ CREATE TABLE IF NOT EXISTS app_user (
     password_hash TEXT NOT NULL,
     role user_role NOT NULL,
     access_mode user_access_mode NOT NULL DEFAULT 'UI',
-    show_developer_links BOOLEAN NOT NULL DEFAULT false,
+    implementer_access BOOLEAN NOT NULL DEFAULT false,
     status active_status,
 
     creation_date audit_timestamp,
@@ -53,5 +52,57 @@ CREATE TABLE IF NOT EXISTS app_user (
 
     CONSTRAINT app_user_email_trim CHECK (email IS NULL OR email = btrim(email)),
     CONSTRAINT app_user_email_not_blank CHECK (email IS NULL OR length(email) > 0),
-    CONSTRAINT app_user_developer_links_admin_only CHECK (show_developer_links = false OR role = 'ADMIN')
+    CONSTRAINT app_user_implementer_access_admin_only CHECK (implementer_access = false OR role = 'ADMIN')
 );
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = current_schema()
+      AND table_name = 'app_user'
+      AND column_name = 'show_developer_links'
+  ) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = current_schema()
+      AND table_name = 'app_user'
+      AND column_name = 'implementer_access'
+  ) THEN
+    ALTER TABLE app_user RENAME COLUMN show_developer_links TO implementer_access;
+  END IF;
+END $$;
+
+ALTER TABLE app_user DROP CONSTRAINT IF EXISTS app_user_implementer_access_admin_only;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM pg_enum enum_value
+    JOIN pg_type enum_type ON enum_type.oid = enum_value.enumtypid
+    WHERE enum_type.typname = 'user_role'
+      AND enum_value.enumlabel IN ('ORGANIZATION_USER', 'COMPANY_USER')
+  ) THEN
+    CREATE TYPE user_role_replacement AS ENUM ('ADMIN', 'STANDARD');
+    ALTER TABLE app_user
+      ALTER COLUMN role TYPE user_role_replacement
+      USING role::text::user_role_replacement;
+    DROP TYPE user_role;
+    ALTER TYPE user_role_replacement RENAME TO user_role;
+  END IF;
+END $$;
+
+ALTER TABLE app_user DROP CONSTRAINT IF EXISTS app_user_developer_links_admin_only;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'app_user_implementer_access_admin_only'
+      AND conrelid = 'app_user'::regclass
+  ) THEN
+    ALTER TABLE app_user
+      ADD CONSTRAINT app_user_implementer_access_admin_only
+      CHECK (implementer_access = false OR role = 'ADMIN');
+  END IF;
+END $$;

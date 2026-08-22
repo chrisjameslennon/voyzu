@@ -5,14 +5,13 @@ import type { UserCreateRequestDto } from "@voyzu/auth/types";
 import type { UserPasswordUpdateRequestDto } from "@voyzu/auth/types";
 import type { UserProfileUpdateRequestDto } from "@voyzu/auth/types";
 import type { UserUpdateRequestDto } from "@voyzu/auth/types";
-import type { UserCompanyAccessUpdateRequestDto } from "@voyzu/auth/types";
 import type { UserBatchPatchRequestDto, UserBatchUpdateRequestDto, UserPatchRequestDto } from "@voyzu/auth/types";
 import { businessRuleError, conflictError, forbiddenError, notFoundError, serverError, inputValidationError, unauthorizedError } from "@voyzu/capability/http";
 import { created, noContent, ok } from "@voyzu/capability/http";
 import { parseBody } from "@voyzu/capability/http";
 import { BusinessRuleError, ConflictError, NotFoundError, InputValidationError } from "@voyzu/capability/errors";
 import { currentUserCanManageUsers } from "../lib/current-user.service";
-import { activateUser, activateUsers, batchCreateUsers, batchDeleteUsers, batchGetUsers, batchPatchUsers, batchUpdateUsers, changeCurrentUserPassword, changeUserPassword, createUser, deactivateUser, deactivateUsers, deleteUser, filterUsers, getUser, listUsers, patchUser, replaceUserCompanyAccess, searchUsers, updateCurrentUserProfile, updateUser } from "../lib/user.service";
+import { activateUser, activateUsers, batchCreateUsers, batchDeleteUsers, batchGetUsers, batchPatchUsers, batchUpdateUsers, changeCurrentUserPassword, changeUserPassword, createUser, deactivateUser, deactivateUsers, deleteUser, filterUsers, getUser, listUsers, patchUser, searchUsers, updateCurrentUserProfile, updateUser } from "../lib/user.service";
 import { getCurrentUser } from "../lib/current-user.service";
 
 async function requireAdmin() {
@@ -173,21 +172,6 @@ export async function handleBatchDeactivate(req: NextRequest) {
   try {
     const body = await parseBody<CodesRequestDto>(req);
     return ok(await deactivateUsers(body.codes ?? []));
-  } catch (err) {
-    if (err instanceof InputValidationError) return inputValidationError(err.message);
-    if (err instanceof BusinessRuleError) return businessRuleError(err.message);
-    if (err instanceof NotFoundError) return notFoundError(err.message);
-    return serverError(err);
-  }
-}
-
-export async function handleReplaceCompanyAccess(req: NextRequest, { params }: { params: Promise<{ code: string }> }) {
-  const denied = await requireAdmin();
-  if (denied) return denied;
-  try {
-    const { code } = await params;
-    const body = await parseBody<UserCompanyAccessUpdateRequestDto>(req);
-    return ok(await replaceUserCompanyAccess(decodeURIComponent(code), body.companyIds ?? []));
   } catch (err) {
     if (err instanceof InputValidationError) return inputValidationError(err.message);
     if (err instanceof BusinessRuleError) return businessRuleError(err.message);

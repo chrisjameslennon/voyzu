@@ -104,4 +104,4 @@ As a rule:
 
 ## Users and company access
 
-Users belong to the organization. Their access can be limited to the companies they are responsible for, allowing one Voyzu environment to support both group-level administration and company-specific access.
+Platform users are identities; ERP Core owns their company scope. Admin users can access every company. Use **Organization > Company Access** to assign standard users to the companies they are responsible for. A standard user with no assignments has no company available.

@@ -9,13 +9,12 @@ import type {
 } from "@voyzu/ui-surface/types";
 
 const ROLE_RANK: Record<VoyzuSurfaceRole, number> = {
-  COMPANY_USER: 1,
-  ORGANIZATION_USER: 2,
-  ADMIN: 3,
+  STANDARD: 1,
+  ADMIN: 2,
 };
 
 function isSurfaceRole(role: string | undefined): role is VoyzuSurfaceRole {
-  return role === "COMPANY_USER" || role === "ORGANIZATION_USER" || role === "ADMIN";
+  return role === "STANDARD" || role === "ADMIN";
 }
 
 export function hasUiAccess(user: VoyzuSurfaceUserAccess | null): user is VoyzuSurfaceUserAccess {
@@ -31,13 +30,17 @@ export function canAccessRole(
   return ROLE_RANK[user.role] >= ROLE_RANK[minRole];
 }
 
-export function authorizeSurfaceRoute({
+export async function authorizeSurfaceRoute({
+  path,
   route,
   user,
-}: VoyzuSurfaceAccessContext): VoyzuSurfaceAccessResult {
+}: VoyzuSurfaceAccessContext): Promise<VoyzuSurfaceAccessResult> {
   if (!route.auth?.required) return "allow";
   if (!user) return "unauthenticated";
-  return canAccessRole(user, route.auth.minRole) ? "allow" : "denied";
+  if (!canAccessRole(user, route.auth.minRole)) return "denied";
+  return route.auth.authorize
+    ? route.auth.authorize({ route, user, path })
+    : "allow";
 }
 
 function filterNavItem(

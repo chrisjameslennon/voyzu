@@ -1,24 +1,13 @@
-import type { UserCompanyAssignmentDto, UserResponseDto } from "@voyzu/auth/types";
-import type { UserAssignmentRow, UserRow } from "../db/user.row.types";
+import type { UserResponseDto } from "@voyzu/auth/types";
+import type { UserRow } from "../db/user.row.types";
 
 interface UserAuditActors {
   creationUser?: UserResponseDto["audit"]["created"]["user"];
   updatedUser?: UserResponseDto["audit"]["updated"]["user"];
 }
 
-export function toAssignmentDto(row: UserAssignmentRow): UserCompanyAssignmentDto {
-  return {
-    id: row.id,
-    userId: row.user_id,
-    companyId: row.company_id,
-    companyCode: row.company_code,
-    companyName: row.company_name,
-  };
-}
-
 export function toDto(
   row: UserRow,
-  assignments: UserAssignmentRow[] = [],
   auditActors: UserAuditActors = {},
 ): UserResponseDto {
   const dto: UserResponseDto = {
@@ -28,9 +17,8 @@ export function toDto(
     displayName: row.display_name,
     role: row.role as UserResponseDto["role"],
     accessMode: row.access_mode as UserResponseDto["accessMode"],
-    showDeveloperLinks: row.show_developer_links,
+    implementerAccess: row.implementer_access,
     status: row.status as UserResponseDto["status"],
-    assignments: assignments.map(toAssignmentDto),
     audit: {
       created: {
         date: row.creation_date,

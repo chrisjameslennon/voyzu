@@ -7,7 +7,7 @@ import { OpenApiDefinitionPage } from "./server/pages/OpenApiDefinitionPage";
 
 const auth = {
   required: true,
-  minRole: "COMPANY_USER",
+  minRole: "STANDARD",
 } as const;
 
 const helpPath = "api-reference/api-reference";

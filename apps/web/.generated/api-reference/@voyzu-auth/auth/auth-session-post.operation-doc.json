@@ -76,13 +76,7 @@
                   {
                     "type": "string",
                     "enum": [
-                      "ORGANIZATION_USER"
-                    ]
-                  },
-                  {
-                    "type": "string",
-                    "enum": [
-                      "COMPANY_USER"
+                      "STANDARD"
                     ]
                   }
                 ]

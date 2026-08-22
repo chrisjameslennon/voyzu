@@ -55,13 +55,13 @@ async function getAuditActors(
 async function enrich(row: Awaited<ReturnType<UserRepo["get"]>>): Promise<UserResponseDto | null> {
   if (!row) return null;
   const repo = new UserRepo(getDb());
-  return toDto(row, await repo.listAssignments(row.id), await getAuditActors(row, repo));
+  return toDto(row, await getAuditActors(row, repo));
 }
 
 export async function listUsers(): Promise<UserResponseDto[]> {
   const repo = new UserRepo(getDb());
   const rows = await repo.list();
-  return Promise.all(rows.map(async (row) => toDto(row, await repo.listAssignments(row.id), await getAuditActors(row, repo))));
+  return Promise.all(rows.map(async (row) => toDto(row, await getAuditActors(row, repo))));
 }
 
 export async function filterUsers(filters: Filter[], _options?: ListOptions): Promise<UserResponseDto[]> {
@@ -107,11 +107,11 @@ export async function updateCurrentUserProfile(input: UserProfileUpdateRequestDt
       display_name: normalized.displayName,
       role: currentUser.role,
       access_mode: currentUser.accessMode,
-      show_developer_links: currentUser.showDeveloperLinks,
+      implementer_access: currentUser.implementerAccess,
       status: currentUser.status,
       audit: auditStamp(currentUser),
     });
-    return toDto(row, await repo.listAssignments(row.id), await getAuditActors(row, repo));
+    return toDto(row, await getAuditActors(row, repo));
   } catch (err) {
     if (err instanceof Error && err.message.includes("duplicate key value")) {
       throw new ConflictError("A user with this email already exists");
@@ -151,14 +151,11 @@ export async function createUser(input: UserCreateRequestDto): Promise<UserRespo
         password_hash: passwordHash,
         role: normalized.role,
         access_mode: normalized.accessMode,
-        show_developer_links: normalized.showDeveloperLinks === true,
+        implementer_access: normalized.implementerAccess === true,
         status: normalized.status ?? "ACTIVE",
         audit: auditStamp(currentUser),
       });
-      if (normalized.role === "COMPANY_USER") {
-        await repo.replaceAssignments(row.id, normalized.companyIds ?? []);
-      }
-      return toDto(row, await repo.listAssignments(row.id), await getAuditActors(row, repo));
+      return toDto(row, await getAuditActors(row, repo));
     });
   } catch (err) {
     if (err instanceof Error && err.message.includes("duplicate key value")) {
@@ -204,12 +201,11 @@ export async function updateUser(code: string, input: UserUpdateRequestDto): Pro
         display_name: normalized.displayName,
         role: normalized.role,
         access_mode: normalized.accessMode,
-        show_developer_links: normalized.showDeveloperLinks === true,
+        implementer_access: normalized.implementerAccess === true,
         status: normalized.status,
         audit: auditStamp(currentUser),
       });
-      await repo.replaceAssignments(row.id, normalized.role === "COMPANY_USER" ? normalized.companyIds ?? [] : []);
-      return toDto(row, await repo.listAssignments(row.id), await getAuditActors(row, repo));
+      return toDto(row, await getAuditActors(row, repo));
     });
   } catch (err) {
     if (err instanceof Error && err.message.includes("duplicate key value")) {
@@ -229,23 +225,8 @@ export async function patchUser(code: string, input: UserPatchRequestDto): Promi
     displayName: input.displayName ?? existing.displayName,
     role: input.role ?? existing.role,
     accessMode: input.accessMode ?? existing.accessMode,
-    showDeveloperLinks: input.showDeveloperLinks ?? existing.showDeveloperLinks,
+    implementerAccess: input.implementerAccess ?? existing.implementerAccess,
     status: existing.status,
-    companyIds: input.companyIds ?? existing.assignments.map((assignment) => assignment.companyId),
-  });
-}
-
-export async function replaceUserCompanyAccess(code: string, companyIds: number[]): Promise<UserResponseDto> {
-  await requireCurrentAdmin();
-  const existing = await new UserRepo(getDb()).get(code);
-  if (!existing) throw new NotFoundError(`User ${code} not found`);
-  if (existing.role !== "COMPANY_USER") {
-    throw new BusinessRuleError("Company assignments are only editable for company users");
-  }
-  return await withTransaction(async (client) => {
-    const repo = new UserRepo(client);
-    await repo.replaceAssignments(existing.id, companyIds);
-    return toDto(existing, await repo.listAssignments(existing.id), await getAuditActors(existing, repo));
   });
 }
 
@@ -256,7 +237,7 @@ export async function deleteUser(code: string): Promise<void> {
 export async function batchGetUsers(codes: string[]): Promise<UserResponseDto[]> {
   const repo = new UserRepo(getDb());
   const rows = await repo.batchGet(normalizeCodes(codes));
-  return Promise.all(rows.map(async (row) => toDto(row, await repo.listAssignments(row.id), await getAuditActors(row, repo))));
+  return Promise.all(rows.map(async (row) => toDto(row, await getAuditActors(row, repo))));
 }
 
 export async function batchCreateUsers(inputs: UserCreateRequestDto[]): Promise<UserResponseDto[]> {
@@ -313,7 +294,7 @@ async function transitionUserStatus(codes: string[], targetStatus: "ACTIVE" | "I
     const users = await ensureUsersExist(normalizedCodes, repo);
     if (targetStatus !== "ACTIVE") await ensureAtLeastOneActiveAdminAfterMutation(repo, users);
     const updated = await repo.batchUpdateStatus(normalizedCodes, targetStatus, auditStamp(currentUser));
-    return Promise.all(updated.map(async (row) => toDto(row, await repo.listAssignments(row.id), await getAuditActors(row, repo))));
+    return Promise.all(updated.map(async (row) => toDto(row, await getAuditActors(row, repo))));
   });
 }
 
@@ -370,8 +351,7 @@ function normalizeCreate(input: UserCreateRequestDto): UserCreateRequestDto {
     password: input.password ?? "",
     confirmPassword: input.confirmPassword ?? "",
     status: input.status ?? "ACTIVE",
-    showDeveloperLinks: input.showDeveloperLinks === true,
-    companyIds: input.role === "COMPANY_USER" ? input.companyIds ?? [] : [],
+    implementerAccess: input.implementerAccess === true,
   };
 }
 
@@ -381,8 +361,7 @@ function normalizeUpdate(input: UserUpdateRequestDto): UserUpdateRequestDto {
     code: input.code?.trim().toUpperCase(),
     email: input.email ? input.email.trim() : null,
     displayName: input.displayName?.trim(),
-    showDeveloperLinks: input.showDeveloperLinks === true,
-    companyIds: input.role === "COMPANY_USER" ? input.companyIds ?? [] : [],
+    implementerAccess: input.implementerAccess === true,
   };
 }
 

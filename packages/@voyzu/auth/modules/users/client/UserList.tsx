@@ -19,19 +19,18 @@ import layout from "@voyzu/ui-layout/css-modules/list.layout.module.css";
 import styles from "@voyzu/ui-style/css-modules/list.module.css";
 import { UserAccessDenied } from "./UserAccessDenied";
 import { refreshCurrentUserAccess } from "./current-user-access";
-import { UserFormModal, type UserCompanyOption, type UserFormValue } from "./UserFormModal";
+import { UserFormModal, type UserFormValue } from "./UserFormModal";
 import { getUserStatusColor } from "./user-status-color";
 
 interface Props {
   pageTitle: string;
   canManageUsers: boolean;
   initialUsers: UserResponseDto[];
-  companies: UserCompanyOption[];
 }
 
 const ITEMS_PER_PAGE = 100;
 
-export function UserList({ pageTitle, canManageUsers, initialUsers, companies }: Props) {
+export function UserList({ pageTitle, canManageUsers, initialUsers }: Props) {
   const router = useRouter();
   const [users, setUsers] = useState(initialUsers);
   const [search, setSearch] = useState("");
@@ -143,9 +142,8 @@ export function UserList({ pageTitle, canManageUsers, initialUsers, companies }:
       confirmPassword: value.confirmPassword,
       role: value.role,
       accessMode: value.accessMode,
-      showDeveloperLinks: value.role === "ADMIN" && value.showDeveloperLinks,
+      implementerAccess: value.role === "ADMIN" && value.implementerAccess,
       status: value.status,
-      companyIds: value.role === "COMPANY_USER" ? value.companyIds : [],
     };
     const res = await fetch("/api/users", {
       method: "POST",
@@ -297,7 +295,7 @@ export function UserList({ pageTitle, canManageUsers, initialUsers, companies }:
           </div>
           <h1 className={`${typography.pageTitle} ${layout.pageTitleResponsive}`}>{pageTitle}</h1>
           <div className={layout.slotTitleByline}>
-            <p className={typography.headingByline}>Manage application users, roles, and company access.</p>
+            <p className={typography.headingByline}>Manage application users, roles, and access modes.</p>
           </div>
         </div>
         <div className={layout.slotActions}>
@@ -445,7 +443,6 @@ export function UserList({ pageTitle, canManageUsers, initialUsers, companies }:
       <UserFormModal
         isOpen={isCreateOpen}
         title="Add User"
-        companies={companies}
         onClose={() => setIsCreateOpen(false)}
         onSubmit={createUser}
       />

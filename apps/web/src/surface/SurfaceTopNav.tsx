@@ -7,7 +7,7 @@ import { resolveExternalUrl } from "@voyzu/ui-surface";
 import { areInstalledPackagePageRoutesVisible } from "@voyzu/package-management/server";
 
 import styles from "@voyzu/ui-surface/css-modules/surface.module.css";
-import { DeveloperButton } from "./top-nav/DeveloperButton";
+import { ImplementerMenu } from "./top-nav/ImplementerMenu";
 import { HelpButton } from "./top-nav/HelpButton";
 import { SettingsButton } from "./top-nav/SettingsButton";
 
@@ -20,8 +20,12 @@ export async function SurfaceTopNav({ slots, activeRoute }: SurfaceTopNavProps) 
   const helpUrl = activeRoute?.helpBaseUrl && activeRoute.helpPath
     ? resolveExternalUrl(activeRoute.helpBaseUrl, activeRoute.helpPath)
     : undefined;
+  const [apiReferenceVisible, uiReferenceVisible] = await Promise.all([
+    areInstalledPackagePageRoutesVisible("@voyzu/api-reference"),
+    areInstalledPackagePageRoutesVisible("@voyzu/ui-reference"),
+  ]);
   const apiDocsUrl = activeRoute?.apiDocsUrl
-    && await areInstalledPackagePageRoutesVisible("@voyzu/api-reference")
+    && apiReferenceVisible
     ? activeRoute.apiDocsUrl
     : undefined;
 
@@ -32,7 +36,11 @@ export async function SurfaceTopNav({ slots, activeRoute }: SurfaceTopNavProps) 
         {getSurfaceSlot(slots, "top.primaryNav")}
       </nav>
       <div className={styles.utility}>
-        <DeveloperButton href={apiDocsUrl} />
+        <ImplementerMenu
+          pageApiHref={apiDocsUrl}
+          apiReferenceVisible={apiReferenceVisible}
+          uiReferenceVisible={uiReferenceVisible}
+        />
         <SettingsButton />
         {helpUrl ? <HelpButton href={helpUrl} /> : null}
         {getSurfaceSlot(slots, "top.user")}

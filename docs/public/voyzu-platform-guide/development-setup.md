@@ -27,10 +27,14 @@ Choose the directory in which you will develop your packages and navigate to it 
 Run:
 
 ```shell
-npm exec --yes --package=github:chrisjameslennon/create-voyzu -- create-voyzu dev
+npm exec --allow-git=all --yes --package=github:chrisjameslennon/create-voyzu -- create-voyzu dev --force
 ```
 
 The command creates the root `package.json` and `packages/` directory when they do not exist. It downloads the Voyzu Platform into `.run/voyzu`, creates the development runtime and installs its dependencies.
+
+The `--allow-git=all` option permits this command to download the installer from GitHub. npm 12 blocks Git-based packages by default. The permission applies to this invocation and does not change your persistent npm configuration.
+
+`--force` deletes and recreates the generated `.run` runtime when it already exists. It preserves the root `packages` source directory, `.package-sources`, `.env.local`, `.gitignore`, the root `package.json` and database data. Packages previously copied into `.run` must be linked or installed again afterward.
 
 The disposable platform runtime is always downloaded from Voyzu's `main`
 branch. Development branch and tag overrides are not supported.

@@ -1,5 +1,0 @@
-{
-  "name": "CompanyCodesRequestDto",
-  "sourceFile": "packages/@voyzu/organization/types/modules/companies/company.codes.request.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\n\nexport const CompanyCodesRequestDto = StrictObject({\n  codes: Type.Array(Type.String()),\n});\nexport type CompanyCodesRequestDto = Type.Static<typeof CompanyCodesRequestDto>;\n"
-}

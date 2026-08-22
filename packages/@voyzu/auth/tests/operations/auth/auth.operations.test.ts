@@ -19,7 +19,7 @@ before(async () => {
     displayName: "Authentication operation test",
     password,
     confirmPassword: password,
-    role: "ORGANIZATION_USER",
+    role: "STANDARD",
     accessMode: "UI",
     status: "ACTIVE",
   }));

@@ -13,7 +13,6 @@ export async function UsersListPage() {
       pageTitle="Users"
       canManageUsers={canManageUsers}
       initialUsers={users}
-      companies={[]}
     />
   );
 }

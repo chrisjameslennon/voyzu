@@ -1,5 +1,5 @@
 {
   "name": "CountryPatchRequestDto",
   "sourceFile": "packages/@voyzu/localization/types/modules/countries/country.patch.request.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { CurrencyCode, NonBlankText, TaxFilingAnchorMonth } from \"@voyzu/localization/types/constraints\";\n\nexport const CountryPatchRequestDto = StrictObject({\n  name: Type.Optional(NonBlankText),\n  currencyCode: Type.Optional(CurrencyCode),\n  taxFilingAnchorMonth: Type.Optional(TaxFilingAnchorMonth),\n  taxFilingIntervalMonths: Type.Optional(Type.Union([Type.Literal(1), Type.Literal(2), Type.Literal(3), Type.Literal(6), Type.Literal(12)])),\n}, { minProperties: 1 });\nexport type CountryPatchRequestDto = Type.Static<typeof CountryPatchRequestDto>;\n"
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { CurrencyCode, NonBlankText } from \"@voyzu/localization/types/constraints\";\n\nexport const CountryPatchRequestDto = StrictObject({\n  name: Type.Optional(NonBlankText),\n  currencyCode: Type.Optional(CurrencyCode),\n}, { minProperties: 1 });\nexport type CountryPatchRequestDto = Type.Static<typeof CountryPatchRequestDto>;\n"
 }

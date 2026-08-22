@@ -7,17 +7,15 @@ import layoutStyles from "@voyzu/ui-layout/css-modules/detail.layout.module.css"
 import detailStyles from "@voyzu/ui-style/css-modules/detail.module.css";
 import typography from "@voyzu/ui-style/css-modules/typography.module.css";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { refreshCurrentUserAccess } from "./current-user-access";
 import { UserAccessDenied } from "./UserAccessDenied";
-import type { UserCompanyOption } from "./UserFormModal";
 import { UserPasswordModal, type UserPasswordValue } from "./UserPasswordModal";
 import { getUserStatusColor } from "./user-status-color";
 
 const ROLE_OPTIONS = [
   { value: "ADMIN", label: "Admin" },
-  { value: "ORGANIZATION_USER", label: "Organization user" },
-  { value: "COMPANY_USER", label: "Company user" },
+  { value: "STANDARD", label: "Standard" },
 ];
 
 const ACCESS_MODE_OPTIONS = [
@@ -32,32 +30,24 @@ interface Props {
   pageTitle: string;
   canManageUsers: boolean;
   user: UserResponseDto | null;
-  companies: UserCompanyOption[];
 }
 
-export function UserDetail({ pageTitle, canManageUsers, user: initialUser, companies }: Props) {
+export function UserDetail({ pageTitle, canManageUsers, user: initialUser }: Props) {
   const router = useRouter();
   const [user, setUser] = useState(initialUser);
   const [code, setCode] = useState(initialUser?.code ?? "");
   const [email, setEmail] = useState(initialUser?.email ?? "");
   const [displayName, setDisplayName] = useState(initialUser?.displayName ?? "");
-  const [role, setRole] = useState<UserRole>(initialUser?.role ?? "COMPANY_USER");
+  const [role, setRole] = useState<UserRole>(initialUser?.role ?? "STANDARD");
   const [accessMode, setAccessMode] = useState<UserAccessMode>(initialUser?.accessMode ?? "UI");
-  const [showDeveloperLinks, setShowDeveloperLinks] = useState(initialUser?.showDeveloperLinks ?? false);
+  const [implementerAccess, setImplementerAccess] = useState(initialUser?.implementerAccess ?? false);
   const [status, setStatus] = useState<UserStatus>(initialUser?.status ?? "ACTIVE");
-  const [companyIds, setCompanyIds] = useState<number[]>(initialUser?.assignments.map((assignment) => assignment.companyId) ?? []);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
   const [serverError, setServerError] = useState("");
   const [toastMessage, setToastMessage] = useState("");
   const [toastVisible, setToastVisible] = useState(false);
 
-  const originalCompanyIds = useMemo(
-    () => new Set(user?.assignments.map((assignment) => assignment.companyId) ?? []),
-    [user],
-  );
-
-  const isCompanyUser = role === "COMPANY_USER";
   const isAdminUser = role === "ADMIN";
   const validation = useFormValidation(() => ({
     code: {
@@ -77,18 +67,6 @@ export function UserDetail({ pageTitle, canManageUsers, user: initialUser, compa
   if (!canManageUsers) return <UserAccessDenied pageTitle={pageTitle} />;
   if (!user) return null;
 
-  const selectedCompanyIds = isCompanyUser ? new Set(companyIds) : new Set(companies.map((company) => company.id));
-
-  const toggleCompany = (companyId: number) => {
-    if (!isCompanyUser) return;
-    setCompanyIds((current) => {
-      const next = new Set(current);
-      if (next.has(companyId)) next.delete(companyId);
-      else next.add(companyId);
-      return [...next];
-    });
-  };
-
   const save = async () => {
     setServerError("");
     if (!validation.attempt()) return;
@@ -98,9 +76,8 @@ export function UserDetail({ pageTitle, canManageUsers, user: initialUser, compa
       displayName,
       role,
       accessMode,
-      showDeveloperLinks: isAdminUser && showDeveloperLinks,
+      implementerAccess: isAdminUser && implementerAccess,
       status,
-      companyIds: isCompanyUser ? companyIds : [],
     };
     const res = await fetch(`/api/users/${encodeURIComponent(user.code)}`, {
       method: "PUT",
@@ -119,16 +96,12 @@ export function UserDetail({ pageTitle, canManageUsers, user: initialUser, compa
     setDisplayName(updated.displayName);
     setRole(updated.role);
     setAccessMode(updated.accessMode);
-    setShowDeveloperLinks(updated.showDeveloperLinks);
+    setImplementerAccess(updated.implementerAccess);
     setStatus(updated.status);
-    setCompanyIds(updated.assignments.map((assignment) => assignment.companyId));
     validation.reset();
     refreshCurrentUserAccess();
 
-    const companyAccessChanged =
-      originalCompanyIds.size !== updated.assignments.length ||
-      updated.assignments.some((assignment) => !originalCompanyIds.has(assignment.companyId));
-    setToastMessage(companyAccessChanged ? "Updated company access" : `Updated ${updated.code}`);
+    setToastMessage(`Updated ${updated.code}`);
     setToastVisible(true);
     if (updated.code !== user.code) router.replace(`/settings/users/${encodeURIComponent(updated.code)}`);
   };
@@ -268,7 +241,7 @@ export function UserDetail({ pageTitle, canManageUsers, user: initialUser, compa
                 onChange={(next) => {
                   const nextRole = next as UserRole;
                   setRole(nextRole);
-                  if (nextRole !== "ADMIN") setShowDeveloperLinks(false);
+                  if (nextRole !== "ADMIN") setImplementerAccess(false);
                 }}
                 options={ROLE_OPTIONS}
                 searchable={false}
@@ -281,37 +254,19 @@ export function UserDetail({ pageTitle, canManageUsers, user: initialUser, compa
               <SearchableSelect value={accessMode} onChange={(next) => setAccessMode(next as UserAccessMode)} options={ACCESS_MODE_OPTIONS} searchable={false} codeBadge={false} hasError={validation.hasError("accessMode")} />
             </label>
             <label className={detailStyles.fieldGroup}>
-              <span className={typography.fieldLabel}>Show Developer Links</span>
+              <span className={typography.fieldLabel}>Implementer Access</span>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", minHeight: "2.75rem" }}>
                 <Checkbox
-                  checked={isAdminUser && showDeveloperLinks}
+                  checked={isAdminUser && implementerAccess}
                   disabled={!isAdminUser}
-                  onChange={() => setShowDeveloperLinks((current) => !current)}
+                  onChange={() => setImplementerAccess((current) => !current)}
                 />
-                <span className={typography.bodyText}>{isAdminUser ? "Show developer toolbar links." : "Admin users only."}</span>
+                <span className={typography.bodyText}>{isAdminUser ? "Show implementer tools." : "Admin users only."}</span>
               </div>
             </label>
           </div>
         </section>
 
-        <section className={detailStyles.card}>
-          <h2 className={typography.sectionHeading}>Company Access</h2>
-          <p className={typography.bodyText}>
-            {isCompanyUser
-              ? companies.length === 0
-                ? "This organization has no companies yet."
-                : "Select the companies this user can access."
-              : "This role has access to all companies."}
-          </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", columnGap: "2rem", rowGap: "0.625rem", marginTop: "1rem" }}>
-            {companies.map((company) => (
-              <label key={company.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", minWidth: 0 }}>
-                <Checkbox checked={selectedCompanyIds.has(company.id)} disabled={!isCompanyUser} onChange={() => toggleCompany(company.id)} />
-                <span className={typography.bodyText}>{company.code} - {company.name}</span>
-              </label>
-            ))}
-          </div>
-        </section>
       </main>
 
       <ConfirmDialog
