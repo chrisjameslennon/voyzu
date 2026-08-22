@@ -14,9 +14,9 @@ import { settingsLeftNav as authSettingsLeftNav } from "@voyzu/auth/navigation/s
 import { voyzuAuditPackage } from "@voyzu/audit/voyzu-package";
 import auditPackage from "@voyzu/audit/package.json";
 import { auditSettingsLeftNav } from "@voyzu/audit/navigation/settings";
-import { voyzuOrganizationPackage } from "@voyzu/organization/voyzu-package";
-import organizationPackage from "@voyzu/organization/package.json";
-import organizationDomains from "@voyzu/organization/navigation/domains";
+import { voyzuLocalizationPackage } from "@voyzu/localization/voyzu-package";
+import localizationPackage from "@voyzu/localization/package.json";
+import { localizationSettingsLeftNav } from "@voyzu/localization/navigation/settings";
 import { welcomePackage } from "@voyzu/welcome/voyzu-package";
 import welcomePackageJson from "@voyzu/welcome/package.json";
 import welcomeTopNav from "@voyzu/welcome/navigation/top-nav";
@@ -138,11 +138,11 @@ const auditPageRoutes = packagePageRoutes(
   auditPackage.name,
   auditPackage.voyzu.settings.helpBaseUrl,
 );
-const organizationPageRoutes = packagePageRoutes(
-  voyzuOrganizationPackage,
-  organizationPackage.voyzu.pageRootPaths,
-  organizationPackage.name,
-  organizationPackage.voyzu.settings.helpBaseUrl,
+const localizationPageRoutes = packagePageRoutes(
+  voyzuLocalizationPackage,
+  localizationPackage.voyzu.pageRootPaths,
+  localizationPackage.name,
+  localizationPackage.voyzu.settings.helpBaseUrl,
 );
 const welcomePageRoutes = packagePageRoutes(
   welcomePackage,
@@ -218,24 +218,6 @@ const apiReferenceSurfaceDomain: VoyzuComposedSurfaceDomain = {
   routePaths: apiReferencePageRoutes.map(({ id, path }) => ({ id, path })),
   leftNav: apiReferenceLeftNav,
 };
-const organizationDomainDefinition = organizationDomains[0];
-const organizationDefaultRoute = organizationPageRoutes.find(
-  ({ id }) => id === organizationDomainDefinition.routeId,
-);
-if (!organizationDefaultRoute) {
-  throw new Error("Organization top-nav route was not found.");
-}
-const organizationRouteIds = new Set(organizationDomainDefinition.routeIds);
-const organizationSurfaceDomain: VoyzuComposedSurfaceDomain = {
-  id: organizationDomainDefinition.routeId,
-  packageName: organizationPackage.name,
-  label: organizationDomainDefinition.label,
-  defaultPath: organizationDefaultRoute.path,
-  routePaths: organizationPageRoutes
-    .filter(({ id }) => organizationRouteIds.has(id))
-    .map(({ id, path }) => ({ id, path })),
-  leftNav: mutableLeftNav(organizationDomainDefinition.leftNav),
-};
 const composedSurfaceDomains = createInstalledPackageDomains([
   ...authPageRoutes,
   ...auditPageRoutes,
@@ -244,13 +226,12 @@ const composedSurfaceDomains = createInstalledPackageDomains([
   ...apiReferencePageRoutes,
   ...packageManagementPageRoutes,
   ...systemInfoPageRoutes,
-  ...organizationPageRoutes,
+  ...localizationPageRoutes,
 ]);
 const packageSurfaceDomains = [
   welcomeSurfaceDomain,
   uiReferenceSurfaceDomain,
   apiReferenceSurfaceDomain,
-  organizationSurfaceDomain,
   ...composedSurfaceDomains,
 ];
 
@@ -262,20 +243,21 @@ const pageRoutes: VoyzuSurfaceRoute[] = [
   ...apiReferencePageRoutes,
   ...packageManagementPageRoutes,
   ...systemInfoPageRoutes,
-  ...organizationPageRoutes,
+  ...localizationPageRoutes,
   ...installedPackagePageRoutes,
 ];
 
+const localizationItems = mutableLeftNav(localizationSettingsLeftNav).flatMap((group) => group.items);
 const packageManagementItems = packageManagementSettingsLeftNav.flatMap((group) => group.items);
 const systemInfoItems = systemInfoSettingsLeftNav.flatMap((group) => group.items);
 const auditItems = auditSettingsLeftNav.flatMap((group) => group.items);
 const settingsLeftNav: VoyzuSurfaceNavGroup[] = authSettingsLeftNav.map(
   (group, index) => ({
     ...group,
-    items: index === 0 ? [...group.items, ...packageManagementItems, ...systemInfoItems, ...auditItems] : [...group.items],
+    items: index === 0 ? [...group.items, ...localizationItems, ...packageManagementItems, ...systemInfoItems, ...auditItems] : [...group.items],
   }),
 );
-const settingsPageRoutes = [...authPageRoutes, ...packageManagementPageRoutes, ...systemInfoPageRoutes, ...auditPageRoutes].filter(
+const settingsPageRoutes = [...authPageRoutes, ...localizationPageRoutes, ...packageManagementPageRoutes, ...systemInfoPageRoutes, ...auditPageRoutes].filter(
   ({ path }) => path.startsWith("/settings/"),
 );
 const settingsRoutePaths = settingsPageRoutes.map(({ id, path }) => ({ id, path }));

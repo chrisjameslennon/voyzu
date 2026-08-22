@@ -1,0 +1,5 @@
+{
+  "name": "CountryBatchUpdateRequestDto",
+  "sourceFile": "packages/@voyzu/localization/types/modules/countries/country.batch-update.request.dto.ts",
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { CountryUpdateRequestDto } from \"./country.update.request.dto\";\nimport { BusinessCode } from \"@voyzu/localization/types/constraints\";\n\nexport const CountryBatchUpdateRequestDto = StrictObject({\n  ...CountryUpdateRequestDto.properties,\n  code: BusinessCode,\n});\nexport type CountryBatchUpdateRequestDto = Type.Static<typeof CountryBatchUpdateRequestDto>;\n"
+}

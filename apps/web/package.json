@@ -17,7 +17,7 @@
     "@voyzu/api-reference": "*",
     "@voyzu/auth": "*",
     "@voyzu/audit": "*",
-    "@voyzu/organization": "*",
+    "@voyzu/localization": "*",
     "@voyzu/capability": "*",
     "@voyzu/types": "*",
     "@voyzu/ui-components": "*",

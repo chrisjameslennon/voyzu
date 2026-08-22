@@ -1,0 +1,5 @@
+{
+  "name": "CurrencyCodesRequestDto",
+  "sourceFile": "packages/@voyzu/localization/types/modules/currencies/currency.codes.request.dto.ts",
+  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\n\nexport const CurrencyCodesRequestDto = StrictObject({\n  codes: Type.Array(Type.String()),\n});\nexport type CurrencyCodesRequestDto = Type.Static<typeof CurrencyCodesRequestDto>;\n"
+}

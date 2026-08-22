@@ -37,7 +37,7 @@ const PLATFORM_PACKAGE_ORDER = [
   "@voyzu/package-management",
   "@voyzu/system-info",
   "@voyzu/audit",
-  "@voyzu/organization",
+  "@voyzu/localization",
   "@voyzu/welcome",
   "@voyzu/ui-reference",
   "@voyzu/api-reference",

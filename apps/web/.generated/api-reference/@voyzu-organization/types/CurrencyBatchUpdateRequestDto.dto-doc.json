@@ -1,5 +1,0 @@
-{
-  "name": "CurrencyBatchUpdateRequestDto",
-  "sourceFile": "packages/@voyzu/organization/types/modules/currencies/currency.batch-update.request.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { CurrencyUpdateRequestDto } from \"./currency.update.request.dto\";\nimport { BusinessCode } from \"@voyzu/organization/types/constraints\";\n\nexport const CurrencyBatchUpdateRequestDto = StrictObject({\n  ...CurrencyUpdateRequestDto.properties,\n  code: BusinessCode,\n});\nexport type CurrencyBatchUpdateRequestDto = Type.Static<typeof CurrencyBatchUpdateRequestDto>;\n"
-}
