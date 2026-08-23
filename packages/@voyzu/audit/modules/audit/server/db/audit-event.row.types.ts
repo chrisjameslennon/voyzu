@@ -4,8 +4,8 @@ export interface AuditEventRow {
   id: number;
   code: string;
   package_code: string;
-  company_id: number | null;
-  company_code: string | null;
+  organization_id: number | null;
+  organization_code: string | null;
   actor_type: ActorType | null;
   actor_id: string | null;
   actor_code: string | null;

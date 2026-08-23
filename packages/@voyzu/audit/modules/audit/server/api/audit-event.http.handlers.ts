@@ -7,7 +7,7 @@ function filtersFromRequest(req: NextRequest) {
   const { searchParams } = req.nextUrl;
   return {
     packageCode: searchParams.get("packageCode") ?? undefined,
-    companyId: searchParams.get("companyId") ?? undefined,
+    organizationId: searchParams.get("organizationId") ?? undefined,
     entityType: searchParams.get("entityType") ?? undefined,
     entityCode: searchParams.get("entityCode") ?? undefined,
     entityId: searchParams.get("entityId") ?? undefined,

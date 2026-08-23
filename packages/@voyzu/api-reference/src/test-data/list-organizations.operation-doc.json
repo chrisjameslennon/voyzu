@@ -1,12 +1,12 @@
 {
-  "operationId": "listCompanies",
+  "operationId": "listOrganizations",
   "method": "get",
-  "path": "/api/companies",
-  "summary": "List companies",
-  "description": "Returns the companies available in the organization.",
+  "path": "/organization/organizations",
+  "summary": "List organizations",
+  "description": "Returns the organizations available in the organization.",
   "responses": {
     "200": {
-      "description": "A list of all companies.",
+      "description": "A list of all organizations.",
       "schema": {
         "type": "array",
         "items": {
@@ -15,28 +15,28 @@
           "properties": {
             "id": {
               "type": "number",
-              "description": "Unique numeric identifier for the company."
+              "description": "Unique numeric identifier for the organization."
             },
             "code": {
               "type": "string",
-              "description": "Stable company code."
+              "description": "Stable organization code."
             },
             "name": {
               "type": "string",
-              "description": "Company display name."
+              "description": "Organization display name."
             },
             "countryCode": {
               "type": "string",
-              "description": "Country code used for company localization."
+              "description": "Country code used for organization localization."
             },
             "baseCurrencyCode": {
               "type": "string",
-              "description": "Base currency code used for company reporting."
+              "description": "Base currency code used for organization reporting."
             },
             "status": {
               "type": "string",
               "enum": ["ACTIVE", "INACTIVE"],
-              "description": "Current company status."
+              "description": "Current organization status."
             }
           }
         }

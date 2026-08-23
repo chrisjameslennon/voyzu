@@ -47,7 +47,7 @@ export function TopNavMenu() {
           ].join(" ")}
           type="button"
           aria-label="Go to Organization"
-          onClick={() => router.push("/organization/companies")}
+          onClick={() => router.push("/organization/organizations")}
         >
           Organization
         </button>

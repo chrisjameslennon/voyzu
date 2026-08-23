@@ -15,9 +15,9 @@ export function GettingStartedPage() {
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Base URL</h2>
         <p className={styles.sectionText}>
-          Endpoint pages show paths such as <code>/api/companies</code>. On a local development instance, the default
+          Endpoint pages show paths such as <code>/organization/organizations</code>. On a local development instance, the default
           base URL is <code>http://localhost:3000</code>, so the full local URL is{" "}
-          <code>http://localhost:3000/api/companies</code>.
+          <code>http://localhost:3000/organization/organizations</code>.
         </p>
       </section>
 

@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION audit_trigger_fn() RETURNS TRIGGER AS $$
 DECLARE
   v_event_id    BIGINT;
-  v_company_id  BIGINT;
+  v_organization_id  BIGINT;
   v_entity_id   TEXT;
   v_entity_code TEXT;
   v_action      TEXT;
@@ -74,7 +74,7 @@ BEGIN
     v_new_record := to_jsonb(NEW);
     v_entity_id := COALESCE(v_new_record->>'id', v_new_record->>'code');
     v_entity_code := v_new_record->>'code';
-    v_company_id := NULLIF(v_new_record->>'company_id','')::BIGINT;
+    v_organization_id := NULLIF(v_new_record->>'organization_id','')::BIGINT;
     IF TG_OP = 'INSERT' THEN
       v_actor_type := v_new_record->>'creation_actor_type';
       v_actor_id := v_new_record->>'creation_user_id';
@@ -92,7 +92,7 @@ BEGIN
     IF TG_OP = 'DELETE' THEN
       v_entity_id := COALESCE(v_old_record->>'id', v_old_record->>'code');
       v_entity_code := v_old_record->>'code';
-      v_company_id := NULLIF(v_old_record->>'company_id','')::BIGINT;
+      v_organization_id := NULLIF(v_old_record->>'organization_id','')::BIGINT;
       v_actor_type := COALESCE(v_old_record->>'deletion_actor_type', v_old_record->>'updated_actor_type');
       v_actor_id := COALESCE(v_old_record->>'deletion_user_id', v_old_record->>'updated_user_id');
       v_mutation_id := COALESCE(v_old_record->>'deletion_mutation_id', v_old_record->>'updated_mutation_id');
@@ -104,7 +104,7 @@ BEGIN
   -- Insert audit event
   INSERT INTO audit_event (
     package_code,
-    company_id,
+    organization_id,
     actor_type,
     actor_id,
     action,
@@ -114,7 +114,7 @@ BEGIN
     mutation_id
   ) VALUES (
     v_package_code,
-    v_company_id,
+    v_organization_id,
     v_actor_type::actor_type,
     v_actor_id,
     v_action,

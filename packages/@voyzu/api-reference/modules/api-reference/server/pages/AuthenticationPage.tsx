@@ -2,19 +2,19 @@ import { RequestExample } from "@voyzu/api-reference/client/components";
 
 import styles from "./guide-pages.module.css";
 
-const companiesListBasicAuthExample = {
+const organizationsListBasicAuthExample = {
   method: "GET" as const,
-  path: "/api/companies",
+  path: "/organization/organizations",
   code: `curl --request GET \\
-  --url http://localhost:3000/api/companies \\
+  --url http://localhost:3000/organization/organizations \\
   --header 'Authorization: Basic BASE64_OF_USER_CODE_COLON_PASSWORD'`,
 };
 
-const companiesListConcreteBasicAuthExample = {
+const organizationsListConcreteBasicAuthExample = {
   method: "GET" as const,
-  path: "/api/companies",
+  path: "/organization/organizations",
   code: `curl --request GET \\
-  --url http://localhost:3000/api/companies \\
+  --url http://localhost:3000/organization/organizations \\
   --header 'Authorization: Basic QVBJX1VTRVI6cGFzc3dvcmRwYXNzd29yZA=='`,
 };
 
@@ -39,14 +39,14 @@ export async function AuthenticationPage() {
           only the password or encode the two parts separately. The user must be active and enabled for API access.
         </p>
         <div className={styles.example}>
-          <RequestExample example={companiesListBasicAuthExample} />
+          <RequestExample example={organizationsListBasicAuthExample} />
         </div>
         <p className={styles.sectionText}>
           For example, the complete unencoded value <code>API_USER:passwordpassword</code> encodes to{" "}
           <code>QVBJX1VTRVI6cGFzc3dvcmRwYXNzd29yZA==</code>.
         </p>
         <div className={styles.example}>
-          <RequestExample example={companiesListConcreteBasicAuthExample} />
+          <RequestExample example={organizationsListConcreteBasicAuthExample} />
         </div>
       </section>
 

@@ -33,7 +33,7 @@ export async function AuditEventsPage({ surface }: OrganizationAuditEventsPagePr
 
   return (
     <AuditEventList
-      companies={[]}
+      organizations={[]}
       initialFinancialYears={[]}
       initialSelectedYearCode=""
       initialDateFrom={hasLinkedEntityFilter ? "" : fromDate}

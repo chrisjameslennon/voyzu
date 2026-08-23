@@ -6,7 +6,7 @@ const PAGE_SIZE = 50;
 
 export interface AuditEventFilters {
   packageCode?: string;
-  companyId?: string;
+  organizationId?: string;
   entityType?: string;
   entityCode?: string;
   entityId?: string;
@@ -40,10 +40,10 @@ export class AuditEventRepo {
       filterParams.push(filters.packageCode);
       filterParts.push(`audit_event.package_code = $${filterParams.length}`);
     }
-    if (filters.companyId) {
-      const companyId = Number(filters.companyId);
-      filterParams.push(companyId);
-      filterParts.push(`audit_event.company_id = $${filterParams.length}`);
+    if (filters.organizationId) {
+      const organizationId = Number(filters.organizationId);
+      filterParams.push(organizationId);
+      filterParts.push(`audit_event.organization_id = $${filterParams.length}`);
     }
     if (filters.entityType) {
       filterParams.push(filters.entityType);
@@ -109,7 +109,7 @@ export class AuditEventRepo {
 
     const pageWhere = pageParts.length ? `WHERE ${pageParts.join(" AND ")}` : "";
     const sql = `
-      SELECT audit_event.*, actor_user.code AS actor_code, actor_user.display_name AS actor_display_name, NULL::text AS company_code
+      SELECT audit_event.*, actor_user.code AS actor_code, actor_user.display_name AS actor_display_name, NULL::text AS organization_code
       FROM audit_event
       LEFT JOIN app_user actor_user ON actor_user.id::text = audit_event.actor_id
       ${pageWhere}
@@ -139,10 +139,10 @@ export class AuditEventRepo {
       filterParams.push(filters.packageCode);
       filterParts.push(`audit_event.package_code = $${filterParams.length}`);
     }
-    if (filters.companyId) {
-      const companyId = Number(filters.companyId);
-      filterParams.push(companyId);
-      filterParts.push(`audit_event.company_id = $${filterParams.length}`);
+    if (filters.organizationId) {
+      const organizationId = Number(filters.organizationId);
+      filterParams.push(organizationId);
+      filterParts.push(`audit_event.organization_id = $${filterParams.length}`);
     }
     if (filters.entityType) {
       filterParams.push(filters.entityType);
@@ -180,7 +180,7 @@ export class AuditEventRepo {
 
     const where = filterParts.length ? `WHERE ${filterParts.join(" AND ")}` : "";
     const sql = `
-      SELECT audit_event.*, actor_user.code AS actor_code, actor_user.display_name AS actor_display_name, NULL::text AS company_code
+      SELECT audit_event.*, actor_user.code AS actor_code, actor_user.display_name AS actor_display_name, NULL::text AS organization_code
       FROM audit_event
       LEFT JOIN app_user actor_user ON actor_user.id::text = audit_event.actor_id
       ${where}
@@ -192,7 +192,7 @@ export class AuditEventRepo {
 
   async getEventById(id: number): Promise<(AuditEventRow & { changes: AuditChangeRow[] }) | null> {
     const { rows: eventRows } = await this.db.query(
-      `SELECT audit_event.*, actor_user.code AS actor_code, actor_user.display_name AS actor_display_name, NULL::text AS company_code
+      `SELECT audit_event.*, actor_user.code AS actor_code, actor_user.display_name AS actor_display_name, NULL::text AS organization_code
        FROM audit_event
        LEFT JOIN app_user actor_user ON actor_user.id::text = audit_event.actor_id
        WHERE audit_event.id = $1`,
@@ -234,8 +234,8 @@ export class AuditEventRepo {
       id: Number(r.id),
       code: String(r.code),
       package_code: String(r.package_code),
-      company_id: r.company_id != null ? Number(r.company_id) : null,
-      company_code: r.company_code != null ? String(r.company_code) : null,
+      organization_id: r.organization_id != null ? Number(r.organization_id) : null,
+      organization_code: r.organization_code != null ? String(r.organization_code) : null,
       actor_type: r.actor_type == null ? null : String(r.actor_type) as ActorType,
       actor_id: r.actor_id != null ? String(r.actor_id) : null,
       actor_code: r.actor_code != null ? String(r.actor_code) : null,

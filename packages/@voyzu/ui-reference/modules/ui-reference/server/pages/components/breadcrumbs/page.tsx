@@ -17,14 +17,14 @@ const STORIES = [
     name: "Surface-provided path",
     description: "The application Surface provides the ancestor path from the matched route's breadcrumbBase.",
     preview: (
-      <BreadcrumbsProvider base={[{ label: "Organization" }, { label: "Companies", href: "/organization/companies" }]}>
+      <BreadcrumbsProvider base={[{ label: "Organization" }, { label: "Organizations", href: "/organization/organizations" }]}>
         <Breadcrumbs />
       </BreadcrumbsProvider>
     ),
     code: `// modules-config/organization.ui.config.ts
 breadcrumbBase: [
   { label: "Organization" },
-  { label: "Companies", href: "/organization/companies" },
+  { label: "Organizations", href: "/organization/organizations" },
 ]
 
 // Module page

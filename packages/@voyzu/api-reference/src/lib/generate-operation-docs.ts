@@ -386,6 +386,7 @@ function folderNameForModuleName(moduleName: string): string {
     .replace(/Module$/, "")
     .replace(/([a-z])([A-Z])/g, "$1-$2")
     .toLowerCase();
+  if (name === "organizations") return "organization";
   if (name === "companies") return "company";
   return name;
 }

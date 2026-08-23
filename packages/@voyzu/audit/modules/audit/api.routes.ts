@@ -39,7 +39,7 @@ const commonResponses = {
 
 const auditFilterParameters = {
   packageCode: { description: "Package code." },
-  companyId: { description: "Company identifier." },
+  organizationId: { description: "Organization identifier." },
   entityType: { description: "Entity type." },
   entityCode: { description: "Entity code." },
   entityId: { description: "Entity identifier." },
@@ -52,7 +52,7 @@ const auditFilterParameters = {
 
 const auditFilterProperties = {
   packageCode: Type.Optional(Type.String({ pattern: "\\S" })),
-  companyId: Type.Optional(Type.Integer({ minimum: 1 })),
+  organizationId: Type.Optional(Type.Integer({ minimum: 1 })),
   entityType: Type.Optional(Type.String({ pattern: "\\S" })),
   entityCode: Type.Optional(Type.String({ pattern: "\\S" })),
   entityId: Type.Optional(Type.String({ pattern: "\\S" })),

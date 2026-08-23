@@ -73,7 +73,7 @@
   color: var(--voyzu-color-text-secondary);
 }
 
-.companyField {
+.organizationField {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -326,7 +326,7 @@
     flex-wrap: wrap;
   }
 
-  .companyField {
+  .organizationField {
     width: 100%;
   }
 

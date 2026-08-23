@@ -1,9 +1,9 @@
 {
-  "operationId": "filterCompanies",
+  "operationId": "filterOrganizations",
   "method": "post",
-  "path": "/api/companies/filter",
-  "summary": "Filter companies",
-  "description": "Filters company records using the shared filter request body.",
+  "path": "/organization/organizations/filter",
+  "summary": "Filter organizations",
+  "description": "Filters organization records using the shared filter request body.",
   "requestBody": {
     "required": true,
     "schema": {
@@ -11,14 +11,14 @@
       "properties": {
         "filters": {
           "type": "array",
-          "description": "Filter predicates applied to company fields.",
+          "description": "Filter predicates applied to organization fields.",
           "items": {
             "type": "object",
             "required": ["field", "operator", "value"],
             "properties": {
               "field": {
                 "type": "string",
-                "description": "Company field to filter against."
+                "description": "Organization field to filter against."
               },
               "operator": {
                 "type": "string",
@@ -47,7 +47,7 @@
               "properties": {
                 "field": {
                   "type": "string",
-                  "description": "Grouped company field to filter against."
+                  "description": "Grouped organization field to filter against."
                 },
                 "operator": {
                   "type": "string",
@@ -79,7 +79,7 @@
   },
   "responses": {
     "200": {
-      "description": "A filtered list of companies.",
+      "description": "A filtered list of organizations.",
       "schema": {
         "type": "array",
         "items": {
@@ -88,28 +88,28 @@
           "properties": {
             "id": {
               "type": "number",
-              "description": "Unique numeric identifier for the company."
+              "description": "Unique numeric identifier for the organization."
             },
             "code": {
               "type": "string",
-              "description": "Stable company code."
+              "description": "Stable organization code."
             },
             "name": {
               "type": "string",
-              "description": "Company display name."
+              "description": "Organization display name."
             },
             "countryCode": {
               "type": "string",
-              "description": "Country code used for company localization."
+              "description": "Country code used for organization localization."
             },
             "baseCurrencyCode": {
               "type": "string",
-              "description": "Base currency code used for company reporting."
+              "description": "Base currency code used for organization reporting."
             },
             "status": {
               "type": "string",
               "enum": ["ACTIVE", "INACTIVE"],
-              "description": "Current company status."
+              "description": "Current organization status."
             }
           }
         }

@@ -31,7 +31,7 @@ interface FinancialYearResponseDto {
 
 const ENTITY_TYPES = [
   "organization",
-  "company",
+  "organization",
   "control_account",
   "financial_document_default",
   "financial_document_type",
@@ -103,7 +103,7 @@ function rangeForPreset(value: string, year: FinancialYearResponseDto | undefine
 const columns: DataTableColumn<AuditEventResponseDto>[] = [
   { key: "code", label: "Code", width: 130 },
   { key: "packageCode", label: "Package", width: 190 },
-  { key: "companyCode", label: "Company", width: 130, render: (e) => e.companyCode ?? "-" },
+  { key: "organizationCode", label: "Organization", width: 130, render: (e) => e.organizationCode ?? "-" },
   {
     key: "creationDate",
     label: "Timestamp",
@@ -156,10 +156,10 @@ function AuditActorDisplay({ event }: { event: AuditEventResponseDto }) {
 }
 
 interface AuditEventListProps {
-  companies: AuditCompanyOption[];
-  companyReadOnly?: boolean;
+  organizations: AuditOrganizationOption[];
+  organizationReadOnly?: boolean;
   suppressInitialDateFilter?: boolean;
-  initialCompanyId?: string;
+  initialOrganizationId?: string;
   initialFinancialYears: FinancialYearResponseDto[];
   initialSelectedYearCode: string;
   initialDateFrom: string;
@@ -171,7 +171,7 @@ interface AuditEventListProps {
   backFromCode?: string;
 }
 
-interface AuditCompanyOption {
+interface AuditOrganizationOption {
   id: number;
   code: string;
   name: string;
@@ -183,10 +183,10 @@ interface PageInfo {
 }
 
 export function AuditEventList({
-  companies,
-  companyReadOnly = false,
+  organizations,
+  organizationReadOnly = false,
   suppressInitialDateFilter = false,
-  initialCompanyId = "",
+  initialOrganizationId = "",
   initialFinancialYears,
   initialSelectedYearCode,
   initialDateFrom,
@@ -203,8 +203,8 @@ export function AuditEventList({
 
   // Filter UI values
   const [search, setSearch] = useState("");
-  const [companyId, setCompanyId] = useState(initialCompanyId);
-  const [availableCompanies, setAvailableCompanies] = useState(companies);
+  const [organizationId, setOrganizationId] = useState(initialOrganizationId);
+  const [availableOrganizations, setAvailableOrganizations] = useState(organizations);
   const [packageCode, setPackageCode] = useState("");
   const [packageOptions, setPackageOptions] = useState([{ value: "", label: "All packages" }]);
   const [financialYears, setFinancialYears] = useState<FinancialYearResponseDto[]>(initialFinancialYears);
@@ -304,9 +304,9 @@ export function AuditEventList({
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch("/api/organization/companies", { signal: controller.signal })
+    fetch("/api/organization/organizations", { signal: controller.signal })
       .then((response) => response.ok ? response.json() : [])
-      .then((items: AuditCompanyOption[]) => setAvailableCompanies(items))
+      .then((items: AuditOrganizationOption[]) => setAvailableOrganizations(items))
       .catch(() => undefined);
     return () => controller.abort();
   }, []);
@@ -357,9 +357,9 @@ export function AuditEventList({
   };
 
   // Immediate filters reset pagination.
-  const handleCompanyChange = (value: string) => {
-    if (companyReadOnly) return;
-    setCompanyId(value);
+  const handleOrganizationChange = (value: string) => {
+    if (organizationReadOnly) return;
+    setOrganizationId(value);
     void fetchYears(Number(value));
     cursorStackRef.current = [null];
     setPageInfo({ page: 1, cursor: null });
@@ -428,7 +428,7 @@ export function AuditEventList({
     const params = new URLSearchParams();
     if (packageCode) params.set("packageCode", packageCode);
     if (debouncedSearch) params.set("search", debouncedSearch);
-    if (companyId) params.set("companyId", companyId);
+    if (organizationId) params.set("organizationId", organizationId);
     if (entityType) params.set("entityType", entityType);
     if (debouncedEntityCode) params.set("entityCode", debouncedEntityCode);
     if (debouncedEntityId) params.set("entityId", debouncedEntityId);
@@ -461,7 +461,7 @@ export function AuditEventList({
 
     void doFetch();
     return () => controller.abort();
-  }, [pageInfo, packageCode, debouncedSearch, companyId, entityType, debouncedEntityCode, debouncedEntityId, mutationId, debouncedActorId, dateFrom, dateTo, dateFilterSuppressed]);
+  }, [pageInfo, packageCode, debouncedSearch, organizationId, entityType, debouncedEntityCode, debouncedEntityId, mutationId, debouncedActorId, dateFrom, dateTo, dateFilterSuppressed]);
 
   const handlePageChange = (newPage: number) => {
     const cursor = cursorStackRef.current[newPage - 1] ?? null;
@@ -510,7 +510,7 @@ export function AuditEventList({
     const params = new URLSearchParams();
     if (packageCode) params.set("packageCode", packageCode);
     if (debouncedSearch) params.set("search", debouncedSearch);
-    if (companyId) params.set("companyId", companyId);
+    if (organizationId) params.set("organizationId", organizationId);
     if (entityType) params.set("entityType", entityType);
     if (debouncedEntityCode) params.set("entityCode", debouncedEntityCode);
     if (debouncedEntityId) params.set("entityId", debouncedEntityId);
@@ -530,21 +530,21 @@ export function AuditEventList({
   const isSomeSelected = items.some((e) => selectedIds.has(e.id)) && !isAllSelected;
   const hasSelection = selectedIds.size > 0;
 
-  const selectedCompany = useMemo(
-    () => availableCompanies.find((company) => String(company.id) === companyId),
-    [availableCompanies, companyId],
+  const selectedOrganization = useMemo(
+    () => availableOrganizations.find((organization) => String(organization.id) === organizationId),
+    [availableOrganizations, organizationId],
   );
 
-  const companyOptions = useMemo(
+  const organizationOptions = useMemo(
     () => [
-      { value: "", label: "All companies" },
-      ...availableCompanies.map((company) => ({
-        value: String(company.id),
-        label: company.name,
-        code: company.code,
+      { value: "", label: "All organizations" },
+      ...availableOrganizations.map((organization) => ({
+        value: String(organization.id),
+        label: organization.name,
+        code: organization.code,
       })),
     ],
-    [availableCompanies],
+    [availableOrganizations],
   );
 
   const rangeItems: DropdownMenuItem[] = [
@@ -585,7 +585,7 @@ export function AuditEventList({
     slug,
     totalMatching,
     packageCode,
-    companyId,
+    organizationId,
     debouncedSearch,
     entityType,
     debouncedEntityCode,
@@ -623,11 +623,11 @@ export function AuditEventList({
   const activeChips = useMemo((): ChipDef[] => {
     const chips: ChipDef[] = [];
     if (packageCode) chips.push({ key: "package", label: "Package", value: packageCode, clear: () => handlePackageChange("") });
-    if (companyId) chips.push({
-      key: "company",
-      label: "Company",
-      value: selectedCompany ? `${selectedCompany.code} - ${selectedCompany.name}` : companyId,
-      clear: companyReadOnly ? undefined : () => handleCompanyChange(""),
+    if (organizationId) chips.push({
+      key: "organization",
+      label: "Organization",
+      value: selectedOrganization ? `${selectedOrganization.code} - ${selectedOrganization.name}` : organizationId,
+      clear: organizationReadOnly ? undefined : () => handleOrganizationChange(""),
     });
     if (entityType) chips.push({ key: "entityType", label: "Entity Type", value: formatEntityType(entityType), clear: () => handleEntityTypeChange("") });
     if (entityCode) chips.push({
@@ -668,12 +668,12 @@ export function AuditEventList({
       },
     });
     return chips;
-  }, [packageCode, companyId, selectedCompany, entityType, entityCode, entityId, mutationId, actorId, search, dateFrom, dateTo, dateFilterSuppressed, clearDateRange]);
+  }, [packageCode, organizationId, selectedOrganization, entityType, entityCode, entityId, mutationId, actorId, search, dateFrom, dateTo, dateFilterSuppressed, clearDateRange]);
 
   const clearAll = () => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     handlePackageChange("");
-    if (!companyReadOnly) handleCompanyChange("");
+    if (!organizationReadOnly) handleOrganizationChange("");
     handleEntityTypeChange("");
     setEntityCode(""); setDebouncedEntityCode("");
     setEntityId(""); setDebouncedEntityId("");
@@ -700,7 +700,7 @@ export function AuditEventList({
           </div>
           <h1 className={`${typography.pageTitle} ${layout.pageTitleResponsive}`}>Audit Log</h1>
           <div className={layout.slotTitleByline}>
-            <p className={typography.headingByline}>The audit log shows a complete record of database changes made across every package and company.</p>
+            <p className={typography.headingByline}>The audit log shows a complete record of database changes made across every package and organization.</p>
           </div>
         </div>
         <div className={styles.titleActions}>
@@ -710,9 +710,9 @@ export function AuditEventList({
         </div>
       </div>
 
-      {/* Row 3: date range + company */}
+      {/* Row 3: date range + organization */}
       <div className={styles.scopeRow}>
-        <div className={styles.companyField}>
+        <div className={styles.organizationField}>
           <label className={styles.filterLabel}>Package</label>
           <SearchableSelect
             value={packageCode}
@@ -726,16 +726,16 @@ export function AuditEventList({
 
         <div className={styles.scopeSeparator} />
 
-        <div className={styles.companyField}>
-          <label className={styles.filterLabel}>Company</label>
+        <div className={styles.organizationField}>
+          <label className={styles.filterLabel}>Organization</label>
           <SearchableSelect
-            value={companyId}
-            onChange={handleCompanyChange}
-            options={companyOptions}
-            placeholder="All companies"
-            searchPlaceholder="Search companies..."
+            value={organizationId}
+            onChange={handleOrganizationChange}
+            options={organizationOptions}
+            placeholder="All organizations"
+            searchPlaceholder="Search organizations..."
             dropdownWidth={320}
-            disabled={companyReadOnly}
+            disabled={organizationReadOnly}
           />
         </div>
 
