@@ -4,8 +4,8 @@ import { spawn } from "node:child_process";
 
 const PLATFORM_REPOSITORY_URL = "https://github.com/chrisjameslennon/voyzu.git";
 const CREATE_VOYZU_PACKAGE = "github:chrisjameslennon/create-voyzu";
-const CORE_REPOSITORY_URL = "https://github.com/chrisjameslennon/voyzu-packages.git";
-const CORE_PACKAGE_NAME = "@voyzu/core";
+const FINANCE_REPOSITORY_URL = "https://github.com/chrisjameslennon/voyzu-packages.git";
+const FINANCE_PACKAGE_NAME = "@voyzu/finance";
 
 interface DeploymentOptions {
   host: string;
@@ -21,7 +21,7 @@ interface DeploymentOptions {
 }
 
 function usage() {
-  console.log(`Deploy a production Voyzu installation and Core package to a self-hosted Linux server.
+  console.log(`Deploy a production Voyzu installation and Finance package to a self-hosted Linux server.
 
 Usage:
   npm run deploy -- --host <hostname> [options]
@@ -193,8 +193,8 @@ function remoteScript(options: DeploymentOptions, envPayload: string) {
   const variables = [
     `PLATFORM_REPOSITORY_URL=${shellQuote(PLATFORM_REPOSITORY_URL)}`,
     `CREATE_VOYZU_PACKAGE=${shellQuote(CREATE_VOYZU_PACKAGE)}`,
-    `CORE_REPOSITORY_URL=${shellQuote(CORE_REPOSITORY_URL)}`,
-    `CORE_PACKAGE_NAME=${shellQuote(CORE_PACKAGE_NAME)}`,
+    `FINANCE_REPOSITORY_URL=${shellQuote(FINANCE_REPOSITORY_URL)}`,
+    `FINANCE_PACKAGE_NAME=${shellQuote(FINANCE_PACKAGE_NAME)}`,
     `DEPLOY_DIR=${shellQuote(options.deployDir)}`,
     `SERVICE_NAME=${shellQuote(options.serviceName)}`,
     `SERVICE_USER=${shellQuote(options.user)}`,
@@ -275,8 +275,8 @@ if [ "$platform_initialized" != "t" ]; then
   npm run voyzu:initialize
 fi
 
-log "Installing or updating $CORE_PACKAGE_NAME"
-npm run voyzu:install "$CORE_REPOSITORY_URL" "$CORE_PACKAGE_NAME"
+log "Installing or updating $FINANCE_PACKAGE_NAME"
+npm run voyzu:install "$FINANCE_REPOSITORY_URL" "$FINANCE_PACKAGE_NAME"
 
 log "Building the composed Voyzu application"
 npm run voyzu:build
@@ -361,7 +361,7 @@ async function main() {
     const envPayload = environmentFilePayload(options.localEnvFile);
     console.log("Voyzu self-host deployment");
     console.log(`  repository:  ${PLATFORM_REPOSITORY_URL}`);
-    console.log(`  core:        ${CORE_PACKAGE_NAME} from ${CORE_REPOSITORY_URL}`);
+    console.log(`  finance:     ${FINANCE_PACKAGE_NAME} from ${FINANCE_REPOSITORY_URL}`);
     console.log(`  target:      ${options.user}@${options.host}`);
     console.log(`  deploy dir:  ${options.deployDir}`);
     console.log(`  service:     ${options.serviceName}`);

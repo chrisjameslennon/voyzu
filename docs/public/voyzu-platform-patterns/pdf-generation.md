@@ -89,4 +89,4 @@ Use `portrait` or `landscape` consistently in the PDF parameters and the templat
 <style>{`@media print { @page { size: A4 portrait; } }`}</style>
 ```
 
-The Trial Balance and organization list reports in `@voyzu/core` are reference implementations of this pattern.
+The Trial Balance and organization list reports in `@voyzu/finance` are reference implementations of this pattern.

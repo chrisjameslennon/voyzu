@@ -8,7 +8,7 @@ To develop Voyzu packages using a `.run` development runtime, directory links an
 
 ## Install Voyzu
 
-Follow these step-by-step instructions to install the Voyzu platform and the Core modules.
+Follow these step-by-step instructions to install the Voyzu platform and Finance package.
 
 ### 1. Prerequisites
 
@@ -95,17 +95,17 @@ npm run voyzu:initialize
 
 This is a one-time initialization step for a new Voyzu installation.
 
-### 6. Install the Voyzu Core package
+### 6. Install the Voyzu Finance package
 
 At this point you have successfully installed the Voyzu platform!
 
-The next step is to install the Core Voyzu Organization and Finance package.
+The next step is to install the Voyzu Finance package.
 
 ```shell
-npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/core
+npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/finance
 ```
 
-The install command downloads the Voyzu Packages repository into `.package-sources`, copies Core into `.run/packages/@voyzu/core`, applies its database installation, installs its npm dependencies and recomposes the application.
+The install command downloads the Voyzu Packages repository into `.package-sources`, copies Finance into `.run/packages/@voyzu/finance`, applies its database installation, installs its npm dependencies and recomposes the application.
 
 ### 7. Start the production application
 
@@ -144,10 +144,10 @@ If you are hosting a Voyzu instance you will want to run Voyzu behind your hosti
 
 ## Updating installed packages
 
-To update an installed package, run its original install command again. For example, to update Voyzu Core:
+To update an installed package, run its original install command again. For example, to update Voyzu Finance:
 
 ```shell
-npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/core
+npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/finance
 ```
 
 The command refreshes the downloaded repository, replaces the installed package copy, applies its installation steps, installs its dependencies and recomposes the application.

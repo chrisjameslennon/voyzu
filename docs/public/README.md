@@ -28,16 +28,14 @@ To install Voyzu see [installation-and-setup.md](installation-and-operation/inst
 
 ## Packages
 
-### Voyzu Core `@voyzu/core`
+### Voyzu Finance `@voyzu/finance`
 
 ```shell
-npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/core
+npm run voyzu:install https://github.com/chrisjameslennon/voyzu-packages.git @voyzu/finance
 ```
 
-The Voyzu Core package provides Core and Financial Ledger Capability including:
+The Voyzu Finance package provides financial ledger capabilities including:
 
-* Organization management
-* Company Management
 * Country and Tax Settings management
 * Financial Ledger capabilities, including:
   * General Ledger

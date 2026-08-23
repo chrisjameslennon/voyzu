@@ -17,7 +17,7 @@ Package development has the same prerequisites as a production installation; no 
 Every Voyzu package name must use the format `@publisher/package-name`. For example:
 
 * `@voyzu/ice-creams`
-* `@voyzu/core`
+* `@voyzu/finance`
 * `@acme/warehousing`
 
 Choose the directory in which you will develop your packages and navigate to it at the command line. The directory does not need to contain an existing project.

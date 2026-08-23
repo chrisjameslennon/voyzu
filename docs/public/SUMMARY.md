@@ -44,7 +44,7 @@
   * [Installed Packages](help-platform/settings/installed-packages.md)
   * [System Information](help-platform/settings/system-information.md)
 
-## Voyzu Core Concepts
+## Voyzu Finance Concepts
 
 * [Introduction](voyzu-core-concepts/introduction.md)
 * [What is a Financial Ledger?](voyzu-core-concepts/what-is-a-financial-ledger.md)
@@ -56,7 +56,7 @@
 * [Inventory](voyzu-core-concepts/inventory.md)
 * [Financial Document Processing](voyzu-core-concepts/financial-document-processing.md)
 
-## Voyzu Core Help <a href="#help-core" id="help-core"></a>
+## Voyzu Finance Help <a href="#help-core" id="help-core"></a>
 
 * [Organization Financial Settings](help-core/organization-financial-settings/README.md)
   * [Organization](help-core/organization-financial-settings/organization.md)

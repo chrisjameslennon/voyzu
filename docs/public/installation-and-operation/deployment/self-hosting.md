@@ -186,7 +186,7 @@ The script:
    or fast-forwards its platform checkout on later runs.
 4. Checks the configured database and applies the preinstalled platform
    installation when it has not yet been initialized.
-5. Installs or updates `@voyzu/core`, including its database installation and
+5. Installs or updates `@voyzu/finance`, including its database installation and
    composed application registrations.
 6. Builds the composed web application and prunes development dependencies.
 7. Installs and enables `voyzu.service` under systemd.
@@ -222,7 +222,7 @@ This is a host setup step and does not need to run with every deployment.
 ## 7. Verify initialization
 
 The deployment command initializes the preinstalled platform packages and
-installs Core before starting the service. For a new empty database it also
+installs Finance before starting the service. For a new empty database it also
 creates the bootstrap administrator:
 
 ```text
@@ -230,7 +230,7 @@ User code: ADMIN
 Password:  password
 ```
 
-Confirm the generated installation, Core package, database connection, and
+Confirm the generated installation, Finance package, database connection, and
 service:
 
 ```bash
@@ -313,7 +313,7 @@ curl --head http://127.0.0.1:3000/
 ```
 
 For later releases, rerun the deployment command. It fast-forwards the platform,
-updates Core from the Voyzu Packages repository, rebuilds the composed
+updates Finance from the Voyzu Packages repository, rebuilds the composed
 application, and restarts the service. Omit `--env-file` to retain the existing
 remote environment file:
 
