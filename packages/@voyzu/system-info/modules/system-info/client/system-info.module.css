@@ -14,6 +14,10 @@
   gap: 1rem;
 }
 
+.databaseAlert {
+  margin-bottom: 1rem;
+}
+
 .infoGrid {
   margin: 0;
 }

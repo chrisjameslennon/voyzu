@@ -2,7 +2,10 @@ export type { ApiMethod } from "./api";
 export type {
   VoyzuPackageDefinition,
   VoyzuPackageInstallDefinition,
+  VoyzuPackageListener,
   VoyzuPackageMetadata,
+  VoyzuEventDefinition,
+  VoyzuModuleEvents,
   VoyzuModuleOperation,
   VoyzuPackageModuleDefinition,
   VoyzuPackageScript,

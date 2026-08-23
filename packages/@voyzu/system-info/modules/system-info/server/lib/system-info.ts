@@ -37,6 +37,7 @@ export interface InfoSection {
 
 export interface SystemInformation {
   generatedAt: string;
+  databaseName: string;
   sections: InfoSection[];
 }
 
@@ -129,7 +130,6 @@ async function filesystemItems(path: string): Promise<InfoItem[]> {
     const available = filesystem.bsize * filesystem.bavail;
     const used = total - free;
     return [
-      { label: "Voyzu filesystem location", value: path, mono: true },
       { label: "Total storage", value: formatBytes(total) },
       { label: "Used storage", value: `${formatBytes(used)} (${percentage(used, total)})` },
       { label: "Available storage", value: formatBytes(available) },
@@ -372,6 +372,7 @@ export async function getSystemInformation(): Promise<SystemInformation> {
 
   return {
     generatedAt: new Date().toISOString(),
+    databaseName: database.items.find((item) => item.label === "Database name")?.value ?? "Unavailable",
     sections: [
       {
         title: "Install",

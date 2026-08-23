@@ -2,6 +2,7 @@ import "server-only";
 
 import detail from "@voyzu/ui-style/css-modules/detail.module.css";
 import typography from "@voyzu/ui-style/css-modules/typography.module.css";
+import { Alert } from "@voyzu/ui-components";
 
 import styles from "../../client/system-info.module.css";
 import { getSystemInformation, type InfoSection } from "../lib/system-info";
@@ -41,6 +42,13 @@ export async function SystemInfoPage() {
           </div>
         </div>
       </header>
+      <Alert
+        className={styles.databaseAlert}
+        variant="soft"
+        color="info"
+        title="Database"
+        text={information.databaseName}
+      />
       <div className={styles.sections}>
         {information.sections.map((section) => <InformationSection key={section.title} {...section} />)}
       </div>

@@ -20,6 +20,11 @@ export {
   type DbExecutor,
 } from "./db";
 export {
+  events,
+  type VoyzuEventContext,
+  type VoyzuEventHandler,
+} from "./events";
+export {
   businessRuleError,
   conflictError,
   forbiddenError,
