@@ -1,90 +1,113 @@
 # Develop a new package
 
-Voyzu business functionality is delivered through packages. A package has its own identity, installation assets and public exports, and contains one or more modules. Each module owns a coherent set of page routes, API routes and supporting business functionality.
+Voyzu business functionality is delivered through packages. A package owns its
+identity, lifecycle resources, public contracts, and one or more modules. Each
+module represents a coherent capability with its own pages, APIs, operations,
+events, UI, services, and persistence.
 
-This guide uses [the `@voyzu/ice-creams` reference package](https://github.com/chrisjameslennon/voyzu-packages/tree/main/packages/%40voyzu/ice-creams) as its example. Ice Creams is a self-contained CRUD package with reference data, application pages, REST APIs, a report, auditing, sample data and tests.
+This guide uses the
+[`@voyzu/ice-creams` reference package](https://github.com/chrisjameslennon/voyzu-packages/tree/main/packages/%40voyzu/ice-creams)
+as a practical example. Before starting, create a development workspace by
+following [Development setup](development-setup.md).
 
-Before starting, create a Voyzu development environment by following [Development setup](development-setup.md).
+## Scaffold the package
 
-## Create the package directory
-
-Create the package beneath the development workspace using its npm scope and package name:
+From the development workspace root, run:
 
 ```shell
-npm run voyzu:create-package "@acme/customer orders"
+npm run voyzu:create-package @acme/customer-orders
 ```
 
-The command creates `packages/@acme/customer-orders` from the Ice Creams reference package and links it into the development runtime. It replaces spaces with dashes and derives display labels, code identifiers, file and directory names, and SQL table names from the `customer-orders` package segment. You can instead create the structure manually as shown below.
+The command creates `packages/@acme/customer-orders` from the reference package,
+rewrites its package identity and derived names, and links it into the
+development runtime. Use a scoped npm name in the form
+`@publisher/package-name`. The workspace must already contain a root `packages`
+directory and an initialized Voyzu database.
 
+The package name and source directory must match exactly:
+
+```text
+package.json name:  @acme/customer-orders
+source directory:   packages/@acme/customer-orders/
 ```
-# Development workspace root
-packages/
-└─ @voyzu/
-   └─ ice-creams/
-```
 
-Every Voyzu package name must have the form `@publisher/package-name`. The directory and the `name` in `package.json` must agree exactly. For example, `packages/@voyzu/ice-creams` must declare `"name": "@voyzu/ice-creams"`.
+The scaffold is a working reference, not a requirement to retain every sample
+module. Remove capabilities that the new package does not need and rename the
+remaining domain concepts deliberately.
 
-## Create the package structure
+## Understand the package structure
 
-The Ice Creams package separates package-level configuration from the modules that implement its functionality:
+A complete package can contain:
 
-```
-# packages/@voyzu/ice-creams
-├─ install/
-│  └─ db/
-│     ├─ seed/
-│     └─ sql/
+```text
+packages/@acme/customer-orders/
 ├─ docs/
 │  └─ public/
-│     └─ example-help.md
+├─ install/
+│  ├─ db/
+│  │  ├─ seed/
+│  │  └─ sql/
+│  └─ manifest.ts
 ├─ modules/
-│  ├─ audit/
-│  ├─ ice-creams/
-│  ├─ reports/
-│  └─ types/
+│  └─ orders/
 ├─ navigation/
 ├─ public-assets/
 ├─ scripts/
+├─ tests/
+│  └─ operations/
+│     └─ orders/
+├─ types/
+├─ uninstall/
+│  ├─ db/
+│  │  └─ sql/
+│  └─ manifest.ts
+├─ listeners.ts
 ├─ package.json
 ├─ README.md
 └─ voyzu.package.ts
 ```
 
-The package must conform to the [package contract](package-contract.md). Every module registered by the package must conform to the [module contract](module-contract.md).
+Only add optional folders when the package needs them. The package must follow
+the [Package contract](package-contract.md), and every registered module must
+follow the [Module contract](module-contract.md).
 
-## Define the package metadata
+## Define `package.json`
 
-Create `package.json` at the package root. The `voyzu.voyzu-package` flag marks the directory as a Voyzu package, while `voyzu.allowInstall` controls whether Voyzu permits it to be installed. Runtime visibility is managed by Package Management after installation.
+`package.json` identifies the package, declares its route ownership and
+dependencies, and exposes its public entry points.
 
 ```json
 {
-  "name": "@voyzu/ice-creams",
+  "name": "@acme/customer-orders",
   "version": "0.1.0",
-  "description": "A best-practice, self-contained ice-cream management package.",
-  "repository": "https://github.com/chrisjameslennon/voyzu-packages.git",
+  "description": "Customer order management for Voyzu.",
   "private": true,
   "type": "module",
   "voyzu": {
     "voyzu-package": true,
     "allowInstall": true,
     "dependencies": [],
-    "pageRootPaths": ["/ice-creams"],
-    "apiRootPaths": ["/ice-creams"],
+    "pageRootPaths": ["/customer-orders"],
+    "apiRootPaths": ["/customer-orders"],
     "settings": {
-      "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
+      "helpBaseUrl": "https://docs.example.com/"
     }
   },
   "exports": {
     "./voyzu-package": {
       "types": "./voyzu.package.ts",
       "import": "./voyzu.package.ts"
+    },
+    "./modules/orders/operations": {
+      "types": "./modules/orders/operations.ts",
+      "import": "./modules/orders/operations.ts"
+    },
+    "./types": {
+      "types": "./types/index.ts",
+      "import": "./types/index.ts"
     }
   },
-  "dependencies": {
-  },
   "peerDependencies": {
-    "@voyzu/audit": "^0.1.0",
     "@voyzu/capability": "^0.1.0",
     "@voyzu/types": "^0.1.0",
     "@voyzu/ui-components": "^0.1.0",
@@ -92,342 +115,456 @@ Create `package.json` at the package root. The `voyzu.voyzu-package` flag marks 
     "@voyzu/ui-style": "^0.1.0",
     "@voyzu/ui-surface": "^0.1.0",
     "next": "^16",
-    "react": "^19"
+    "react": "^19",
+    "server-only": "^0.0.1",
+    "typebox": "^1.3.0"
   }
 }
 ```
 
-Declare packages required at runtime in `dependencies` or `peerDependencies`.
+Declare host-provided libraries as `peerDependencies`. Put only
+package-specific runtime libraries in `dependencies`. The Voyzu platform is
+implicit; list another installable Voyzu package in `voyzu.dependencies` only
+when installation order genuinely depends on it.
 
-## Add database installation
+## Define public DTOs with TypeBox
 
-Packages that own database objects place their ordered, repeatable SQL beneath `install/db`. Ice Creams creates a reference table and a business table:
-
-```
-# packages/@voyzu/ice-creams/install/db
-├─ sql/
-│  ├─ ice-cream-flavor.sql
-│  └─ ice-cream.sql
-└─ seed/
-   └─ ice-cream-flavor.seed.sql
-```
-
-The schema uses a foreign key from `ice_cream` to `ice_cream_flavor`, stable business codes, status constraints and the standard Voyzu audit columns. Database constraints protect structural integrity even when data is written outside the user interface.
-
-```sql
--- packages/@voyzu/ice-creams/install/db/sql/ice-cream.sql
-CREATE TABLE IF NOT EXISTS ice_cream (
-    id                       BIGSERIAL PRIMARY KEY,
-    code                     TEXT NOT NULL UNIQUE,
-    name                     TEXT NOT NULL,
-    flavor_id                BIGINT NOT NULL,
-    supplier                 TEXT NOT NULL,
-    status                   TEXT NOT NULL DEFAULT 'ACTIVE',
-
-    creation_date            audit_timestamp,
-    creation_actor_type      actor_type,
-    creation_user_id         TEXT,
-    creation_mutation_id     UUID,
-
-    updated_date             audit_timestamp,
-    updated_actor_type       actor_type,
-    updated_user_id          TEXT,
-    updated_mutation_id      UUID,
-
-    deletion_date            audit_timestamp,
-    deletion_actor_type      actor_type,
-    deletion_user_id         TEXT,
-    deletion_mutation_id     UUID,
-
-    CONSTRAINT fk_ice_cream_flavor
-      FOREIGN KEY (flavor_id) REFERENCES ice_cream_flavor(id),
-    CONSTRAINT ck_ice_cream_code
-      CHECK (code = upper(code) AND btrim(code) <> ''),
-    CONSTRAINT ck_ice_cream_name
-      CHECK (btrim(name) <> ''),
-    CONSTRAINT ck_ice_cream_supplier
-      CHECK (btrim(supplier) <> ''),
-    CONSTRAINT ck_ice_cream_status
-      CHECK (status IN ('ACTIVE', 'INACTIVE'))
-);
-
-CREATE INDEX IF NOT EXISTS ix_ice_cream_flavor_id
-  ON ice_cream(flavor_id);
-
-CREATE INDEX IF NOT EXISTS ix_ice_cream_status
-  ON ice_cream(status);
-
-DROP TRIGGER IF EXISTS ice_cream_audit_trigger ON ice_cream;
-CREATE TRIGGER ice_cream_audit_trigger
-  BEFORE INSERT OR UPDATE OR DELETE ON ice_cream
-  FOR EACH ROW
-  EXECUTE FUNCTION audit_trigger_fn('@voyzu/ice-creams');
-```
-
-Seed data belongs under `install/db/seed`.
-
-## Create a module
-
-The primary Ice Creams module owns the CRUD interface and APIs:
-
-```
-# packages/@voyzu/ice-creams/modules/ice-creams
-├─ client/             # Interactive React components
-├─ domain/             # Pure business policies
-├─ server/
-│  ├─ api/             # HTTP handlers
-│  ├─ db/              # Repositories and persisted row types
-│  ├─ lib/             # Services, mapping and validation
-│  └─ pages/           # Server-rendered page components
-├─ tests/
-├─ index.ts
-├─ api.routes.ts
-├─ pages.routes.ts
-├─ operations.ts       # Public facade over server/lib services
-└─ module.ts
-```
-
-The route files are the authoritative registries of application pages and REST endpoints. `module.ts` composes them with the module's optional public operations facade:
+DTOs are runtime schemas as well as TypeScript contracts. Put shared public DTOs
+in the package's top-level `types/` folder and export them through
+`package.json`.
 
 ```ts
-// pages.routes.ts
+// types/order.dto.ts
+import Type from "typebox";
+import { StrictObject } from "@voyzu/types/api";
+
+export const OrderCreateRequestDto = StrictObject({
+  code: Type.String({ pattern: "^[A-Z0-9][A-Z0-9_-]*$", maxLength: 30 }),
+  customerCode: Type.String({ minLength: 1, maxLength: 30 }),
+});
+
+export type OrderCreateRequestDto = Type.Static<typeof OrderCreateRequestDto>;
+
+export const OrderResponseDto = StrictObject({
+  id: Type.Integer({ minimum: 1 }),
+  code: Type.String(),
+  customerCode: Type.String(),
+  status: Type.Union([Type.Literal("ACTIVE"), Type.Literal("INACTIVE")]),
+});
+
+export type OrderResponseDto = Type.Static<typeof OrderResponseDto>;
+```
+
+The Voyzu API router validates declared request and response schemas at the HTTP
+perimeter. Keep validators under `server/lib` for business rules, such as
+whether an order can be cancelled; do not repeat DTO shape validation there.
+
+See [Validation layers](../voyzu-platform-patterns/validation-layers.md).
+
+## Add installation and removal resources
+
+Packages that own database objects place ordered SQL under `install/db/sql` and
+optional seed data under `install/db/seed`. SQL should be rerunnable and should
+use database constraints to protect structural integrity.
+
+```text
+install/
+├─ db/
+│  ├─ sql/
+│  │  └─ customer-order.sql
+│  └─ seed/
+│     └─ order-status.seed.sql
+└─ manifest.ts
+```
+
+```ts
+// install/manifest.ts
+export const install = {
+  sql: ["./install/db/sql/customer-order.sql"],
+  seedSql: ["./install/db/seed/order-status.seed.sql"],
+} as const;
+```
+
+If the package supports removal, add dependency-safe SQL beneath `uninstall/`
+and declare it in an uninstall manifest. Uninstall normally reverses creation
+order and must preserve platform audit history.
+
+```ts
+// uninstall/manifest.ts
+export const uninstall = {
+  sql: ["./uninstall/db/sql/drop-customer-order.sql"],
+} as const;
+```
+
+## Build a module
+
+The Orders module keeps its public contracts at the module root and its
+implementation in dedicated folders:
+
+```text
+modules/orders/
+├─ client/                  # Browser-safe React components
+├─ domain/                  # Optional pure business policies
+├─ server/
+│  ├─ api/                  # Thin HTTP handlers
+│  ├─ db/                   # Repositories and persistence row types
+│  ├─ lib/                  # Services, mappers, and business validators
+│  ├─ pages/                # Server-rendered page components
+│  └─ index.ts              # Controlled server entry point
+├─ types/                   # Optional module-private schemas
+├─ api.routes.ts
+├─ events.ts
+├─ module.ts
+├─ operations.ts
+└─ pages.routes.ts
+```
+
+Do not add a module-root `index.ts` barrel. Import the module manifest from
+`module.ts` and expose only deliberate public entry points through the package's
+`exports` map.
+
+### Compose the module
+
+`module.ts` only composes the sibling contracts:
+
+```ts
+// modules/orders/module.ts
+import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
+
+import { apiDefinitions } from "./api.routes";
+import { events } from "./events";
+import { operations } from "./operations";
+import { pageRoutes } from "./pages.routes";
+
+export const ordersModule = {
+  pageRoutes,
+  apiDefinitions,
+  operations,
+  events,
+} as const satisfies VoyzuPackageModuleDefinition;
+
+export default ordersModule;
+```
+
+Use empty objects for `pageRoutes` or `apiDefinitions` when the module does not
+provide that kind of route. Omit `events` only when the module exposes no
+state-changing operations.
+
+### Register page routes
+
+`pages.routes.ts` is the authoritative page registry:
+
+```tsx
+// modules/orders/pages.routes.ts
+import { OrderDetailPage, OrdersListPage } from "./server";
+
 export const pageRoutes = {
   list: {
-    id: "voyzu.ice-creams.page.list",
-    path: "/ice-creams",
-    Page: IceCreamsListPage,
-    pageTitle: "Ice Creams",
+    id: "acme.customer-orders.orders.page.list",
+    path: "/customer-orders",
+    Page: OrdersListPage,
+    pageTitle: "Customer Orders",
+    helpPath: "customer-orders/orders",
+    breadcrumbBase: [],
+    auth: { required: true, minRole: "STANDARD" },
+  },
+  detail: {
+    id: "acme.customer-orders.orders.page.detail",
+    path: "/customer-orders/[code]",
+    Page: OrderDetailPage,
+    pageTitle: "Customer Order",
+    helpPath: "customer-orders/orders",
+    breadcrumbBase: [
+      { label: "Customer Orders", href: "/customer-orders" },
+    ],
     auth: { required: true, minRole: "STANDARD" },
   },
 } as const;
+```
 
-// api.routes.ts
+Route IDs must be stable and globally unique. Page paths must remain within a
+root declared by `voyzu.pageRootPaths`.
+
+### Register API routes
+
+`api.routes.ts` declares transport, documentation, request schemas, response
+schemas, and thin handlers together:
+
+```ts
+// modules/orders/api.routes.ts
+import {
+  InputValidationErrorResponseDto,
+  InternalServerErrorResponseDto,
+} from "@voyzu/types/errors";
 import Type from "typebox";
-import { IceCreamResponseDto } from "../types";
+
+import { OrderCreateRequestDto, OrderResponseDto } from "../../types";
+import { handleCreate, handleList } from "./server/api/order.http.handlers";
 
 export const apiDefinitions = {
   list: {
     method: "GET",
-    path: "/ice-creams",
-    handler: (request: any) => handleList(request),
-    summary: "List",
-    description: "Lists all ice creams.",
-    tags: ["Ice Creams"],
+    path: "/customer-orders",
+    handler: handleList,
+    summary: "List customer orders",
+    description: "Lists customer orders.",
+    tags: ["Customer Orders"],
     responses: {
       "200": {
-        description: "All ice creams.",
-        body: Type.Array(IceCreamResponseDto),
+        description: "Customer orders.",
+        body: Type.Array(OrderResponseDto),
+      },
+      "500": {
+        description: "An unexpected server error occurred.",
+        body: InternalServerErrorResponseDto,
+      },
+    },
+  },
+  create: {
+    method: "POST",
+    path: "/customer-orders",
+    handler: handleCreate,
+    request: {
+      contentType: "application/json",
+      body: OrderCreateRequestDto,
+    },
+    summary: "Create a customer order",
+    description: "Creates a customer order.",
+    tags: ["Customer Orders"],
+    responses: {
+      "201": {
+        description: "The created customer order.",
+        body: OrderResponseDto,
+      },
+      "400": {
+        description: "Validation failed.",
+        body: InputValidationErrorResponseDto,
+      },
+      "500": {
+        description: "An unexpected server error occurred.",
+        body: InternalServerErrorResponseDto,
       },
     },
   },
 } as const;
 ```
 
-Page paths are relative to the application root. API paths are relative to Voyzu's `/api` base path and must follow REST principles. Route IDs must be stable and unique across the composed Voyzu instance.
+API paths are relative to Voyzu's `/api` base and must remain within a root
+declared by `voyzu.apiRootPaths`. JSON is the default content type when one is
+not declared. Declare non-JSON content such as `application/pdf` or `text/csv`
+explicitly. A declared request body retains the current required-body behavior.
+Declare every expected success and error response, including the standard
+authentication, authorization, and server-error responses.
 
-## Implement the module layers
+HTTP handlers call services directly. They normalize validated transport values,
+map known errors, and return responses; they do not own persistence or business
+rules.
 
-The Ice Creams module follows the standard Voyzu implementation layers:
+### Implement services and operations
 
-| Location        | Responsibility                                      |
-| --------------- | --------------------------------------------------- |
-| `client`        | Forms, lists, details and client-side interaction   |
-| `domain`        | Pure operation policies shared by client and server |
-| `server/api`    | HTTP input extraction and response mapping          |
-| `server/db`     | SQL access and persisted row mapping                |
-| `server/lib`    | Validation, business rules and orchestration        |
-| `server/pages`  | Server-side page data loading                       |
-| `operations.ts` | Public wrappers over service methods                |
-| `tests`         | Domain, service, validation and integration tests   |
+Services under `server/lib` own business orchestration and transactions. They
+call repositories, apply business validation, map persistence rows to DTOs, and
+dispatch events.
 
-Business rules must be enforced in the server service layer. Client-side use of the same policy may improve feedback, but it must not replace server-side enforcement.
+`operations.ts` is a thin, server-only programmatic facade over those services.
+It adds no validation or business behavior:
 
 ```ts
-// packages/@voyzu/ice-creams/modules/ice-creams/domain/operation-policy.ts
-export function Activate(
-  current: IceCreamOperationState,
-): OperationBlocker[] {
-  return current.status === "ACTIVE"
-    ? [{
-        code: "ALREADY_ACTIVE",
-        message: `Ice cream ${current.code} is already active`,
-      }]
-    : [];
-}
+// modules/orders/operations.ts
+import "server-only";
+
+import * as service from "./server/lib/order.service";
+
+export const createOrder = (...args: Parameters<typeof service.createOrder>) =>
+  service.createOrder(...args);
+
+export const listOrders = (...args: Parameters<typeof service.listOrders>) =>
+  service.listOrders(...args);
+
+export const deleteOrder = (...args: Parameters<typeof service.deleteOrder>) =>
+  service.deleteOrder(...args);
+
+export const operations = {
+  createOrder,
+  deleteOrder,
+  listOrders,
+} as const;
 ```
 
-For more information see [validation-layers.md](../voyzu-platform-patterns/validation-layers.md "mention")
+Use operations for tests and deliberate programmatic access. HTTP handlers
+continue to call services directly.
 
-## Register the modules
+### Declare events
 
-A package may contain multiple modules. Ice Creams registers its CRUD, report and audit modules in `voyzu.package.ts`. This file is authoritative; Voyzu does not discover modules by scanning the `modules` directory.
+Each state-changing public operation should have a corresponding completed-action
+event whose payload matches the successful operation response:
 
 ```ts
-// packages/@voyzu/ice-creams/voyzu.package.ts
-export const iceCreamsPackage = {
-  modules: [
-    iceCreamsModule,
-    iceCreamReportsModule,
-    iceCreamAuditModule,
-  ],
-  install: {
-    sql: [
-      "./install/db/sql/ice-cream-flavor.sql",
-      "./install/db/sql/ice-cream.sql",
-    ],
-    seedSql: [
-      "./install/db/seed/ice-cream-flavor.seed.sql",
-    ],
+// modules/orders/events.ts
+import { OrderResponseDto } from "../../types";
+
+export const events = {
+  orderCreated: {
+    description: "A customer order was created.",
+    payload: OrderResponseDto,
   },
-  uninstall: {
-    sql: [
-      "./uninstall/db/sql/drop-ice-cream.sql",
-      "./uninstall/db/sql/drop-ice-cream-flavor.sql",
-    ],
-  },
-  scripts: {
-    sampleData: installSampleData,
-  },
+} as const;
+```
+
+The service dispatches its local event definition. Other packages consume the
+derived global event name through package-level listeners. Functions within the
+same package should call services directly. See
+[Event patterns](../voyzu-platform-patterns/events.md).
+
+## Register the package manifest
+
+`voyzu.package.ts` explicitly composes the package. Voyzu does not discover
+modules or lifecycle files by scanning directories.
+
+```ts
+// voyzu.package.ts
+import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
+
+import { install } from "./install/manifest";
+import { ordersModule } from "./modules/orders/module";
+import { uninstall } from "./uninstall/manifest";
+
+export const customerOrdersPackage = {
+  modules: [ordersModule],
+  install,
+  uninstall,
 } as const satisfies VoyzuPackageDefinition;
+
+export default customerOrdersPackage;
 ```
 
-Every package must register at least one module. The `install`, `uninstall`, and `scripts` sections are optional.
+Every package registers at least one module. Installation, removal, scripts,
+and listeners are optional.
 
 ## Add navigation
 
-Navigation is optional. A package with user-interface pages may export a top navigation item, a left navigation definition, both, or neither. Navigation refers to page route IDs rather than duplicating URL paths.
+Navigation is optional. It references page route IDs instead of repeating URL
+paths:
 
 ```ts
-// packages/@voyzu/ice-creams/navigation/top-nav.topnav.ts
-export const iceCreamsTopNav = {
-  label: "Ice Creams",
-  routeId: iceCreamsModule.pageRoutes.list.id,
-} as const;
+// navigation/top-nav.ts
+import { ordersModule } from "../modules/orders/module";
 
-export default iceCreamsTopNav;
+export default {
+  label: "Customer Orders",
+  routeId: ordersModule.pageRoutes.list.id,
+} as const;
 ```
 
 ```ts
-// packages/@voyzu/ice-creams/navigation/left-nav.leftnav.ts
-export const iceCreamsLeftNav = [
+// navigation/left-nav.ts
+import { ordersModule } from "../modules/orders/module";
+
+export default [
   {
     items: [
       {
-        label: "Ice Creams",
-        icon: "icecream",
-        routeId: iceCreamsModule.pageRoutes.list.id,
-      },
-    ],
-  },
-  {
-    label: "Reports",
-    items: [
-      {
-        label: "All Ice Creams",
-        icon: "summarize",
-        routeId: iceCreamReportsModule.pageRoutes.all.id,
-      },
-    ],
-  },
-  {
-    label: "Audit",
-    items: [
-      {
-        label: "Audit Log",
-        icon: "history",
-        routeId: iceCreamAuditModule.pageRoutes.list.id,
+        label: "Orders",
+        icon: "receipt_long",
+        routeId: ordersModule.pageRoutes.list.id,
       },
     ],
   },
 ] as const;
-
-export default iceCreamsLeftNav;
 ```
 
-Expose each navigation definition that the package provides through `package.json`:
+Expose each contributed navigation file through `package.json` using
+`./navigation/top-nav` and `./navigation/left-nav` exports.
 
-```json
-{
-  "exports": {
-    "./navigation/top-nav": {
-      "types": "./navigation/top-nav.topnav.ts",
-      "import": "./navigation/top-nav.topnav.ts"
-    },
-    "./navigation/left-nav": {
-      "types": "./navigation/left-nav.leftnav.ts",
-      "import": "./navigation/left-nav.leftnav.ts"
-    }
-  }
-}
+## Add tests
+
+Tests live at package level and mirror the module operations surface:
+
+```text
+tests/
+└─ operations/
+   └─ orders/
+      └─ orders.operations.test.ts
 ```
-
-## Expose public functionality
-
-Use the `exports` map in `package.json` to define the only entry points that other packages may import. Consumers must not reach into private source files.
-
-```json
-{
-  "exports": {
-    "./modules/ice-creams/server": {
-      "types": "./modules/ice-creams/server/index.ts",
-      "import": "./modules/ice-creams/server/index.ts"
-    },
-    "./types": {
-      "types": "./modules/types/index.ts",
-      "import": "./modules/types/index.ts"
-    }
-  }
-}
-```
-
-A consuming package can then use the public package name:
 
 ```ts
-// packages/@acme/menus/modules/menu/server/lib/menu.service.ts
-import { getIceCream } from "@voyzu/ice-creams/modules/ice-creams/server";
-import type { IceCreamResponseDto } from "@voyzu/ice-creams/types";
+import { describe, expect, it } from "vitest";
+import {
+  createOrder,
+  deleteOrder,
+} from "@acme/customer-orders/modules/orders/operations";
+
+describe("orders operations", () => {
+  it("creates an order", async () => {
+    const code = `ORDER_${Date.now()}`;
+    try {
+      const order = await createOrder({
+        code,
+        customerCode: "CUSTOMER_001",
+      });
+
+      expect(order.code).toBe(code);
+    } finally {
+      await deleteOrder(code).catch(() => undefined);
+    }
+  });
+});
 ```
 
-## Add public assets
+All functions exposed through `operations.ts` should be tested. Use unique
+fixtures and remove created business records so tests are repeatable; generated
+audit history may remain. See [Testing patterns](../voyzu-platform-patterns/tests.md).
 
-Place package-owned static files in an optional package-root `public-assets` directory. Composition publishes them beneath the full package name in the Next.js public directory. For example, `@acme/warehousing/public-assets/logo.svg` is served at `/@acme/warehousing/logo.svg`.
+## Add assets and documentation
 
-Packages must use their own scoped public path and must not write directly to the platform's `apps/web/public` directory. Composition replaces published assets on update and removes them on uninstall.
+Place package-owned static files beneath `public-assets/`. Composition publishes
+them under the full scoped package name, preventing collisions:
 
-## Link and compose the package
+```text
+Source: public-assets/images/order.svg
+URL:    /@acme/customer-orders/images/order.svg
+```
 
-Link the local package into the development runtime:
+Keep the package overview in `README.md`. Put detailed documentation beneath
+`docs/`, with published help content under `docs/public/`. A page route's
+`helpPath` is resolved against `voyzu.settings.helpBaseUrl`.
+
+## Link, compose, and run
+
+`voyzu:create-package` links the scaffold automatically. For a manually created
+or previously unlinked package, run:
 
 ```shell
-npm run voyzu:link-package @voyzu/ice-creams
+npm run voyzu:link-package @acme/customer-orders
 ```
 
-The command installs a physical package copy beneath `.run/packages`, applies its database installation, installs workspace dependencies and composes its modules into Voyzu. The command name is retained for compatibility.
+Linking creates a physical runtime copy beneath `.run/packages`, runs the
+package installation, installs composed dependencies, and composes Voyzu.
 
-Start the development server:
+Start the linked-package development runtime and watcher with:
 
 ```shell
-npm run voyzu:dev
+npm run dev
 ```
 
-While development is running, Voyzu watches the editable source beneath `packages` and mirrors additions, changes, renames and deletions into the runtime copy for hot reload. Run composition again after changing package exports, module registrations, routes or navigation:
+Voyzu mirrors editable linked-package source into the transient runtime. Run
+composition after changing package exports, module registration, page or API
+routes, navigation, events, assets, or API schemas:
 
 ```shell
 npm run voyzu:compose
 ```
 
-## Add tests and documentation
+Composition generates thin Next.js routes beneath
+`apps/web/app/(generated)` and supporting navigation, event, and API Reference
+files beneath `apps/web/.generated`. Never edit generated files directly.
 
-Test domain rules, request and response validation, and exposed service behaviour at the narrowest useful boundary. Keep tests with the module they exercise and use fixtures for database-backed service tests.
-
-Keep the package overview in its root `README.md`. Place all other package documentation under the package-root `docs` directory. Public-facing documentation and online-help source belong under `docs/public`.
-
-Page routes may define a `helpPath` that Voyzu resolves against the package's `voyzu.settings.helpBaseUrl` setting.
-
-Documentation may be published through GitBook or another provider. See [Documentation and help](../voyzu-platform-patterns/documentation-and-help.md) for the complete pattern.
+See [Commands](commands.md) for the complete command reference.
 
 ## Reference package
 
-The complete Ice Creams implementation conforms to the package and module contracts and demonstrates the patterns described in this guide.
+The Ice Creams package demonstrates CRUD pages, REST APIs, TypeBox DTOs,
+business validation, persistence, auditing, reports, sample data, and operation
+tests.
 
-[View the Ice Creams reference package on GitHub](https://github.com/chrisjameslennon/voyzu-packages/tree/main/packages/%40voyzu/ice-creams)
+[View the Ice Creams reference package on GitHub](https://github.com/chrisjameslennon/voyzu-packages/tree/main/packages/%40voyzu/ice-creams).

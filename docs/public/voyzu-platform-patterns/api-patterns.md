@@ -3,7 +3,7 @@
 Voyzu generates thin native Next.js route handlers from package API definitions during composition:
 
 ```text
-apps/web/app/(generated)/api/stock/[code]/route.ts
+apps/web/app/(generated)/api/warehousing/stock/[code]/route.ts
 ```
 
 Packages do not maintain these generated files. Each module declares its routes
@@ -17,24 +17,23 @@ handler. Keep the handler implementation in the module's server boundary.
 
 ```ts
 // packages/@acme/warehousing/modules/stock/api.routes.ts
-import { handleCreate, handleGet, handleList } from "./server";
+import { handleCreate, handleGet, handleList } from "./server/api/stock.http.handlers";
 
 export const apiDefinitions = {
   list: {
     method: "GET",
-    path: "/stock",
-    handler: (request: any) => handleList(request),
+    path: "/warehousing/stock",
+    handler: handleList,
   },
   create: {
     method: "POST",
-    path: "/stock",
-    handler: (request: any) => handleCreate(request),
+    path: "/warehousing/stock",
+    handler: handleCreate,
   },
   get: {
     method: "GET",
-    path: "/stock/[code]",
-    handler: (request: any, context: any) =>
-      handleGet(request, context),
+    path: "/warehousing/stock/[code]",
+    handler: handleGet,
   },
 } as const;
 ```
@@ -42,7 +41,8 @@ export const apiDefinitions = {
 An API-only module may use an empty `pageRoutes` object.
 
 At runtime the route is prefixed with `/api`, so the example above exposes
-`GET /api/stock`, `POST /api/stock`, and `GET /api/stock/{code}`.
+`GET /api/warehousing/stock`, `POST /api/warehousing/stock`, and
+`GET /api/warehousing/stock/{code}`.
 Next.js performs path matching, parameter extraction and method dispatch. The
 thin Voyzu handler retains authentication plus request and response validation.
 
@@ -107,13 +107,15 @@ import {
   InputValidationErrorResponseDto,
   InternalServerErrorResponseDto,
 } from "@voyzu/types";
-import { IceCreamResponseDto, IceCreamUpdateRequestDto } from "../types";
+import {
+  IceCreamResponseDto,
+  IceCreamUpdateRequestDto,
+} from "@voyzu/ice-creams/types";
 
 update: {
   method: "PUT",
   path: "/ice-creams/[code]",
-  handler: (request: any, context: any) =>
-    handleUpdate(request, context),
+  handler: handleUpdate,
   summary: "Update ice cream",
   description: "Fully replaces the writable fields of an ice cream.",
   tags: ["Ice Creams"],
@@ -223,8 +225,8 @@ Dynamic segments use Next.js bracket syntax in `api.routes.ts`:
 // packages/@acme/warehousing/modules/stock/api.routes.ts
 {
   method: "GET",
-  path: "/stock/[code]",
-  handler: (request, context) => handleGet(request, context),
+  path: "/warehousing/stock/[code]",
+  handler: handleGet,
 }
 ```
 
@@ -239,21 +241,25 @@ export async function handleGet(
   context: { params: Promise<{ code: string }> },
 ) {
   const { code } = await context.params;
-  // Validate code, call the service, and return a NextResponse.
+  // The router has validated code; parse it as needed, call the service,
+  // and return a NextResponse.
 }
 ```
 
-Validate all path and query-string values before passing them to a service.
+The router validates declared path and query-string schemas before invoking the
+handler. Values still arrive at the handler as their original strings, so parse
+or normalize them into the service's expected types without repeating the
+contract validation.
 
 ## Keep handlers thin
 
 HTTP handlers must:
 
-1. parse path, query-string, cookie, and body input;
-2. validate the request contract;
-3. call a server service;
-4. translate the result into a response DTO; and
-5. map known errors to appropriate HTTP status codes.
+1. read and normalize the already validated path, query-string, cookie, and
+   body input;
+2. call a server service;
+3. translate the result into a response DTO; and
+4. map known errors to appropriate HTTP status codes.
 
 Handlers must not contain persistence queries or duplicate business rules.
 Services own business operations and repositories own SQL.
@@ -268,7 +274,7 @@ return as well as its successful response.
 |---|---|---|
 | `400` | The path, query string, or request body is malformed or fails validation. | `InputValidationErrorResponseDto` |
 | `401` | The caller is not authenticated. | `UnauthorizedErrorResponseDto` |
-| `403` | The authenticated caller lacks permission. | Runtime authorization response |
+| `403` | The authenticated caller lacks permission. | `ForbiddenErrorResponseDto` |
 | `404` | The requested entity does not exist. | `EntityNotFoundErrorResponseDto` |
 | `409` | The request conflicts with an existing value or state, such as a duplicate code. | `ConflictErrorResponseDto` |
 | `422` | The request is valid but a business rule blocks the operation. | `BusinessRuleErrorResponseDto` |
@@ -296,10 +302,11 @@ objects so that internal schema changes do not silently change the public API.
 ## Compose API changes
 
 Run `npm run voyzu:compose` after adding or changing an API definition or DTO.
-Composition reads each active package's `voyzu.package.ts`, rebuilds the runtime
-API registry, generates the package-grouped API documentation and combined
+Composition reads each active package's `voyzu.package.ts`, writes thin Next.js
+handlers beneath `apps/web/app/(generated)/api`, generates package-grouped API
+documentation beneath `apps/web/.generated/api-reference`, writes the combined
 OpenAPI document, and clears the Next.js cache.
 
-Do not edit generated registry or API documentation files. Restart the web
-server after `voyzu:compose` completes so the application loads the regenerated
-routes and documentation.
+Do not edit generated routes or API documentation files. Restart the web server
+after `voyzu:compose` completes so the application loads the regenerated routes
+and documentation.

@@ -54,10 +54,10 @@ Set `helpPath` on each page route that has contextual documentation. The path is
 export const pageRoutes = {
   list: {
     id: "acme.stock.page.list",
-    path: "/stock",
+    path: "/warehousing/stock",
     Page: StockListPage,
     pageTitle: "Stock",
-    helpPath: "/stock/stock-items",
+    helpPath: "stock/stock-items",
     auth: { required: true, minRole: "STANDARD" },
   },
 } as const;

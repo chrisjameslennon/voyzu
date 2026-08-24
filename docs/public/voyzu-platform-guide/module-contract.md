@@ -1,286 +1,329 @@
 # Module contract
 
-The locations below are relative to the package repository root. Each rule states whether it belongs in package metadata, a module definition, navigation, or the module's supporting source directories.
+A module is a cohesive application capability owned by one Voyzu package. It keeps its page and API contracts separate from its implementation and exposes a stable operations surface for tests and module-to-module communication.
 
-## Module structure and registration
+A module resides beneath the owning package's `modules/` directory:
 
-### Source location
-
-A module should reside beneath the owning package's `modules/module-name` directory. Its entry point is `module.ts`, with page and API registration in sibling route files. An optional `operations.ts` exposes the module's public programmatic interface. Supporting client, domain and server code belongs beneath the same module directory.
-
-Example:
-
-```
-# package repository root
+```text
 packages/@acme/warehousing/
 └─ modules/
    └─ stock/
-      ├─ module.ts
-      ├─ pages.routes.ts
-      ├─ api.routes.ts
-      ├─ operations.ts       # optional public service facade
       ├─ client/
       ├─ domain/
-      └─ server/
+      ├─ server/
+      ├─ types/
+      ├─ api.routes.ts
+      ├─ events.ts
+      ├─ module.ts
+      ├─ operations.ts
+      └─ pages.routes.ts
 ```
 
-### Module definition
+Only the folders and root files required by the module need to be present. A server-only module, for example, may have empty route collections and no `client/` folder.
 
-A module definition must compose the `pageRoutes` and `apiDefinitions` exported by its route files. The route collections must be objects and may be empty. A service-backed module may also expose an `operations` object. The composition belongs in `modules/module-name/module.ts`.
+## Root files
 
-Example:
+### `module.ts`
+
+`module.ts` is the module manifest. It composes the contracts declared by the module's sibling files and contains no route definitions or implementation logic itself.
 
 ```ts
-// packages/@acme/warehousing/modules/stock/module.ts
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
+
 import { apiDefinitions } from "./api.routes";
-import { pageRoutes } from "./pages.routes";
+import { events } from "./events";
 import { operations } from "./operations";
+import { pageRoutes } from "./pages.routes";
 
 export const stockModule = {
   pageRoutes,
   apiDefinitions,
   operations,
+  events,
 } as const satisfies VoyzuPackageModuleDefinition;
+
+export default stockModule;
 ```
 
-### Package registration
-
-A module must be imported and included in the owning package's `modules` collection. Voyzu does not discover modules by scanning the package's `modules` directory. Registration belongs in the package-level `voyzu.package.ts`.
-
-Example:
+Voyzu does not discover modules by scanning the directory. The package must register the module in its root `voyzu.package.ts`:
 
 ```ts
-// packages/@acme/warehousing/voyzu.package.ts
 import { stockModule } from "./modules/stock/module";
 
 export default {
-  // ...
   modules: [stockModule],
 };
 ```
 
-## Page routes
+Do not add a module-level `index.ts` barrel. Import the manifest, operations, or explicitly exported server entry point directly.
 
-### User-interface capability
+### `pages.routes.ts`
 
-A module exposes its user-interface pages through the `pageRoutes` collection in `pages.routes.ts`. This collection is the module's authoritative list of pages and allows Voyzu to generate native Next.js pages while composing authorization, page metadata and navigation references into the application.
-
-A module with no user-interface pages must define an empty `pageRoutes` object.
-
-### Route definitions
-
-Each page route must define a stable `id`, a unique application `path`, a `pageTitle` and a React `Page` component. Dynamic URL segments must use the Next.js bracket convention. Page-route registration belongs in `pages.routes.ts`; page components normally belong under the module's `server/pages` or client directory.
-
-Example:
+`pages.routes.ts` is the authoritative collection of the module's browser pages. Voyzu uses it to generate thin native Next.js routes and compose authorization, metadata, help, and navigation references.
 
 ```ts
-// packages/@acme/warehousing/modules/stock/pages.routes.ts
+import {
+  StockDetailPage,
+  StockListPage,
+} from "@acme/warehousing/modules/stock/server";
+
 export const pageRoutes = {
+  list: {
+    id: "acme.warehousing.stock.page.list",
+    path: "/warehousing/stock",
+    pageTitle: "Stock",
+    Page: StockListPage,
+    helpPath: "stock/overview",
+    auth: { required: true, minRole: "STANDARD" },
+  },
   detail: {
     id: "acme.warehousing.stock.page.detail",
-    path: "/stock/[code]",
+    path: "/warehousing/stock/[code]",
     pageTitle: "Stock item",
     Page: StockDetailPage,
+    breadcrumbBase: [
+      { label: "Stock", href: "/warehousing/stock" },
+    ],
     auth: { required: true, minRole: "STANDARD" },
   },
 } as const;
 ```
 
-### Authorization
+Every page route requires a stable, application-wide `id`, a path within a page root owned by the package, a title, and a React page component. Dynamic segments use Next.js bracket syntax such as `[code]`, `[...path]`, and `[[...path]]`; Next.js extracts those parameters before Voyzu supplies them to the page.
 
-A page route should declare its authentication and minimum-role requirements explicitly. A protected page must use one of the Voyzu surface roles. Authorization metadata belongs on the page-route entry in `pages.routes.ts`.
-
-Example:
+Use an empty object when the module has no pages:
 
 ```ts
-// packages/@acme/warehousing/modules/stock/pages.routes.ts
-auth: {
-  required: true,
-  minRole: "STANDARD",
-},
+export const pageRoutes = {} as const;
 ```
 
-### Metadata
+Navigation belongs in the package's `navigation/` folder and refers to `pageRoutes` entries by route ID. A `helpPath` is relative to the package's `voyzu.settings.helpBaseUrl`. See [Application surfaces](../voyzu-platform-patterns/app-surface.md) and [Documentation and help](../voyzu-platform-patterns/documentation-and-help.md).
 
-A page route may provide breadcrumbs, help, and framing metadata. These values must describe the route without introducing navigation paths that conflict with the route definition. This metadata belongs on the page-route entry in `pages.routes.ts`. A `helpPath` must be relative to the `voyzu.settings.helpBaseUrl` declared by the owning package.
+### `api.routes.ts`
 
-Example:
-
-```ts
-// packages/@acme/warehousing/modules/stock/pages.routes.ts
-{
-  breadcrumbBase: [{ label: "Stock", href: "/stock" }],
-  helpPath: "packages/warehousing/stock",
-  unframed: false,
-}
-```
-
-See [Documentation and help](../voyzu-platform-patterns/documentation-and-help.md) for the package-level help setting and publishing pattern.
-
-### Navigation references
-
-Package navigation must refer to a module page by its route `id`. A module must not require navigation to be usable; modules may be API-only or server-only. Navigation definitions belong in the owning package's `navigation` directory, not in the module definition.
-
-Example:
+`api.routes.ts` is the authoritative collection of the module's HTTP endpoints. Each entry declares the route, handler, documentation, request schemas, and response schemas in one place.
 
 ```ts
-// packages/@acme/warehousing/navigation/left-nav.leftnav.ts
-{
-  label: "Stock",
-  routeId: stockModule.pageRoutes.list.id,
-}
-```
+import {
+  InputValidationErrorResponseDto,
+  InternalServerErrorResponseDto,
+} from "@voyzu/types/errors";
+import {
+  StockItemCreateRequestDto,
+  StockItemResponseDto,
+} from "@acme/warehousing/types";
 
-## API routes
+import { handleCreate } from "./server/api/stock.http.handlers";
 
-### API capability
-
-A module exposes its HTTP API through the `apiDefinitions` collection in `api.routes.ts`. This collection is the module's authoritative list of endpoints and allows Voyzu to compose handlers and route matching into the application.
-
-A module with no HTTP API must define an empty `apiDefinitions` object.
-
-### Route definitions
-
-Each entry in `apiDefinitions` defines one HTTP endpoint. It must specify an HTTP `method`, a path relative to Voyzu's `/api` base path and an asynchronous `handler`. The combination of method and path must be unique across the composed application.
-
-API routes must follow REST principles. Paths must identify resources using nouns, HTTP methods must express the operation using their standard semantics, and handlers must return appropriate HTTP status codes. Route registration belongs in `api.routes.ts`; handler implementations belong under `server/api`.
-
-Example:
-
-```ts
-// packages/@acme/warehousing/modules/stock/api.routes.ts
 export const apiDefinitions = {
-  get: {
-    method: "GET",
-    path: "/stock/[code]",
-    handler: handleGetStock,
+  create: {
+    method: "POST",
+    path: "/warehousing/stock",
+    handler: handleCreate,
+    request: {
+      contentType: "application/json",
+      body: StockItemCreateRequestDto,
+    },
+    summary: "Create stock item",
+    description: "Creates a stock item.",
+    tags: ["Stock"],
+    responses: {
+      "201": {
+        description: "The created stock item.",
+        body: StockItemResponseDto,
+      },
+      "400": {
+        description: "Validation failed.",
+        body: InputValidationErrorResponseDto,
+      },
+      "500": {
+        description: "An unexpected server error occurred.",
+        body: InternalServerErrorResponseDto,
+      },
+    },
   },
 } as const;
 ```
 
-### Request and response contracts
+The combination of HTTP method and path must be unique across the composed application. Paths are relative to Voyzu's shared `/api` prefix and must remain within an API root owned by the package. For example, the declared path `/warehousing/stock` is served at `/api/warehousing/stock`.
 
-An API route should use explicit DTOs for request bodies, path parameters, query parameters and responses. Shared Voyzu request and error DTOs should be reused rather than redefined. Domain DTOs belong in the owning package's types area and must be exposed through a public export when other packages consume them.
+Request and response contracts use TypeBox DTOs. The router validates requests and responses against these schemas at the HTTP perimeter. When `request.body` is declared, the body is required. JSON is the default content type when none is declared; non-JSON bodies such as PDF or CSV must declare their content type explicitly.
 
-Example:
+An invalid response indicates an application defect. In development, response validation failures throw. In production, Voyzu logs the validation error and returns the response.
+
+Path parameters use the same Next.js bracket names as the path. Query and path schemas belong under `request`. Use an empty object when the module has no API:
 
 ```ts
-// packages/@acme/warehousing/modules/types/stock.ts
+export const apiDefinitions = {} as const;
+```
+
+API paths identify resources with nouns and use standard HTTP method and status semantics. See [API patterns](../voyzu-platform-patterns/api-patterns.md) and [Validation layers](../voyzu-platform-patterns/validation-layers.md).
+
+### `operations.ts`
+
+`operations.ts` is the module's stable programmatic surface. It contains thin, server-only wrappers over service methods and adds no validation, business rules, persistence, or HTTP behaviour.
+
+```ts
+import "server-only";
+
+import * as service from "./server/lib/stock.service";
+
+function operation<TArgs extends unknown[], TResult>(
+  serviceMethod: (...args: TArgs) => TResult,
+) {
+  return (...args: TArgs): TResult => serviceMethod(...args);
+}
+
+export const createStockItem = operation(service.createStockItem);
+export const updateStockItem = operation(service.updateStockItem);
+export const deleteStockItem = operation(service.deleteStockItem);
+
+export const operations = {
+  createStockItem,
+  updateStockItem,
+  deleteStockItem,
+} as const;
+```
+
+Operations are called by package-level operation tests and may be called by other modules. Code already inside the owning module calls its service methods directly. HTTP handlers also call services directly rather than routing through operations.
+
+Expose operations intended for external use through the package's `package.json`:
+
+```jsonc
+{
+  "exports": {
+    "./modules/stock/operations": "./modules/stock/operations.ts"
+  }
+}
+```
+
+Each state-changing operation should have a corresponding completed-action event in `events.ts`.
+
+### `events.ts`
+
+`events.ts` declares the integration events owned by the module. Event keys are local; Voyzu derives their global names from the registered package and module.
+
+```ts
+import { StockItemResponseDto } from "@acme/warehousing/types";
+
+export const events = {
+  stockItemCreated: {
+    description: "A stock item was created.",
+    payload: StockItemResponseDto,
+  },
+  stockItemUpdated: {
+    description: "A stock item was updated.",
+    payload: StockItemResponseDto,
+  },
+  stockItemDeleted: {
+    description: "A stock item was deleted.",
+    payload: StockItemResponseDto,
+  },
+} as const;
+```
+
+For example, Voyzu registers `stockItemDeleted` as `@acme/warehousing.stock.stockItemDeleted`. The successful service response DTO is also the event payload. The service dispatches the event and supplies its transaction when one is active:
+
+```ts
+await platformEvents.dispatch(
+  events.stockItemDeleted,
+  stockItem,
+  { transaction: db },
+);
+```
+
+Events are for consumption by other packages. Functions within the same package call services directly. See [Event patterns](../voyzu-platform-patterns/events.md).
+
+## `client/`
+
+`client/` contains browser-safe React components, hooks, and utilities. Client components may call HTTP APIs but must not import database access, credentials, services, or anything beneath `server/`.
+
+```text
+client/
+├─ pages/
+│  └─ StockListContent.tsx
+└─ index.ts
+```
+
+```tsx
+// client/pages/StockListContent.tsx
+"use client";
+
+export function StockListContent({ items }: StockListContentProps) {
+  return <StockTable items={items} />;
+}
+```
+
+`client/index.ts` is a controlled client-safe barrel:
+
+```ts
+export { StockListContent } from "./pages/StockListContent";
+```
+
+## `domain/`
+
+`domain/` is optional and contains pure business policies that do not depend on React, HTTP, Next.js, or persistence. It is useful when the same rule drives both server enforcement and UI availability.
+
+```text
+domain/
+└─ operation-policy.ts
+```
+
+```ts
+export function changeCodeBlockers(
+  item: { hasTransactions: boolean },
+): string[] {
+  return item.hasTransactions
+    ? ["The code cannot be changed after transactions exist."]
+    : [];
+}
+```
+
+Server services remain the authority and must enforce the rule even when the client uses the same policy to disable an action.
+
+## `types/`
+
+`types/` is optional for module-private schemas and types. Public DTOs shared by API definitions, operations, events, or other packages normally belong in the owning package's top-level `types/` folder and are exported through `package.json`.
+
+```ts
+// types/stock-selection.dto.ts
 import Type from "typebox";
 import { StrictObject } from "@voyzu/types/api";
 
-export const StockItemCreateRequestDto = StrictObject({
-  code: Type.String({ pattern: "^[A-Z0-9_-]+$" }),
-  name: Type.String({ minLength: 1 }),
+export const StockSelectionDto = StrictObject({
+  code: Type.String(),
 });
-export type StockItemCreateRequestDto = Type.Static<typeof StockItemCreateRequestDto>;
 
-export const StockItemResponseDto = StrictObject({
-  id: Type.Integer({ minimum: 1 }),
-  code: Type.String({ pattern: "^[A-Z0-9_-]+$" }),
-  name: Type.String({ minLength: 1 }),
-  status: Type.Union([Type.Literal("ACTIVE"), Type.Literal("INACTIVE")]),
-});
-export type StockItemResponseDto = Type.Static<typeof StockItemResponseDto>;
+export type StockSelectionDto = Type.Static<typeof StockSelectionDto>;
 ```
 
-## Module implementation
+DTO schemas own structural object validation. Do not repeat their length, shape, required-field, or primitive-type constraints in service validators.
 
-### Operations
+## `server/`
 
-A service-backed module may expose an `operations` object from `operations.ts`. Operations are thin, server-only wrappers over the module's services. They contain no validation, business rules, persistence logic, or HTTP concerns; those remain in the underlying services and HTTP handlers.
+`server/` contains all server-only implementation code. Browser code must never import this folder. Keep API transport, persistence, services, and server-rendered pages in their dedicated subfolders.
 
-Operations form the stable boundary used by module tests and by other modules. Nothing inside the owning module needs to call them. Export the file through an explicit package subpath such as `@acme/warehousing/stock/operations`.
+```text
+server/
+├─ api/
+├─ db/
+├─ lib/
+├─ pages/
+└─ index.ts
+```
+
+### `server/index.ts`
+
+`server/index.ts` is a controlled server entry point used by route registration and composition. It exposes only the server-rendered page components or other runtime entries that must be resolved through the package export.
 
 ```ts
-// packages/@acme/warehousing/modules/stock/operations.ts
-import "server-only";
-import { getStock as getStockService } from "./server/lib/stock.service";
-
-export const getStock = (
-  ...args: Parameters<typeof getStockService>
-): ReturnType<typeof getStockService> => getStockService(...args);
-
-export const operations = { getStock } as const;
+export { StockListPage } from "./pages/StockListPage";
+export { StockDetailPage } from "./pages/StockDetailPage";
 ```
 
-### Validation
-
-A module declares TypeBox request and response schemas in its API definition; the router validates them at the transport perimeter. Cross-field and domain validators belong under `server/lib`, while database-dependent rules belong in services or operation policies. Validators must not repeat object constraints already declared by DTO schemas.
-
-Example:
-
-```ts
-// packages/@acme/warehousing/modules/stock/server/lib/stock-item.service.ts
-const errors = validateCreate(input);
-if (errors.length) {
-  throw new InputValidationError(errors.join("; "));
-}
-```
-
-See the pattern [validation-layers.md](../voyzu-platform-patterns/validation-layers.md "mention")
-
-### Business rules
-
-Business rules must reside in the module's domain or service layer rather than in React pages or HTTP route registration. Rule failures must produce stable, meaningful Voyzu business errors. Rules belong under `domain` or `server/lib`.
-
-Example:
-
-```ts
-// packages/@acme/warehousing/modules/stock/server/lib/stock-item.service.ts
-if (warehouse.status !== "ACTIVE") {
-  throw new BusinessRuleError("The warehouse is inactive.");
-}
-```
-
-### Server boundary
-
-Server-only code must remain under the module's server boundary and must not be imported by client components. Client-safe entry points must not re-export database, credential or server-only functionality. The boundary is expressed by separate `client` and `server` directories and entry points.
-
-SSR page components may import `server-only`. A Node-safe service barrel used by tests and scripts must not re-export those pages; expose SSR pages through a separate page entry point.
-
-Example:
-
-```
-# packages/@acme/warehousing/
-modules/stock/
-├─ client/index.ts       # client-safe exports
-├─ server/index.ts       # Node-safe services and handlers
-└─ server/pages/index.ts # SSR page exports
-```
-
-### Persistence
-
-Database access must be isolated behind module-owned repositories or services. Pages and HTTP handlers must not issue ad hoc database queries. Repository code belongs under `server/db`; orchestration belongs under `server/lib`.
-
-Example:
-
-```ts
-// packages/@acme/warehousing/modules/stock/server/lib/stock-item.service.ts
-const stockItem = await StockItemRepo.getByCode(code);
-```
-
-### Auditing
-
-A module that mutates auditable business data must use Voyzu's audit contracts and propagate the current actor and mutation context. Audit records must be written as part of the same business operation. Audit stamping normally occurs in the module's service layer before repository persistence.
-
-Example:
-
-```ts
-// packages/@acme/warehousing/modules/stock/server/lib/stock-item.service.ts
-const audit = await createUpdateAuditStamp();
-await StockItemRepo.update(code, withUpdateAudit(update, audit));
-```
-
-### Public module APIs
-
-Module functionality intended for use by another package must be exported through a package-level public entry point. Consumers must not import private module files. The public entry point belongs in the providing module, and the export mapping belongs in the owning package's `package.json`.
-
-Example:
+Expose this entry point explicitly through the owning package's `package.json`. Programmatic consumers use `operations.ts`; they must not import private service or server file paths.
 
 ```jsonc
-// packages/@acme/warehousing/package.json
 {
   "exports": {
     "./modules/stock/server": "./modules/stock/server/index.ts"
@@ -288,37 +331,140 @@ Example:
 }
 ```
 
+### `server/api/`
+
+`server/api/` contains thin HTTP handlers. A handler reads HTTP-specific input, calls a service, maps known errors to Voyzu responses, and returns a `NextResponse`.
+
 ```ts
-// packages/@acme/manufacturing/modules/work-orders/server/lib/work-order.service.ts
-import { StockService } from "@acme/warehousing/modules/stock/server";
+// server/api/stock.http.handlers.ts
+export async function handleCreate(req: NextRequest): Promise<NextResponse> {
+  try {
+    const input = await parseBody<StockItemCreateRequestDto>(req);
+    return created(await createStockItem(input));
+  } catch (error) {
+    if (error instanceof BusinessRuleError) return businessRuleError(error);
+    return serverError(error);
+  }
+}
 ```
 
-## Quality and guidance
+TypeBox validation belongs to the API route and is performed by the router. Handlers do not repeat DTO validation.
 
-### Testing
+### `server/db/`
 
-A module should test its domain rules, request and response validation, and exposed service behaviour at the narrowest useful boundary. Repository outcomes should be verified through services rather than by testing private repositories directly. Tests should reside within the module or in the repository's corresponding package test area.
+`server/db/` owns repositories, SQL, and persistence row types. Repositories accept a database executor so services can use the same transaction across repositories and event listeners.
 
-Example:
-
+```text
+server/db/
+├─ stock.repo.ts
+└─ stock.row.types.ts
 ```
-# packages/@acme/warehousing/
-modules/stock/
+
+```ts
+export class StockRepo {
+  constructor(private readonly db: DbExecutor) {}
+
+  async findByCode(code: string): Promise<StockRow | null> {
+    const result = await this.db.query(
+      "SELECT * FROM stock_item WHERE code = $1",
+      [code],
+    );
+    return result.rows[0] ?? null;
+  }
+}
+```
+
+Pages and HTTP handlers must not issue ad hoc persistence queries for module-owned data; they call services or repositories through the appropriate server layer.
+
+### `server/lib/`
+
+`server/lib/` contains services, mappers, and business validators. Services orchestrate transactions, persistence, auditing, business rules, DTO mapping, and event dispatch.
+
+```text
+server/lib/
+├─ stock.mapper.ts
+├─ stock.service.ts
+└─ stock.validator.ts
+```
+
+```ts
+export async function deleteStockItem(
+  code: string,
+): Promise<StockItemResponseDto> {
+  return withTransaction(async (db) => {
+    const repo = new StockRepo(db);
+    const deleted = await repo.delete(code);
+    const stockItem = toResponseDto(deleted);
+
+    await platformEvents.dispatch(
+      events.stockItemDeleted,
+      stockItem,
+      { transaction: db },
+    );
+
+    return stockItem;
+  });
+}
+```
+
+Validators in `server/lib/` contain business validation only:
+
+```ts
+export function validateDeletion(item: StockItem): void {
+  if (item.hasTransactions) {
+    throw new BusinessRuleError(
+      "A stock item with transactions cannot be deleted.",
+    );
+  }
+}
+```
+
+Mutations of auditable data create and persist Voyzu audit stamps within the same business operation. See [Data](../voyzu-platform-patterns/data.md), [Auditing](../voyzu-platform-patterns/auditing-patterns.md), and [Validation layers](../voyzu-platform-patterns/validation-layers.md).
+
+### `server/pages/`
+
+`server/pages/` contains server-rendered React page components referenced by `pages.routes.ts`. They load initial data and compose client components but do not own business rules.
+
+```tsx
+// server/pages/StockListPage.tsx
+import "server-only";
+
+import { StockListContent } from "../../client";
+import { listStockItems } from "../lib/stock.service";
+
+export async function StockListPage() {
+  const items = await listStockItems();
+  return <StockListContent items={items} />;
+}
+```
+
+Keep server-rendered pages out of client-safe barrels. A Node-safe service entry point must not accidentally expose Next.js page dependencies to scripts or tests that do not run inside Next.js.
+
+## Package-level tests
+
+Module operation tests live in the owning package's top-level `tests/operations/[module-name]/` folder rather than inside the module.
+
+```text
+packages/@acme/warehousing/
 └─ tests/
-   ├─ stock-item.service.test.ts
-   └─ stock-item.validator.test.ts
+   └─ operations/
+      └─ stock/
+         └─ stock.operations.test.ts
 ```
 
-### Voyzu patterns
+```ts
+import { operations } from "../../../modules/stock/operations";
 
-A module should follow the established Voyzu patterns for data, APIs, application surfaces, validation, auditing, integration and testing unless the module documents a deliberate exception.
+it("creates a stock item", async () => {
+  const item = await operations.createStockItem(input);
+  expect(item.code).toBe(input.code);
+});
+```
 
-Example:
+Test every exported operation. Tests should clean up the records they create; intentional audit records may remain. See [Testing](../voyzu-platform-patterns/tests.md).
 
-See the patterns for [data](../voyzu-platform-patterns/data.md), [APIs](../voyzu-platform-patterns/api-patterns.md), [application surfaces](../voyzu-platform-patterns/app-surface.md), [validation](../voyzu-platform-patterns/validation-layers.md), [auditing](../voyzu-platform-patterns/auditing-patterns.md), and [testing](../voyzu-platform-patterns/tests.md).
+## Reference module
 
-### Reference package
+The Ice Creams module demonstrates this contract in a complete package.
 
-The Voyzu Ice Creams package conforms to this contract and demonstrates many of the established module and application patterns in use.
-
-[View the Ice Creams reference package on GitHub](https://github.com/chrisjameslennon/voyzu-packages/tree/main/packages/%40voyzu/ice-creams)
+[View the Ice Creams module on GitHub](https://github.com/chrisjameslennon/voyzu-packages/tree/main/packages/%40voyzu/ice-creams/modules/ice-creams).

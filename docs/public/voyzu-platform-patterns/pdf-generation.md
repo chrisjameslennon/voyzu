@@ -46,19 +46,23 @@ The framed branch renders the interactive report screen. The unframed branch ret
 Register both paths against the same page component. Mark the printable route as `unframed`:
 
 ```ts
-pageRoutes: {
+export const pageRoutes = {
   report: {
+    id: "acme.financeReports.page.trialBalance",
     path: "/finance/reports/trial-balance",
+    pageTitle: "Trial Balance",
     Page: TrialBalanceReportPage,
-    auth: { required: true },
+    auth: { required: true, minRole: "STANDARD" },
   },
   reportPrintable: {
+    id: "acme.financeReports.page.trialBalance.printable",
     path: "/finance/reports/trial-balance/printable",
+    pageTitle: "Trial Balance",
     Page: TrialBalanceReportPage,
     unframed: true,
-    auth: { required: true },
+    auth: { required: true, minRole: "STANDARD" },
   },
-}
+} as const;
 ```
 
 ## Report actions
@@ -89,4 +93,5 @@ Use `portrait` or `landscape` consistently in the PDF parameters and the templat
 <style>{`@media print { @page { size: A4 portrait; } }`}</style>
 ```
 
-The Trial Balance and organization list reports in `@voyzu/finance` are reference implementations of this pattern.
+The Trial Balance reports in `@voyzu/finance` and organization list reports in
+`@voyzu/erp-core` are reference implementations of this pattern.

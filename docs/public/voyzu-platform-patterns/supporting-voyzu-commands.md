@@ -58,7 +58,7 @@ The package definition registers modules and lifecycle resources:
 
 ```ts
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
-import { iceCreamsModule } from "./modules/ice-creams";
+import { iceCreamsModule } from "./modules/ice-creams/module";
 import { install as installSampleData } from "./scripts/sample-data/install";
 
 export const iceCreamsPackage = {
@@ -201,10 +201,11 @@ in its `modules` array. Each registered module must provide `pageRoutes` and
 `apiDefinitions`, even when one of those collections is empty.
 
 Depending on the package exports, composition may also consume navigation,
-static assets, styles, documentation settings, and other package metadata. API
+static assets, styles, documentation settings, and other package metadata. It
+writes thin Next.js routes beneath `apps/web/app/(generated)` and supporting
+navigation, event, and API Reference output beneath `apps/web/.generated`. API
 documentation generation reads API route definitions and referenced DTOs from
-the package source. Generated composition and API documentation files must never be
-edited directly.
+the package source. Generated output must never be edited directly.
 
 Run composition after changing package contracts, dependencies, routes,
 navigation, assets, API definitions, or DTO documentation:
@@ -231,7 +232,7 @@ Before publishing or installing a package, confirm that:
 * uninstall SQL is dependency-safe and preserves platform audit records;
 * optional TypeScript operations are explicitly exposed through `scripts`;
 * routes and navigation stay within the package's declared roots;
-* API definitions and DTO comments are complete enough to generate the API
+* API definitions and DTO schema descriptions are complete enough to generate the API
   Reference; and
 * the composed application can typecheck and build with the package installed.
 

@@ -16,7 +16,7 @@ The colon is mandatory and there must be no spaces around it. Base64-encode that
 
 ```shell
 curl --request GET \
-  --url http://localhost:3000/api/companies \
+  --url http://localhost:3000/api/organization/organizations \
   --header 'Authorization: Basic BASE64_OF_USER_CODE_COLON_PASSWORD'
 ```
 
@@ -36,7 +36,7 @@ and can be sent as:
 
 ```shell
 curl --request GET \
-  --url http://localhost:3000/api/companies \
+  --url http://localhost:3000/api/organization/organizations \
   --header 'Authorization: Basic QVBJX1VTRVI6cGFzc3dvcmRwYXNzd29yZA=='
 ```
 
@@ -56,14 +56,14 @@ import { getCurrentUser } from "@voyzu/auth/users/server";
 const user = await getCurrentUser();
 if (!user) {
   throw new Error("An authenticated user is required");
-} as const;
+}
 ```
 
 API requests are recorded with the API actor type. Packages must not parse authentication headers or construct their own request identity context.
 
 ## UI sessions
 
-The login page posts the supplied identifier and password to `POST /api/auth/login`. A successful login creates a signed `voyzu_auth` cookie with these properties:
+The login page posts the supplied identifier and password to `POST /api/auth/session`. A successful login creates a signed `voyzu_auth` cookie with these properties:
 
 - HTTP only, so client JavaScript cannot read it.
 - Secure and available across the application.
@@ -74,7 +74,7 @@ The cookie identifies the user and session expiry. On authenticated application 
 
 The installer generates a strong private `VOYZU_AUTH_SECRET` for each installation. Preserve it in every deployed environment. Voyzu refuses to create or verify sessions when the value is missing or decodes to fewer than 32 bytes. Changing the secret invalidates existing UI sessions.
 
-Logging out through `POST /api/auth/logout` expires the cookie. Packages must not implement module-specific login state, session cookies, or logout behavior.
+Logging out through `DELETE /api/auth/session` expires the cookie. Packages must not implement module-specific login state, session cookies, or logout behavior.
 
 ## Protect application pages
 
@@ -90,7 +90,7 @@ export const pageRoutes = {
     Page: InventoryItemsListPage,
     auth: { required: true, minRole: "STANDARD" },
   },
-}
+} as const;
 ```
 
 For a protected page, the application surface:
@@ -106,6 +106,6 @@ Page-route protection controls entry to the UI. API handlers and services must s
 - Use the platform route `auth` declaration for protected pages.
 - Use `getCurrentUser()` when server-side behavior needs the current identity.
 - Allow the platform API router to establish request identity.
-- Keep authentication separate from company selection and other business context.
+- Keep authentication separate from organization selection and other business context.
 - Apply service-level authorization independently of UI visibility.
 - Do not decode `voyzu_auth`, parse Basic authentication, or create package-specific authentication cookies.

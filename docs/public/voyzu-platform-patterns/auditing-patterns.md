@@ -4,7 +4,7 @@ Auditing in Voyzu is database-backed. Application code supplies actor and mutati
 
 Every audit event belongs to exactly one Voyzu package. The package code is declared when the package attaches its trigger and is stored as a non-null `audit_event.package_code` value.
 
-An audit company ID may be null for organization-level or pre-company data. PostgreSQL permits a null foreign key, while still enforcing the relationship when a non-null company ID is supplied.
+An audit organization ID may be null for platform-level or pre-organization data. PostgreSQL permits a null foreign key while still enforcing the relationship when a non-null organization ID is supplied.
 
 ## High-level flow
 
@@ -141,7 +141,7 @@ export function StockItemAuditPanel({ stockItem }: StockItemAuditPanelProps) {
 }
 ```
 
-The calling package owns the audit list page and its navigation behavior. Its `auditHref` should identify the entity using `entityType` with `entityId` or `entityCode`, or use `mutationId` when the link should show one business mutation. It should also carry enough return context for the audit page's Back button to return to the originating detail page. The panel itself does not assume any package routes or use UI components from Core.
+The calling package owns the audit list page and its navigation behavior. Its `auditHref` should identify the entity using `entityType` with `entityId` or `entityCode`, or use `mutationId` when the link should show one business mutation. It should also carry enough return context for the audit page's Back button to return to the originating detail page. The panel itself does not assume any package routes or use UI components from a business package.
 
 ## Query audit events
 
@@ -154,7 +154,7 @@ GET /api/audit/export
 GET /api/audit/{id}
 ```
 
-List, count, and export accept `packageCode`, `companyId`, `entityType`, `entityCode`, `entityId`, `mutationId`, `actorId`, date, and search filters. Omitting `packageCode` intentionally queries across packages; no separate cross-package permission is required for an authenticated API caller.
+List, count, and export accept `packageCode`, `organizationId`, `entityType`, `entityCode`, `entityId`, `mutationId`, `actorId`, date, and search filters. Omitting `packageCode` intentionally queries across packages; no separate cross-package permission is required for an authenticated API caller.
 
 Packages own their audit list and detail pages. They may use the neutral audit DTOs and API, but must not reuse another business package's audit UI.
 
@@ -162,4 +162,4 @@ Packages own their audit list and detail pages. They may use the neutral audit D
 
 A package that uses audit helpers or audit tables must declare `@voyzu/audit` as a peer dependency. Audit is preinstalled by Voyzu, so it is not listed in the package's `voyzu.dependencies` array.
 
-The platform creates nullable `audit_event.company_id` without a foreign key because audit is installed independently of core. Core adds the company foreign key after it creates the `company` table. Packages without a company scope leave `company_id` null.
+The platform creates nullable `audit_event.organization_id` without a foreign key because Audit is installed independently of ERP Core. ERP Core adds the organization foreign key after it creates the `organization` table. Packages without an organization scope leave `organization_id` null. Deleting an organization sets the audit reference to null so the permanent audit history remains.

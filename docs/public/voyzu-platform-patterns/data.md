@@ -23,7 +23,7 @@ A Data Transfer Object (DTO) is the definitive definition of data as it is descr
 DTOs describe the shape of a data object as it applies to a given data operation. There is no attempt, for example, to define a single "stock object"; rather, there are multiple definitions depending on the data operation.
 
 ```ts
-// packages/@acme/warehousing/modules/types/stock.ts
+// packages/@acme/warehousing/types/modules/stock/stock.dto.ts
 import Type from "typebox";
 import { StrictObject } from "@voyzu/types/api";
 import { AuditMetadataDto } from "@voyzu/types/modules/core";
@@ -69,18 +69,24 @@ Database row types are internal persistence shapes. Map them to DTOs rather than
 
 A Data Repository in Voyzu is code that controls read and write data access. Repositories own SQL and row mapping. All database access must be via a Data Repository. The general pattern is that a module service file calls a data repository file, and all interactions go through the service module.
 
-Within the Data Repository use `getDb` from `@voyzu/capability/db` for normal application queries:
+Repositories accept a `DbExecutor` from `@voyzu/capability/db`. A service may
+pass the shared pool for an ordinary read or a transaction client for atomic
+work:
 
 ```ts
 // packages/@acme/warehousing/modules/stock/server/db/stock.repo.ts
-import { getDb } from "@voyzu/capability/db";
+import type { DbExecutor } from "@voyzu/capability/db";
 
-export async function getStock(code: string) {
-  const result = await getDb().query(
-    "select id, code, name from stock where code = $1",
-    [code],
-  );
-  return result.rows[0] ?? null;
+export class StockRepo {
+  constructor(private readonly db: DbExecutor) {}
+
+  async getByCode(code: string) {
+    const result = await this.db.query(
+      "select id, code, name from stock where code = $1",
+      [code],
+    );
+    return result.rows[0] ?? null;
+  }
 }
 ```
 
@@ -95,8 +101,8 @@ Use `withTransaction` when a business operation changes multiple rows or must sh
 import { withTransaction } from "@voyzu/capability/db";
 
 await withTransaction(async (client) => {
-  await stockRepo.update(client, code, patch);
-  await stockMovementRepo.create(client, movement);
+  await new StockRepo(client).update(code, patch);
+  await new StockMovementRepo(client).create(movement);
 });
 ```
 

@@ -74,10 +74,10 @@ Check package pages at desktop and mobile widths. Review focus, hover, disabled,
 The Voyzu platform source is available in an installed workspace beneath `.run/voyzu`, so it is technically possible to change the application-wide theme.
 
 {% hint style="warning" %}
-Changing files beneath `.run` is not recommended. The runtime workspace is ephemeral, and `voyzu:refresh`, updates, or recreation may overwrite these changes. Voyzu does not currently provide a supported application-branding contract. Maintain durable theme changes in your own Voyzu platform source rather than relying on edits made directly in `.run`.
+Changing files beneath `.run` is not recommended. The runtime workspace is ephemeral, and `voyzu:update` or runtime recreation may overwrite these changes. Voyzu does not currently provide a supported application-branding contract. Maintain durable theme changes in your own Voyzu platform source rather than relying on edits made directly in `.run`.
 {% endhint %}
 
-If a temporary platform customization is required, create `.run/voyzu/apps/web/app/theme.css`, override the public tokens at `:root`, and import it after the default tokens in `.run/voyzu/apps/web/app/(web)/layout.tsx`:
+If a temporary platform customization is required, create `.run/voyzu/apps/web/src/surface/theme.css`, override the public tokens at `:root`, and import it after the default tokens in `.run/voyzu/apps/web/src/surface/VoyzuWebLayout.tsx`:
 
 ```css
 :root {
@@ -90,7 +90,7 @@ If a temporary platform customization is required, create `.run/voyzu/apps/web/a
 
 ```ts
 import "@voyzu/ui-style/css/design-tokens.css";
-import "../theme.css";
+import "./theme.css";
 ```
 
 The custom stylesheet must be imported after `design-tokens.css` so its values win the CSS cascade. Rebuild and restart the web application after changing platform source.
@@ -108,7 +108,7 @@ To change it temporarily, replace that file with the new logo while retaining th
 To use a different filename, file type, or public path, place the asset beneath `.run/voyzu/apps/web/public` and update the `src` value in:
 
 ```text
-.run/voyzu/apps/web/app/(web)/surface/top-nav/VoyzuBrand.tsx
+.run/voyzu/apps/web/src/surface/top-nav/VoyzuBrand.tsx
 ```
 
 Also update the image alternative text when the displayed brand changes. These logo changes have the same ephemeral status as other direct `.run` modifications; keep durable replacements in maintained Voyzu platform source.

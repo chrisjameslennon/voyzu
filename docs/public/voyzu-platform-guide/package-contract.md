@@ -1,469 +1,374 @@
 # Package contract
 
-## Package structure
+A Voyzu package is a self-contained unit of functionality made up of one or more modules. Its scoped package name determines its source location:
 
-### Package identity
-
-A Voyzu package must have a scoped npm name in the form `@publisher/package-name`. The publisher and package name must be valid, stable directory names. This npm name as it appears in `package.json` is the package's authoritative identity.
-
-Example:
-
-```
+```text
 @acme/warehousing
+└─ packages/@acme/warehousing/
 ```
 
-### Source location
+A complete package can contain the following entries. Only `package.json`, `voyzu.package.ts`, and `modules/` are normally required; the remaining entries are added when the package needs them.
 
-A package must reside at `packages/@publisher/package-name` within its Git repository. Its directory path must exactly match the `name` in its `package.json`.
-
-Example:
-
-```
-packages/
-└─ @acme/
-   └─ warehousing/
-      └─ package.json       # "name": "@acme/warehousing"
-```
-
-### Package boundary
-
-Package source, installation files, scripts and permanent configuration must remain inside the package directory. A package must not depend on generated files beneath `.run` or write permanent source into the Voyzu Platform runtime.
-
-Example:
-
-```
+```text
 packages/@acme/warehousing/
+├─ docs/
 ├─ install/
 ├─ modules/
 ├─ navigation/
+├─ public-assets/
 ├─ scripts/
+├─ tests/
+├─ types/
+├─ uninstall/
+├─ listeners.ts
 ├─ package.json
+├─ README.md
 └─ voyzu.package.ts
 ```
 
-## `package.json` entries
+## Root files
 
-### Package metadata
+### `package.json`
 
-A package must contain `package.json`, use ES modules and declare itself as a Voyzu package. `voyzu.allowInstall` must be `true` before Voyzu will install the package; it does not represent runtime status.
+`package.json` identifies the package, declares its Voyzu contract, and exposes its public entry points. The directory path must match the scoped `name`.
 
-Dependencies are the voyzu packages this package depends on.
-
-Example:
-
-```json
-{
-  "name": "@acme/warehousing",
-  "version": "0.1.0",
-  "description": "Warehouse and stock management for Voyzu.",
-  "repository": "https://github.com/acme/warehouse-packages.git",
-  "private": true,
-  "type": "module",
-  "voyzu": {
-    "voyzu-package": true,
-    "allowInstall": true,
-    "dependencies": [],
-    "pageRootPaths": ["/warehousing"],
-    "apiRootPaths": ["/warehousing"],
-    "settings": {
-      "helpBaseUrl": "https://docs.example.com/"
-    }
-  }
-}
-```
-
-### Required exports
-
-A package must export its package definition through the standard export name. Each additional declared export must resolve to the corresponding package-owned source file.
-
-Example:
-
-```json
-{
-  "exports": {
-    "./voyzu-package": "./voyzu.package.ts"
-  }
-}
-```
-
-### Public exports
-
-Code intended for use by another package must be exposed explicitly through `package.json` exports. A consuming package must not import another package's private file paths.
-
-Example:
-
-```json
-{
-  "exports": {
-    "./modules/stock/server": {
-      "types": "./modules/stock/server/index.ts",
-      "import": "./modules/stock/server/index.ts"
-    }
-  }
-}
-```
-
-```ts
-import { StockService } from "@acme/warehousing/modules/stock/server";
-```
-
-### npm dependencies
-
-A package must declare ordinary runtime requirements in `dependencies` and host-provided requirements in `peerDependencies`. Development-only `file:` paths must not be used as distributable package dependencies. See [Managing dependencies](../voyzu-platform-patterns/managing-dependencies.md).
-
-Example:
-
-```json
-{
-  "dependencies": {
-    "cat-names": "^0.0.1"
-  },
-  "peerDependencies": {
-    "@voyzu/audit": "^0.1.0",
-    "@voyzu/types": "^0.1.0",
-    "next": "^16",
-    "react": "^19"
-  }
-}
-```
-
-### Voyzu package dependencies
-
-The `voyzu` metadata in `package.json` must contain a `dependencies` array, even when the package has no package-level dependencies. A dependency must use the depended-on package's scoped npm name. Voyzu itself is an implicit dependency and must not be listed.
-
-Example:
-
-```json
-{
-  "voyzu": {
-    "dependencies": ["@acme/inventory"]
-  }
-}
-```
-
-### Page and API root paths
-
-A package must separately declare the page and API URL namespaces it owns. Root paths reserve namespaces; they do not create routes. Actual page and API routes are registered by the package's modules.
-
-#### Page root paths
-
-`voyzu.pageRootPaths` contains the package's browser-facing page namespaces. Every page route registered by the package must equal one of these roots or be a child of one.
-
-For example, a page root of `/warehousing` permits module page routes such as:
+The scoped package name is the package's authoritative identity. Its publisher and package-name segments must exactly match the directories beneath `packages/`.
 
 ```text
-/warehousing
-/warehousing/stock
-/warehousing/stock/{code}
+package.json name:  @acme/warehousing
+source directory:   packages/@acme/warehousing/
 ```
 
-It does not permit a page route beneath `/purchasing` unless `/purchasing` is also declared as a page root.
+The following is illustrative JSON with comments. Remove the comments in a real `package.json` file.
 
-Page-route visibility is managed independently after installation. Hiding a package's page routes prevents direct access to its registered pages. Hiding its top-navigation items is a separate setting and does not hide its pages.
-
-#### API root paths
-
-`voyzu.apiRootPaths` contains the package's API namespaces relative to Voyzu's shared `/api` prefix. Every API route registered by the package must equal one of these roots or be a child of one.
-
-For example, this declaration:
-
-```json
+```jsonc
 {
+  "name": "@acme/warehousing",          // Must match packages/@acme/warehousing/.
+  "version": "1.0.0",
+  "description": "Warehouse management.",
+  "repository": "https://github.com/acme/warehousing",
+  "private": true,
+  "type": "module",                    // Voyzu packages use ES modules.
+
   "voyzu": {
-    "apiRootPaths": ["/warehousing"]
-  }
-}
-```
-
-permits module API paths such as `/warehousing/stock` and `/warehousing/stock/{code}`. Callers use the external URLs `/api/warehousing/stock` and `/api/warehousing/stock/{code}`.
-
-API routes have no package visibility setting. Hiding top navigation or page routes does not disable a package's APIs.
-
-#### Uniqueness and overlap
-
-Page and API roots are separate routing spaces and may use the same value within one package. Across packages, roots in the same routing space must not overlap. Installation and development linking reject both exact duplicates and nested collisions such as `/warehousing` and `/warehousing/reports`. A package with no routes of a given kind must declare an empty array.
-
-Example:
-
-```json
-{
-  "voyzu": {
-    "pageRootPaths": ["/warehousing", "/stock-reports"],
-    "apiRootPaths": ["/warehousing"]
-  }
-}
-```
-
-### Package settings
-
-A package that supplies page help must declare its documentation base URL at `voyzu.settings.helpBaseUrl` in `package.json`. Page routes supply only their package-relative `helpPath`; Voyzu combines the two values when rendering the Help action. The base may use GitBook or any other HTTP or HTTPS documentation provider.
-
-Example:
-
-```json
-{
-  "voyzu": {
+    "voyzu-package": true,               // Marks this as a Voyzu package.
+    "allowInstall": true,
+    "dependencies": ["@acme/products"], // Other Voyzu packages, not npm packages.
+    "pageRootPaths": ["/warehousing"],  // Browser route namespaces owned here.
+    "apiRootPaths": ["/warehousing"],   // API route namespaces owned here.
     "settings": {
-      "helpBaseUrl": "https://docs.example.com/"
+      "helpBaseUrl": "https://docs.acme.example/warehousing/"
     }
+  },
+
+  "exports": {
+    "./voyzu-package": "./voyzu.package.ts",
+    "./navigation/top-nav": "./navigation/top-nav.ts",
+    "./navigation/left-nav": "./navigation/left-nav.ts",
+    "./modules/stock": "./modules/stock/module.ts",
+    "./modules/stock/operations": "./modules/stock/operations.ts",
+    "./types": "./types/index.ts",
+    "./listeners": "./listeners.ts"
+  },
+
+  "dependencies": {
+    "typebox": "^1.3.0"
+  },
+  "peerDependencies": {
+    "@voyzu/types": "*"
   }
 }
 ```
 
-See [Documentation and help](../voyzu-platform-patterns/documentation-and-help.md) for the documentation source and contextual Help pattern.
+Only paths declared in `exports` are public. Do not use filesystem dependencies or expose private implementation files.
 
-## `voyzu.package.ts` entries
+Page and API root paths reserve separate namespaces. A package may use the same root in both namespaces, but two packages cannot own overlapping roots within the same namespace. Use an empty array when the package owns no roots. The Voyzu platform itself is implicit and is not listed in `voyzu.dependencies`.
 
-### Package definition
+### `voyzu.package.ts`
 
-A package must contain `voyzu.package.ts` and default-export an object conforming to `VoyzuPackageDefinition`. The definition must provide `modules`. A normal package must register at least one module. An install-only package may use an empty `modules` array when it declares at least one database installation file. Package identity, version and description belong only in `package.json`.
-
-Example:
+`voyzu.package.ts` is the package manifest. It composes the package's modules and optional lifecycle, script, and listener registrations.
 
 ```ts
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
-import { stockModule } from "./modules/stock/module";
 
-export const warehousingPackage = {
+import { install } from "./install/manifest";
+import { stockModule } from "./modules/stock/module";
+import { sampleData } from "./scripts/sample-data";
+import { uninstall } from "./uninstall/manifest";
+import { listeners } from "./listeners";
+
+const packageDefinition = {
   modules: [stockModule],
+  install,
+  uninstall,
+  scripts: { sampleData },
+  listeners,
 } as const satisfies VoyzuPackageDefinition;
 
-export default warehousingPackage;
+export default packageDefinition;
 ```
 
-### Module registration
+A functional package normally declares at least one module. A package used solely for installation infrastructure may declare `modules: []`.
 
-A package that provides application functionality must register at least one module in `voyzu.package.ts`. Only modules present in the `modules` collection are composed into the page and API registries. Every registered module must satisfy the [module contract](module-contract.md). An install-only package may declare `modules: []` and contributes no page or API routes.
+### `README.md`
 
-Example:
+`README.md` gives package consumers a short overview, its main capabilities, and links to further documentation.
 
-```ts
-modules: [
-  stockModule,
-  warehouseReportsModule,
-  warehouseAuditModule,
-],
+```md
+# @acme/warehousing
+
+Warehouse stock, locations, transfers, and inventory operations for Voyzu.
+
+See [package documentation](./docs/README.md).
 ```
 
-Install-only example:
+### `listeners.ts`
+
+`listeners.ts` is optional. It declares package-level consumers of events raised by other packages. Cross-package listeners use the event's global name and can access the dispatch transaction through the event context.
 
 ```ts
-// packages/@acme/database-foundation/voyzu.package.ts
-export default {
-  modules: [],
-  install: {
-    sql: ["./install/db/sql/domains.sql"],
-  },
+import type { VoyzuEventContext } from "@voyzu/capability/events";
+
+type OrganizationDeletedPayload = {
+  id: number;
 };
+
+export const listeners = [
+  {
+    event: "@voyzu/erp-core.organizations.organizationDeleted",
+    handler: async (
+      organization: OrganizationDeletedPayload,
+      context: VoyzuEventContext,
+    ) => {
+      await removeWarehouseOrganization(
+        organization.id,
+        context.transaction,
+      );
+    },
+  },
+] as const;
 ```
 
-### Database installation
+Use events for communication between packages. Code within a package should call the relevant service directly. See [Events](../voyzu-platform-patterns/events.md) for the complete pattern.
 
-A package that owns database objects may declare ordered `sql` and `seedSql` files. Paths must be relative to the package and must not escape its directory. Voyzu executes `sql` first and `seedSql` second, in declared order. Installation SQL must be safe to run again when a package is updated.
+## `docs/`
 
-Example:
+`docs/` contains detailed package documentation. Place material intended for the published help site under `docs/public/`.
+
+```text
+docs/
+├─ public/
+│  └─ warehouse-setup.md
+└─ architecture.md
+```
+
+For example, `docs/public/warehouse-setup.md` can explain user-facing setup while `docs/architecture.md` records internal package design decisions.
+
+## `install/`
+
+`install/` owns the package's database objects, seed data, and installation manifest. Installation must be rerunnable and declares execution order explicitly.
+
+```text
+install/
+├─ db/
+│  ├─ sql/
+│  │  └─ warehouse.sql
+│  └─ seed/
+│     └─ warehouse.seed.sql
+└─ manifest.ts
+```
 
 ```ts
-install: {
-  sql: [
-    "./install/db/sql/warehouse.sql",
-    "./install/db/sql/stock-item.sql",
-  ],
-  seedSql: [
-    "./install/db/seed/warehouse.seed.sql",
-  ],
-},
+export const install = {
+  sql: ["./install/db/sql/warehouse.sql"],
+  seedSql: ["./install/db/seed/warehouse.seed.sql"],
+} as const;
 ```
 
-### Database uninstallation
+Voyzu runs object SQL before seed SQL, using the order declared in each array.
 
-A package may declare ordered `uninstall.sql` files that reverse its database installation. Voyzu executes the files in one transaction before removing the installed package copy. Package uninstall SQL must leave platform-owned audit records intact.
+## `modules/`
+
+`modules/` contains the package's application capabilities. Each module owns its routes, operations, events, UI, services, persistence, and business validation. See the [Module contract](module-contract.md) for the detailed structure and rules.
+
+```text
+modules/
+└─ stock/
+   ├─ client/
+   ├─ server/
+   ├─ api.routes.ts
+   ├─ events.ts
+   ├─ module.ts
+   ├─ operations.ts
+   └─ pages.routes.ts
+```
+
+`module.ts` is the module manifest and only composes the module contract:
 
 ```ts
-uninstall: {
-  sql: [
-    "./uninstall/db/sql/drop-stock-item.sql",
-    "./uninstall/db/sql/drop-warehouse.sql",
-  ],
-},
+import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
+
+import { apiDefinitions } from "./api.routes";
+import { events } from "./events";
+import { operations } from "./operations";
+import { pageRoutes } from "./pages.routes";
+
+export const stockModule = {
+  pageRoutes,
+  apiDefinitions,
+  operations,
+  events,
+} as const satisfies VoyzuPackageModuleDefinition;
 ```
 
-### Package scripts
+`operations.ts` is the module's public programmatic surface and is a thin wrapper over services. Public operations should have corresponding events in `events.ts`. API handlers continue to call services directly.
 
-A package may expose callable methods through the `scripts` object in `voyzu.package.ts`. Script entries must be functions, not command strings. Standard package scripts include `sampleData`. Uninstallation is a dedicated package lifecycle rather than a general-purpose script.
+## `navigation/`
 
-Example:
+`navigation/` contributes top and left navigation. Navigation entries refer to registered route IDs rather than duplicating URL paths.
+
+```text
+navigation/
+├─ left-nav.ts
+└─ top-nav.ts
+```
 
 ```ts
-import { install as installSampleData } from "./scripts/sample-data/install";
-
-scripts: {
-  sampleData: installSampleData,
-},
-```
-
-```shell
-npm run voyzu:run-script @acme/warehousing sampleData
-```
-
-## Navigation
-
-### Top navigation
-
-A single-domain package may export one or more top-navigation definition. When present, its `routeId` must identify one page route belonging to a registered module. That route becomes the package's default surface route. A server-only package may omit top navigation.
-
-Example:
-
-```ts
-import { stockModule } from "../modules/stock/module";
-
-const topNav = {
+// navigation/top-nav.ts
+export default {
   label: "Warehousing",
-  routeId: stockModule.pageRoutes.list.id,
+  icon: "warehouse",
+  routeId: "stock.list",
 } as const;
 
-export default topNav;
-```
-
-### Multiple navigation domains
-
-A package that provides more than one top-navigation domain must export `./navigation/domains` instead of the single-domain top- and left-navigation exports. Each domain must declare its label, default `routeId`, complete `routeIds` collection and left navigation. A domain may include a route owned by a preinstalled Voyzu package when that route is deliberately presented within the domain.
-
-Example:
-
-```json
-{
-  "exports": {
-    "./navigation/domains": "./navigation/domains.ts"
-  }
-}
-```
-
-```ts
-// packages/@acme/operations/navigation/domains.ts
-import type { VoyzuPackageNavigationDomain } from "@voyzu/types/framework";
-import { inventoryModule } from "../modules/inventory/module";
-import { manufacturingModule } from "../modules/manufacturing/module";
-import { inventoryLeftNav } from "./inventory.left-nav";
-import { manufacturingLeftNav } from "./manufacturing.left-nav";
-
+// navigation/left-nav.ts
 export default [
-  {
-    label: "Inventory",
-    routeId: inventoryModule.pageRoutes.list.id,
-    routeIds: [inventoryModule.pageRoutes.list.id],
-    leftNav: inventoryLeftNav,
-  },
-  {
-    label: "Manufacturing",
-    routeId: manufacturingModule.pageRoutes.list.id,
-    routeIds: [manufacturingModule.pageRoutes.list.id],
-    leftNav: manufacturingLeftNav,
-  },
-] as const satisfies readonly VoyzuPackageNavigationDomain[];
-```
-
-### Left navigation
-
-A single-domain package may export a left-navigation array. A multi-domain package must declare a separate left-navigation array for each domain in its domain collection. Every navigation item must refer to a page route by `routeId`; it must not duplicate the route path. A package without a user interface may omit left navigation.
-
-Example:
-
-```ts
-import { stockModule } from "../modules/stock/module";
-
-const leftNav = [
   {
     items: [
       {
         label: "Stock",
         icon: "inventory",
-        routeId: stockModule.pageRoutes.list.id,
+        routeId: "stock.list",
       },
     ],
   },
 ] as const;
-
-export default leftNav;
 ```
 
-## Static assets
+A package spanning multiple navigation domains exports `./navigation/domains` instead. Each domain declares its label, entry route, owned route IDs, and left navigation.
 
-### Public assets
+## `public-assets/`
 
-A package may provide static web assets in a package-root `public-assets` directory. Composition copies the directory contents into the Next.js public directory beneath a path named after the full scoped package name. Package assets must be referenced using that package-owned URL namespace.
+`public-assets/` contains static files copied into the composed web application. Voyzu gives them a package-scoped URL to avoid collisions.
 
-```
-packages/@acme/warehousing/
-└─ public-assets/
-   └─ warehouse-logo.svg
-
-.run/voyzu/apps/web/public/
-└─ @acme/
-   └─ warehousing/
-      └─ warehouse-logo.svg
+```text
+public-assets/
+└─ images/
+   └─ warehouse-map.svg
 ```
 
-The example asset is served at `/@acme/warehousing/warehouse-logo.svg`. Composition replaces the package's complete published asset directory so renamed and deleted files do not remain in the runtime. Uninstall composition removes the uninstalled package's published assets.
-
-See [Static assets](../voyzu-platform-patterns/static-assets.md) for the complete lifecycle and usage pattern.
-
-## Installation and composition
-
-### Installation mode
-
-A deployed package must be copied from a downloaded Git repository into `.run/packages`. A package under local development may be linked from the root `packages` workspace. The package contract must be identical in either mode.
-
-Example:
-
-```
-production:
-  .package-sources/acme-voyzu/packages/@acme/warehousing
-      -> copied to .run/packages/@acme/warehousing
-
-development:
-  packages/@acme/warehousing
-      -> linked at .run/packages/@acme/warehousing
+```text
+Source: public-assets/images/warehouse-map.svg
+URL:    /@acme/warehousing/images/warehouse-map.svg
 ```
 
-### Composition
+Composition replaces the package's copied assets, and uninstall removes them.
 
-An installed package must be composable without manual edits to the Voyzu Platform. Voyzu derives workspace dependencies, Next.js transpilation, page routes, API routes and navigation from the installed package contract. Generated composition files must not be edited by the package.
+## `scripts/`
 
-Example:
+`scripts/` contains package maintenance or setup functions exposed through the package manifest. Scripts are callable tasks, not command-line programs.
 
-```shell
-npm run voyzu:compose
+```ts
+// scripts/sample-data.ts
+export async function sampleData(): Promise<void> {
+  await seedWarehouseSampleData();
+}
 ```
 
-## Documentation
+After registering `sampleData` in `voyzu.package.ts`, run it with:
 
-### Documentation layout
-
-A package must keep its overview in a root `README.md`. All other package documentation should reside in a package-root `docs` directory. Documentation intended for users or publication as online help should reside in `docs/public`. See [Documentation and help](../voyzu-platform-patterns/documentation-and-help.md) for more information.
-
-```
-packages/@acme/warehousing/
-├─ README.md
-├─ docs/
-│  ├─ architecture.md
-│  └─ public/
-│     ├─ README.md
-│     └─ stock-items.md
-├─ package.json
-└─ voyzu.package.ts
+```powershell
+npm run voyzu:run-script @acme/warehousing sampleData
 ```
 
-### Voyzu patterns
+## `tests/`
 
-A package should follow the established Voyzu patterns for data, APIs, application surfaces, validation, auditing, integration and testing unless the package documents a deliberate exception.
+`tests/` contains package-level tests. Operation tests mirror the public operations surface by module.
 
-Example:
+```text
+tests/
+└─ operations/
+   └─ stock/
+      └─ stock.operations.test.ts
+```
 
-See the patterns for [data](../voyzu-platform-patterns/data.md), [APIs](../voyzu-platform-patterns/api-patterns.md), [application surfaces](../voyzu-platform-patterns/app-surface.md), [validation](../voyzu-platform-patterns/validation-layers.md), [auditing](../voyzu-platform-patterns/auditing-patterns.md), and [testing](../voyzu-platform-patterns/tests.md).
+```ts
+import { describe, expect, it } from "vitest";
+import { operations } from "../../../modules/stock/operations";
 
-### Reference package
+describe("stock operations", () => {
+  it("returns a stock item", async () => {
+    const item = await operations.getStockItem("ITEM-001");
+    expect(item.code).toBe("ITEM-001");
+  });
+});
+```
 
-The Voyzu Ice Creams package conforms to this contract and demonstrates many of the established package and application patterns in use.
+Tests must clean up records they create unless the retained record is an intentional audit record.
 
-[View the Ice Creams reference package on GitHub](https://github.com/chrisjameslennon/voyzu-packages/tree/main/packages/%40voyzu/ice-creams)
+## `types/`
+
+`types/` contains shared public DTO schemas and their inferred TypeScript types. Use TypeBox so the same contract supports runtime validation, API documentation, and static typing.
+
+```ts
+// types/stock-item.dto.ts
+import Type from "typebox";
+import { StrictObject } from "@voyzu/types/api";
+
+export const StockItemDto = StrictObject({
+  code: Type.String({ maxLength: 30 }),
+  description: Type.String(),
+});
+
+export type StockItemDto = Type.Static<typeof StockItemDto>;
+```
+
+```ts
+// types/index.ts
+export { StockItemDto } from "./stock-item.dto";
+```
+
+Expose public types through `package.json`; keep service and persistence-only types private.
+
+## `uninstall/`
+
+`uninstall/` owns the optional removal manifest and SQL. Removal runs in declared order within one transaction, normally reversing installation dependencies.
+
+```text
+uninstall/
+├─ db/
+│  └─ sql/
+│     └─ drop-warehouse.sql
+└─ manifest.ts
+```
+
+```ts
+export const uninstall = {
+  sql: ["./uninstall/db/sql/drop-warehouse.sql"],
+} as const;
+```
+
+Uninstall SQL removes package-owned data and database objects but must preserve platform audit history.
+
+## Composition boundary
+
+Voyzu composes installed packages into the runtime workspace, derives generated routing and navigation files, installs the resulting dependencies, and copies public assets. Package authors edit package source only; generated composition files are transient and must not be edited.
+
+```text
+packages/@acme/warehousing/        <- package source
+              |
+              v compose
+.run/packages/@acme/warehousing/   <- transient runtime package
+```
+
+For a complete working example, see the Ice Creams reference package in the Voyzu Packages repository.

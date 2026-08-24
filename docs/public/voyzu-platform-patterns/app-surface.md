@@ -10,24 +10,24 @@ A UI-capable package exposes page routes through the modules listed in its `voyz
 
 ```tsx
 // packages/@acme/warehousing/modules/stock/pages.routes.ts
-import { StockDetailPage, StockListPage } from "./server/pages";
+import { StockDetailPage, StockListPage } from "@acme/warehousing/modules/stock/server";
 
 export const pageRoutes = {
   list: {
     id: "acme.stock.page.list",
-    path: "/stock",
+    path: "/warehousing/stock",
     pageTitle: "Stock",
     Page: StockListPage,
-    breadcrumbBase: [{ label: "Warehousing", href: "/stock" }],
+    breadcrumbBase: [{ label: "Warehousing", href: "/warehousing/stock" }],
     helpPath: "packages/warehousing/stock",
     auth: { required: true, minRole: "STANDARD" },
   },
   detail: {
     id: "acme.stock.page.detail",
-    path: "/stock/[code]",
+    path: "/warehousing/stock/[code]",
     pageTitle: "Stock item",
     Page: StockDetailPage,
-    breadcrumbBase: [{ label: "Warehousing", href: "/stock" }],
+    breadcrumbBase: [{ label: "Warehousing", href: "/warehousing/stock" }],
     helpPath: "packages/warehousing/stock",
     auth: { required: true, minRole: "STANDARD" },
   },
@@ -193,10 +193,14 @@ The install and link-package workflows compose packages automatically. Compositi
 2. imports each package's `voyzu.package.ts` through its public export;
 3. collects page routes and API definitions;
 4. includes optional domain navigation or single-domain navigation exports;
-5. writes generated runtime registries; and
+5. writes thin Next.js routes beneath `apps/web/app/(generated)` and supporting
+   navigation, event, and API Reference output beneath `apps/web/.generated`;
+   and
 6. updates the runtime workspace and Next.js transpilation metadata.
 
-Generated files are runtime output and must not be edited. Restart the web server after installing, linking, or recomposing packages.
+Generated routes and `.generated` files are runtime output and must not be
+edited. Restart the web server after installing, linking, or recomposing
+packages.
 
 ## Use the main area
 
@@ -209,7 +213,7 @@ Set `unframed: true` only when a route must bypass the complete application fram
 export const pageRoutes = {
   dashboard: {
     id: "acme.dashboard.page.main",
-    path: "/dashboard",
+    path: "/analytics/dashboard",
     pageTitle: "Dashboard",
     Page: DashboardPage,
     unframed: true,
@@ -228,7 +232,7 @@ Use `DetailBackButton` for a predictable destination:
 // packages/@acme/warehousing/modules/stock/server/pages/StockDetailPage.tsx
 import { DetailBackButton } from "@voyzu/ui-surface/client";
 
-<DetailBackButton fallbackHref="/stock" />;
+<DetailBackButton fallbackHref="/warehousing/stock" />;
 ```
 
 When a list page carries meaningful query-string state such as filters, sorting, or paging, include that state in the detail-page URL and set `preserveSearchParams`. The button returns to the fallback route with the current detail-page query string preserved.
@@ -237,7 +241,7 @@ When a list page carries meaningful query-string state such as filters, sorting,
 import { DetailBackButton } from "@voyzu/ui-surface/client";
 
 <DetailBackButton
-  fallbackHref="/stock"
+  fallbackHref="/warehousing/stock"
   preserveSearchParams
 />;
 ```

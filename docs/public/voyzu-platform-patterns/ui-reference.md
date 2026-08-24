@@ -21,7 +21,7 @@ Sign in and open `http://localhost:3000/ui-reference`. The reference includes in
 | `@voyzu/ui-components` | Reusable controls and interaction patterns such as buttons, inputs, tables, dialogs, filters, navigation, alerts, and validation               |
 | `@voyzu/ui-layout`     | Page arrangement, responsive breakpoints, and the standard list, detail, create, and report layouts                                            |
 | `@voyzu/ui-style`      | Design tokens, reset styles, typography, forms, list/detail styling, and modal styling                                                         |
-| `@voyzu/ui-surface`    | The application shell, route surface, breadcrumbs, and surface slots; modules normally consume the configured surface rather than creating one |
+| `@voyzu/ui-surface`    | The application shell, route surface, detail navigation, and surface slots; modules normally consume the configured surface rather than creating one |
 
 Import components and their types from the package root:
 
@@ -130,10 +130,13 @@ Do not copy a reference-page preview into production without checking all states
 
 ## When no shared component fits
 
-Create a module-local component when the behavior is specific to one business workflow. If a component can be used throughout your package then build it as a shared package component Build it from shared controls and tokens where possible. A package shared component should include:
+Create a module-local component under the module's `client/` folder when the
+behavior is specific to one business workflow. If a component is reused across
+the package, place it in a package-owned common module and build it from shared
+controls and tokens where possible. A shared package component should include:
 
-1. The component and its CSS module under `/ui-components/src`.
-2. A public export from `/ui-components/src/index.ts`.
+1. The component and its CSS module under the common module's `client/` folder.
+2. A controlled client barrel export from that module.
 3. Optionally its own reference page with props, interactive states, and copyable usage.
 
 Keep shared component APIs typed, focused, and independent of business DTOs. Business-specific data mapping belongs in the consuming module.

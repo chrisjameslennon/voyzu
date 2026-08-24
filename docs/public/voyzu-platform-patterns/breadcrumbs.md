@@ -50,17 +50,17 @@ repeated in `breadcrumbBase` or `slugs`.
 ## Define the route hierarchy
 
 Set `breadcrumbBase` beside `path` and `Page` in the module's top-level
-`module.ts`.
+`pages.routes.ts`.
 
 For a list page, provide the stable surface area and any navigation group:
 
 ```ts
 {
   id: "acme.stock.page.list",
-  path: "/stock",
+  path: "/warehousing/stock",
   Page: StockListPage,
   breadcrumbBase: [
-    { label: "Warehousing", href: "/stock" },
+    { label: "Warehousing", href: "/warehousing/stock" },
   ],
 }
 ```
@@ -70,11 +70,11 @@ For a detail page, add the containing list as the final base item:
 ```ts
 {
   id: "acme.stock.page.detail",
-  path: "/stock/[code]",
+  path: "/warehousing/stock/[code]",
   Page: StockDetailPage,
   breadcrumbBase: [
-    { label: "Warehousing", href: "/stock" },
-    { label: "Stock", href: "/stock" },
+    { label: "Warehousing", href: "/warehousing/stock" },
+    { label: "Stock", href: "/warehousing/stock" },
   ],
 }
 ```

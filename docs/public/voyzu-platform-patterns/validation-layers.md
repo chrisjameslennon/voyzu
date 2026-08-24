@@ -161,11 +161,11 @@ Query definitions keep presentation metadata alongside one schema for the comple
 ```ts
 query: {
   parameters: {
-    companyId: { description: "Company identifier." },
+    organizationId: { description: "Organization identifier." },
     search: { description: "Free-text search." },
   },
   schema: Type.Object({
-    companyId: Type.Optional(Type.Integer({ minimum: 1 })),
+    organizationId: Type.Optional(Type.Integer({ minimum: 1 })),
     search: Type.Optional(Type.String({ pattern: "\\S" })),
   }),
 },
@@ -272,7 +272,7 @@ control-account.service.ts
 The service orchestrates the operation. Its responsibilities include:
 
 ```
-resolving company and settings scope
+resolving organization and settings scope
 checking permissions
 opening the transaction
 loading the current record
@@ -291,7 +291,7 @@ For an `UpdateGLAccount` operation, the service must establish that:
 the current control account exists
 the proposed GL account exists
 the control-account definition exists
-the caller may modify the applicable company settings
+the caller may modify the applicable organization settings
 the required derived properties are available
 ```
 
@@ -300,7 +300,7 @@ Examples of service-prerequisite failures include:
 ```
 Control account not found
 GL account not found
-Company settings are not writable
+Organization settings are not writable
 Control-account definition not found
 ```
 
