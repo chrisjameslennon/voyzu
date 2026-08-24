@@ -31,6 +31,7 @@
 * [Theming](voyzu-platform-patterns/theming.md)
 * [UI patterns](voyzu-platform-patterns/ui-reference.md)
 * [Integrating with other packages](voyzu-platform-patterns/integrating-with-core-functionality.md)
+* [Event patterns](voyzu-platform-patterns/events.md)
 * [API patterns](voyzu-platform-patterns/api-patterns.md)
 * [Supporting Voyzu commands](voyzu-platform-patterns/supporting-voyzu-commands.md)
 * [Testing patterns](voyzu-platform-patterns/tests.md)
