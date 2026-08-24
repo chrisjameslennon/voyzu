@@ -8,7 +8,7 @@ function calls.
 ## Match events to operations
 
 Each state-changing method exposed by `operations.ts` should have a
-corresponding completed-action event in `events.ts`:
+corresponding completed-action event in `events.ts`. For example:
 
 | Operation | Event |
 |---|---|
@@ -18,7 +18,7 @@ corresponding completed-action event in `events.ts`:
 | `activateOrganization` | `organizationActivated` |
 
 Use the successful operation response DTO as the event payload. This keeps the
-operation result and integration contract aligned.
+operation result and event contract aligned.
 
 ```ts
 // organizations/events.ts
@@ -53,7 +53,7 @@ return organization;
 
 ## Listen from another package
 
-Cross-package listeners live in the consuming package's root `listeners.ts`.
+Cross-package listeners should live in the consuming package's root `listeners.ts`.
 They use the globally stable event name and do not import the publishing
 package:
 
@@ -69,7 +69,7 @@ export const listeners = [{
 }] as const;
 ```
 
-The listener receives the transaction that raised the event through
+The listener receives the SQL transaction that raised the event through
 `context.transaction`. It can use that transaction so its work commits with
 the originating operation. If the listener throws, it can cause that
 transaction to roll back.

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import type { InstalledPackageResponseDto } from "../../types";
+import type { InstalledPackageResponseDto } from "@voyzu/package-management/types";
 import { Badge, Breadcrumbs, Button, DropdownMenu, Toast, ToggleSwitch, ValidationAlert, type DropdownMenuItem } from "@voyzu/ui-components";
 import { DetailBackButton } from "@voyzu/ui-surface/client";
 import layout from "@voyzu/ui-layout/css-modules/detail.layout.module.css";

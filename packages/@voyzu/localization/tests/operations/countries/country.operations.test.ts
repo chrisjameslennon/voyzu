@@ -7,7 +7,15 @@ import type { CountryUpdateRequestDto } from "@voyzu/localization/types/modules/
 
 import { getPool } from "@voyzu/capability/db";
 import {
+  activateCountries,
+  activateCountry,
+  batchCreateCountries,
+  batchDeleteCountries,
   getCountry,
+  createCountry,
+  deactivateCountries,
+  deactivateCountry,
+  deleteCountry,
   updateCountry,
   patchCountry,
   listCountries,
@@ -19,6 +27,7 @@ import {
 } from "../../../modules/countries/operations";
 
 before(async () => {
+  await getPool().query("DELETE FROM country WHERE code = ANY($1::text[])", [["XW", "XY", "XZ"]]);
   await getPool().query(
     `INSERT INTO country (code, name, currency_code, status)
      VALUES
@@ -41,10 +50,21 @@ after(async () => {
   } catch {
     // best-effort
   }
+  await getPool().query("DELETE FROM country WHERE code = ANY($1::text[])", [["XW", "XY", "XZ"]]);
   await getPool().end();
 });
 
-describe("country.service", () => {
+describe("country operations", () => {
+  it("creates a country", async () => {
+    const country = await createCountry({
+      code: "XZ",
+      name: "Test Country XZ",
+      currencyCode: "NZD",
+    });
+    assert.equal(country.code, "XZ");
+    assert.equal(country.status, "ACTIVE");
+  });
+
   it("gets a country by code", async () => {
     const country = await getCountry("NZ");
     assert.ok(country);
@@ -146,5 +166,30 @@ describe("country.service", () => {
 
     // restore
     await batchPatchCountries([{ code: "NZ", status: "ACTIVE" }, { code: "AU", status: "ACTIVE" }]);
+  });
+
+  it("activates and deactivates one country", async () => {
+    assert.equal((await deactivateCountry("XZ")).status, "INACTIVE");
+    assert.equal((await activateCountry("XZ")).status, "ACTIVE");
+  });
+
+  it("batch creates, activates, and deactivates countries", async () => {
+    const countries = await batchCreateCountries([
+      { code: "XY", name: "Test Country XY", currencyCode: "NZD" },
+      { code: "XW", name: "Test Country XW", currencyCode: "NZD" },
+    ]);
+    assert.deepEqual(countries.map(({ code }) => code), ["XY", "XW"]);
+    assert.ok((await deactivateCountries(["XY", "XW"])).every(({ status }) => status === "INACTIVE"));
+    assert.ok((await activateCountries(["XY", "XW"])).every(({ status }) => status === "ACTIVE"));
+  });
+
+  it("deletes one country", async () => {
+    await deleteCountry("XZ");
+    assert.equal(await getCountry("XZ"), null);
+  });
+
+  it("batch deletes countries", async () => {
+    await batchDeleteCountries(["XY", "XW"]);
+    assert.equal((await batchGetCountries(["XY", "XW"])).length, 0);
   });
 });

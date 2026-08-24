@@ -8,6 +8,8 @@ import type { CurrencyUpdateRequestDto } from "@voyzu/localization/types/modules
 
 import { getPool } from "@voyzu/capability/db";
 import {
+  activateCurrencies,
+  activateCurrency,
   getCurrency,
   createCurrency,
   updateCurrency,
@@ -20,28 +22,24 @@ import {
   batchGetCurrencies,
   batchUpdateCurrencies,
   batchPatchCurrencies,
-  batchDeleteCurrencies
+  batchDeleteCurrencies,
+  deactivateCurrencies,
+  deactivateCurrency,
 } from "../../../modules/currencies/operations";
 
 const createdCodes: string[] = [];
 const testCodes = ["SVA", "SVB", "ZZC", "ZZD"];
 
 before(async () => {
-  await batchDeleteCurrencies(testCodes);
+  await getPool().query("DELETE FROM currency WHERE code = ANY($1::text[])", [testCodes]);
 });
 
 after(async () => {
-  if (createdCodes.length) {
-    try {
-      await batchDeleteCurrencies([...createdCodes]);
-    } catch {
-      // best-effort cleanup
-    }
-  }
+  await getPool().query("DELETE FROM currency WHERE code = ANY($1::text[])", [testCodes]);
   await getPool().end();
 });
 
-describe("currency.service", () => {
+describe("currency operations", () => {
   it("creates a currency (minimal fields)", async () => {
     const input: CurrencyCreateRequestDto = {
       code: "SVA",
@@ -99,6 +97,11 @@ describe("currency.service", () => {
   it("patches a currency (partial update — status only)", async () => {
     const result = await patchCurrency("SVA", { status: "ACTIVE" });
     assert.equal(result.status, "ACTIVE");
+  });
+
+  it("activates and deactivates one currency", async () => {
+    assert.equal((await deactivateCurrency("SVA")).status, "INACTIVE");
+    assert.equal((await activateCurrency("SVA")).status, "ACTIVE");
   });
 
   it("lists all currencies (includes test currencies)", async () => {
@@ -167,6 +170,11 @@ describe("currency.service", () => {
     assert.equal(currencies[1].status, "ACTIVE");
   });
 
+  it("batch activates and deactivates currencies", async () => {
+    assert.ok((await deactivateCurrencies(["ZZC", "ZZD"])).every(({ status }) => status === "INACTIVE"));
+    assert.ok((await activateCurrencies(["ZZC", "ZZD"])).every(({ status }) => status === "ACTIVE"));
+  });
+
   it("deletes a single currency by code", async () => {
     const code = createdCodes.shift()!;
     await deleteCurrency(code);
@@ -207,4 +215,3 @@ describe("currency.service", () => {
     );
   });
 });
-

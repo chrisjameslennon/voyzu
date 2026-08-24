@@ -35,7 +35,7 @@
     "./auth/client": "./modules/auth/client/index.ts",
     "./auth/server": "./modules/auth/server/index.ts",
     "./auth/server/session": "./modules/auth/server/session.ts",
-    "./types": "./modules/types/index.ts",
+    "./types": "./types/index.ts",
     "./users": "./modules/users/module.ts",
     "./users/operations": "./modules/users/operations.ts",
     "./users/client": "./modules/users/client/index.ts",

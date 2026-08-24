@@ -1,10 +1,12 @@
 import "server-only";
 
-import { authenticateUser as authenticateUserService } from "./server/auth.service";
+import * as service from "./server/auth.service";
 
-export const authenticateUser = (
-  ...args: Parameters<typeof authenticateUserService>
-): ReturnType<typeof authenticateUserService> => authenticateUserService(...args);
+function operation<TArgs extends unknown[], TResult>(serviceMethod: (...args: TArgs) => TResult) {
+  return (...args: TArgs): TResult => serviceMethod(...args);
+}
+
+export const authenticateUser = operation(service.authenticateUser);
 
 export const operations = {
   authenticateUser,

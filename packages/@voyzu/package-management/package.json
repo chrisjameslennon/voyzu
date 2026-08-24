@@ -28,7 +28,7 @@
     "./navigation/settings": "./navigation/settings.left-nav.ts",
     "./package-management/operations": "./modules/package-management/operations.ts",
     "./server": "./modules/package-management/server/index.ts",
-    "./types": "./modules/types/index.ts"
+    "./types": "./types/index.ts"
   },
   "peerDependencies": {
     "@voyzu/auth": "^0.1.0",

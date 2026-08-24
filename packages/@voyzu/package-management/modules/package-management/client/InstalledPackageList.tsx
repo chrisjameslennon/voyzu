@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import type { InstalledPackageResponseDto } from "../../types";
+import type { InstalledPackageResponseDto } from "@voyzu/package-management/types";
 import { Badge, Breadcrumbs, Button, DataTable, FilterChips, FilterPanel, Input, Toast, ValidationAlert, type DataTableColumn, type FilterState, type FilterTab } from "@voyzu/ui-components";
 import layout from "@voyzu/ui-layout/css-modules/list.layout.module.css";
 import detail from "@voyzu/ui-style/css-modules/detail.module.css";

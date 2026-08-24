@@ -1,13 +1,10 @@
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
 
+import { install } from "./install/manifest";
+
 export const voyzuFoundationPackage = {
   modules: [],
-  install: {
-    sql: [
-      "./install/db/sql/platform-domains.sql",
-      "./install/db/sql/voyzu-settings.sql",
-    ],
-  },
+  install,
 } as const satisfies VoyzuPackageDefinition;
 
 export default voyzuFoundationPackage;

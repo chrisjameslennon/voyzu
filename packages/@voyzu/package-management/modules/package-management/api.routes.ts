@@ -11,7 +11,7 @@ import {
   InstalledPackageMoveRequestDto,
   InstalledPackageResponseDto,
   InstalledPackageUpdateRequestDto,
-} from "../types";
+} from "@voyzu/package-management/types";
 import {
   handleGet,
   handleGetHomePage,

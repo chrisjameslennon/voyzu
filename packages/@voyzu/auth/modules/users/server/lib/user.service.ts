@@ -6,8 +6,10 @@ import type { UserPasswordUpdateRequestDto } from "@voyzu/auth/types";
 import type { UserProfileUpdateRequestDto } from "@voyzu/auth/types";
 import type { UserUpdateRequestDto } from "@voyzu/auth/types";
 import type { UserResponseDto } from "@voyzu/auth/types";
-import { getDb, withTransaction } from "@voyzu/capability/db";
+import { getDb, withTransaction, type DbExecutor } from "@voyzu/capability/db";
 import { BusinessRuleError, ConflictError, DataError, NotFoundError, InputValidationError } from "@voyzu/capability/errors";
+import { events as platformEvents } from "@voyzu/capability/events";
+import { events } from "../../events";
 import { UserRepo } from "../db/user.repo";
 import type { UserRow } from "../db/user.row.types";
 import { getCurrentActorType, getCurrentUser } from "./current-user.service";
@@ -100,18 +102,22 @@ export async function updateCurrentUserProfile(input: UserProfileUpdateRequestDt
   const normalized = normalizeProfileUpdate(input);
 
   try {
-    const repo = new UserRepo(getDb());
-    const row = await repo.update(currentUser.code, {
-      code: currentUser.code,
-      email: normalized.email ?? null,
-      display_name: normalized.displayName,
-      role: currentUser.role,
-      access_mode: currentUser.accessMode,
-      implementer_access: currentUser.implementerAccess,
-      status: currentUser.status,
-      audit: auditStamp(currentUser),
+    return await withTransaction(async (db) => {
+      const repo = new UserRepo(db);
+      const row = await repo.update(currentUser.code, {
+        code: currentUser.code,
+        email: normalized.email ?? null,
+        display_name: normalized.displayName,
+        role: currentUser.role,
+        access_mode: currentUser.accessMode,
+        implementer_access: currentUser.implementerAccess,
+        status: currentUser.status,
+        audit: auditStamp(currentUser),
+      });
+      const user = toDto(row, await getAuditActors(row, repo));
+      await platformEvents.dispatch(events.userUpdated, user, { transaction: db });
+      return user;
     });
-    return toDto(row, await getAuditActors(row, repo));
   } catch (err) {
     if (err instanceof Error && err.message.includes("duplicate key value")) {
       throw new ConflictError("A user with this email already exists");
@@ -127,7 +133,12 @@ export async function changeCurrentUserPassword(input: UserPasswordUpdateRequest
   if (errors.length) throw new InputValidationError(errors.join("; "));
 
   try {
-    await new UserRepo(getDb()).updatePassword(currentUser.code, await hashPassword(input.password), auditStamp(currentUser));
+    await withTransaction(async (db) => {
+      const repo = new UserRepo(db);
+      const row = await repo.updatePassword(currentUser.code, await hashPassword(input.password), auditStamp(currentUser));
+      const user = toDto(row, await getAuditActors(row, repo));
+      await platformEvents.dispatch(events.userPasswordChanged, user, { transaction: db });
+    });
   } catch (err) {
     if (err instanceof DataError) throw new NotFoundError(`User ${currentUser.code} not found`);
     throw err;
@@ -155,7 +166,9 @@ export async function createUser(input: UserCreateRequestDto): Promise<UserRespo
         status: normalized.status ?? "ACTIVE",
         audit: auditStamp(currentUser),
       });
-      return toDto(row, await getAuditActors(row, repo));
+      const user = toDto(row, await getAuditActors(row, repo));
+      await platformEvents.dispatch(events.userCreated, user, { transaction: client });
+      return user;
     });
   } catch (err) {
     if (err instanceof Error && err.message.includes("duplicate key value")) {
@@ -173,7 +186,12 @@ export async function changeUserPassword(code: string, input: UserPasswordUpdate
   if (errors.length) throw new InputValidationError(errors.join("; "));
 
   try {
-    await new UserRepo(getDb()).updatePassword(code, await hashPassword(input.password), auditStamp(currentUser));
+    await withTransaction(async (db) => {
+      const repo = new UserRepo(db);
+      const row = await repo.updatePassword(code, await hashPassword(input.password), auditStamp(currentUser));
+      const user = toDto(row, await getAuditActors(row, repo));
+      await platformEvents.dispatch(events.userPasswordChanged, user, { transaction: db });
+    });
   } catch (err) {
     if (err instanceof DataError) throw new NotFoundError(`User ${code} not found`);
     throw err;
@@ -182,30 +200,13 @@ export async function changeUserPassword(code: string, input: UserPasswordUpdate
 
 export async function updateUser(code: string, input: UserUpdateRequestDto): Promise<UserResponseDto> {
   const currentUser = await requireCurrentAdmin();
-  const normalized = normalizeUpdate(input);
-  const errors = validateUserInput(normalized);
-  if (errors.length) throw new InputValidationError(errors.join("; "));
 
   try {
     return await withTransaction(async (client) => {
       const repo = new UserRepo(client);
-      const existing = await repo.get(code);
-      if (!existing) throw new DataError(`User ${code} not found`);
-      if (existing.code === currentUser.code && existing.role !== normalized.role) {
-        throw new BusinessRuleError("You cannot change your own access level");
-      }
-      await ensureAtLeastOneActiveAdminAfterMutation(repo, [existing], normalized.role, normalized.status);
-      const row = await repo.update(code, {
-        code: normalized.code,
-        email: normalized.email ?? null,
-        display_name: normalized.displayName,
-        role: normalized.role,
-        access_mode: normalized.accessMode,
-        implementer_access: normalized.implementerAccess === true,
-        status: normalized.status,
-        audit: auditStamp(currentUser),
-      });
-      return toDto(row, await getAuditActors(row, repo));
+      const user = await updateUserWithRepo(repo, currentUser, code, input);
+      await platformEvents.dispatch(events.userUpdated, user, { transaction: client });
+      return user;
     });
   } catch (err) {
     if (err instanceof Error && err.message.includes("duplicate key value")) {
@@ -231,7 +232,18 @@ export async function patchUser(code: string, input: UserPatchRequestDto): Promi
 }
 
 export async function deleteUser(code: string): Promise<void> {
-  await batchDeleteUsers([code]);
+  const currentUser = await requireCurrentAdmin();
+  const normalizedCode = code.trim().toUpperCase();
+  if (normalizedCode === currentUser.code) throw new BusinessRuleError("You cannot delete your own user");
+
+  await withTransaction(async (db) => {
+    const repo = new UserRepo(db);
+    const [row] = await ensureUsersExist([normalizedCode], repo);
+    await ensureAtLeastOneActiveAdminAfterMutation(repo, [row]);
+    const user = toDto(row, await getAuditActors(row, repo));
+    await platformEvents.dispatch(events.userDeleted, user, { transaction: db });
+    await repo.delete(normalizedCode);
+  });
 }
 
 export async function batchGetUsers(codes: string[]): Promise<UserResponseDto[]> {
@@ -241,29 +253,108 @@ export async function batchGetUsers(codes: string[]): Promise<UserResponseDto[]>
 }
 
 export async function batchCreateUsers(inputs: UserCreateRequestDto[]): Promise<UserResponseDto[]> {
-  const result: UserResponseDto[] = [];
-  for (const input of inputs) result.push(await createUser(input));
-  return result;
+  const currentUser = await requireCurrentAdmin();
+  try {
+    return await withTransaction(async (db) => {
+      const repo = new UserRepo(db);
+      const users: UserResponseDto[] = [];
+      for (const input of inputs) {
+        const normalized = normalizeCreate(input);
+        const errors = [...validateUserInput(normalized), ...validateUserPassword(normalized, normalized.accessMode)];
+        if (errors.length) throw new InputValidationError(errors.join("; "));
+        const row = await repo.insert({
+          code: normalized.code,
+          email: normalized.email ?? null,
+          display_name: normalized.displayName,
+          password_hash: await hashPassword(normalized.password),
+          role: normalized.role,
+          access_mode: normalized.accessMode,
+          implementer_access: normalized.implementerAccess === true,
+          status: normalized.status ?? "ACTIVE",
+          audit: auditStamp(currentUser),
+        });
+        users.push(toDto(row, await getAuditActors(row, repo)));
+      }
+      await platformEvents.dispatch(events.usersCreated, users, { transaction: db });
+      return users;
+    });
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("duplicate key value")) {
+      throw new ConflictError("One or more user codes or emails already exist");
+    }
+    throw err;
+  }
 }
 
 export async function batchUpdateUsers(inputs: UserBatchUpdateRequestDto[]): Promise<UserResponseDto[]> {
-  const result: UserResponseDto[] = [];
-  for (const input of inputs) result.push(await updateUser(input.code, input));
-  return result;
+  const currentUser = await requireCurrentAdmin();
+  try {
+    return await withTransaction(async (db) => {
+      const repo = new UserRepo(db);
+      const users: UserResponseDto[] = [];
+      for (const input of inputs) {
+        users.push(await updateUserWithRepo(repo, currentUser, input.code, input));
+      }
+      await platformEvents.dispatch(events.usersUpdated, users, { transaction: db });
+      return users;
+    });
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("duplicate key value")) {
+      throw new ConflictError("One or more user codes or emails already exist");
+    }
+    if (err instanceof DataError) throw new NotFoundError("One or more users not found");
+    throw err;
+  }
 }
 
 export async function batchPatchUsers(inputs: UserBatchPatchRequestDto[]): Promise<UserResponseDto[]> {
-  const result: UserResponseDto[] = [];
-  for (const input of inputs) result.push(await patchUser(input.code, input));
-  return result;
+  const currentUser = await requireCurrentAdmin();
+  try {
+    return await withTransaction(async (db) => {
+      const repo = new UserRepo(db);
+      const users: UserResponseDto[] = [];
+      for (const input of inputs) {
+        const existingRow = await repo.get(input.code);
+        if (!existingRow) throw new DataError(`User ${input.code} not found`);
+        const existing = toDto(existingRow, await getAuditActors(existingRow, repo));
+        users.push(await updateUserWithRepo(repo, currentUser, input.code, {
+          code: existing.code,
+          email: input.email !== undefined ? input.email : existing.email,
+          displayName: input.displayName ?? existing.displayName,
+          role: input.role ?? existing.role,
+          accessMode: input.accessMode ?? existing.accessMode,
+          implementerAccess: input.implementerAccess ?? existing.implementerAccess,
+          status: existing.status,
+        }));
+      }
+      await platformEvents.dispatch(events.usersUpdated, users, { transaction: db });
+      return users;
+    });
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("duplicate key value")) {
+      throw new ConflictError("One or more user codes or emails already exist");
+    }
+    if (err instanceof DataError) throw new NotFoundError("One or more users not found");
+    throw err;
+  }
 }
 
 export async function activateUser(code: string): Promise<UserResponseDto> {
-  return (await activateUsers([code]))[0];
+  const currentUser = await requireCurrentAdmin();
+  return withTransaction(async (db) => {
+    const [user] = await transitionUserStatus(db, currentUser, [code], "ACTIVE");
+    await platformEvents.dispatch(events.userActivated, user, { transaction: db });
+    return user;
+  });
 }
 
 export async function deactivateUser(code: string): Promise<UserResponseDto> {
-  return (await deactivateUsers([code]))[0];
+  const currentUser = await requireCurrentAdmin();
+  return withTransaction(async (db) => {
+    const [user] = await transitionUserStatus(db, currentUser, [code], "INACTIVE");
+    await platformEvents.dispatch(events.userDeactivated, user, { transaction: db });
+    return user;
+  });
 }
 
 export async function batchDeleteUsers(codes: string[]): Promise<void> {
@@ -271,31 +362,76 @@ export async function batchDeleteUsers(codes: string[]): Promise<void> {
   const normalizedCodes = normalizeCodes(codes);
   if (normalizedCodes.includes(currentUser.code)) throw new BusinessRuleError("You cannot delete your own user");
 
-  const repo = new UserRepo(getDb());
-  const users = await ensureUsersExist(normalizedCodes, repo);
-  await ensureAtLeastOneActiveAdminAfterMutation(repo, users);
-  await repo.batchDelete(normalizedCodes);
+  await withTransaction(async (db) => {
+    const repo = new UserRepo(db);
+    const rows = await ensureUsersExist(normalizedCodes, repo);
+    await ensureAtLeastOneActiveAdminAfterMutation(repo, rows);
+    const users = await Promise.all(rows.map(async (row) => toDto(row, await getAuditActors(row, repo))));
+    await platformEvents.dispatch(events.usersDeleted, users, { transaction: db });
+    await repo.batchDelete(normalizedCodes);
+  });
 }
 
 export async function activateUsers(codes: string[]): Promise<UserResponseDto[]> {
-  return transitionUserStatus(codes, "ACTIVE");
+  const currentUser = await requireCurrentAdmin();
+  return withTransaction(async (db) => {
+    const users = await transitionUserStatus(db, currentUser, codes, "ACTIVE");
+    await platformEvents.dispatch(events.usersActivated, users, { transaction: db });
+    return users;
+  });
 }
 
 export async function deactivateUsers(codes: string[]): Promise<UserResponseDto[]> {
-  return transitionUserStatus(codes, "INACTIVE");
+  const currentUser = await requireCurrentAdmin();
+  return withTransaction(async (db) => {
+    const users = await transitionUserStatus(db, currentUser, codes, "INACTIVE");
+    await platformEvents.dispatch(events.usersDeactivated, users, { transaction: db });
+    return users;
+  });
 }
 
-async function transitionUserStatus(codes: string[], targetStatus: "ACTIVE" | "INACTIVE"): Promise<UserResponseDto[]> {
-  const currentUser = await requireCurrentAdmin();
+async function transitionUserStatus(
+  db: DbExecutor,
+  currentUser: UserResponseDto,
+  codes: string[],
+  targetStatus: "ACTIVE" | "INACTIVE",
+): Promise<UserResponseDto[]> {
   const normalizedCodes = normalizeCodes(codes);
 
-  return await withTransaction(async (client) => {
-    const repo = new UserRepo(client);
-    const users = await ensureUsersExist(normalizedCodes, repo);
-    if (targetStatus !== "ACTIVE") await ensureAtLeastOneActiveAdminAfterMutation(repo, users);
-    const updated = await repo.batchUpdateStatus(normalizedCodes, targetStatus, auditStamp(currentUser));
-    return Promise.all(updated.map(async (row) => toDto(row, await getAuditActors(row, repo))));
+  const repo = new UserRepo(db);
+  const users = await ensureUsersExist(normalizedCodes, repo);
+  if (targetStatus !== "ACTIVE") await ensureAtLeastOneActiveAdminAfterMutation(repo, users);
+  const updated = await repo.batchUpdateStatus(normalizedCodes, targetStatus, auditStamp(currentUser));
+  return Promise.all(updated.map(async (row) => toDto(row, await getAuditActors(row, repo))));
+}
+
+async function updateUserWithRepo(
+  repo: UserRepo,
+  currentUser: UserResponseDto,
+  code: string,
+  input: UserUpdateRequestDto,
+): Promise<UserResponseDto> {
+  const normalized = normalizeUpdate(input);
+  const errors = validateUserInput(normalized);
+  if (errors.length) throw new InputValidationError(errors.join("; "));
+
+  const existing = await repo.get(code);
+  if (!existing) throw new DataError(`User ${code} not found`);
+  if (existing.code === currentUser.code && existing.role !== normalized.role) {
+    throw new BusinessRuleError("You cannot change your own access level");
+  }
+  await ensureAtLeastOneActiveAdminAfterMutation(repo, [existing], normalized.role, normalized.status);
+  const row = await repo.update(code, {
+    code: normalized.code,
+    email: normalized.email ?? null,
+    display_name: normalized.displayName,
+    role: normalized.role,
+    access_mode: normalized.accessMode,
+    implementer_access: normalized.implementerAccess === true,
+    status: normalized.status,
+    audit: auditStamp(currentUser),
   });
+  return toDto(row, await getAuditActors(row, repo));
 }
 
 async function requireCurrentAdmin(): Promise<UserResponseDto> {

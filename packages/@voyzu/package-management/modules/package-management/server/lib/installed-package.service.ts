@@ -1,12 +1,14 @@
-import { getDb, withTransaction } from "@voyzu/capability/db";
+import { getDb, withTransaction, type DbExecutor } from "@voyzu/capability/db";
 import { BusinessRuleError, NotFoundError } from "@voyzu/capability/errors";
+import { events as platformEvents } from "@voyzu/capability/events";
 
 import type {
   InstalledPackageResponseDto,
-} from "../../../types";
+} from "@voyzu/package-management/types";
 import { InstalledPackageRepo } from "../db/installed-package.repo";
 import type { InstalledPackageRow } from "../db/installed-package.row.types";
 import { ChangePageRouteVisibility, isRequiredPackage } from "../../domain/operation-policy";
+import { events } from "../../events";
 import { discoverInstalledPackages, type DiscoveredPackage } from "./package-inventory";
 
 function response(
@@ -32,7 +34,7 @@ function response(
 
 export async function reconcileInstalledPackages(): Promise<InstalledPackageResponseDto[]> {
   const inventory = await discoverInstalledPackages();
-  await withTransaction(async (db) => {
+  return withTransaction(async (db) => {
     await db.query("SELECT pg_advisory_xact_lock(hashtext('voyzu.installed-packages'))");
     const existing = await new InstalledPackageRepo(db).list();
     const existingByCode = new Map(existing.map((row) => [row.code, row]));
@@ -58,14 +60,23 @@ export async function reconcileInstalledPackages(): Promise<InstalledPackageResp
     } else {
       await db.query("DELETE FROM installed_packages WHERE NOT (code = ANY($1::text[]))", [names]);
     }
+    const packages = await listInstalledPackagesWith(db, inventory);
+    await platformEvents.dispatch(events.installedPackagesReconciled, packages, { transaction: db });
+    return packages;
   });
-  return listInstalledPackages();
 }
 
 export async function listInstalledPackages(): Promise<InstalledPackageResponseDto[]> {
+  return listInstalledPackagesWith(getDb());
+}
+
+async function listInstalledPackagesWith(
+  db: DbExecutor,
+  knownInventory?: DiscoveredPackage[],
+): Promise<InstalledPackageResponseDto[]> {
   const [rows, inventory] = await Promise.all([
-    new InstalledPackageRepo(getDb()).list(),
-    discoverInstalledPackages(),
+    new InstalledPackageRepo(db).list(),
+    knownInventory ?? discoverInstalledPackages(),
   ]);
   const inventoryByCode = new Map(inventory.map((item) => [item.code, item]));
   return rows.map((row) => response(row, inventoryByCode.get(row.code)));
@@ -85,24 +96,27 @@ export async function updateInstalledPackageVisibility(
   topNavigationVisible: boolean,
   pageRoutesVisible: boolean,
 ): Promise<InstalledPackageResponseDto> {
-  const repo = new InstalledPackageRepo(getDb());
-  const existing = await repo.getById(id);
-  if (!existing) throw new NotFoundError(`Package id ${id} not found`);
-  const visibilityBlockers = ChangePageRouteVisibility(existing, pageRoutesVisible);
-  if (visibilityBlockers.length) {
-    throw new BusinessRuleError(visibilityBlockers.map(({ message }) => message).join("; "));
-  }
-  if (!pageRoutesVisible) {
-    const inventory = await discoverInstalledPackages();
-    const packageInfo = inventory.find(({ code }) => code === existing.code);
-    const homeSegment = firstPathSegment(await getHomePageRoute());
-    if (homeSegment && packageInfo?.pageRootPaths.some((path) => firstPathSegment(path) === homeSegment)) {
-      throw new BusinessRuleError(`${existing.code} contains the configured home page and its page routes cannot be hidden`);
+  return withTransaction(async (db) => {
+    const repo = new InstalledPackageRepo(db);
+    const existing = await repo.getById(id);
+    if (!existing) throw new NotFoundError(`Package id ${id} not found`);
+    const visibilityBlockers = ChangePageRouteVisibility(existing, pageRoutesVisible);
+    if (visibilityBlockers.length) {
+      throw new BusinessRuleError(visibilityBlockers.map(({ message }) => message).join("; "));
     }
-  }
-  const row = await repo.updateVisibility(id, topNavigationVisible, pageRoutesVisible);
-  const inventory = await discoverInstalledPackages();
-  return response(row, inventory.find((item) => item.code === row.code));
+    const inventory = await discoverInstalledPackages();
+    if (!pageRoutesVisible) {
+      const packageInfo = inventory.find(({ code }) => code === existing.code);
+      const homeSegment = firstPathSegment(await getHomePageRouteWith(db));
+      if (homeSegment && packageInfo?.pageRootPaths.some((path) => firstPathSegment(path) === homeSegment)) {
+        throw new BusinessRuleError(`${existing.code} contains the configured home page and its page routes cannot be hidden`);
+      }
+    }
+    const row = await repo.updateVisibility(id, topNavigationVisible, pageRoutesVisible);
+    const packageDto = response(row, inventory.find((item) => item.code === row.code));
+    await platformEvents.dispatch(events.installedPackageVisibilityUpdated, packageDto, { transaction: db });
+    return packageDto;
+  });
 }
 
 const HOME_PAGE_SETTING = "HOME_PAGE_ROUTE";
@@ -112,7 +126,11 @@ function firstPathSegment(path: string): string | undefined {
 }
 
 export async function getHomePageRoute(): Promise<string> {
-  const { rows } = await getDb().query(
+  return getHomePageRouteWith(getDb());
+}
+
+async function getHomePageRouteWith(db: DbExecutor): Promise<string> {
+  const { rows } = await db.query(
     "SELECT value FROM voyzu_settings WHERE code = $1",
     [HOME_PAGE_SETTING],
   );
@@ -120,20 +138,23 @@ export async function getHomePageRoute(): Promise<string> {
 }
 
 export async function updateHomePageRoute(route: string): Promise<string> {
-  await getDb().query(
-    `INSERT INTO voyzu_settings (code, value)
-     VALUES ($1, $2)
-     ON CONFLICT (code) DO UPDATE SET value = EXCLUDED.value`,
-    [HOME_PAGE_SETTING, route],
-  );
-  return route;
+  return withTransaction(async (db) => {
+    await db.query(
+      `INSERT INTO voyzu_settings (code, value)
+       VALUES ($1, $2)
+       ON CONFLICT (code) DO UPDATE SET value = EXCLUDED.value`,
+      [HOME_PAGE_SETTING, route],
+    );
+    await platformEvents.dispatch(events.homePageRouteUpdated, route, { transaction: db });
+    return route;
+  });
 }
 
 export async function moveInstalledPackage(
   id: number,
   direction: "up" | "down",
 ): Promise<InstalledPackageResponseDto[]> {
-  await withTransaction(async (db) => {
+  return withTransaction(async (db) => {
     await db.query("SELECT pg_advisory_xact_lock(hashtext('voyzu.installed-packages'))");
     const repo = new InstalledPackageRepo(db);
     const inventory = await discoverInstalledPackages();
@@ -144,13 +165,16 @@ export async function moveInstalledPackage(
     const index = rows.findIndex((row) => row.id === id);
     if (index < 0) throw new NotFoundError(`Navigation package id ${id} not found`);
     const targetIndex = direction === "up" ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= rows.length) return;
-    const current = rows[index];
-    const target = rows[targetIndex];
-    await repo.updateOrder(current.code, target.nav_order);
-    await repo.updateOrder(target.code, current.nav_order);
+    if (targetIndex >= 0 && targetIndex < rows.length) {
+      const current = rows[index];
+      const target = rows[targetIndex];
+      await repo.updateOrder(current.code, target.nav_order);
+      await repo.updateOrder(target.code, current.nav_order);
+    }
+    const packages = await listInstalledPackagesWith(db, inventory);
+    await platformEvents.dispatch(events.installedPackagesReordered, packages, { transaction: db });
+    return packages;
   });
-  return listInstalledPackages();
 }
 
 export async function areInstalledPackagePageRoutesVisible(code: string | undefined): Promise<boolean> {

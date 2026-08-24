@@ -1,5 +1,6 @@
-import { getDb, withTransaction } from "@voyzu/capability/db";
+import { getDb, withTransaction, type DbExecutor } from "@voyzu/capability/db";
 import { BusinessRuleError, ConflictError, DataError, InputValidationError, NotFoundError } from "@voyzu/capability/errors";
+import { events as platformEvents } from "@voyzu/capability/events";
 import { createCreationAuditStamp, createUpdateAuditStamp, withAuditActors, withCreationAudit, withUpdateAudit } from "@voyzu/localization/common/server";
 import type {
   CountryBatchPatchRequestDto,
@@ -12,6 +13,7 @@ import type {
 import type { Filter, ListOptions } from "@voyzu/types/params";
 
 import { Deactivate, Delete } from "../../domain/operation-policy";
+import { events } from "../../events";
 import { CountryRepo } from "../db/country.repo";
 import type { CountryRow } from "../db/country.row.types";
 
@@ -35,8 +37,12 @@ function throwIfBlocked(blockers: ReturnType<typeof Delete>): void {
 
 export async function createCountry(input: CountryCreateRequestDto): Promise<CountryResponseDto> {
   try {
-    const row = await new CountryRepo(getDb()).insert(withCreationAudit(toInsertRow(input), await createCreationAuditStamp()));
-    return enrichRow(row);
+    return await withTransaction(async (db) => {
+      const row = await new CountryRepo(db).insert(withCreationAudit(toInsertRow(input), await createCreationAuditStamp()));
+      const country = await enrichRow(row);
+      await platformEvents.dispatch(events.countryCreated, country, { transaction: db });
+      return country;
+    });
   } catch (error) {
     if (error instanceof Error && error.message.includes("duplicate key value")) {
       throw new ConflictError("A country with this code already exists");
@@ -54,10 +60,14 @@ export async function getCountry(code: string): Promise<CountryResponseDto | nul
 
 export async function updateCountry(code: string, input: CountryUpdateRequestDto): Promise<CountryResponseDto> {
   try {
-    const row = await new CountryRepo(getDb()).update(code, {
-      ...withUpdateAudit(toUpdateRow(input), await createUpdateAuditStamp()),
+    return await withTransaction(async (db) => {
+      const row = await new CountryRepo(db).update(code, {
+        ...withUpdateAudit(toUpdateRow(input), await createUpdateAuditStamp()),
+      });
+      const country = await enrichRow(row);
+      await platformEvents.dispatch(events.countryUpdated, country, { transaction: db });
+      return country;
     });
-    return enrichRow(row);
   } catch (error) {
     if (error instanceof DataError) throw new NotFoundError(`Country ${code} not found`);
     throw error;
@@ -66,10 +76,14 @@ export async function updateCountry(code: string, input: CountryUpdateRequestDto
 
 export async function patchCountry(code: string, input: CountryPatchRequestDto): Promise<CountryResponseDto> {
   try {
-    const row = await new CountryRepo(getDb()).patch(code, {
-      ...withUpdateAudit(toPatchRow(input), await createUpdateAuditStamp()),
+    return await withTransaction(async (db) => {
+      const row = await new CountryRepo(db).patch(code, {
+        ...withUpdateAudit(toPatchRow(input), await createUpdateAuditStamp()),
+      });
+      const country = await enrichRow(row);
+      await platformEvents.dispatch(events.countryUpdated, country, { transaction: db });
+      return country;
     });
-    return enrichRow(row);
   } catch (error) {
     if (error instanceof DataError) throw new NotFoundError(`Country ${code} not found`);
     throw error;
@@ -77,11 +91,15 @@ export async function patchCountry(code: string, input: CountryPatchRequestDto):
 }
 
 export async function deleteCountry(code: string): Promise<void> {
-  const repo = new CountryRepo(getDb());
-  const existing = await repo.get(code);
-  if (!existing) throw new NotFoundError(`Country ${code} not found`);
-  throwIfBlocked(Delete({ code: existing.code }));
-  await repo.delete(code);
+  await withTransaction(async (db) => {
+    const repo = new CountryRepo(db);
+    const existing = await repo.get(code);
+    if (!existing) throw new NotFoundError(`Country ${code} not found`);
+    throwIfBlocked(Delete({ code: existing.code }));
+    const country = await enrichRow(existing);
+    await platformEvents.dispatch(events.countryDeleted, country, { transaction: db });
+    await repo.delete(code);
+  });
 }
 
 export async function listCountries(): Promise<CountryResponseDto[]> {
@@ -107,6 +125,7 @@ export async function batchCreateCountries(inputs: CountryCreateRequestDto[]): P
       for (const input of inputs) {
         results.push(await enrichRow(await repo.insert(withCreationAudit(toInsertRow(input), audit))));
       }
+      await platformEvents.dispatch(events.countriesCreated, results, { transaction: client });
       return results;
     });
   } catch (error) {
@@ -131,6 +150,7 @@ export async function batchUpdateCountries(inputs: CountryBatchUpdateRequestDto[
       for (const input of inputs) {
         results.push(await enrichRow(await repo.update(input.code, withUpdateAudit(toUpdateRow(input), audit))));
       }
+      await platformEvents.dispatch(events.countriesUpdated, results, { transaction: client });
       return results;
     });
   } catch (error) {
@@ -148,6 +168,7 @@ export async function batchPatchCountries(inputs: CountryBatchPatchRequestDto[])
       for (const input of inputs) {
         results.push(await enrichRow(await repo.patch(input.code, withUpdateAudit(toPatchRow(input), audit))));
       }
+      await platformEvents.dispatch(events.countriesUpdated, results, { transaction: client });
       return results;
     });
   } catch (error) {
@@ -160,52 +181,72 @@ export async function batchDeleteCountries(codes: string[]): Promise<void> {
   const normalizedCodes = normalizeCodes(codes);
   if (normalizedCodes.length === 0) throw new InputValidationError("At least one country code is required");
 
-  const repo = new CountryRepo(getDb());
-  const existing = await repo.batchGet(normalizedCodes);
-  const found = new Set(existing.map((country) => country.code));
-  const missing = normalizedCodes.filter((code) => !found.has(code));
-  if (missing.length > 0) throw new NotFoundError(`Country ${missing.join(", ")} not found`);
-
-  for (const country of existing) throwIfBlocked(Delete({ code: country.code }));
-
-  await repo.batchDelete(normalizedCodes);
-}
-
-export async function activateCountry(code: string): Promise<CountryResponseDto> {
-  const [country] = await activateCountries([code]);
-  return country;
-}
-
-export async function deactivateCountry(code: string): Promise<CountryResponseDto> {
-  const [country] = await deactivateCountries([code]);
-  return country;
-}
-
-export async function activateCountries(codes: string[]): Promise<CountryResponseDto[]> {
-  return transitionCountryStatus(codes, "ACTIVE");
-}
-
-export async function deactivateCountries(codes: string[]): Promise<CountryResponseDto[]> {
-  return transitionCountryStatus(codes, "INACTIVE");
-}
-
-async function transitionCountryStatus(codes: string[], targetStatus: "ACTIVE" | "INACTIVE"): Promise<CountryResponseDto[]> {
-  const normalizedCodes = normalizeCodes(codes);
-  if (normalizedCodes.length === 0) throw new InputValidationError("At least one country code is required");
-
-  const audit = await createUpdateAuditStamp();
-  return withTransaction(async (client) => {
-    const repo = new CountryRepo(client);
+  await withTransaction(async (db) => {
+    const repo = new CountryRepo(db);
     const existing = await repo.batchGet(normalizedCodes);
     const found = new Set(existing.map((country) => country.code));
     const missing = normalizedCodes.filter((code) => !found.has(code));
     if (missing.length > 0) throw new NotFoundError(`Country ${missing.join(", ")} not found`);
 
-    if (targetStatus === "INACTIVE") {
-      for (const country of existing) throwIfBlocked(Deactivate({ code: country.code }));
-    }
+    for (const country of existing) throwIfBlocked(Delete({ code: country.code }));
 
-    const rows = await repo.batchUpdateStatus(normalizedCodes, targetStatus, audit);
-    return enrichRows(rows);
+    const countries = await enrichRows(existing);
+    await platformEvents.dispatch(events.countriesDeleted, countries, { transaction: db });
+    await repo.batchDelete(normalizedCodes);
   });
+}
+
+export async function activateCountry(code: string): Promise<CountryResponseDto> {
+  return withTransaction(async (db) => {
+    const [country] = await transitionCountryStatus(db, [code], "ACTIVE");
+    await platformEvents.dispatch(events.countryActivated, country, { transaction: db });
+    return country;
+  });
+}
+
+export async function deactivateCountry(code: string): Promise<CountryResponseDto> {
+  return withTransaction(async (db) => {
+    const [country] = await transitionCountryStatus(db, [code], "INACTIVE");
+    await platformEvents.dispatch(events.countryDeactivated, country, { transaction: db });
+    return country;
+  });
+}
+
+export async function activateCountries(codes: string[]): Promise<CountryResponseDto[]> {
+  return withTransaction(async (db) => {
+    const countries = await transitionCountryStatus(db, codes, "ACTIVE");
+    await platformEvents.dispatch(events.countriesActivated, countries, { transaction: db });
+    return countries;
+  });
+}
+
+export async function deactivateCountries(codes: string[]): Promise<CountryResponseDto[]> {
+  return withTransaction(async (db) => {
+    const countries = await transitionCountryStatus(db, codes, "INACTIVE");
+    await platformEvents.dispatch(events.countriesDeactivated, countries, { transaction: db });
+    return countries;
+  });
+}
+
+async function transitionCountryStatus(
+  db: DbExecutor,
+  codes: string[],
+  targetStatus: "ACTIVE" | "INACTIVE",
+): Promise<CountryResponseDto[]> {
+  const normalizedCodes = normalizeCodes(codes);
+  if (normalizedCodes.length === 0) throw new InputValidationError("At least one country code is required");
+
+  const audit = await createUpdateAuditStamp();
+  const repo = new CountryRepo(db);
+  const existing = await repo.batchGet(normalizedCodes);
+  const found = new Set(existing.map((country) => country.code));
+  const missing = normalizedCodes.filter((code) => !found.has(code));
+  if (missing.length > 0) throw new NotFoundError(`Country ${missing.join(", ")} not found`);
+
+  if (targetStatus === "INACTIVE") {
+    for (const country of existing) throwIfBlocked(Deactivate({ code: country.code }));
+  }
+
+  const rows = await repo.batchUpdateStatus(normalizedCodes, targetStatus, audit);
+  return enrichRows(rows);
 }

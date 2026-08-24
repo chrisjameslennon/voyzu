@@ -8,7 +8,7 @@ import type {
   HomePageRouteUpdateRequestDto,
   InstalledPackageMoveRequestDto,
   InstalledPackageUpdateRequestDto,
-} from "../../../types";
+} from "@voyzu/package-management/types";
 import {
   getInstalledPackage,
   getHomePageRoute,
