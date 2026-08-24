@@ -24,6 +24,7 @@ export {
   type VoyzuEventContext,
   type VoyzuEventHandler,
 } from "./events";
+export { operation, type VoyzuOperationDefinition } from "./operations";
 export {
   businessRuleError,
   conflictError,

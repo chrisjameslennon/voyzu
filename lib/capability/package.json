@@ -24,6 +24,10 @@
       "types": "./src/events/index.ts",
       "import": "./src/events/index.ts"
     },
+    "./operations": {
+      "types": "./src/operations/index.ts",
+      "import": "./src/operations/index.ts"
+    },
     "./runtime": {
       "types": "./src/runtime/index.ts",
       "import": "./src/runtime/index.ts"
