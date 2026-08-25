@@ -131,9 +131,14 @@ async function call(name: string, ...args: unknown[]): Promise<unknown> {
   return registered.handler(...args);
 }
 
+function has(name: string): boolean {
+  return registry.has(name);
+}
+
 export const operation = {
   define,
   registerModule,
   callOptional,
   call,
+  has,
 } as const;
