@@ -12,6 +12,7 @@ export type DetailBackSource =
   | "arStatements"
   | "apStatements"
   | "financialDocumentType"
+  | "audit"
   | "organizationAudit"
   | "companyAudit";
 
@@ -40,6 +41,7 @@ export function normalizeDetailBackSource(value: string | undefined): DetailBack
   if (value === "ar-statements") return "arStatements";
   if (value === "ap-statements") return "apStatements";
   if (value === "financial-document-type") return "financialDocumentType";
+  if (value === "audit") return "audit";
   if (value === "organization-audit") return "organizationAudit";
   if (value === "company-audit") return "companyAudit";
   return undefined;
@@ -59,6 +61,13 @@ function companyAuditReturnHref(value: string | undefined): string | undefined {
   return value;
 }
 
+function auditReturnHref(value: string | undefined): string | undefined {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) return undefined;
+  if (value.includes("?") || value.includes("#") || value.includes("\\")) return undefined;
+  if (value.split("/").some((segment) => segment === "." || segment === "..")) return undefined;
+  return value;
+}
+
 export function detailBackHref({ from, fromCode, fallbackHref }: DetailBackContext) {
   if (from === "journal" && fromCode) return `/finance/journals/${encodeURIComponent(fromCode)}`;
   if (from === "arLedgerEntry" && fromCode) return `/finance/subledgers/ar/ledger-entries/${encodeURIComponent(fromCode)}`;
@@ -72,6 +81,7 @@ export function detailBackHref({ from, fromCode, fallbackHref }: DetailBackConte
   if (from === "arStatements") return "/finance/subledgers/ar/statements";
   if (from === "apStatements") return "/finance/subledgers/ap/statements";
   if (from === "financialDocumentType" && fromCode) return `/organization/financial-document-types/${encodeURIComponent(fromCode)}`;
+  if (from === "audit") return auditReturnHref(fromCode) ?? fallbackHref;
   if (from === "organizationAudit") return organizationAuditReturnHref(fromCode) ?? fallbackHref;
   if (from === "companyAudit") return companyAuditReturnHref(fromCode) ?? fallbackHref;
   return fallbackHref;
@@ -118,6 +128,7 @@ function sourceQueryValue(from: Exclude<DetailBackSource, "journals">) {
   if (from === "apBills") return "ap-bills";
   if (from === "arStatements") return "ar-statements";
   if (from === "financialDocumentType") return "financial-document-type";
+  if (from === "audit") return "audit";
   if (from === "organizationAudit") return "organization-audit";
   if (from === "companyAudit") return "company-audit";
   return "ap-statements";

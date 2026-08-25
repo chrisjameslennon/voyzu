@@ -28,7 +28,7 @@ export async function AuditEventsPage({ surface }: OrganizationAuditEventsPagePr
   const hasLinkedEntityFilter = Boolean(initialFilters.entityType || initialFilters.entityCode || initialFilters.entityId || initialFilters.mutationId);
   const backFrom = normalizeDetailBackSource(searchParams.from);
   const backFromCode = searchParams.fromCode;
-  const hasBackTarget = backFrom === "organizationAudit"
+  const hasBackTarget = Boolean(backFrom)
     && detailBackHref({ from: backFrom, fromCode: backFromCode, fallbackHref: "" }) !== "";
 
   return (
@@ -43,6 +43,7 @@ export async function AuditEventsPage({ surface }: OrganizationAuditEventsPagePr
       initialEntityCode={initialFilters.entityCode}
       initialEntityId={initialFilters.entityId}
       initialMutationId={initialFilters.mutationId}
+      backFrom={hasBackTarget ? backFrom : undefined}
       backFromCode={hasBackTarget ? backFromCode : undefined}
     />
   );

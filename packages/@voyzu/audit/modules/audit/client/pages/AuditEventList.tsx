@@ -1,6 +1,7 @@
 "use client";
 
 import { DetailBackButton } from "@voyzu/ui-surface/client";
+import type { DetailBackSource } from "@voyzu/ui-surface";
 import { getAuditActionColor } from "@voyzu/audit/client";
 import type {
   AuditEventListResponseDto,
@@ -168,6 +169,7 @@ interface AuditEventListProps {
   initialEntityCode?: string;
   initialEntityId?: string;
   initialMutationId?: string;
+  backFrom?: DetailBackSource;
   backFromCode?: string;
 }
 
@@ -195,6 +197,7 @@ export function AuditEventList({
   initialEntityCode = "",
   initialEntityId = "",
   initialMutationId = "",
+  backFrom,
   backFromCode,
 }: AuditEventListProps) {
   const router = useRouter();
@@ -704,8 +707,8 @@ export function AuditEventList({
           </div>
         </div>
         <div className={styles.titleActions}>
-          {backFromCode ? (
-            <DetailBackButton fallbackHref="/settings/audit" from="organizationAudit" fromCode={backFromCode} />
+          {backFrom ? (
+            <DetailBackButton fallbackHref="/settings/audit" from={backFrom} fromCode={backFromCode} />
           ) : null}
         </div>
       </div>
