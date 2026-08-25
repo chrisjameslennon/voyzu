@@ -187,6 +187,9 @@ export const operations = {
 
 Operations are called by package-level operation tests and may be called by other modules. Code already inside the owning module calls its service methods directly. HTTP handlers also call services directly rather than routing through operations.
 
+Cross-package callers use the composed operation registry rather than importing
+the providing package. See [Operation patterns](../voyzu-platform-patterns/operations.md).
+
 Expose operations intended for external use through the package's `package.json`:
 
 ```jsonc
