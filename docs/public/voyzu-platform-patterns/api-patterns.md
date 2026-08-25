@@ -1,14 +1,14 @@
 # API patterns
 
-Voyzu generates thin native Next.js route handlers from package API definitions during composition:
+Voyzu composes package API definitions into a registry consumed by the platform wildcard API handler:
 
 ```text
-apps/web/app/(generated)/api/warehousing/stock/[code]/route.ts
+apps/web/app/api/[[...voyzuApiPath]]/route.ts
 ```
 
-Packages do not maintain these generated files. Each module declares its routes
-in `apiDefinitions`; composition validates the complete route manifest and emits
-one `route.ts` per path, combining multiple HTTP methods in the same file.
+Packages do not maintain Next.js route files. Each module declares its routes
+in `apiDefinitions`; composition adds the package modules to the shared registry,
+and the wildcard handler matches the request path and HTTP method.
 
 ## Define routes in `api.routes.ts`
 
@@ -302,11 +302,11 @@ objects so that internal schema changes do not silently change the public API.
 ## Compose API changes
 
 Run `npm run voyzu:compose` after adding or changing an API definition or DTO.
-Composition reads each active package's `voyzu.package.ts`, writes thin Next.js
-handlers beneath `apps/web/app/(generated)/api`, generates package-grouped API
-documentation beneath `apps/web/.generated/api-reference`, writes the combined
+Composition reads each active package's `voyzu.package.ts`, updates the shared
+package registry, generates package-grouped API documentation beneath
+`apps/web/.generated/api-reference`, writes the combined
 OpenAPI document, and clears the Next.js cache.
 
-Do not edit generated routes or API documentation files. Restart the web server
-after `voyzu:compose` completes so the application loads the regenerated routes
+Do not edit generated registries or API documentation files. Restart the web server
+after `voyzu:compose` completes so the application loads the regenerated registry
 and documentation.

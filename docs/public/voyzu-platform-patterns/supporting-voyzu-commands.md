@@ -202,8 +202,9 @@ in its `modules` array. Each registered module must provide `pageRoutes` and
 
 Depending on the package exports, composition may also consume navigation,
 static assets, styles, documentation settings, and other package metadata. It
-writes thin Next.js routes beneath `apps/web/app/(generated)` and supporting
-navigation, event, and API Reference output beneath `apps/web/.generated`. API
+writes navigation, event, operation, and API Reference output beneath
+`apps/web/.generated`. The platform wildcard page and API handlers consume the
+composed route definitions at runtime. API
 documentation generation reads API route definitions and referenced DTOs from
 the package source. Generated output must never be edited directly.
 
@@ -214,7 +215,7 @@ navigation, assets, API definitions, or DTO documentation:
 npm run voyzu:compose
 ```
 
-Restart the web server after composition so it loads the regenerated routes and
+Restart the web server after composition so it loads the regenerated registries and
 documentation. Source mirroring for a linked development package copies code
 changes into the runtime, but it does not replace composition when generated
 configuration must change.

@@ -555,9 +555,9 @@ routes, navigation, events, assets, or API schemas:
 npm run voyzu:compose
 ```
 
-Composition generates thin Next.js routes beneath
-`apps/web/app/(generated)` and supporting navigation, event, and API Reference
-files beneath `apps/web/.generated`. Never edit generated files directly.
+Composition generates navigation, event, operation, and API Reference files
+beneath `apps/web/.generated`. The platform wildcard page and API handlers use
+these registries at runtime. Never edit generated files directly.
 
 See [Commands](commands.md) for the complete command reference.
 

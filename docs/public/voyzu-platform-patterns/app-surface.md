@@ -34,7 +34,7 @@ export const pageRoutes = {
 } as const;
 ```
 
-Voyzu supports static and dynamic path segments. During composition it generates thin native Next.js pages beneath `apps/web/app/(generated)/(web)`. Next.js matches the route and supplies its parameters; the Voyzu page renderer retains authorization, package visibility, framing, breadcrumbs and help behavior. Keep page components in a server-only page entry point when they access the database or other private server functionality.
+Voyzu supports static and dynamic path segments. Composition adds package page definitions to the surface registry, and the platform wildcard page matches the requested path and supplies its parameters. The surface router retains authorization, package visibility, framing, breadcrumbs and help behavior. Keep page components in a server-only page entry point when they access the database or other private server functionality.
 
 The supported route authorization roles are `STANDARD` and `ADMIN`. A public route must set `auth.required` to `false` deliberately; authenticated package pages should normally set it to `true`.
 
@@ -193,13 +193,13 @@ The install and link-package workflows compose packages automatically. Compositi
 2. imports each package's `voyzu.package.ts` through its public export;
 3. collects page routes and API definitions;
 4. includes optional domain navigation or single-domain navigation exports;
-5. writes thin Next.js routes beneath `apps/web/app/(generated)` and supporting
-   navigation, event, and API Reference output beneath `apps/web/.generated`;
+5. writes navigation, event, operation, and API Reference output beneath
+   `apps/web/.generated` for the platform wildcard handlers to consume;
    and
 6. updates the runtime workspace and Next.js transpilation metadata.
 
-Generated routes and `.generated` files are runtime output and must not be
-edited. Restart the web server after installing, linking, or recomposing
+`.generated` files are runtime output and must not be edited. Restart the web
+server after installing, linking, or recomposing
 packages.
 
 ## Use the main area

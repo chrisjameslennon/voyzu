@@ -2,7 +2,6 @@ node_modules
 **/node_modules
 .next
 **/.next
-/apps/web/app/(generated)/
 /apps/web/.generated/navigation/
 next.config.local.ts
 **/next-env.d.ts

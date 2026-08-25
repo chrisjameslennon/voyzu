@@ -59,7 +59,7 @@ Do not add a module-level `index.ts` barrel. Import the manifest, operations, or
 
 ### `pages.routes.ts`
 
-`pages.routes.ts` is the authoritative collection of the module's browser pages. Voyzu uses it to generate thin native Next.js routes and compose authorization, metadata, help, and navigation references.
+`pages.routes.ts` is the authoritative collection of the module's browser pages. Voyzu adds it to the surface registry used by the platform wildcard page to match paths and compose authorization, metadata, help, and navigation references.
 
 ```ts
 import {
