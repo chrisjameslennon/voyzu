@@ -1,319 +1,77 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { execFileSync } from "node:child_process";
-import { pathToFileURL } from "node:url";
 
+import type { ApiRouteDefinition } from "@voyzu/types/api";
 import sampler from "openapi-sampler";
-import {
-  Node,
-  Project,
-  SyntaxKind,
-  type Expression,
-  type ObjectLiteralExpression,
-  type PropertyAssignment,
-} from "ts-morph";
+import type { TSchema } from "typebox";
 
-type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+import type {
+  OperationDoc,
+  OperationDocRequestParam,
+} from "../types";
+
+export type { OperationDoc } from "../types";
+
 const DEFAULT_CONTENT_TYPE = "application/json";
 
-type SchemaNameRef = {
-  schemaName: string;
-};
-type ApiSchema = Record<string, unknown> | SchemaNameRef;
-
-type ApiResponseDefinition = {
-  description: string;
-  contentType?: string;
-  body?: ApiSchema;
-  cookies?: Record<
-    string,
-    {
-      description?: string;
-      action?: "set" | "clear";
-      httpOnly?: boolean;
-      secure?: boolean;
-      sameSite?: string;
-      path?: string;
-      maxAgeSeconds?: number;
-    }
-  >;
-};
-
-type ApiParameterDefinition = {
-  description?: string;
-  required?: boolean;
-  schema: ApiSchema;
-};
-
-type ApiQueryDefinition = {
-  parameters: Record<string, Omit<ApiParameterDefinition, "schema">>;
-  schema: ApiSchema;
-};
-
-type ApiRequestCookieDefinition = {
-  description?: string;
-  required?: boolean;
-  example?: unknown;
-  httpOnly?: boolean;
-  secure?: boolean;
-  sameSite?: string;
-  path?: string;
-  maxAgeSeconds?: number;
-};
-
-type ApiDefinition = {
-  method: HttpMethod;
-  path: string;
-  summary: string;
-  description: string;
-  tags?: string[];
-  request?: {
-    path?: Record<string, ApiParameterDefinition>;
-    query?: ApiQueryDefinition;
-    cookies?: Record<string, ApiRequestCookieDefinition>;
-    contentType?: string;
-    body?: ApiSchema;
-  };
-  responses: Record<string, ApiResponseDefinition>;
-};
-
-type ModuleApiDefinitions = {
-  folderName: string;
-  definitions: ApiDefinition[];
-};
-
-type PackageApiDefinitions = {
+export interface ApiDocumentationRegistration {
   packageName: string;
-  folderName: string;
-  modules: ModuleApiDefinitions[];
-};
+  moduleName: string;
+  routes: readonly ApiRouteDefinition[];
+}
 
-export type OperationDoc = {
-  operationId: string;
-  method: Lowercase<HttpMethod>;
-  path: string;
-  summary: string;
-  description: string;
-  tags?: string[];
-  requestPathParams?: Record<
-    string,
-    {
-      description?: string;
-      required?: boolean;
-      schema: Record<string, unknown>;
-      example?: unknown;
-    }
-  >;
-  requestQuerystringParams?: Record<
-    string,
-    {
-      description?: string;
-      required?: boolean;
-      schema: Record<string, unknown>;
-      example?: unknown;
-    }
-  >;
-  requestCookies?: Record<string, ApiRequestCookieDefinition>;
-  requestBody?: {
-    required?: boolean;
-    contentType?: string;
-    schemaRef?: SchemaRefDoc;
-    schema: Record<string, unknown>;
-    example?: unknown;
-  };
-  responses: Record<
-    string,
-    {
-      description: string;
-      contentType?: string;
-      schemaRef?: SchemaRefDoc;
-      schema?: Record<string, unknown>;
-      example?: unknown;
-      cookies?: ApiResponseDefinition["cookies"];
-    }
-  >;
-};
-
-export type SchemaRefDoc = string | { type: "array"; items: SchemaRefDoc };
-
-export type DtoDoc = {
-  name: string;
-  sourceFile: string;
-  typescript: string;
-};
-
-export type GenerateOperationDocsOptions = {
-  workspaceRoot: string;
+export interface GenerateOperationDocsOptions {
   outputDir: string;
-};
-
-const TYPES_FOLDER_NAME = "types";
-
-class DtoRegistry {
-  readonly #workspaceRoot: string;
-  readonly #sourceByName = new Map<string, string>();
-  readonly #sourceContents = new Map<string, string>();
-  readonly #schemaByName = new Map<string, Record<string, unknown>>();
-  #temporaryInputsRoot: string | undefined;
-
-  constructor(workspaceRoot: string) {
-    this.#workspaceRoot = workspaceRoot;
-    this.#indexSources();
-  }
-
-  #indexSources(): void {
-    const sourceRoots = [
-      path.join(this.#workspaceRoot, "lib", "types", "src"),
-      path.join(this.#workspaceRoot, "packages"),
-      path.join(this.#workspaceRoot, "lib", "modules"),
-    ];
-    const installedRoot = installedPackagesRoot(this.#workspaceRoot);
-    if (installedRoot) sourceRoots.push(installedRoot);
-
-    for (const filePath of sourceRoots.flatMap(listTypeSourceFiles)) {
-      const source = fs.readFileSync(filePath, "utf-8");
-      this.#sourceContents.set(filePath, source);
-      const declarations = source.matchAll(/export\s+const\s+([A-Za-z_$][\w$]*)\b/g);
-      for (const match of declarations) {
-        const dtoName = match[1];
-        if (dtoName && !this.#sourceByName.has(dtoName)) {
-          this.#sourceByName.set(dtoName, filePath);
-        }
-      }
-    }
-  }
-
-  sourceFile(dtoName: string): string {
-    const sourceFile = this.#sourceByName.get(dtoName);
-    if (!sourceFile) {
-      throw new Error(`Could not find TypeScript source for DTO ${dtoName}`);
-    }
-    return sourceFile;
-  }
-
-  sourceText(dtoName: string): string {
-    const sourceFile = this.sourceFile(dtoName);
-    const source = this.#sourceContents.get(sourceFile);
-    if (source === undefined) {
-      throw new Error(`Could not read TypeScript source for DTO ${dtoName}`);
-    }
-    return source;
-  }
-
-  prepare(dtoNames: ReadonlySet<string>, temporaryInputsRoot: string): void {
-    this.#temporaryInputsRoot = temporaryInputsRoot;
-    fs.mkdirSync(temporaryInputsRoot, { recursive: true });
-    const names = [...dtoNames].sort();
-    const inputFile = path.join(temporaryInputsRoot, "typebox-schemas.ts");
-    const imports = names.map((dtoName, index) =>
-      `import { ${dtoName} as Schema${index} } from ${JSON.stringify(pathToFileURL(this.sourceFile(dtoName)).href)};`
-    );
-    const entries = names.map((dtoName, index) => `${JSON.stringify(dtoName)}: Schema${index}`);
-    fs.writeFileSync(
-      inputFile,
-      `${imports.join("\n")}\nprocess.stdout.write(JSON.stringify({${entries.join(",")}}));\n`,
-      "utf-8",
-    );
-    const output = execFileSync(process.execPath, ["--import", "tsx", inputFile], {
-      cwd: this.#workspaceRoot,
-      encoding: "utf-8",
-    });
-    const schemas = JSON.parse(output) as Record<string, Record<string, unknown>>;
-    for (const [name, schema] of Object.entries(schemas)) {
-      this.#schemaByName.set(name, rewriteGeneratedSchema(schema) as Record<string, unknown>);
-    }
-  }
-
-  schema(dtoName: string): Record<string, unknown> {
-    const cached = this.#schemaByName.get(dtoName);
-    if (cached) return cached;
-    throw new Error(`Schema registry was not prepared for DTO ${dtoName}`);
-  }
-
-  dispose(): void {
-    if (this.#temporaryInputsRoot) {
-      fs.rmSync(this.#temporaryInputsRoot, { recursive: true, force: true });
-    }
-  }
+  registrations: readonly ApiDocumentationRegistration[];
+  workspaceRoot: string;
 }
 
-function rewriteGeneratedSchema(value: unknown, seen = new WeakSet<object>()): unknown {
-  if (Array.isArray(value)) return value.map((item) => rewriteGeneratedSchema(item, seen));
+type JsonSchema = Record<string, unknown>;
+
+function jsonType(value: unknown): string {
+  if (value === null) return "null";
+  if (Array.isArray(value)) return "array";
+  return typeof value;
+}
+
+function normalizeSchemaValue(
+  value: unknown,
+  ancestors = new WeakSet<object>(),
+): unknown {
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeSchemaValue(item, ancestors));
+  }
   if (!value || typeof value !== "object") return value;
-  if (seen.has(value)) return {};
-  seen.add(value);
+  if (ancestors.has(value)) return {};
+  ancestors.add(value);
 
-  const record = value as Record<string, unknown>;
-  if ("const" in record) {
-    return {
-      type: typeof record.const,
-      enum: [record.const],
-      ...Object.fromEntries(Object.entries(record).filter(([key]) => key !== "const" && key !== "$schema")),
-    };
-  }
-
-  const entries = Object.entries(record)
+  const schema = value as Record<string, unknown>;
+  const entries = Object.entries(schema)
     .filter(([key]) => key !== "$schema")
-    .map(([key, item]) => [
-      key,
-      typeof item === "string" ? item.replace(/#\/definitions\//g, "#/components/schemas/") : rewriteGeneratedSchema(item, seen),
-    ]);
-  return Object.fromEntries(entries);
-}
+    .map(([key, item]) => [key, normalizeSchemaValue(item, ancestors)]);
+  ancestors.delete(value);
 
-function isSchemaNameRef(schema: ApiSchema): schema is SchemaNameRef {
-  return typeof schema.schemaName === "string";
-}
-
-function expandSchema(schema: ApiSchema, dtoRegistry: DtoRegistry): Record<string, unknown> {
-  if (isSchemaNameRef(schema)) return dtoRegistry.schema(schema.schemaName);
-  if (schema.type === "array" && schema.items && typeof schema.items === "object") {
-    return { ...schema, items: expandSchema(schema.items as ApiSchema, dtoRegistry) };
-  }
-  if (schema.properties && typeof schema.properties === "object") {
-    return {
-      ...schema,
-      properties: Object.fromEntries(Object.entries(schema.properties as Record<string, ApiSchema>)
-        .map(([name, property]) => [name, expandSchema(property, dtoRegistry)])),
-    };
-  }
-  if (Array.isArray(schema.anyOf)) {
-    return { ...schema, anyOf: schema.anyOf.map((item) => expandSchema(item as ApiSchema, dtoRegistry)) };
-  }
-  return schema;
-}
-
-function schemaRefDoc(schema: ApiSchema): SchemaRefDoc | undefined {
-  if (isSchemaNameRef(schema)) return schema.schemaName;
-  if (schema.type === "array" && schema.items && typeof schema.items === "object") {
-    const itemRef = schemaRefDoc(schema.items as ApiSchema);
-    return itemRef ? { type: "array", items: itemRef } : undefined;
-  }
-  return undefined;
-}
-
-function collectSchemaRefs(schemaRef: SchemaRefDoc | undefined, refs: Set<string>): void {
-  if (!schemaRef) return;
-  if (typeof schemaRef === "string") {
-    refs.add(schemaRef);
-    return;
-  }
-  collectSchemaRefs(schemaRef.items, refs);
-}
-
-function collectDefinitionDtoRefs(definition: ApiDefinition, refs: Set<string>): void {
-  const collect = (schema: ApiSchema | undefined) => {
-    if (schema) collectSchemaRefs(schemaRefDoc(schema), refs);
+  const normalized = Object.fromEntries(entries);
+  if (!("const" in schema)) return normalized;
+  delete normalized.const;
+  return {
+    type: jsonType(schema.const),
+    enum: [schema.const],
+    ...normalized,
   };
-  collect(definition.request?.body);
-  for (const response of Object.values(definition.responses)) {
-    collect(response.body);
-  }
+}
+
+function normalizeSchema(schema: TSchema): JsonSchema {
+  return normalizeSchemaValue(schema) as JsonSchema;
+}
+
+function localDefinitionName(reference: string): string {
+  return reference.replace(/^#\/(?:\$defs|definitions)\//, "");
 }
 
 function inlineLocalSchemaRefs(
   value: unknown,
-  definitions = new Map<string, Record<string, unknown>>(),
+  definitions = new Map<string, JsonSchema>(),
   referenceDepth = new Map<string, number>(),
 ): unknown {
   if (Array.isArray(value)) {
@@ -321,36 +79,50 @@ function inlineLocalSchemaRefs(
   }
   if (!value || typeof value !== "object") return value;
 
-  const schema = value as Record<string, unknown>;
-  const localDefinitions = schema.$defs;
-  if (localDefinitions && typeof localDefinitions === "object" && !Array.isArray(localDefinitions)) {
+  const schema = value as JsonSchema;
+  for (const definitionKey of ["$defs", "definitions"] as const) {
+    const localDefinitions = schema[definitionKey];
+    if (!localDefinitions || typeof localDefinitions !== "object" || Array.isArray(localDefinitions)) {
+      continue;
+    }
     for (const [name, definition] of Object.entries(localDefinitions)) {
       if (definition && typeof definition === "object" && !Array.isArray(definition)) {
-        definitions.set(name, definition as Record<string, unknown>);
+        definitions.set(name, definition as JsonSchema);
       }
     }
   }
 
   if (typeof schema.$ref === "string") {
-    const definition = definitions.get(schema.$ref);
+    const name = localDefinitionName(schema.$ref);
+    const definition = definitions.get(name);
     if (definition) {
-      const depth = referenceDepth.get(schema.$ref) ?? 0;
+      const depth = referenceDepth.get(name) ?? 0;
       if (depth > 0) return { type: "object" };
       const nestedDepth = new Map(referenceDepth);
-      nestedDepth.set(schema.$ref, depth + 1);
+      nestedDepth.set(name, depth + 1);
       return inlineLocalSchemaRefs(definition, definitions, nestedDepth);
     }
   }
 
   return Object.fromEntries(
     Object.entries(schema)
-      .filter(([key]) => key !== "$defs")
-      .map(([key, item]) => [key, inlineLocalSchemaRefs(item, definitions, referenceDepth)]),
+      .filter(([key]) => key !== "$defs" && key !== "definitions")
+      .map(([key, item]) => [
+        key,
+        inlineLocalSchemaRefs(item, definitions, referenceDepth),
+      ]),
   );
 }
 
-function sampleSchema(schema: Record<string, unknown>): unknown {
-  return sampler.sample(inlineLocalSchemaRefs(schema) as never, { skipNonRequired: false });
+function sampleSchema(schema: JsonSchema): unknown {
+  try {
+    return sampler.sample(
+      inlineLocalSchemaRefs(schema) as never,
+      { skipNonRequired: false },
+    );
+  } catch {
+    return undefined;
+  }
 }
 
 function sampleContent(contentType: string): string | undefined {
@@ -366,7 +138,7 @@ function routePathToDocPath(routePath: string): string {
   return `/api${openApiPath.startsWith("/") ? openApiPath : `/${openApiPath}`}`;
 }
 
-function operationName(routePath: string, method: HttpMethod): string {
+function operationName(routePath: string, method: string): string {
   const normalizedPath = routePath
     .replace(/^\//, "")
     .replace(/\[([^\]]+)\]/g, "$1")
@@ -376,580 +148,265 @@ function operationName(routePath: string, method: HttpMethod): string {
   return `${normalizedPath}-${method.toLowerCase()}`;
 }
 
-function fileNameForOperation(routePath: string, method: HttpMethod): string {
-  return `${operationName(routePath, method)}.operation-doc.json`;
-}
-
-function folderNameForModuleName(moduleName: string): string {
-  const name = moduleName
-    .replace(/ModuleBase$/, "")
-    .replace(/Module$/, "")
-    .replace(/([a-z])([A-Z])/g, "$1-$2")
-    .toLowerCase();
-  if (name === "organizations") return "organization";
-  if (name === "companies") return "company";
-  return name;
-}
-
-function getPropertyName(property: PropertyAssignment): string | null {
-  const name = property.getNameNode();
-  if (Node.isStringLiteral(name) || Node.isNumericLiteral(name)) return name.getLiteralText();
-  return name.getText();
-}
-
-function getObjectProperty(object: ObjectLiteralExpression, key: string): Expression | undefined {
-  for (const property of object.getProperties()) {
-    if (Node.isShorthandPropertyAssignment(property) && property.getName() === key) {
-      return property.getNameNode();
-    }
-    if (!Node.isPropertyAssignment(property)) continue;
-    if (getPropertyName(property) === key) return property.getInitializer();
-  }
-  return undefined;
-}
-
-function expressionToValue(expression: Expression, seen = new Set<string>()): unknown {
-  if (
-    Node.isAsExpression(expression)
-    || Node.isSatisfiesExpression(expression)
-    || Node.isParenthesizedExpression(expression)
-  ) {
-    return expressionToValue(expression.getExpression(), seen);
-  }
-  if (Node.isStringLiteral(expression) || Node.isNoSubstitutionTemplateLiteral(expression)) {
-    return expression.getLiteralText();
-  }
-  if (Node.isNumericLiteral(expression)) return Number(expression.getLiteralText());
-  if (expression.getKind() === SyntaxKind.TrueKeyword) return true;
-  if (expression.getKind() === SyntaxKind.FalseKeyword) return false;
-  if (expression.getKind() === SyntaxKind.NullKeyword) return null;
-  if (Node.isIdentifier(expression)) {
-    const declaration = expression.getSymbol()?.getDeclarations().find(Node.isVariableDeclaration);
-    const initializer = declaration?.getInitializer();
-    if (declaration && initializer) {
-      const key = `${declaration.getSourceFile().getFilePath()}:${declaration.getStart()}`;
-      if (seen.has(key)) return undefined;
-      seen.add(key);
-      const value = expressionToValue(initializer, seen);
-      seen.delete(key);
-      return value;
-    }
-    for (const importDeclaration of expression.getSourceFile().getImportDeclarations()) {
-      const imported = importDeclaration.getNamedImports().find(
-        (item) => (item.getAliasNode()?.getText() ?? item.getName()) === expression.getText(),
-      );
-      if (imported) return { schemaName: imported.getName() } satisfies SchemaNameRef;
-    }
-    return undefined;
-  }
-  if (Node.isArrayLiteralExpression(expression)) {
-    return expression.getElements().map((item) => expressionToValue(item, seen));
-  }
-  if (Node.isObjectLiteralExpression(expression)) {
-    const result: Record<string, unknown> = {};
-    for (const property of expression.getProperties()) {
-      if (Node.isSpreadAssignment(property)) {
-        const spreadValue = expressionToValue(property.getExpression(), seen);
-        if (spreadValue && typeof spreadValue === "object" && !Array.isArray(spreadValue)) {
-          Object.assign(result, spreadValue);
-        }
-        continue;
-      }
-      if (Node.isShorthandPropertyAssignment(property)) {
-        result[property.getName()] = expressionToValue(property.getNameNode(), seen);
-        continue;
-      }
-      if (Node.isPropertyAssignment(property)) {
-        const name = getPropertyName(property);
-        const initializer = property.getInitializer();
-        if (name && initializer) result[name] = expressionToValue(initializer, seen);
-      }
-    }
-    return result;
-  }
-  if (Node.isCallExpression(expression)) {
-    const functionName = expression.getExpression().getText();
-    const args = expression.getArguments();
-    const options = (index: number) => {
-      const value = args[index] ? expressionToValue(args[index], seen) : undefined;
-      return value && typeof value === "object" && !Array.isArray(value) ? value : {};
-    };
-    if (functionName === "Type.String") return { type: "string", ...options(0) };
-    if (functionName === "Type.Number") return { type: "number", ...options(0) };
-    if (functionName === "Type.Integer") return { type: "integer", ...options(0) };
-    if (functionName === "Type.Boolean") return { type: "boolean", ...options(0) };
-    if (functionName === "Type.Null") return { type: "null", ...options(0) };
-    if (functionName === "Type.Unknown") return { ...options(0) };
-    if (functionName === "Type.Literal" && args[0]) {
-      const value = expressionToValue(args[0], seen);
-      return { type: typeof value, enum: [value], ...options(1) };
-    }
-    if (functionName === "Type.Array" && args[0]) {
-      return { type: "array", items: expressionToValue(args[0], seen), ...options(1) };
-    }
-    if (functionName === "Type.Union" && args[0]) {
-      return { anyOf: expressionToValue(args[0], seen), ...options(1) };
-    }
-    if (functionName === "Type.Optional" && args[0]) {
-      return { __optional: expressionToValue(args[0], seen) };
-    }
-    if ((functionName === "Type.Object" || functionName === "StrictObject") && args[0]) {
-      const properties = expressionToValue(args[0], seen) as Record<string, unknown>;
-      const required: string[] = [];
-      const unwrapped = Object.fromEntries(Object.entries(properties).map(([name, property]) => {
-        if (property && typeof property === "object" && "__optional" in property) {
-          return [name, (property as { __optional: unknown }).__optional];
-        }
-        required.push(name);
-        return [name, property];
-      }));
-      return {
-        type: "object",
-        properties: unwrapped,
-        ...(required.length ? { required } : {}),
-        ...options(1),
-        ...(functionName === "StrictObject" ? { additionalProperties: false } : {}),
-      };
-    }
-  }
-  return undefined;
-}
-
-function readStringProperty(object: ObjectLiteralExpression, key: string): string | undefined {
-  const value = getObjectProperty(object, key);
-  if (!value) return undefined;
-  const parsed = expressionToValue(value);
-  return typeof parsed === "string" ? parsed : undefined;
-}
-
-function readApiDefinition(routeObject: ObjectLiteralExpression): ApiDefinition | undefined {
-  const method = readStringProperty(routeObject, "method") as HttpMethod | undefined;
-  const routePath = readStringProperty(routeObject, "path");
-  const parsed = expressionToValue(routeObject) as ApiDefinition | undefined;
-  if (!method || !routePath || !parsed?.responses) return undefined;
-  return {
-    ...parsed,
-    method,
-    path: routePath,
-    summary: parsed.summary ?? method,
-    description: parsed.description ?? parsed.summary ?? method,
-  };
-}
-
-function unwrapObjectLiteral(
-  expression: Expression | undefined,
-  sourceFile = expression?.getSourceFile(),
-  project?: Project,
-): ObjectLiteralExpression | undefined {
-  if (!expression) return undefined;
-  sourceFile = expression.getSourceFile() ?? sourceFile;
-  if (Node.isObjectLiteralExpression(expression)) return expression;
-  if (Node.isAsExpression(expression) || Node.isSatisfiesExpression(expression) || Node.isParenthesizedExpression(expression)) {
-    return unwrapObjectLiteral(expression.getExpression(), sourceFile, project);
-  }
-  if (Node.isIdentifier(expression) && sourceFile) {
-    const localDeclaration = sourceFile.getVariableDeclaration(expression.getText());
-    if (localDeclaration) return unwrapObjectLiteral(localDeclaration.getInitializer(), sourceFile, project);
-    if (project) {
-      for (const importDeclaration of sourceFile.getImportDeclarations()) {
-        const imported = importDeclaration.getNamedImports().find(
-          (item) => (item.getAliasNode()?.getText() ?? item.getName()) === expression.getText(),
-        );
-        if (!imported) continue;
-        const importedPath = resolveTypeScriptModule(
-          path.dirname(sourceFile.getFilePath()),
-          importDeclaration.getModuleSpecifierValue(),
-        );
-        const importedSource = project.addSourceFileAtPath(importedPath);
-        return unwrapObjectLiteral(
-          importedSource.getVariableDeclaration(imported.getName())?.getInitializer(),
-          importedSource,
-          project,
-        );
-      }
-    }
-  }
-  return undefined;
-}
-
-function resolveTypeScriptModule(packageDirectory: string, moduleSpecifier: string): string {
-  const unresolved = path.resolve(packageDirectory, moduleSpecifier);
-  const candidates = [unresolved, `${unresolved}.ts`, `${unresolved}.tsx`, path.join(unresolved, "index.ts")];
-  const resolved = candidates.find((candidate) => fs.existsSync(candidate) && fs.statSync(candidate).isFile());
-  if (!resolved) throw new Error(`Could not resolve package module ${moduleSpecifier} from ${packageDirectory}`);
-  return resolved;
-}
-
-function registeredModules(packageDirectory: string, project: Project): Array<{ name: string; filePath: string }> {
-  const packageDefinitionPath = path.join(packageDirectory, "voyzu.package.ts");
-  const sourceFile = project.addSourceFileAtPath(packageDefinitionPath);
-  const packageObject = sourceFile.getVariableDeclarations()
-    .map((declaration) => unwrapObjectLiteral(declaration.getInitializer()))
-    .find((definition) => definition && getObjectProperty(definition, "modules"));
-  if (!packageObject) throw new Error(`Could not read modules from ${packageDefinitionPath}`);
-  const modules = getObjectProperty(packageObject, "modules");
-  if (!modules || !Node.isArrayLiteralExpression(modules)) {
-    throw new Error(`${packageDefinitionPath} modules must be an array literal`);
-  }
-
-  return modules.getElements().map((element) => {
-    if (!Node.isIdentifier(element)) {
-      throw new Error(`${packageDefinitionPath} modules must contain imported module identifiers`);
-    }
-    const localName = element.getText();
-    for (const declaration of sourceFile.getImportDeclarations()) {
-      const imported = declaration.getNamedImports().find(
-        (namedImport) => (namedImport.getAliasNode()?.getText() ?? namedImport.getName()) === localName,
-      );
-      if (!imported) continue;
-      return {
-        name: imported.getName(),
-        filePath: resolveTypeScriptModule(packageDirectory, declaration.getModuleSpecifierValue()),
-      };
-    }
-    throw new Error(`Could not resolve registered module ${localName} from ${packageDefinitionPath}`);
-  });
-}
-
-function moduleApiDefinitions(
-  filePath: string,
-  moduleName: string,
-  project: Project,
-): ModuleApiDefinitions | undefined {
-  const sourceFile = project.addSourceFileAtPath(filePath);
-  const declaration = sourceFile.getVariableDeclaration(moduleName);
-  const objectInitializer = unwrapObjectLiteral(declaration?.getInitializer(), sourceFile, project);
-  if (!objectInitializer) throw new Error(`Could not read module ${moduleName} from ${filePath}`);
-  const apiDefinitionsExpression = getObjectProperty(objectInitializer, "apiDefinitions");
-  const apiDefinitionsObject = unwrapObjectLiteral(apiDefinitionsExpression, sourceFile, project);
-  if (!apiDefinitionsObject) return undefined;
-  const definitions = apiDefinitionsObject.getProperties().flatMap((property) => {
-    if (!Node.isPropertyAssignment(property)) return [];
-    const routeObject = property.getInitializerIfKind(SyntaxKind.ObjectLiteralExpression);
-    if (!routeObject) return [];
-    const definition = readApiDefinition(routeObject);
-    return definition ? [definition] : [];
-  });
-  return definitions.length > 0
-    ? { folderName: folderNameForModuleName(moduleName), definitions }
-    : undefined;
-}
-
-function packageDirectories(packagesRoot: string): string[] {
-  if (!fs.existsSync(packagesRoot)) return [];
-  return fs.readdirSync(packagesRoot, { withFileTypes: true })
-    .filter((scope) => scope.isDirectory() && scope.name.startsWith("@"))
-    .flatMap((scope) => {
-      const scopeRoot = path.join(packagesRoot, scope.name);
-      return fs.readdirSync(scopeRoot, { withFileTypes: true })
-        .filter((entry) => entry.isDirectory() || entry.isSymbolicLink())
-        .map((entry) => path.join(scopeRoot, entry.name));
-    });
-}
-
-function installedPackagesRoot(workspaceRoot: string): string | undefined {
-  const runtimeRoot = path.dirname(workspaceRoot);
-  const runtimeManifest = path.join(runtimeRoot, "package.json");
-  if (path.basename(workspaceRoot) !== "voyzu" || !fs.existsSync(runtimeManifest)) return undefined;
-  const instanceManifest = path.join(path.dirname(runtimeRoot), "package.json");
-  if (!fs.existsSync(instanceManifest)) {
-    throw new Error("A Voyzu installation must have a root package.json.");
-  }
-  const manifest = JSON.parse(fs.readFileSync(instanceManifest, "utf-8")) as { voyzu?: { mode?: string } };
-  if (manifest.voyzu?.mode !== "development" && manifest.voyzu?.mode !== "production") {
-    throw new Error("The root package.json must declare voyzu.mode as development or production.");
-  }
-  return path.join(runtimeRoot, "packages");
+function fileNameForOperation(route: ApiRouteDefinition): string {
+  return `${operationName(route.path, route.method)}.operation-doc.json`;
 }
 
 function packageFolderName(packageName: string): string {
   return packageName.replace("/", "-");
 }
 
-function readPackageApiDefinitions(workspaceRoot: string): PackageApiDefinitions[] {
-  const project = new Project({
-    tsConfigFilePath: path.join(workspaceRoot, "tsconfig.json"),
-    skipAddingFilesFromTsConfig: true,
-  });
-  const roots = [path.join(workspaceRoot, "packages")];
-  const installedRoot = installedPackagesRoot(workspaceRoot);
-  if (installedRoot) roots.push(installedRoot);
-
-  const packages = roots.flatMap(packageDirectories).flatMap((directory) => {
-    const manifestPath = path.join(directory, "package.json");
-    const definitionPath = path.join(directory, "voyzu.package.ts");
-    if (!fs.existsSync(manifestPath) || !fs.existsSync(definitionPath)) return [];
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8")) as {
-      name?: string;
-      voyzu?: { "voyzu-package"?: boolean };
-    };
-    if (manifest.voyzu?.["voyzu-package"] !== true || !manifest.name) return [];
-    const modules = registeredModules(directory, project)
-      .map(({ filePath, name }) => moduleApiDefinitions(filePath, name, project))
-      .filter((definition): definition is ModuleApiDefinitions => Boolean(definition));
-    return modules.length
-      ? [{ packageName: manifest.name, folderName: packageFolderName(manifest.name), modules }]
-      : [];
-  });
-
-  const platformManifest = JSON.parse(
-    fs.readFileSync(path.join(workspaceRoot, "lib", "api", "package.json"), "utf-8"),
-  ) as { name: string };
-  const capabilityModulePath = path.join(workspaceRoot, "lib", "api", "src", "capability.module.ts");
-  const capabilityDefinition = moduleApiDefinitions(
-    capabilityModulePath,
-    "capabilityModule",
-    project,
-  );
-  const platformModules = capabilityDefinition ? [capabilityDefinition] : [];
-  if (platformModules.length) {
-    packages.push({
-      packageName: platformManifest.name,
-      folderName: packageFolderName(platformManifest.name),
-      modules: platformModules,
-    });
-  }
-  return packages;
+function moduleFolderName(moduleName: string): string {
+  const folderName = moduleName
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
+    .replace(/[^A-Za-z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase();
+  if (!folderName) throw new Error(`Invalid API module name: ${moduleName}`);
+  return folderName;
 }
 
-function toOperationDoc(
-  definition: ApiDefinition,
-  dtoRefs: Set<string>,
-  dtoRegistry: DtoRegistry,
-): OperationDoc {
-  const requestPathParams = definition.request?.path
-    ? expandParameters(definition.request.path, dtoRegistry)
-    : undefined;
-  const requestQuerystringParams = definition.request?.query
-    ? expandQueryParameters(definition.request.query)
-    : undefined;
-  const requestSchema = definition.request?.body
-    ? expandSchema(definition.request.body, dtoRegistry)
-    : undefined;
-  const requestSchemaRef = definition.request?.body ? schemaRefDoc(definition.request.body) : undefined;
-  collectSchemaRefs(requestSchemaRef, dtoRefs);
-  const responses = Object.fromEntries(
-    Object.entries(definition.responses).map(([status, response]) => {
+function titleCase(value: string): string {
+  return value
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function operationAnchor(summary: string): string {
+  return summary
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase();
+}
+
+function parameterDoc(
+  definition: { description?: string; required?: boolean; schema: TSchema },
+  required?: boolean,
+): OperationDocRequestParam {
+  const schema = normalizeSchema(definition.schema);
+  const example = sampleSchema(schema);
+  const isRequired = required ?? definition.required;
+  return {
+    ...(definition.description ? { description: definition.description } : {}),
+    ...(isRequired !== undefined ? { required: isRequired } : {}),
+    schema,
+    ...(example !== undefined ? { example } : {}),
+  };
+}
+
+function pathParameters(route: ApiRouteDefinition): Record<string, OperationDocRequestParam> | undefined {
+  if (!route.request?.path) return undefined;
+  return Object.fromEntries(
+    Object.entries(route.request.path).map(([name, definition]) => [
+      name,
+      parameterDoc(definition, true),
+    ]),
+  );
+}
+
+function queryParameters(route: ApiRouteDefinition): Record<string, OperationDocRequestParam> | undefined {
+  const query = route.request?.query;
+  if (!query) return undefined;
+  const querySchema = normalizeSchema(query.schema);
+  const properties = querySchema.properties;
+  if (!properties || typeof properties !== "object" || Array.isArray(properties)) {
+    throw new Error(`${route.method} ${route.path} query schema must define object properties`);
+  }
+  const required = new Set(Array.isArray(querySchema.required) ? querySchema.required : []);
+  return Object.fromEntries(
+    Object.entries(query.parameters).map(([name, metadata]) => {
+      const schema = (properties as Record<string, unknown>)[name];
+      if (!schema || typeof schema !== "object" || Array.isArray(schema)) {
+        throw new Error(`${route.method} ${route.path} query parameter ${name} has no schema property`);
+      }
+      return [
+        name,
+        parameterDoc(
+          { ...metadata, schema: schema as TSchema },
+          metadata.required ?? (required.has(name) ? true : undefined),
+        ),
+      ];
+    }),
+  );
+}
+
+function responseDocs(route: ApiRouteDefinition): OperationDoc["responses"] {
+  return Object.fromEntries(
+    Object.entries(route.responses).map(([status, response]) => {
       const contentType = response.contentType ?? DEFAULT_CONTENT_TYPE;
-      const responseSchema = response.body ? expandSchema(response.body, dtoRegistry) : undefined;
-      const responseSchemaRef = response.body ? schemaRefDoc(response.body) : undefined;
-      collectSchemaRefs(responseSchemaRef, dtoRefs);
+      const schema = response.body ? normalizeSchema(response.body) : undefined;
+      const example = schema ? sampleSchema(schema) : sampleContent(contentType);
       return [
         status,
         {
           description: response.description,
           contentType,
-          ...(responseSchemaRef ? { schemaRef: responseSchemaRef } : {}),
-          ...(responseSchema
-            ? { schema: responseSchema, example: sampleSchema(responseSchema) }
-            : status !== "204" && sampleContent(contentType) !== undefined
-              ? { example: sampleContent(contentType) }
-              : {}),
+          ...(schema ? { schema } : {}),
+          ...(example !== undefined ? { example } : {}),
           ...(response.cookies ? { cookies: response.cookies } : {}),
         },
       ];
     }),
   );
+}
+
+function toOperationDoc(route: ApiRouteDefinition): OperationDoc {
+  const requestBodySchema = route.request?.body
+    ? normalizeSchema(route.request.body)
+    : undefined;
+  const requestBodyExample = requestBodySchema
+    ? sampleSchema(requestBodySchema)
+    : undefined;
+  const requestPathParams = pathParameters(route);
+  const requestQuerystringParams = queryParameters(route);
 
   return {
-    operationId: operationName(definition.path, definition.method),
-    method: definition.method.toLowerCase() as Lowercase<HttpMethod>,
-    path: routePathToDocPath(definition.path),
-    summary: definition.summary,
-    description: definition.description,
-    ...(definition.tags ? { tags: definition.tags } : {}),
+    operationId: operationName(route.path, route.method),
+    method: route.method.toLowerCase() as OperationDoc["method"],
+    path: routePathToDocPath(route.path),
+    summary: route.summary,
+    description: route.description,
+    ...(route.tags ? { tags: [...route.tags] } : {}),
     ...(requestPathParams ? { requestPathParams } : {}),
     ...(requestQuerystringParams ? { requestQuerystringParams } : {}),
-    ...(definition.request?.cookies ? { requestCookies: definition.request.cookies } : {}),
-    ...(definition.request?.body && requestSchema
+    ...(route.request?.cookies ? { requestCookies: route.request.cookies } : {}),
+    ...(requestBodySchema
       ? {
         requestBody: {
           required: true,
-          contentType: definition.request.contentType ?? DEFAULT_CONTENT_TYPE,
-          ...(requestSchemaRef ? { schemaRef: requestSchemaRef } : {}),
-          schema: requestSchema,
-          example: sampleSchema(requestSchema),
+          contentType: route.request?.contentType ?? DEFAULT_CONTENT_TYPE,
+          schema: requestBodySchema,
+          ...(requestBodyExample !== undefined ? { example: requestBodyExample } : {}),
         },
       }
       : {}),
-    responses,
+    responses: responseDocs(route),
   };
 }
 
-function expandParameters(
-  parameters: Record<string, ApiParameterDefinition>,
-  dtoRegistry: DtoRegistry,
-): Record<string, { description?: string; required?: boolean; schema: Record<string, unknown>; example?: unknown }> {
-  return Object.fromEntries(
-    Object.entries(parameters).map(([name, parameter]) => {
-      const schema = expandSchema(parameter.schema, dtoRegistry);
-      return [
-        name,
-        {
-          ...(parameter.description ? { description: parameter.description } : {}),
-          ...(parameter.required !== undefined ? { required: parameter.required } : {}),
-          schema,
-          example: sampleSchema(schema),
-        },
-      ];
-    }),
-  );
-}
-
-function expandQueryParameters(
-  query: ApiQueryDefinition,
-): Record<string, { description?: string; required?: boolean; schema: Record<string, unknown>; example?: unknown }> {
-  const properties = !isSchemaNameRef(query.schema) && query.schema.properties
-    ? query.schema.properties as Record<string, ApiSchema>
-    : {};
-  return Object.fromEntries(
-    Object.entries(query.parameters).map(([name, parameter]) => {
-      const schema = properties[name];
-      if (!schema) throw new Error(`Could not find query parameter ${name} in its TypeBox schema`);
-      return [
-        name,
-        {
-          ...(parameter.description ? { description: parameter.description } : {}),
-          ...(parameter.required !== undefined ? { required: parameter.required } : {}),
-          schema: schema as Record<string, unknown>,
-          example: sampleSchema(schema as Record<string, unknown>),
-        },
-      ];
-    }),
-  );
-}
-
-function cleanOutputDir(outputDir: string, extension = ".operation-doc.json"): void {
-  fs.mkdirSync(outputDir, { recursive: true });
-  for (const fileName of fs.readdirSync(outputDir)) {
-    const filePath = path.join(outputDir, fileName);
-    if (fs.statSync(filePath).isFile() && fileName.endsWith(extension)) {
-      fs.unlinkSync(filePath);
-    }
-  }
-}
-
-function cleanGeneratedOperationDocsRoot(outputRoot: string): void {
+function cleanOutputRoot(outputRoot: string): void {
+  fs.rmSync(outputRoot, { recursive: true, force: true });
   fs.mkdirSync(outputRoot, { recursive: true });
-  for (const entry of fs.readdirSync(outputRoot, { withFileTypes: true })) {
-    const entryPath = path.join(outputRoot, entry.name);
-    if (entry.isDirectory()) {
-      fs.rmSync(entryPath, { recursive: true, force: true });
-    } else {
-      fs.unlinkSync(entryPath);
+}
+
+function validateRegistrations(registrations: readonly ApiDocumentationRegistration[]): void {
+  const moduleKeys = new Set<string>();
+  const routeKeys = new Set<string>();
+  for (const registration of registrations) {
+    if (!registration.packageName || !registration.moduleName) {
+      throw new Error("API documentation registrations require packageName and moduleName");
+    }
+    const moduleKey = `${registration.packageName}/${registration.moduleName}`;
+    if (moduleKeys.has(moduleKey)) {
+      throw new Error(`Duplicate API documentation module: ${moduleKey}`);
+    }
+    moduleKeys.add(moduleKey);
+    for (const route of registration.routes) {
+      const key = `${route.method} ${route.path}`;
+      if (routeKeys.has(key)) throw new Error(`Duplicate documented API route: ${key}`);
+      routeKeys.add(key);
+      if (route.handler || typeof route.loadHandler !== "function") {
+        throw new Error(`${key} must use a lazy loadHandler`);
+      }
+      if (!route.summary || !route.description || !route.responses) {
+        throw new Error(`${key} is missing required API documentation`);
+      }
     }
   }
-}
-
-function listTypeSourceFiles(typesRoot: string): string[] {
-  if (!fs.existsSync(typesRoot)) return [];
-  const results: string[] = [];
-  for (const entry of fs.readdirSync(typesRoot, { withFileTypes: true })) {
-    if (["node_modules", ".next", ".generated"].includes(entry.name)) continue;
-    const entryPath = path.join(typesRoot, entry.name);
-    if (
-      entry.isDirectory()
-      || (entry.isSymbolicLink() && fs.statSync(entryPath).isDirectory())
-    ) {
-      results.push(...listTypeSourceFiles(entryPath));
-    } else if (entry.isFile() && entry.name.endsWith(".ts")) {
-      results.push(entryPath);
-    }
-  }
-  return results;
-}
-
-function dtoDocFor(dtoName: string, workspaceRoot: string, dtoRegistry: DtoRegistry): DtoDoc {
-  const sourceFile = dtoRegistry.sourceFile(dtoName);
-  return {
-    name: dtoName,
-    sourceFile: path.relative(workspaceRoot, sourceFile).replace(/\\/g, "/"),
-    typescript: dtoRegistry.sourceText(dtoName),
-  };
-}
-
-function fileNameForDto(dtoName: string): string {
-  return `${dtoName}.dto-doc.json`;
-}
-
-function writeDtoDocs(
-  dtoRefs: Set<string>,
-  workspaceRoot: string,
-  outputRoot: string,
-  dtoRegistry: DtoRegistry,
-): string[] {
-  const outputDir = path.join(outputRoot, TYPES_FOLDER_NAME);
-  cleanOutputDir(outputDir, ".dto-doc.json");
-  const writtenFiles: string[] = [];
-  for (const dtoName of Array.from(dtoRefs).sort()) {
-    const outputPath = path.join(outputDir, fileNameForDto(dtoName));
-    fs.writeFileSync(
-      outputPath,
-      `${JSON.stringify(dtoDocFor(dtoName, workspaceRoot, dtoRegistry), null, 2)}\n`,
-      "utf-8",
-    );
-    writtenFiles.push(outputPath);
-  }
-  return writtenFiles;
 }
 
 export function generateOperationDocs(options: GenerateOperationDocsOptions): string[] {
+  validateRegistrations(options.registrations);
   const outputRoot = path.resolve(options.workspaceRoot, options.outputDir);
-  const previousCwd = process.cwd();
-  let dtoRegistry: DtoRegistry | undefined;
-  process.chdir(options.workspaceRoot);
-  try {
-    cleanGeneratedOperationDocsRoot(outputRoot);
-    const packageDefinitions = readPackageApiDefinitions(options.workspaceRoot).sort((a, b) =>
-      a.packageName.localeCompare(b.packageName)
+  cleanOutputRoot(outputRoot);
+
+  const packages = Map.groupBy(
+    [...options.registrations].sort((left, right) =>
+      left.packageName.localeCompare(right.packageName)
+      || left.moduleName.localeCompare(right.moduleName)
+    ),
+    ({ packageName }) => packageName,
+  );
+  const writtenFiles: string[] = [];
+  const navigationGroups: Array<{
+    label: string;
+    items: Array<{
+      label: string;
+      icon: string;
+      path: string;
+      children: Array<{ label: string; path: string }>;
+    }>;
+  }> = [];
+
+  for (const [packageName, registrations] of packages) {
+    const packageOutputDir = path.join(outputRoot, packageFolderName(packageName));
+    fs.mkdirSync(packageOutputDir, { recursive: true });
+    const packageDocPath = path.join(packageOutputDir, "package-doc.json");
+    fs.writeFileSync(
+      packageDocPath,
+      `${JSON.stringify({ packageName }, null, 2)}\n`,
+      "utf-8",
     );
-    const allDtoRefs = new Set<string>();
-    for (const packageDefinition of packageDefinitions) {
-      for (const moduleDefinition of packageDefinition.modules) {
-        for (const definition of moduleDefinition.definitions) {
-          collectDefinitionDtoRefs(definition, allDtoRefs);
-        }
-      }
-    }
-    dtoRegistry = new DtoRegistry(options.workspaceRoot);
-    dtoRegistry.prepare(
-      allDtoRefs,
-      path.join(outputRoot, ".schema-inputs"),
-    );
-    const writtenFiles: string[] = [];
-    for (const packageDefinition of packageDefinitions) {
-      const packageOutputDir = path.join(outputRoot, packageDefinition.folderName);
-      fs.mkdirSync(packageOutputDir, { recursive: true });
-      const packageDocPath = path.join(packageOutputDir, "package-doc.json");
-      fs.writeFileSync(
-        packageDocPath,
-        `${JSON.stringify({ packageName: packageDefinition.packageName }, null, 2)}\n`,
-        "utf-8",
-      );
-      writtenFiles.push(packageDocPath);
-      const dtoRefs = new Set<string>();
-      for (const { folderName, definitions } of packageDefinition.modules.sort((a, b) =>
-        a.folderName.localeCompare(b.folderName),
-      )) {
-        const outputDir = path.join(packageOutputDir, folderName);
-        cleanOutputDir(outputDir);
-        for (const definition of definitions) {
-          const doc = toOperationDoc(definition, dtoRefs, dtoRegistry);
-          const outputPath = path.join(outputDir, fileNameForOperation(definition.path, definition.method));
-          fs.writeFileSync(outputPath, `${JSON.stringify(doc, null, 2)}\n`, "utf-8");
-          writtenFiles.push(outputPath);
-        }
-      }
-      writtenFiles.push(...writeDtoDocs(
-        dtoRefs,
-        options.workspaceRoot,
+    writtenFiles.push(packageDocPath);
+
+    const packageNavigation = {
+      label: packageName,
+      items: [] as Array<{
+        label: string;
+        icon: string;
+        path: string;
+        children: Array<{ label: string; path: string }>;
+      }>,
+    };
+
+    for (const registration of registrations) {
+      const moduleOutputDir = path.join(
         packageOutputDir,
-        dtoRegistry,
-      ));
+        moduleFolderName(registration.moduleName),
+      );
+      fs.mkdirSync(moduleOutputDir, { recursive: true });
+      const modulePath = `/api-reference/${packageFolderName(packageName)}/${moduleFolderName(registration.moduleName)}`;
+      const sortedRoutes = [...registration.routes].sort((left, right) =>
+        left.path.localeCompare(right.path) || left.method.localeCompare(right.method)
+      );
+      for (const route of sortedRoutes) {
+        const outputPath = path.join(moduleOutputDir, fileNameForOperation(route));
+        fs.writeFileSync(
+          outputPath,
+          `${JSON.stringify(toOperationDoc(route), null, 2)}\n`,
+          "utf-8",
+        );
+        writtenFiles.push(outputPath);
+      }
+      const navigationRoutes = [...registration.routes].sort((left, right) =>
+        left.summary.localeCompare(right.summary)
+        || left.path.localeCompare(right.path)
+        || left.method.localeCompare(right.method)
+      );
+      packageNavigation.items.push({
+        label: packageName === "@voyzu/audit"
+          ? "Audit"
+          : navigationRoutes[0]?.tags?.[0] ?? titleCase(registration.moduleName),
+        icon: "article",
+        path: modulePath,
+        children: navigationRoutes.map((route) => ({
+          label: route.summary,
+          path: `${modulePath}#${operationAnchor(route.summary)}`,
+        })),
+      });
     }
-    return writtenFiles;
-  } finally {
-    dtoRegistry?.dispose();
-    process.chdir(previousCwd);
+    navigationGroups.push(packageNavigation);
   }
+
+  const navigationPath = path.join(outputRoot, "navigation.json");
+  fs.writeFileSync(
+    navigationPath,
+    `${JSON.stringify(navigationGroups, null, 2)}\n`,
+    "utf-8",
+  );
+  writtenFiles.push(navigationPath);
+
+  return writtenFiles;
 }

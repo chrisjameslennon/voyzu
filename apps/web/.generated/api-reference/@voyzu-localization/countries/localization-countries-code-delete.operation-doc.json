@@ -10,6 +10,7 @@
   "requestPathParams": {
     "code": {
       "description": "Country code.",
+      "required": true,
       "schema": {
         "type": "string"
       },
@@ -24,7 +25,6 @@
     "404": {
       "description": "Country was not found.",
       "contentType": "application/json",
-      "schemaRef": "EntityNotFoundErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -52,7 +52,6 @@
     "422": {
       "description": "Country has postings and cannot be deleted.",
       "contentType": "application/json",
-      "schemaRef": "BusinessRuleErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -80,7 +79,6 @@
     "500": {
       "description": "An unexpected server error occurred.",
       "contentType": "application/json",
-      "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [

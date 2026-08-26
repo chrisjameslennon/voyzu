@@ -1,8 +1,13 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { generateOperationDocs, generateOpenApi } from "../src/lib/index";
+import { capabilityModule } from "@voyzu/api/capability-module";
+import {
+  generateOperationDocs,
+  generateOpenApi,
+  type ApiDocumentationRegistration,
+} from "../src/lib/index";
 
 const SCRIPT_DIRECTORY = path.dirname(fileURLToPath(import.meta.url));
 
@@ -26,9 +31,35 @@ function findPlatformRoot(startDirectory: string): string {
 export async function buildApiReference(): Promise<void> {
   const platformRoot = findPlatformRoot(SCRIPT_DIRECTORY);
   const generatedFilesDirectory = "apps/web/.generated/api-reference";
+  const apiRouteIndexPath = path.join(
+    platformRoot,
+    "apps",
+    "web",
+    ".generated",
+    "api-routes",
+    "index.ts",
+  );
+  const generatedIndex = await import(pathToFileURL(apiRouteIndexPath).href) as {
+    preinstalledApiRouteModules: ApiDocumentationRegistration[];
+  };
+  const installedIndex = await import(pathToFileURL(
+    path.join(path.dirname(apiRouteIndexPath), "installed.ts"),
+  ).href) as {
+    installedApiRouteModules: ApiDocumentationRegistration[];
+  };
+  const registrations: ApiDocumentationRegistration[] = [
+    ...generatedIndex.preinstalledApiRouteModules,
+    ...installedIndex.installedApiRouteModules,
+    {
+      packageName: "@voyzu/api",
+      moduleName: "capability",
+      routes: Object.values(capabilityModule.apiDefinitions),
+    },
+  ];
   const writtenFiles = generateOperationDocs({
     workspaceRoot: platformRoot,
     outputDir: generatedFilesDirectory,
+    registrations,
   });
   const openApiFile = generateOpenApi({
     workspaceRoot: platformRoot,

@@ -48,9 +48,9 @@
             "example": "string"
           },
           {
-            "name": "companyId",
+            "name": "organizationId",
             "in": "query",
-            "description": "Company identifier.",
+            "description": "Organization identifier.",
             "schema": {
               "type": "integer",
               "minimum": 1
@@ -169,8 +169,8 @@
                           "id",
                           "code",
                           "packageCode",
-                          "companyId",
-                          "companyCode",
+                          "organizationId",
+                          "organizationCode",
                           "actorType",
                           "actorId",
                           "actorCode",
@@ -195,7 +195,7 @@
                             "type": "string",
                             "pattern": "\\S"
                           },
-                          "companyId": {
+                          "organizationId": {
                             "anyOf": [
                               {
                                 "type": "integer",
@@ -206,7 +206,7 @@
                               }
                             ]
                           },
-                          "companyCode": {
+                          "organizationCode": {
                             "anyOf": [
                               {
                                 "type": "string",
@@ -370,8 +370,8 @@
                       "id": 1,
                       "code": "string",
                       "packageCode": "string",
-                      "companyId": 1,
-                      "companyCode": "string",
+                      "organizationId": 1,
+                      "organizationCode": "string",
                       "actorType": "APP",
                       "actorId": "string",
                       "actorCode": "string",
@@ -553,8 +553,8 @@
                     "id",
                     "code",
                     "packageCode",
-                    "companyId",
-                    "companyCode",
+                    "organizationId",
+                    "organizationCode",
                     "actorType",
                     "actorId",
                     "actorCode",
@@ -579,7 +579,7 @@
                       "type": "string",
                       "pattern": "\\S"
                     },
-                    "companyId": {
+                    "organizationId": {
                       "anyOf": [
                         {
                           "type": "integer",
@@ -590,7 +590,7 @@
                         }
                       ]
                     },
-                    "companyCode": {
+                    "organizationCode": {
                       "anyOf": [
                         {
                           "type": "string",
@@ -733,8 +733,8 @@
                   "id": 1,
                   "code": "string",
                   "packageCode": "string",
-                  "companyId": 1,
-                  "companyCode": "string",
+                  "organizationId": 1,
+                  "organizationCode": "string",
                   "actorType": "APP",
                   "actorId": "string",
                   "actorCode": "string",
@@ -930,9 +930,9 @@
             "example": "string"
           },
           {
-            "name": "companyId",
+            "name": "organizationId",
             "in": "query",
-            "description": "Company identifier.",
+            "description": "Organization identifier.",
             "schema": {
               "type": "integer",
               "minimum": 1
@@ -1188,9 +1188,9 @@
             "example": "string"
           },
           {
-            "name": "companyId",
+            "name": "organizationId",
             "in": "query",
-            "description": "Company identifier.",
+            "description": "Organization identifier.",
             "schema": {
               "type": "integer",
               "minimum": 1
@@ -1291,8 +1291,8 @@
                       "id",
                       "code",
                       "packageCode",
-                      "companyId",
-                      "companyCode",
+                      "organizationId",
+                      "organizationCode",
                       "actorType",
                       "actorId",
                       "actorCode",
@@ -1317,7 +1317,7 @@
                         "type": "string",
                         "pattern": "\\S"
                       },
-                      "companyId": {
+                      "organizationId": {
                         "anyOf": [
                           {
                             "type": "integer",
@@ -1328,7 +1328,7 @@
                           }
                         ]
                       },
-                      "companyCode": {
+                      "organizationCode": {
                         "anyOf": [
                           {
                             "type": "string",
@@ -1473,8 +1473,8 @@
                     "id": 1,
                     "code": "string",
                     "packageCode": "string",
-                    "companyId": 1,
-                    "companyCode": "string",
+                    "organizationId": 1,
+                    "organizationCode": "string",
                     "actorType": "APP",
                     "actorId": "string",
                     "actorCode": "string",

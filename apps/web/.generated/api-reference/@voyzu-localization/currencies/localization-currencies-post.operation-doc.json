@@ -10,7 +10,6 @@
   "requestBody": {
     "required": true,
     "contentType": "application/json",
-    "schemaRef": "CurrencyCreateRequestDto",
     "schema": {
       "type": "object",
       "required": [
@@ -50,7 +49,6 @@
     "201": {
       "description": "The created currency.",
       "contentType": "application/json",
-      "schemaRef": "CurrencyResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -333,7 +331,6 @@
     "400": {
       "description": "Validation failed.",
       "contentType": "application/json",
-      "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -361,7 +358,6 @@
     "409": {
       "description": "Conflict.",
       "contentType": "application/json",
-      "schemaRef": "ConflictErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -389,7 +385,6 @@
     "422": {
       "description": "Business rule failed.",
       "contentType": "application/json",
-      "schemaRef": "BusinessRuleErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -417,7 +412,6 @@
     "500": {
       "description": "An unexpected server error occurred.",
       "contentType": "application/json",
-      "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [

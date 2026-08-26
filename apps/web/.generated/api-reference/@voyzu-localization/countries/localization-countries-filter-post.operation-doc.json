@@ -10,7 +10,6 @@
   "requestBody": {
     "required": true,
     "contentType": "application/json",
-    "schemaRef": "FilterRequestDto",
     "schema": {
       "type": "object",
       "required": [
@@ -240,10 +239,6 @@
     "200": {
       "description": "A filtered list of countries.",
       "contentType": "application/json",
-      "schemaRef": {
-        "type": "array",
-        "items": "CountryResponseDto"
-      },
       "schema": {
         "type": "array",
         "items": {
@@ -557,7 +552,6 @@
     "500": {
       "description": "An unexpected server error occurred.",
       "contentType": "application/json",
-      "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [

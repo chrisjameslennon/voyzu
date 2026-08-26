@@ -1,5 +1,0 @@
-{
-  "name": "AuditEventCountResponseDto",
-  "sourceFile": "packages/@voyzu/audit/modules/types/audit-event-count.response.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nexport const AuditEventCountResponseDto = StrictObject({\n  count: Type.Integer({ minimum: 0, description: \"Number of audit events matching the supplied filters.\" }),\n});\nexport type AuditEventCountResponseDto = Type.Static<typeof AuditEventCountResponseDto>;\n"
-}

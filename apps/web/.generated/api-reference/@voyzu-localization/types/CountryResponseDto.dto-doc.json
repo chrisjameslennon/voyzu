@@ -1,5 +1,0 @@
-{
-  "name": "CountryResponseDto",
-  "sourceFile": "packages/@voyzu/localization/types/modules/countries/country.response.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { AuditMetadataDto } from \"@voyzu/localization/types/modules/core\";\nimport { Status } from \"@voyzu/localization/types/modules/core\";\nimport { BusinessCode, CurrencyCode, NonBlankText } from \"@voyzu/localization/types/constraints\";\n\nexport const CountryResponseDto = StrictObject({\n  id: Type.String({ description: \"Stable country identifier.\" }),\n  code: BusinessCode,\n  name: NonBlankText,\n  currencyCode: CurrencyCode,\n  currency: StrictObject({\n    code: BusinessCode,\n    name: NonBlankText,\n  }),\n  status: Status,\n  audit: AuditMetadataDto,\n});\nexport type CountryResponseDto = Type.Static<typeof CountryResponseDto>;\n"
-}

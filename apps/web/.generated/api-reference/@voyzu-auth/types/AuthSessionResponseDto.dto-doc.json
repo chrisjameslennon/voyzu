@@ -1,5 +1,0 @@
-{
-  "name": "AuthSessionResponseDto",
-  "sourceFile": "packages/@voyzu/auth/modules/types/auth-session.response.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { AuthUserDto } from \"./auth-user.dto\";\n\nexport const AuthSessionResponseDto = StrictObject({\n  authenticated: Type.Boolean({ description: \"Whether the request has an authenticated UI session.\" }),\n  user: Type.Optional(Type.Union([AuthUserDto, Type.Null()], { description: \"Authenticated user, when a session exists.\" })),\n});\nexport type AuthSessionResponseDto = Type.Static<typeof AuthSessionResponseDto>;\n"
-}

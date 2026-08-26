@@ -12,30 +12,43 @@ and the wildcard handler matches the request path and HTTP method.
 
 ## Define routes in `api.routes.ts`
 
-Each API definition must provide an HTTP method, a path, and an asynchronous
-handler. Keep the handler implementation in the module's server boundary.
+Each API definition must provide an HTTP method, a path, and a lazy,
+type-checked handler loader. Keep the handler implementation in the module's
+server boundary.
 
 ```ts
 // packages/@acme/warehousing/modules/stock/api.routes.ts
-import { handleCreate, handleGet, handleList } from "./server/api/stock.http.handlers";
-
 export const apiDefinitions = {
   list: {
     method: "GET",
     path: "/warehousing/stock",
-    handler: handleList,
+    loadHandler: () => import("./server/api/stock.http.handlers")
+      .then((module) => module.handleList),
   },
   create: {
     method: "POST",
     path: "/warehousing/stock",
-    handler: handleCreate,
+    loadHandler: () => import("./server/api/stock.http.handlers")
+      .then((module) => module.handleCreate),
   },
   get: {
     method: "GET",
     path: "/warehousing/stock/[code]",
-    handler: handleGet,
+    loadHandler: () => import("./server/api/stock.http.handlers")
+      .then((module) => module.handleGet),
   },
 } as const;
+```
+
+Expose each route manifest directly from the package without routing through
+`voyzu.package.ts` or `module.ts`:
+
+```jsonc
+{
+  "exports": {
+    "./stock/api.routes": "./modules/stock/api.routes.ts"
+  }
+}
 ```
 
 An API-only module may use an empty `pageRoutes` object.
@@ -115,7 +128,8 @@ import {
 update: {
   method: "PUT",
   path: "/ice-creams/[code]",
-  handler: handleUpdate,
+  loadHandler: () => import("./server/api/ice-cream.http.handlers")
+    .then((module) => module.handleUpdate),
   summary: "Update ice cream",
   description: "Fully replaces the writable fields of an ice cream.",
   tags: ["Ice Creams"],
@@ -211,11 +225,13 @@ export const IceCreamUpdateRequestDto = StrictObject({
 export type IceCreamUpdateRequestDto = Type.Static<typeof IceCreamUpdateRequestDto>;
 ```
 
-`voyzu:compose` reads the registered modules of every active package, extracts
-their `apiDefinitions`, resolves referenced DTOs, and writes package-grouped
-operation and DTO documents together with the combined OpenAPI document. The
-API Reference UI reads those generated files; it does not inspect handlers at
-runtime.
+`voyzu:compose` discovers exported `./<module>/api.routes` manifests and writes
+small generated indexes containing the package name, module name, and actual
+route definitions. The API documentation generator imports those indexes and
+serializes the same TypeBox schemas used by runtime validation. It does not
+parse TypeScript, inspect `voyzu.package.ts`, reconstruct expressions, or load
+HTTP handlers. The API Reference UI reads the generated operation documents
+and combined OpenAPI document; it does not inspect handlers at runtime.
 
 ## Use dynamic path parameters
 
@@ -226,7 +242,8 @@ Dynamic segments use Next.js bracket syntax in `api.routes.ts`:
 {
   method: "GET",
   path: "/warehousing/stock/[code]",
-  handler: handleGet,
+  loadHandler: () => import("./server/api/stock.http.handlers")
+    .then((module) => module.handleGet),
 }
 ```
 
@@ -302,10 +319,12 @@ objects so that internal schema changes do not silently change the public API.
 ## Compose API changes
 
 Run `npm run voyzu:compose` after adding or changing an API definition or DTO.
-Composition reads each active package's `voyzu.package.ts`, updates the shared
-package registry, generates package-grouped API documentation beneath
-`apps/web/.generated/api-reference`, writes the combined
-OpenAPI document, and clears the Next.js cache.
+Composition regenerates the preinstalled API index and, during full package
+composition, the installed-package API index. The documentation build consumes
+both indexes, generates package-grouped API documentation beneath
+`apps/web/.generated/api-reference`, and writes the combined OpenAPI document.
+The installed index is preserved by ordinary `npm run dev` startup, so starting
+the platform does not discard an existing installed-package composition.
 
 Do not edit generated registries or API documentation files. Restart the web server
 after `voyzu:compose` completes so the application loads the regenerated registry

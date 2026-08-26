@@ -10,6 +10,7 @@
   "requestPathParams": {
     "code": {
       "description": "Currency business code.",
+      "required": true,
       "schema": {
         "type": "string"
       },
@@ -19,7 +20,6 @@
   "requestBody": {
     "required": true,
     "contentType": "application/json",
-    "schemaRef": "CurrencyPatchRequestDto",
     "schema": {
       "type": "object",
       "properties": {
@@ -50,7 +50,6 @@
     "200": {
       "description": "Successful response.",
       "contentType": "application/json",
-      "schemaRef": "CurrencyResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -333,7 +332,6 @@
     "400": {
       "description": "Validation failed.",
       "contentType": "application/json",
-      "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -361,7 +359,6 @@
     "404": {
       "description": "Entity not found.",
       "contentType": "application/json",
-      "schemaRef": "EntityNotFoundErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -389,7 +386,6 @@
     "422": {
       "description": "Business rule failed.",
       "contentType": "application/json",
-      "schemaRef": "BusinessRuleErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -417,7 +413,6 @@
     "500": {
       "description": "An unexpected server error occurred.",
       "contentType": "application/json",
-      "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [

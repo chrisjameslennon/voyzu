@@ -21,10 +21,6 @@
     "200": {
       "description": "A list of matching countries.",
       "contentType": "application/json",
-      "schemaRef": {
-        "type": "array",
-        "items": "CountryResponseDto"
-      },
       "schema": {
         "type": "array",
         "items": {
@@ -338,7 +334,6 @@
     "400": {
       "description": "Validation failed.",
       "contentType": "application/json",
-      "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -366,7 +361,6 @@
     "500": {
       "description": "An unexpected server error occurred.",
       "contentType": "application/json",
-      "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [

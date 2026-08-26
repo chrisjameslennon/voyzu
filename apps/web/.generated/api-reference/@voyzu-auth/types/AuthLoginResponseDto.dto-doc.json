@@ -1,5 +1,0 @@
-{
-  "name": "AuthLoginResponseDto",
-  "sourceFile": "packages/@voyzu/auth/modules/types/auth-login.response.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { AuthUserDto } from \"./auth-user.dto\";\n\nexport const AuthLoginResponseDto = StrictObject({ user: AuthUserDto });\nexport type AuthLoginResponseDto = Type.Static<typeof AuthLoginResponseDto>;\n"
-}

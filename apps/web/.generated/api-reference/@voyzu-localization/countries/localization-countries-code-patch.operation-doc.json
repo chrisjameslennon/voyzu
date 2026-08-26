@@ -10,6 +10,7 @@
   "requestPathParams": {
     "code": {
       "description": "Country code.",
+      "required": true,
       "schema": {
         "type": "string"
       },
@@ -19,7 +20,6 @@
   "requestBody": {
     "required": true,
     "contentType": "application/json",
-    "schemaRef": "CountryPatchRequestDto",
     "schema": {
       "type": "object",
       "properties": {
@@ -44,7 +44,6 @@
     "200": {
       "description": "The patched country.",
       "contentType": "application/json",
-      "schemaRef": "CountryResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -353,7 +352,6 @@
     "400": {
       "description": "Validation failed.",
       "contentType": "application/json",
-      "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -381,7 +379,6 @@
     "404": {
       "description": "Country was not found.",
       "contentType": "application/json",
-      "schemaRef": "EntityNotFoundErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -409,7 +406,6 @@
     "500": {
       "description": "An unexpected server error occurred.",
       "contentType": "application/json",
-      "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [

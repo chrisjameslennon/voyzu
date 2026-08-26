@@ -1,5 +1,0 @@
-{
-  "name": "CsvExportRequestDto",
-  "sourceFile": "lib/types/src/params/csv-export.request.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"../api\";\n\nexport const CsvExportColumnDto = StrictObject({\n  key: Type.String({ pattern: \"\\\\S\", description: \"Non-blank source field key to read from each row.\" }),\n  label: Type.String({ pattern: \"\\\\S\", description: \"Non-blank column heading to write in the CSV file.\" }),\n});\nexport type CsvExportColumnDto = Type.Static<typeof CsvExportColumnDto>;\n\nexport const CsvExportRequestDto = StrictObject({\n  filename: Type.String({ pattern: \"\\\\S\", description: \"Non-blank download filename without extension.\" }),\n  columns: Type.Array(CsvExportColumnDto, { minItems: 1, description: \"CSV columns to include in output order.\" }),\n  rows: Type.Array(Type.Record(Type.String(), Type.Unknown()), { description: \"Rows to write to the CSV file.\" }),\n});\nexport type CsvExportRequestDto = Type.Static<typeof CsvExportRequestDto>;\n"
-}

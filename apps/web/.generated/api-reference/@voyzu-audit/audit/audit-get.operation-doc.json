@@ -16,8 +16,8 @@
       },
       "example": "string"
     },
-    "companyId": {
-      "description": "Company identifier.",
+    "organizationId": {
+      "description": "Organization identifier.",
       "schema": {
         "type": "integer",
         "minimum": 1
@@ -101,7 +101,6 @@
     "200": {
       "description": "Matching audit events.",
       "contentType": "application/json",
-      "schemaRef": "AuditEventListResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -118,8 +117,8 @@
                 "id",
                 "code",
                 "packageCode",
-                "companyId",
-                "companyCode",
+                "organizationId",
+                "organizationCode",
                 "actorType",
                 "actorId",
                 "actorCode",
@@ -144,7 +143,7 @@
                   "type": "string",
                   "pattern": "\\S"
                 },
-                "companyId": {
+                "organizationId": {
                   "anyOf": [
                     {
                       "type": "integer",
@@ -155,7 +154,7 @@
                     }
                   ]
                 },
-                "companyCode": {
+                "organizationCode": {
                   "anyOf": [
                     {
                       "type": "string",
@@ -319,8 +318,8 @@
             "id": 1,
             "code": "string",
             "packageCode": "string",
-            "companyId": 1,
-            "companyCode": "string",
+            "organizationId": 1,
+            "organizationCode": "string",
             "actorType": "APP",
             "actorId": "string",
             "actorCode": "string",
@@ -348,7 +347,6 @@
     "400": {
       "description": "Validation failed.",
       "contentType": "application/json",
-      "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -376,7 +374,6 @@
     "401": {
       "description": "Authentication failed.",
       "contentType": "application/json",
-      "schemaRef": "UnauthorizedErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -404,7 +401,6 @@
     "403": {
       "description": "Access is forbidden.",
       "contentType": "application/json",
-      "schemaRef": "ForbiddenErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -432,7 +428,6 @@
     "500": {
       "description": "An unexpected server error occurred.",
       "contentType": "application/json",
-      "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [

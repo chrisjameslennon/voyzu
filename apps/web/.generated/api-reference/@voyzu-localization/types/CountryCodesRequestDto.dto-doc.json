@@ -1,5 +1,0 @@
-{
-  "name": "CountryCodesRequestDto",
-  "sourceFile": "packages/@voyzu/localization/types/modules/countries/country.codes.request.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\n\nexport const CountryCodesRequestDto = StrictObject({\n  codes: Type.Array(Type.String()),\n});\nexport type CountryCodesRequestDto = Type.Static<typeof CountryCodesRequestDto>;\n"
-}

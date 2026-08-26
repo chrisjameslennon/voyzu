@@ -10,7 +10,6 @@
   "requestBody": {
     "required": true,
     "contentType": "application/json",
-    "schemaRef": "CountryCreateRequestDto",
     "schema": {
       "type": "object",
       "required": [
@@ -45,7 +44,6 @@
     "201": {
       "description": "The created country.",
       "contentType": "application/json",
-      "schemaRef": "CountryResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -354,7 +352,6 @@
     "400": {
       "description": "Validation failed.",
       "contentType": "application/json",
-      "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -382,7 +379,6 @@
     "409": {
       "description": "A country with this code already exists.",
       "contentType": "application/json",
-      "schemaRef": "ConflictErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -410,7 +406,6 @@
     "500": {
       "description": "An unexpected server error occurred.",
       "contentType": "application/json",
-      "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [

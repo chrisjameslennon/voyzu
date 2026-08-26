@@ -98,7 +98,7 @@ Navigation belongs in the package's `navigation/` folder and refers to `pageRout
 
 ### `api.routes.ts`
 
-`api.routes.ts` is the authoritative collection of the module's HTTP endpoints. Each entry declares the route, handler, documentation, request schemas, and response schemas in one place.
+`api.routes.ts` is the authoritative collection of the module's HTTP endpoints. Each entry declares the route, lazy handler loader, documentation, request schemas, and response schemas in one place.
 
 ```ts
 import {
@@ -110,13 +110,12 @@ import {
   StockItemResponseDto,
 } from "@acme/warehousing/types";
 
-import { handleCreate } from "./server/api/stock.http.handlers";
-
 export const apiDefinitions = {
   create: {
     method: "POST",
     path: "/warehousing/stock",
-    handler: handleCreate,
+    loadHandler: () => import("./server/api/stock.http.handlers")
+      .then((module) => module.handleCreate),
     request: {
       contentType: "application/json",
       body: StockItemCreateRequestDto,
@@ -141,6 +140,9 @@ export const apiDefinitions = {
   },
 } as const;
 ```
+
+Expose the manifest as `./<module>/api.routes`; composition and documentation
+generation import this lightweight surface directly.
 
 The combination of HTTP method and path must be unique across the composed application. Paths are relative to Voyzu's shared `/api` prefix and must remain within an API root owned by the package. For example, the declared path `/warehousing/stock` is served at `/api/warehousing/stock`.
 
@@ -193,7 +195,7 @@ Expose operations intended for external use through the package's `package.json`
 ```jsonc
 {
   "exports": {
-    "./modules/stock/operations": "./modules/stock/operations.ts"
+    "./stock/operations": "./modules/stock/operations.ts"
   }
 }
 ```

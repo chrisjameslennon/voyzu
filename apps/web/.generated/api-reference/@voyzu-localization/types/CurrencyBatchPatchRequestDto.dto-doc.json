@@ -1,5 +1,0 @@
-{
-  "name": "CurrencyBatchPatchRequestDto",
-  "sourceFile": "packages/@voyzu/localization/types/modules/currencies/currency.batch-patch.request.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { CurrencyPatchRequestDto } from \"./currency.patch.request.dto\";\nimport { BusinessCode } from \"@voyzu/localization/types/constraints\";\n\nexport const CurrencyBatchPatchRequestDto = StrictObject({\n  ...CurrencyPatchRequestDto.properties,\n  code: BusinessCode,\n});\nexport type CurrencyBatchPatchRequestDto = Type.Static<typeof CurrencyBatchPatchRequestDto>;\n"
-}

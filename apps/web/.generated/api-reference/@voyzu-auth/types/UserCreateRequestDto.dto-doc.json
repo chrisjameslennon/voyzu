@@ -1,5 +1,0 @@
-{
-  "name": "UserCreateRequestDto",
-  "sourceFile": "packages/@voyzu/auth/modules/types/user.create.request.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { UserAccessMode, UserRole, UserStatus } from \"./user.response.dto\";\nimport { UserCode, UserDisplayName, UserEmail, UserPassword } from \"./user.fields\";\n\nexport const UserCreateRequestDto = StrictObject({\n  code: UserCode,\n  email: Type.Optional(UserEmail),\n  displayName: UserDisplayName,\n  password: UserPassword,\n  confirmPassword: UserPassword,\n  role: UserRole, accessMode: UserAccessMode,\n  implementerAccess: Type.Optional(Type.Boolean()), status: Type.Optional(UserStatus),\n});\nexport type UserCreateRequestDto = Type.Static<typeof UserCreateRequestDto>;\n"
-}

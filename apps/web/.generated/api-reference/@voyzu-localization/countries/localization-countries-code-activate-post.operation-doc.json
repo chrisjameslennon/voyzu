@@ -10,6 +10,7 @@
   "requestPathParams": {
     "code": {
       "description": "Country code.",
+      "required": true,
       "schema": {
         "type": "string"
       },
@@ -20,7 +21,6 @@
     "200": {
       "description": "The activated country.",
       "contentType": "application/json",
-      "schemaRef": "CountryResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -329,7 +329,6 @@
     "404": {
       "description": "Country was not found.",
       "contentType": "application/json",
-      "schemaRef": "EntityNotFoundErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -357,7 +356,6 @@
     "500": {
       "description": "An unexpected server error occurred.",
       "contentType": "application/json",
-      "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [

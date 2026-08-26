@@ -11,10 +11,6 @@
     "200": {
       "description": "Installed packages.",
       "contentType": "application/json",
-      "schemaRef": {
-        "type": "array",
-        "items": "InstalledPackageResponseDto"
-      },
       "schema": {
         "type": "array",
         "items": {
@@ -109,7 +105,6 @@
     "400": {
       "description": "Validation failed.",
       "contentType": "application/json",
-      "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -137,7 +132,6 @@
     "401": {
       "description": "Authentication failed.",
       "contentType": "application/json",
-      "schemaRef": "UnauthorizedErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -165,7 +159,6 @@
     "403": {
       "description": "Administrator access is required.",
       "contentType": "application/json",
-      "schemaRef": "ForbiddenErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -193,7 +186,6 @@
     "500": {
       "description": "An unexpected server error occurred.",
       "contentType": "application/json",
-      "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [

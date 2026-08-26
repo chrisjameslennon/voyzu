@@ -1,5 +1,0 @@
-{
-  "name": "AuthLoginRequestDto",
-  "sourceFile": "packages/@voyzu/auth/modules/types/auth-login.request.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\n\nexport const AuthLoginRequestDto = StrictObject({\n  identifier: Type.String({ pattern: \"\\\\S\", description: \"Non-blank user code, email address, or other configured login identifier.\" }),\n  password: Type.String({ minLength: 1, description: \"User password.\" }),\n});\nexport type AuthLoginRequestDto = Type.Static<typeof AuthLoginRequestDto>;\n"
-}

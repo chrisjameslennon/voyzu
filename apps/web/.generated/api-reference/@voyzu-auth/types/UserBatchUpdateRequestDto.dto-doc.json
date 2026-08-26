@@ -1,5 +1,0 @@
-{
-  "name": "UserBatchUpdateRequestDto",
-  "sourceFile": "packages/@voyzu/auth/modules/types/user.batch-update.request.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { UserUpdateRequestDto } from \"./user.update.request.dto\";\nimport { UserCode } from \"./user.fields\";\n\nexport const UserBatchUpdateRequestDto = StrictObject({ ...UserUpdateRequestDto.properties, code: UserCode });\nexport type UserBatchUpdateRequestDto = Type.Static<typeof UserBatchUpdateRequestDto>;\n"
-}

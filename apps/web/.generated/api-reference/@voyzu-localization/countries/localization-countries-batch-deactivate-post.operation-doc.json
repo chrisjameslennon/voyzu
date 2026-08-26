@@ -10,7 +10,6 @@
   "requestBody": {
     "required": true,
     "contentType": "application/json",
-    "schemaRef": "CountryCodesRequestDto",
     "schema": {
       "type": "object",
       "required": [
@@ -36,10 +35,6 @@
     "200": {
       "description": "The deactivated countries.",
       "contentType": "application/json",
-      "schemaRef": {
-        "type": "array",
-        "items": "CountryResponseDto"
-      },
       "schema": {
         "type": "array",
         "items": {
@@ -353,7 +348,6 @@
     "400": {
       "description": "Validation failed.",
       "contentType": "application/json",
-      "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -381,7 +375,6 @@
     "404": {
       "description": "One or more countries were not found.",
       "contentType": "application/json",
-      "schemaRef": "EntityNotFoundErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -409,7 +402,6 @@
     "500": {
       "description": "An unexpected server error occurred.",
       "contentType": "application/json",
-      "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [

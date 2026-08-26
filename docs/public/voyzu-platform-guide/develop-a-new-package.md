@@ -97,7 +97,11 @@ dependencies, and exposes its public entry points.
       "types": "./voyzu.package.ts",
       "import": "./voyzu.package.ts"
     },
-    "./modules/orders/operations": {
+    "./orders/api.routes": {
+      "types": "./modules/orders/api.routes.ts",
+      "import": "./modules/orders/api.routes.ts"
+    },
+    "./orders/operations": {
       "types": "./modules/orders/operations.ts",
       "import": "./modules/orders/operations.ts"
     },
@@ -283,7 +287,7 @@ root declared by `voyzu.pageRootPaths`.
 ### Register API routes
 
 `api.routes.ts` declares transport, documentation, request schemas, response
-schemas, and thin handlers together:
+schemas, and lazy typed handler loaders together:
 
 ```ts
 // modules/orders/api.routes.ts
@@ -294,13 +298,12 @@ import {
 import Type from "typebox";
 
 import { OrderCreateRequestDto, OrderResponseDto } from "../../types";
-import { handleCreate, handleList } from "./server/api/order.http.handlers";
-
 export const apiDefinitions = {
   list: {
     method: "GET",
     path: "/customer-orders",
-    handler: handleList,
+    loadHandler: () => import("./server/api/order.http.handlers")
+      .then((module) => module.handleList),
     summary: "List customer orders",
     description: "Lists customer orders.",
     tags: ["Customer Orders"],
@@ -318,7 +321,8 @@ export const apiDefinitions = {
   create: {
     method: "POST",
     path: "/customer-orders",
-    handler: handleCreate,
+    loadHandler: () => import("./server/api/order.http.handlers")
+      .then((module) => module.handleCreate),
     request: {
       contentType: "application/json",
       body: OrderCreateRequestDto,

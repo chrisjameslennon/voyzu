@@ -64,8 +64,9 @@ The following is illustrative JSON with comments. Remove the comments in a real 
     "./voyzu-package": "./voyzu.package.ts",
     "./navigation/top-nav": "./navigation/top-nav.ts",
     "./navigation/left-nav": "./navigation/left-nav.ts",
-    "./modules/stock": "./modules/stock/module.ts",
-    "./modules/stock/operations": "./modules/stock/operations.ts",
+    "./stock": "./modules/stock/module.ts",
+    "./stock/api.routes": "./modules/stock/api.routes.ts",
+    "./stock/operations": "./modules/stock/operations.ts",
     "./types": "./types/index.ts"
   },
 

@@ -10,7 +10,6 @@
   "requestBody": {
     "required": true,
     "contentType": "application/json",
-    "schemaRef": "AuthLoginRequestDto",
     "schema": {
       "type": "object",
       "required": [
@@ -40,7 +39,6 @@
     "200": {
       "description": "The authenticated user.",
       "contentType": "application/json",
-      "schemaRef": "AuthLoginResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -109,7 +107,6 @@
     "400": {
       "description": "Validation failed.",
       "contentType": "application/json",
-      "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -137,7 +134,6 @@
     "401": {
       "description": "Login credentials were invalid.",
       "contentType": "application/json",
-      "schemaRef": "UnauthorizedErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -165,7 +161,6 @@
     "403": {
       "description": "Access is forbidden.",
       "contentType": "application/json",
-      "schemaRef": "ForbiddenErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -193,7 +188,6 @@
     "500": {
       "description": "An unexpected server error occurred.",
       "contentType": "application/json",
-      "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [

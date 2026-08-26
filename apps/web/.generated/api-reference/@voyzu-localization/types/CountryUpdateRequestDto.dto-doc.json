@@ -1,5 +1,0 @@
-{
-  "name": "CountryUpdateRequestDto",
-  "sourceFile": "packages/@voyzu/localization/types/modules/countries/country.update.request.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { StrictObject } from \"@voyzu/types/api\";\nimport { CurrencyCode, NonBlankText } from \"@voyzu/localization/types/constraints\";\n\nexport const CountryUpdateRequestDto = StrictObject({\n  name: NonBlankText,\n  currencyCode: CurrencyCode,\n});\nexport type CountryUpdateRequestDto = Type.Static<typeof CountryUpdateRequestDto>;\n"
-}

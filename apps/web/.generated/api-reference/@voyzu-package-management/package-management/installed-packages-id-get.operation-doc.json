@@ -10,6 +10,7 @@
   "requestPathParams": {
     "id": {
       "description": "Numeric identifier of the installed package record.",
+      "required": true,
       "schema": {
         "type": "integer",
         "minimum": 1
@@ -21,7 +22,6 @@
     "200": {
       "description": "The installed package.",
       "contentType": "application/json",
-      "schemaRef": "InstalledPackageResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -111,7 +111,6 @@
     "400": {
       "description": "Validation failed.",
       "contentType": "application/json",
-      "schemaRef": "InputValidationErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -139,7 +138,6 @@
     "401": {
       "description": "Authentication failed.",
       "contentType": "application/json",
-      "schemaRef": "UnauthorizedErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -167,7 +165,6 @@
     "403": {
       "description": "Administrator access is required.",
       "contentType": "application/json",
-      "schemaRef": "ForbiddenErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [
@@ -199,7 +196,6 @@
     "500": {
       "description": "An unexpected server error occurred.",
       "contentType": "application/json",
-      "schemaRef": "InternalServerErrorResponseDto",
       "schema": {
         "type": "object",
         "required": [

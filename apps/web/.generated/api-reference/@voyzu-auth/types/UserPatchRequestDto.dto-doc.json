@@ -1,5 +1,0 @@
-{
-  "name": "UserPatchRequestDto",
-  "sourceFile": "packages/@voyzu/auth/modules/types/user.patch.request.dto.ts",
-  "typescript": "import Type from \"typebox\";\nimport { UserUpdateRequestDto } from \"./user.update.request.dto\";\n\nexport const UserPatchRequestDto = Type.Partial(Type.Omit(UserUpdateRequestDto, [\"code\", \"status\"]), { additionalProperties: false });\nexport type UserPatchRequestDto = Type.Static<typeof UserPatchRequestDto>;\n"
-}
