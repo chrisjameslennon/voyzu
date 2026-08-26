@@ -3,7 +3,7 @@
 Voyzu business functionality is delivered through packages. A package owns its
 identity, lifecycle resources, public contracts, and one or more modules. Each
 module represents a coherent capability with its own pages, APIs, operations,
-events, UI, services, and persistence.
+UI, services, and persistence.
 
 This guide uses the
 [`@voyzu/ice-creams` reference package](https://github.com/chrisjameslennon/voyzu-packages/tree/main/packages/%40voyzu/ice-creams)
@@ -61,7 +61,6 @@ packages/@acme/customer-orders/
 │  ├─ db/
 │  │  └─ sql/
 │  └─ manifest.ts
-├─ listeners.ts
 ├─ package.json
 ├─ README.md
 └─ voyzu.package.ts
@@ -213,7 +212,6 @@ modules/orders/
 │  └─ index.ts              # Controlled server entry point
 ├─ types/                   # Optional module-private schemas
 ├─ api.routes.ts
-├─ events.ts
 ├─ module.ts
 ├─ operations.ts
 └─ pages.routes.ts
@@ -232,7 +230,6 @@ Do not add a module-root `index.ts` barrel. Import the module manifest from
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
 import { apiDefinitions } from "./api.routes";
-import { events } from "./events";
 import { operations } from "./operations";
 import { pageRoutes } from "./pages.routes";
 
@@ -240,15 +237,13 @@ export const ordersModule = {
   pageRoutes,
   apiDefinitions,
   operations,
-  events,
 } as const satisfies VoyzuPackageModuleDefinition;
 
 export default ordersModule;
 ```
 
 Use empty objects for `pageRoutes` or `apiDefinitions` when the module does not
-provide that kind of route. Omit `events` only when the module exposes no
-state-changing operations.
+provide that kind of route.
 
 ### Register page routes
 
@@ -364,7 +359,7 @@ rules.
 
 Services under `server/lib` own business orchestration and transactions. They
 call repositories, apply business validation, map persistence rows to DTOs, and
-dispatch events.
+invoke optional cross-package commands when required.
 
 `operations.ts` is a thin, server-only programmatic facade over those services.
 It adds no validation or business behavior:
@@ -394,28 +389,6 @@ export const operations = {
 Use operations for tests and deliberate programmatic access. HTTP handlers
 continue to call services directly.
 
-### Declare events
-
-Each state-changing public operation should have a corresponding completed-action
-event whose payload matches the successful operation response:
-
-```ts
-// modules/orders/events.ts
-import { OrderResponseDto } from "../../types";
-
-export const events = {
-  orderCreated: {
-    description: "A customer order was created.",
-    payload: OrderResponseDto,
-  },
-} as const;
-```
-
-The service dispatches its local event definition. Other packages consume the
-derived global event name through package-level listeners. Functions within the
-same package should call services directly. See
-[Event patterns](../voyzu-platform-patterns/events.md).
-
 ## Register the package manifest
 
 `voyzu.package.ts` explicitly composes the package. Voyzu does not discover
@@ -438,8 +411,8 @@ export const customerOrdersPackage = {
 export default customerOrdersPackage;
 ```
 
-Every package registers at least one module. Installation, removal, scripts,
-and listeners are optional.
+Every package registers at least one module. Installation, removal, and scripts
+are optional.
 
 ## Add navigation
 
@@ -549,13 +522,13 @@ npm run dev
 
 Voyzu mirrors editable linked-package source into the transient runtime. Run
 composition after changing package exports, module registration, page or API
-routes, navigation, events, assets, or API schemas:
+routes, navigation, assets, or API schemas:
 
 ```shell
 npm run voyzu:compose
 ```
 
-Composition generates navigation, event, operation, and API Reference files
+Composition generates navigation, operation, and API Reference files
 beneath `apps/web/.generated`. The platform wildcard page and API handlers use
 these registries at runtime. Never edit generated files directly.
 

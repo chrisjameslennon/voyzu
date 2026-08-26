@@ -1,11 +1,10 @@
-import { InstalledPackageDetailPage } from "./server/pages/InstalledPackageDetailPage";
-import { InstalledPackagesListPage } from "./server/pages/InstalledPackagesListPage";
-
 export const pageRoutes = {
   list: {
     id: "voyzu.package-management.page.list",
     path: "/settings/packages",
-    Page: InstalledPackagesListPage,
+    loadPage: () =>
+      import("./server/pages/InstalledPackagesListPage")
+        .then((module) => module.InstalledPackagesListPage),
     pageTitle: "Installed Packages",
     helpPath: "help-platform/settings/installed-packages",
     breadcrumbBase: [{ label: "Settings", href: "/settings/users" }],
@@ -14,7 +13,9 @@ export const pageRoutes = {
   detail: {
     id: "voyzu.package-management.page.detail",
     path: "/settings/packages/[id]",
-    Page: InstalledPackageDetailPage,
+    loadPage: () =>
+      import("./server/pages/InstalledPackageDetailPage")
+        .then((module) => module.InstalledPackageDetailPage),
     pageTitle: "Installed Packages",
     helpPath: "help-platform/settings/installed-packages",
     breadcrumbBase: [

@@ -1,6 +1,4 @@
 import Type from "typebox";
-import { handleActivate as handleCurrenciesActivate, handleBatchActivate as handleCurrenciesBatchActivate, handleBatchCreate as handleCurrenciesBatchCreate, handleBatchDeactivate as handleCurrenciesBatchDeactivate, handleBatchDelete as handleCurrenciesBatchDelete, handleBatchGet as handleCurrenciesBatchGet, handleBatchPatch as handleCurrenciesBatchPatch, handleBatchUpdate as handleCurrenciesBatchUpdate, handleCreate as handleCurrenciesCreate, handleDeactivate as handleCurrenciesDeactivate, handleDelete as handleCurrenciesDelete, handleFilter as handleCurrenciesFilter, handleGet as handleCurrenciesGet, handleList as handleCurrenciesList, handlePatch as handleCurrenciesPatch, handleSearch as handleCurrenciesSearch, handleUpdate as handleCurrenciesUpdate } from "@voyzu/localization/currencies/server";
-import { CurrenciesListPage, CurrencyDetailPage } from "@voyzu/localization/currencies/server";
 import { BusinessRuleErrorResponseDto, ConflictErrorResponseDto, EntityNotFoundErrorResponseDto, FilterRequestDto, InputValidationErrorResponseDto, InternalServerErrorResponseDto } from "@voyzu/types";
 import { CurrencyResponseDto } from "../../types/modules/currencies/currency.response.dto";
 import { CurrencyCodesRequestDto } from "../../types/modules/currencies/currency.codes.request.dto";
@@ -10,13 +8,11 @@ import { CurrencyCreateRequestDto } from "../../types/modules/currencies/currenc
 import { CurrencyPatchRequestDto } from "../../types/modules/currencies/currency.patch.request.dto";
 import { CurrencyUpdateRequestDto } from "../../types/modules/currencies/currency.update.request.dto";
 
-
-
 export const apiDefinitions = {
   list: {
     method: "GET",
     path: "/localization/currencies",
-    handler: (request: any) => handleCurrenciesList(request),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleList),
     summary: "List",
     description: "List Currencies.",
     tags: ["Currencies"],
@@ -31,7 +27,7 @@ export const apiDefinitions = {
   create: {
     method: "POST",
     path: "/localization/currencies",
-    handler: (request: any) => handleCurrenciesCreate(request),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleCreate),
     request: { contentType: "application/json", body: CurrencyCreateRequestDto },
     summary: "Create",
     description: "Create Currencies. Status defaults to ACTIVE and cannot be supplied in the request body.",
@@ -50,7 +46,7 @@ export const apiDefinitions = {
   filter: {
     method: "POST",
     path: "/localization/currencies/filter",
-    handler: (request: any) => handleCurrenciesFilter(request),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleFilter),
     request: { contentType: "application/json", body: FilterRequestDto },
     summary: "Filter",
     description: "Filter Currencies.",
@@ -66,7 +62,7 @@ export const apiDefinitions = {
   search: {
     method: "GET",
     path: "/localization/currencies/search",
-    handler: (request: any) => handleCurrenciesSearch(request),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleSearch),
     request: { query: { parameters: { q: { description: "Search text used to match currency records.", required: true } }, schema: Type.Object({ q: { type: "string" } }) } },
     summary: "Search",
     description: "Search Currencies.",
@@ -83,7 +79,7 @@ export const apiDefinitions = {
   get: {
     method: "GET",
     path: "/localization/currencies/[code]",
-    handler: (request: any, context: any) => handleCurrenciesGet(request, context),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleGet),
     request: {
       path: {
         code: {
@@ -107,7 +103,7 @@ export const apiDefinitions = {
   update: {
     method: "PUT",
     path: "/localization/currencies/[code]",
-    handler: (request: any, context: any) => handleCurrenciesUpdate(request, context),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleUpdate),
     request: {
       path: {
         code: {
@@ -133,7 +129,7 @@ export const apiDefinitions = {
   patch: {
     method: "PATCH",
     path: "/localization/currencies/[code]",
-    handler: (request: any, context: any) => handleCurrenciesPatch(request, context),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handlePatch),
     request: {
       path: {
         code: {
@@ -159,7 +155,7 @@ export const apiDefinitions = {
   delete: {
     method: "DELETE",
     path: "/localization/currencies/[code]",
-    handler: (request: any, context: any) => handleCurrenciesDelete(request, context),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleDelete),
     request: {
       path: {
         code: {
@@ -181,7 +177,7 @@ export const apiDefinitions = {
   batchCreate: {
     method: "POST",
     path: "/localization/currencies/batch/create",
-    handler: (request: any) => handleCurrenciesBatchCreate(request),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleBatchCreate),
     request: { contentType: "application/json", body: Type.Array(CurrencyCreateRequestDto) },
     summary: "Batch Create",
     description: "Creates multiple currencies. Status defaults to ACTIVE and cannot be supplied in the request body.",
@@ -196,7 +192,7 @@ export const apiDefinitions = {
   batchGet: {
     method: "POST",
     path: "/localization/currencies/batch/get",
-    handler: (request: any) => handleCurrenciesBatchGet(request),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleBatchGet),
     request: { contentType: "application/json", body: CurrencyCodesRequestDto },
     summary: "Batch Get",
     description: "Gets multiple currencies by code.",
@@ -210,7 +206,7 @@ export const apiDefinitions = {
   batchUpdate: {
     method: "PUT",
     path: "/localization/currencies/batch/update",
-    handler: (request: any) => handleCurrenciesBatchUpdate(request),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleBatchUpdate),
     request: { contentType: "application/json", body: Type.Array(CurrencyBatchUpdateRequestDto) },
     summary: "Batch Update",
     description: "Updates multiple currencies. Status and code cannot be changed by this request; code identifies each row.",
@@ -225,7 +221,7 @@ export const apiDefinitions = {
   batchPatch: {
     method: "PATCH",
     path: "/localization/currencies/batch/patch",
-    handler: (request: any) => handleCurrenciesBatchPatch(request),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleBatchPatch),
     request: { contentType: "application/json", body: Type.Array(CurrencyBatchPatchRequestDto) },
     summary: "Batch Patch",
     description: "Patches multiple currencies. Status and code cannot be changed by this request; code identifies each row.",
@@ -240,7 +236,7 @@ export const apiDefinitions = {
   batchDelete: {
     method: "POST",
     path: "/localization/currencies/batch/delete",
-    handler: (request: any) => handleCurrenciesBatchDelete(request),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleBatchDelete),
     request: { contentType: "application/json", body: CurrencyCodesRequestDto },
     summary: "Batch Delete",
     description: "Deletes multiple currencies. Currencies with postings cannot be deleted.",
@@ -256,7 +252,7 @@ export const apiDefinitions = {
   activate: {
     method: "POST",
     path: "/localization/currencies/[code]/activate",
-    handler: (request: any, context: any) => handleCurrenciesActivate(request, context),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleActivate),
     request: {
       path: {
         code: {
@@ -277,7 +273,7 @@ export const apiDefinitions = {
   deactivate: {
     method: "POST",
     path: "/localization/currencies/[code]/deactivate",
-    handler: (request: any, context: any) => handleCurrenciesDeactivate(request, context),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleDeactivate),
     request: {
       path: {
         code: {
@@ -298,7 +294,7 @@ export const apiDefinitions = {
   batchActivate: {
     method: "POST",
     path: "/localization/currencies/batch/activate",
-    handler: (request: any) => handleCurrenciesBatchActivate(request),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleBatchActivate),
     request: { contentType: "application/json", body: CurrencyCodesRequestDto },
     summary: "Batch Activate",
     description: "Sets multiple currencies to ACTIVE.",
@@ -313,7 +309,7 @@ export const apiDefinitions = {
   batchDeactivate: {
     method: "POST",
     path: "/localization/currencies/batch/deactivate",
-    handler: (request: any) => handleCurrenciesBatchDeactivate(request),
+    loadHandler: () => import("./server/api/currency.http.handlers").then((module) => module.handleBatchDeactivate),
     request: { contentType: "application/json", body: CurrencyCodesRequestDto },
     summary: "Batch Deactivate",
     description: "Sets multiple currencies to INACTIVE.",

@@ -25,7 +25,10 @@
   "exports": {
     "./package.json": "./package.json",
     "./voyzu-package": "./voyzu.package.ts",
+    "./navigation": "./navigation/index.ts",
     "./navigation/settings": "./navigation/settings.left-nav.ts",
+    "./package-management/api.routes": "./modules/package-management/api.routes.ts",
+    "./package-management/pages.routes": "./modules/package-management/pages.routes.ts",
     "./package-management/operations": "./modules/package-management/operations.ts",
     "./server": "./modules/package-management/server/index.ts",
     "./types": "./types/index.ts"

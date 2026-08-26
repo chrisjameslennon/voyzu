@@ -1,8 +1,8 @@
-import { welcomeModule } from "../modules/welcome/module";
+import { pageRoutes as welcomePageRoutes } from "../modules/welcome/pages.routes";
 
 const topNav = {
   label: "Welcome",
-  routeId: welcomeModule.pageRoutes.home.id,
+  routeId: welcomePageRoutes.home.id,
 } as const;
 
 export default topNav;

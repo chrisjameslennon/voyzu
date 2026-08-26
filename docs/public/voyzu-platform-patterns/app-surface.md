@@ -193,7 +193,7 @@ The install and link-package workflows compose packages automatically. Compositi
 2. imports each package's `voyzu.package.ts` through its public export;
 3. collects page routes and API definitions;
 4. includes optional domain navigation or single-domain navigation exports;
-5. writes navigation, event, operation, and API Reference output beneath
+5. writes navigation, operation, and API Reference output beneath
    `apps/web/.generated` for the platform wildcard handlers to consume;
    and
 6. updates the runtime workspace and Next.js transpilation metadata.

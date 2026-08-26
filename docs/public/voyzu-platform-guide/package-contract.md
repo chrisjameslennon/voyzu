@@ -20,7 +20,6 @@ packages/@acme/warehousing/
 ├─ tests/
 ├─ types/
 ├─ uninstall/
-├─ listeners.ts
 ├─ package.json
 ├─ README.md
 └─ voyzu.package.ts
@@ -67,8 +66,7 @@ The following is illustrative JSON with comments. Remove the comments in a real 
     "./navigation/left-nav": "./navigation/left-nav.ts",
     "./modules/stock": "./modules/stock/module.ts",
     "./modules/stock/operations": "./modules/stock/operations.ts",
-    "./types": "./types/index.ts",
-    "./listeners": "./listeners.ts"
+    "./types": "./types/index.ts"
   },
 
   "dependencies": {
@@ -86,7 +84,7 @@ Page and API root paths reserve separate namespaces. A package may use the same 
 
 ### `voyzu.package.ts`
 
-`voyzu.package.ts` is the package manifest. It composes the package's modules and optional lifecycle, script, and listener registrations.
+`voyzu.package.ts` is the package manifest. It composes the package's modules and optional lifecycle and script registrations.
 
 ```ts
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
@@ -95,14 +93,12 @@ import { install } from "./install/manifest";
 import { stockModule } from "./modules/stock/module";
 import { sampleData } from "./scripts/sample-data";
 import { uninstall } from "./uninstall/manifest";
-import { listeners } from "./listeners";
 
 const packageDefinition = {
   modules: [stockModule],
   install,
   uninstall,
   scripts: { sampleData },
-  listeners,
 } as const satisfies VoyzuPackageDefinition;
 
 export default packageDefinition;
@@ -121,35 +117,6 @@ Warehouse stock, locations, transfers, and inventory operations for Voyzu.
 
 See [package documentation](./docs/README.md).
 ```
-
-### `listeners.ts`
-
-`listeners.ts` is optional. It declares package-level consumers of events raised by other packages. Cross-package listeners use the event's global name and can access the dispatch transaction through the event context.
-
-```ts
-import type { VoyzuEventContext } from "@voyzu/capability/events";
-
-type OrganizationDeletedPayload = {
-  id: number;
-};
-
-export const listeners = [
-  {
-    event: "@voyzu/erp-core.organizations.organizationDeleted",
-    handler: async (
-      organization: OrganizationDeletedPayload,
-      context: VoyzuEventContext,
-    ) => {
-      await removeWarehouseOrganization(
-        organization.id,
-        context.transaction,
-      );
-    },
-  },
-] as const;
-```
-
-Use events for communication between packages. Code within a package should call the relevant service directly. See [Events](../voyzu-platform-patterns/events.md) for the complete pattern.
 
 ## `docs/`
 
@@ -189,7 +156,7 @@ Voyzu runs object SQL before seed SQL, using the order declared in each array.
 
 ## `modules/`
 
-`modules/` contains the package's application capabilities. Each module owns its routes, operations, events, UI, services, persistence, and business validation. See the [Module contract](module-contract.md) for the detailed structure and rules.
+`modules/` contains the package's application capabilities. Each module owns its routes, operations, UI, services, persistence, and business validation. See the [Module contract](module-contract.md) for the detailed structure and rules.
 
 ```text
 modules/
@@ -197,7 +164,6 @@ modules/
    ├─ client/
    ├─ server/
    ├─ api.routes.ts
-   ├─ events.ts
    ├─ module.ts
    ├─ operations.ts
    └─ pages.routes.ts
@@ -209,7 +175,6 @@ modules/
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
 import { apiDefinitions } from "./api.routes";
-import { events } from "./events";
 import { operations } from "./operations";
 import { pageRoutes } from "./pages.routes";
 
@@ -217,11 +182,10 @@ export const stockModule = {
   pageRoutes,
   apiDefinitions,
   operations,
-  events,
 } as const satisfies VoyzuPackageModuleDefinition;
 ```
 
-`operations.ts` is the module's public programmatic surface and is a thin wrapper over services. Public operations should have corresponding events in `events.ts`. API handlers continue to call services directly.
+`operations.ts` is the module's public programmatic surface and is a thin wrapper over services. Cross-package callers use the composed command registry; API handlers continue to call services directly.
 
 ## `navigation/`
 

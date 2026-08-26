@@ -13,7 +13,6 @@ packages/@acme/warehousing/
       ├─ server/
       ├─ types/
       ├─ api.routes.ts
-      ├─ events.ts
       ├─ module.ts
       ├─ operations.ts
       └─ pages.routes.ts
@@ -31,7 +30,6 @@ Only the folders and root files required by the module need to be present. A ser
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
 import { apiDefinitions } from "./api.routes";
-import { events } from "./events";
 import { operations } from "./operations";
 import { pageRoutes } from "./pages.routes";
 
@@ -39,7 +37,6 @@ export const stockModule = {
   pageRoutes,
   apiDefinitions,
   operations,
-  events,
 } as const satisfies VoyzuPackageModuleDefinition;
 
 export default stockModule;
@@ -200,43 +197,6 @@ Expose operations intended for external use through the package's `package.json`
 }
 ```
 
-Each state-changing operation should have a corresponding completed-action event in `events.ts`.
-
-### `events.ts`
-
-`events.ts` declares the integration events owned by the module. Event keys are local; Voyzu derives their global names from the registered package and module.
-
-```ts
-import { StockItemResponseDto } from "@acme/warehousing/types";
-
-export const events = {
-  stockItemCreated: {
-    description: "A stock item was created.",
-    payload: StockItemResponseDto,
-  },
-  stockItemUpdated: {
-    description: "A stock item was updated.",
-    payload: StockItemResponseDto,
-  },
-  stockItemDeleted: {
-    description: "A stock item was deleted.",
-    payload: StockItemResponseDto,
-  },
-} as const;
-```
-
-For example, Voyzu registers `stockItemDeleted` as `@acme/warehousing.stock.stockItemDeleted`. The successful service response DTO is also the event payload. The service dispatches the event and supplies its transaction when one is active:
-
-```ts
-await platformEvents.dispatch(
-  events.stockItemDeleted,
-  stockItem,
-  { transaction: db },
-);
-```
-
-Events are for consumption by other packages. Functions within the same package call services directly. See [Event patterns](../voyzu-platform-patterns/events.md).
-
 ## `client/`
 
 `client/` contains browser-safe React components, hooks, and utilities. Client components may call HTTP APIs but must not import database access, credentials, services, or anything beneath `server/`.
@@ -286,7 +246,7 @@ Server services remain the authority and must enforce the rule even when the cli
 
 ## `types/`
 
-`types/` is optional for module-private schemas and types. Public DTOs shared by API definitions, operations, events, or other packages normally belong in the owning package's top-level `types/` folder and are exported through `package.json`.
+`types/` is optional for module-private schemas and types. Public DTOs shared by API definitions, operations, or other packages normally belong in the owning package's top-level `types/` folder and are exported through `package.json`.
 
 ```ts
 // types/stock-selection.dto.ts
@@ -355,7 +315,7 @@ TypeBox validation belongs to the API route and is performed by the router. Hand
 
 ### `server/db/`
 
-`server/db/` owns repositories, SQL, and persistence row types. Repositories accept a database executor so services can use the same transaction across repositories and event listeners.
+`server/db/` owns repositories, SQL, and persistence row types. Repositories accept a database executor so services can use the same transaction across repositories and cross-package commands.
 
 ```text
 server/db/
@@ -381,7 +341,7 @@ Pages and HTTP handlers must not issue ad hoc persistence queries for module-own
 
 ### `server/lib/`
 
-`server/lib/` contains services, mappers, and business validators. Services orchestrate transactions, persistence, auditing, business rules, DTO mapping, and event dispatch.
+`server/lib/` contains services, mappers, and business validators. Services orchestrate transactions, persistence, auditing, business rules, DTO mapping, and command calls.
 
 ```text
 server/lib/
@@ -397,15 +357,7 @@ export async function deleteStockItem(
   return withTransaction(async (db) => {
     const repo = new StockRepo(db);
     const deleted = await repo.delete(code);
-    const stockItem = toResponseDto(deleted);
-
-    await platformEvents.dispatch(
-      events.stockItemDeleted,
-      stockItem,
-      { transaction: db },
-    );
-
-    return stockItem;
+    return toResponseDto(deleted);
   });
 }
 ```

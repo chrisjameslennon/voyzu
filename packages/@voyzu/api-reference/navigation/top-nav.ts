@@ -1,8 +1,8 @@
-import { apiReferenceModule } from "../modules/api-reference/module";
+import { pageRoutes as apiReferencePageRoutes } from "../modules/api-reference/pages.routes";
 
 const topNav = {
   label: "API Reference",
-  routeId: apiReferenceModule.pageRoutes.gettingStarted.id,
+  routeId: apiReferencePageRoutes.gettingStarted.id,
 } as const;
 
 export default topNav;

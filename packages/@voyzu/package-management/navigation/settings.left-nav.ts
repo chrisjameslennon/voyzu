@@ -1,4 +1,4 @@
-import { packageManagementModule } from "../modules/package-management/module";
+import { pageRoutes as packageManagementPageRoutes } from "../modules/package-management/pages.routes";
 
 export const packageManagementSettingsLeftNav = [
   {
@@ -7,7 +7,7 @@ export const packageManagementSettingsLeftNav = [
       {
         label: "Installed Packages",
         icon: "deployed_code",
-        routeId: packageManagementModule.pageRoutes.list.id,
+        routeId: packageManagementPageRoutes.list.id,
       },
     ],
   },

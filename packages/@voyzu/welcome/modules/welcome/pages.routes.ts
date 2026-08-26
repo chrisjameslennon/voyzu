@@ -1,10 +1,10 @@
-import { WelcomePage } from "./server/pages/WelcomePage";
-
 export const pageRoutes = {
   home: {
     id: "voyzu.welcome.page.home",
     path: "/welcome",
-    Page: WelcomePage,
+    loadPage: () =>
+      import("./server/pages/WelcomePage")
+        .then((module) => module.WelcomePage),
     pageTitle: "Welcome",
     helpPath: "installation-and-operation/installation-and-setup",
     auth: {

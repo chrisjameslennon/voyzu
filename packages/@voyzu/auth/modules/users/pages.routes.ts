@@ -1,12 +1,10 @@
-import { UserDetailPage } from "./server/pages/UserDetailPage";
-import { UserProfilePage } from "./server/pages/UserProfilePage";
-import { UsersListPage } from "./server/pages/UsersListPage";
-
 export const pageRoutes = {
   list: {
     id: "voyzu.users.page.list",
     path: "/settings/users",
-    Page: UsersListPage,
+    loadPage: () =>
+      import("./server/pages/UsersListPage")
+        .then((module) => module.UsersListPage),
     pageTitle: "Users",
     helpPath: "help-platform/settings/users",
     breadcrumbBase: [{ label: "Settings", href: "/settings/users" }],
@@ -15,7 +13,9 @@ export const pageRoutes = {
   profile: {
     id: "voyzu.users.page.profile",
     path: "/settings/users/profile",
-    Page: UserProfilePage,
+    loadPage: () =>
+      import("./server/pages/UserProfilePage")
+        .then((module) => module.UserProfilePage),
     pageTitle: "User Profile",
     helpPath: "help-platform/settings/user-profile",
     breadcrumbBase: [{ label: "Settings" }, { label: "Users" }],
@@ -24,7 +24,9 @@ export const pageRoutes = {
   detail: {
     id: "voyzu.users.page.detail",
     path: "/settings/users/[code]",
-    Page: UserDetailPage,
+    loadPage: () =>
+      import("./server/pages/UserDetailPage")
+        .then((module) => module.UserDetailPage),
     pageTitle: "Users",
     helpPath: "help-platform/settings/users",
     breadcrumbBase: [

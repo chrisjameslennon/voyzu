@@ -1,7 +1,5 @@
-import "../../../.generated/events/register";
-
 import { createVoyzuApiRouteHandlers } from "@voyzu/api";
-import { withApiBasicAuthContext } from "@voyzu/auth/auth/server";
+import { withApiBasicAuthContext } from "@voyzu/auth/auth/server/api-basic-auth";
 
 import { voyzuApiConfig } from "../voyzu.api.config";
 

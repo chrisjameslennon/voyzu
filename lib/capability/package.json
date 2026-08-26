@@ -20,10 +20,6 @@
       "types": "./src/db/index.ts",
       "import": "./src/db/index.ts"
     },
-    "./events": {
-      "types": "./src/events/index.ts",
-      "import": "./src/events/index.ts"
-    },
     "./operations": {
       "types": "./src/operations/index.ts",
       "import": "./src/operations/index.ts"

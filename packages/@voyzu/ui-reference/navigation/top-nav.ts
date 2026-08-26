@@ -1,8 +1,8 @@
-import { uiReferenceModule } from "../modules/ui-reference/module";
+import { pageRoutes as uiReferencePageRoutes } from "../modules/ui-reference/pages.routes";
 
 const topNav = {
   label: "UI Reference",
-  routeId: uiReferenceModule.pageRoutes.alert.id,
+  routeId: uiReferencePageRoutes.alert.id,
 } as const;
 
 export default topNav;

@@ -202,7 +202,7 @@ in its `modules` array. Each registered module must provide `pageRoutes` and
 
 Depending on the package exports, composition may also consume navigation,
 static assets, styles, documentation settings, and other package metadata. It
-writes navigation, event, operation, and API Reference output beneath
+writes navigation, operation, and API Reference output beneath
 `apps/web/.generated`. The platform wildcard page and API handlers consume the
 composed route definitions at runtime. API
 documentation generation reads API route definitions and referenced DTOs from

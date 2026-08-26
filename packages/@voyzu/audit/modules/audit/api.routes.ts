@@ -11,12 +11,6 @@ import {
   UnauthorizedErrorResponseDto,
 } from "@voyzu/types";
 import Type from "typebox";
-import {
-  handleCount,
-  handleExportAll,
-  handleGetById,
-  handleList,
-} from "./server";
 
 const commonResponses = {
   "400": {
@@ -87,7 +81,7 @@ export const apiDefinitions = {
   list: {
     method: "GET",
     path: "/audit",
-    handler: (request: any) => handleList(request),
+    loadHandler: () => import("./server/api/audit-event.http.handlers").then((module) => module.handleList),
     request: auditListRequest,
     summary: "List audit events",
     description:
@@ -108,7 +102,7 @@ export const apiDefinitions = {
   count: {
     method: "GET",
     path: "/audit/count",
-    handler: (request: any) => handleCount(request),
+    loadHandler: () => import("./server/api/audit-event.http.handlers").then((module) => module.handleCount),
     request: auditFilterRequest,
     summary: "Count audit events",
     description:
@@ -129,7 +123,7 @@ export const apiDefinitions = {
   export: {
     method: "GET",
     path: "/audit/export",
-    handler: (request: any) => handleExportAll(request),
+    loadHandler: () => import("./server/api/audit-event.http.handlers").then((module) => module.handleExportAll),
     request: auditFilterRequest,
     summary: "Export audit events",
     description:
@@ -150,7 +144,7 @@ export const apiDefinitions = {
   get: {
     method: "GET",
     path: "/audit/[id]",
-    handler: (request: any, context: any) => handleGetById(request, context),
+    loadHandler: () => import("./server/api/audit-event.http.handlers").then((module) => module.handleGetById),
     request: {
       path: {
         id: {

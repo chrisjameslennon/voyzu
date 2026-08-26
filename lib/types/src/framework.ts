@@ -1,20 +1,11 @@
 import type { ApiRouteDefinition } from "./api";
-import type { TSchema } from "typebox";
 
 export type VoyzuModuleOperation = (...args: any[]) => any;
-
-export interface VoyzuEventDefinition<TPayload extends TSchema = TSchema> {
-  description: string;
-  payload: TPayload;
-}
-
-export type VoyzuModuleEvents = Readonly<Record<string, VoyzuEventDefinition>>;
 
 export interface VoyzuPackageModuleDefinition {
   pageRoutes: Readonly<Record<string, unknown>>;
   apiDefinitions: Readonly<Record<string, ApiRouteDefinition>>;
   operations?: Readonly<Record<string, VoyzuModuleOperation>>;
-  events?: VoyzuModuleEvents;
 }
 
 /**
@@ -77,11 +68,6 @@ export interface VoyzuPackageScripts {
   sampleData?: VoyzuPackageScript;
 }
 
-export interface VoyzuPackageListener {
-  event: string;
-  handler: (...args: any[]) => void | Promise<void>;
-}
-
 /**
  * The composition contract exported by a package's `voyzu.package.ts`.
  *
@@ -95,5 +81,4 @@ export interface VoyzuPackageDefinition<
   install?: VoyzuPackageInstallDefinition;
   uninstall?: VoyzuPackageUninstallDefinition;
   scripts?: VoyzuPackageScripts;
-  listeners?: readonly VoyzuPackageListener[];
 }

@@ -1,6 +1,5 @@
 import { getDb, withTransaction, type DbExecutor } from "@voyzu/capability/db";
 import { BusinessRuleError, NotFoundError } from "@voyzu/capability/errors";
-import { events as platformEvents } from "@voyzu/capability/events";
 
 import type {
   InstalledPackageResponseDto,
@@ -8,7 +7,6 @@ import type {
 import { InstalledPackageRepo } from "../db/installed-package.repo";
 import type { InstalledPackageRow } from "../db/installed-package.row.types";
 import { ChangePageRouteVisibility, isRequiredPackage } from "../../domain/operation-policy";
-import { events } from "../../events";
 import { discoverInstalledPackages, type DiscoveredPackage } from "./package-inventory";
 
 function response(
@@ -61,7 +59,6 @@ export async function reconcileInstalledPackages(): Promise<InstalledPackageResp
       await db.query("DELETE FROM installed_packages WHERE NOT (code = ANY($1::text[]))", [names]);
     }
     const packages = await listInstalledPackagesWith(db, inventory);
-    await platformEvents.dispatch(events.installedPackagesReconciled, packages, { transaction: db });
     return packages;
   });
 }
@@ -114,7 +111,6 @@ export async function updateInstalledPackageVisibility(
     }
     const row = await repo.updateVisibility(id, topNavigationVisible, pageRoutesVisible);
     const packageDto = response(row, inventory.find((item) => item.code === row.code));
-    await platformEvents.dispatch(events.installedPackageVisibilityUpdated, packageDto, { transaction: db });
     return packageDto;
   });
 }
@@ -145,7 +141,6 @@ export async function updateHomePageRoute(route: string): Promise<string> {
        ON CONFLICT (code) DO UPDATE SET value = EXCLUDED.value`,
       [HOME_PAGE_SETTING, route],
     );
-    await platformEvents.dispatch(events.homePageRouteUpdated, route, { transaction: db });
     return route;
   });
 }
@@ -172,7 +167,6 @@ export async function moveInstalledPackage(
       await repo.updateOrder(target.code, current.nav_order);
     }
     const packages = await listInstalledPackagesWith(db, inventory);
-    await platformEvents.dispatch(events.installedPackagesReordered, packages, { transaction: db });
     return packages;
   });
 }

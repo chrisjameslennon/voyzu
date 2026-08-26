@@ -26,7 +26,6 @@ Explicitly out of scope for this change:
 - packages from the separate `voyzu-packages` repository
 - API routes
 - operations
-- events/listeners
 - slots and other extension surfaces
 - React navigation components such as left-nav headers
 
@@ -95,7 +94,6 @@ The generated files are indexes only. They do not copy or reconstruct package ro
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
 import { apiDefinitions } from "./api.routes";
-import { events } from "./events";
 import { pageRoutes } from "./pages.routes";
 import { operations } from "./operations";
 
@@ -103,7 +101,6 @@ export const usersModule = {
   pageRoutes,
   apiDefinitions,
   operations,
-  events,
 } as const satisfies VoyzuPackageModuleDefinition;
 ```
 
@@ -360,7 +357,7 @@ export const settingsLeftNav = [
 ] as const;
 ```
 
-This gives good type safety, but importing `usersModule` also reaches `api.routes.ts`, `events.ts`, `operations.ts`, and `pages.routes.ts`.
+This gives good type safety, but importing `usersModule` also reaches `api.routes.ts`, `operations.ts`, and `pages.routes.ts`.
 
 Once `pages.routes.ts` is safe to import globally, navigation should reference it directly:
 
@@ -468,6 +465,9 @@ export const preinstalledNavigation = [
 ] as const;
 ```
 
+The generator preserves the existing explicit platform navigation order. It must
+not use filesystem discovery order as the user-visible navigation order.
+
 Again, this is an index only. It does not copy the navigation definitions into generated code.
 
 Platform runtime code can flatten/interpret these contributions into the existing top navigation, domains, and left navigation structures.
@@ -548,6 +548,10 @@ import { preinstalledNavigation }
 
 The existing hardcoded runtime imports of complete preinstalled package definitions should no longer be required to construct page routes or navigation.
 
+The page-route index is consumed as the bare flattened route array shown above.
+It does not inject package metadata into route objects. Automatic `apiDocsUrl`
+generation is paused until API composition is redesigned.
+
 The page runtime becomes:
 
 ```text
@@ -621,7 +625,6 @@ The following must not be imported merely to match `/settings/users`:
 @voyzu/auth/modules/users/module.ts
 @voyzu/auth/modules/users/api.routes.ts
 @voyzu/auth/modules/users/operations.ts
-@voyzu/auth/modules/users/events.ts
 UsersListPage.tsx
 UserDetailPage.tsx
 UserProfilePage.tsx
@@ -650,7 +653,7 @@ This change must not:
 
 - migrate packages in the `voyzu-packages` repository;
 - redesign API composition;
-- redesign operations or events;
+- redesign operations;
 - convert page implementations into string entry points;
 - duplicate page route metadata into generated files;
 - duplicate navigation metadata into generated files;

@@ -6,8 +6,6 @@ import {
   InternalServerErrorResponseDto,
   UnauthorizedErrorResponseDto,
 } from "@voyzu/types";
-import { handleGenericPdf } from "./voyzu.pdf.handlers";
-import { handleExport } from "@voyzu/capability/export";
 
 const commonResponses = {
   "400": {
@@ -33,7 +31,9 @@ export const capabilityModule = {
     pdf: {
       method: "GET",
       path: "/capability/pdf",
-      handler: (request: any) => handleGenericPdf(request, "attachment"),
+      loadHandler: () => import("./voyzu.pdf.handlers").then(
+        (module) => (request: any) => module.handleGenericPdf(request, "attachment"),
+      ),
       request: {
         query: {
           parameters: {
@@ -68,7 +68,9 @@ export const capabilityModule = {
     pdfView: {
       method: "GET",
       path: "/capability/pdf-view",
-      handler: (request: any) => handleGenericPdf(request, "inline"),
+      loadHandler: () => import("./voyzu.pdf.handlers").then(
+        (module) => (request: any) => module.handleGenericPdf(request, "inline"),
+      ),
       request: {
         query: {
           parameters: {
@@ -103,7 +105,9 @@ export const capabilityModule = {
     export: {
       method: "POST",
       path: "/capability/export",
-      handler: (request: any) => handleExport(request),
+      loadHandler: () => import("@voyzu/capability/export").then(
+        (module) => module.handleExport,
+      ),
       request: {
         contentType: "application/json",
         body: CsvExportRequestDto,

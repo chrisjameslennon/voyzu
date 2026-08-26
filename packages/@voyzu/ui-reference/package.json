@@ -19,8 +19,10 @@
   "exports": {
     "./package.json": "./package.json",
     "./voyzu-package": "./voyzu.package.ts",
+    "./navigation": "./navigation/index.ts",
     "./navigation/top-nav": "./navigation/top-nav.ts",
-    "./navigation/left-nav": "./navigation/left-nav.ts"
+    "./navigation/left-nav": "./navigation/left-nav.ts",
+    "./ui-reference/pages.routes": "./modules/ui-reference/pages.routes.ts"
   },
   "peerDependencies": {
     "@voyzu/types": "^0.1.0",

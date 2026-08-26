@@ -1,6 +1,5 @@
 import { getDb, withTransaction, type DbExecutor } from "@voyzu/capability/db";
 import { BusinessRuleError, ConflictError, DataError, InputValidationError, NotFoundError } from "@voyzu/capability/errors";
-import { events as platformEvents } from "@voyzu/capability/events";
 import { createCreationAuditStamp, createUpdateAuditStamp, withAuditActors, withCreationAudit, withUpdateAudit } from "@voyzu/localization/common/server";
 import type {
   CountryBatchPatchRequestDto,
@@ -13,7 +12,6 @@ import type {
 import type { Filter, ListOptions } from "@voyzu/types/params";
 
 import { Deactivate, Delete } from "../../domain/operation-policy";
-import { events } from "../../events";
 import { CountryRepo } from "../db/country.repo";
 import type { CountryRow } from "../db/country.row.types";
 
@@ -40,7 +38,6 @@ export async function createCountry(input: CountryCreateRequestDto): Promise<Cou
     return await withTransaction(async (db) => {
       const row = await new CountryRepo(db).insert(withCreationAudit(toInsertRow(input), await createCreationAuditStamp()));
       const country = await enrichRow(row);
-      await platformEvents.dispatch(events.countryCreated, country, { transaction: db });
       return country;
     });
   } catch (error) {
@@ -65,7 +62,6 @@ export async function updateCountry(code: string, input: CountryUpdateRequestDto
         ...withUpdateAudit(toUpdateRow(input), await createUpdateAuditStamp()),
       });
       const country = await enrichRow(row);
-      await platformEvents.dispatch(events.countryUpdated, country, { transaction: db });
       return country;
     });
   } catch (error) {
@@ -81,7 +77,6 @@ export async function patchCountry(code: string, input: CountryPatchRequestDto):
         ...withUpdateAudit(toPatchRow(input), await createUpdateAuditStamp()),
       });
       const country = await enrichRow(row);
-      await platformEvents.dispatch(events.countryUpdated, country, { transaction: db });
       return country;
     });
   } catch (error) {
@@ -96,8 +91,6 @@ export async function deleteCountry(code: string): Promise<void> {
     const existing = await repo.get(code);
     if (!existing) throw new NotFoundError(`Country ${code} not found`);
     throwIfBlocked(Delete({ code: existing.code }));
-    const country = await enrichRow(existing);
-    await platformEvents.dispatch(events.countryDeleted, country, { transaction: db });
     await repo.delete(code);
   });
 }
@@ -125,7 +118,6 @@ export async function batchCreateCountries(inputs: CountryCreateRequestDto[]): P
       for (const input of inputs) {
         results.push(await enrichRow(await repo.insert(withCreationAudit(toInsertRow(input), audit))));
       }
-      await platformEvents.dispatch(events.countriesCreated, results, { transaction: client });
       return results;
     });
   } catch (error) {
@@ -150,7 +142,6 @@ export async function batchUpdateCountries(inputs: CountryBatchUpdateRequestDto[
       for (const input of inputs) {
         results.push(await enrichRow(await repo.update(input.code, withUpdateAudit(toUpdateRow(input), audit))));
       }
-      await platformEvents.dispatch(events.countriesUpdated, results, { transaction: client });
       return results;
     });
   } catch (error) {
@@ -168,7 +159,6 @@ export async function batchPatchCountries(inputs: CountryBatchPatchRequestDto[])
       for (const input of inputs) {
         results.push(await enrichRow(await repo.patch(input.code, withUpdateAudit(toPatchRow(input), audit))));
       }
-      await platformEvents.dispatch(events.countriesUpdated, results, { transaction: client });
       return results;
     });
   } catch (error) {
@@ -190,8 +180,6 @@ export async function batchDeleteCountries(codes: string[]): Promise<void> {
 
     for (const country of existing) throwIfBlocked(Delete({ code: country.code }));
 
-    const countries = await enrichRows(existing);
-    await platformEvents.dispatch(events.countriesDeleted, countries, { transaction: db });
     await repo.batchDelete(normalizedCodes);
   });
 }
@@ -199,7 +187,6 @@ export async function batchDeleteCountries(codes: string[]): Promise<void> {
 export async function activateCountry(code: string): Promise<CountryResponseDto> {
   return withTransaction(async (db) => {
     const [country] = await transitionCountryStatus(db, [code], "ACTIVE");
-    await platformEvents.dispatch(events.countryActivated, country, { transaction: db });
     return country;
   });
 }
@@ -207,7 +194,6 @@ export async function activateCountry(code: string): Promise<CountryResponseDto>
 export async function deactivateCountry(code: string): Promise<CountryResponseDto> {
   return withTransaction(async (db) => {
     const [country] = await transitionCountryStatus(db, [code], "INACTIVE");
-    await platformEvents.dispatch(events.countryDeactivated, country, { transaction: db });
     return country;
   });
 }
@@ -215,7 +201,6 @@ export async function deactivateCountry(code: string): Promise<CountryResponseDt
 export async function activateCountries(codes: string[]): Promise<CountryResponseDto[]> {
   return withTransaction(async (db) => {
     const countries = await transitionCountryStatus(db, codes, "ACTIVE");
-    await platformEvents.dispatch(events.countriesActivated, countries, { transaction: db });
     return countries;
   });
 }
@@ -223,7 +208,6 @@ export async function activateCountries(codes: string[]): Promise<CountryRespons
 export async function deactivateCountries(codes: string[]): Promise<CountryResponseDto[]> {
   return withTransaction(async (db) => {
     const countries = await transitionCountryStatus(db, codes, "INACTIVE");
-    await platformEvents.dispatch(events.countriesDeactivated, countries, { transaction: db });
     return countries;
   });
 }

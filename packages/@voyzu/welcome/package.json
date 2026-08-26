@@ -19,7 +19,9 @@
   "exports": {
     "./package.json": "./package.json",
     "./voyzu-package": "./voyzu.package.ts",
+    "./navigation": "./navigation/index.ts",
     "./navigation/top-nav": "./navigation/top-nav.ts",
+    "./welcome/pages.routes": "./modules/welcome/pages.routes.ts",
     ".": {
       "types": "./modules/welcome/module.ts",
       "import": "./modules/welcome/module.ts"

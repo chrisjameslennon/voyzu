@@ -1,6 +1,5 @@
 import { createElement } from "react";
 import type {
-  VoyzuBreadcrumbItem,
   VoyzuComposedSurfaceDomain,
   VoyzuSurfaceConfig,
   VoyzuSurfaceNavGroup,
@@ -8,104 +7,50 @@ import type {
   VoyzuSurfaceRoute,
 } from "@voyzu/ui-surface/types";
 
-import { voyzuAuthPackage } from "@voyzu/auth/voyzu-package";
-import authPackage from "@voyzu/auth/package.json";
-import { settingsLeftNav as authSettingsLeftNav } from "@voyzu/auth/navigation/settings";
-import { voyzuAuditPackage } from "@voyzu/audit/voyzu-package";
-import auditPackage from "@voyzu/audit/package.json";
-import { auditSettingsLeftNav } from "@voyzu/audit/navigation/settings";
-import { voyzuLocalizationPackage } from "@voyzu/localization/voyzu-package";
-import localizationPackage from "@voyzu/localization/package.json";
-import { localizationSettingsLeftNav } from "@voyzu/localization/navigation/settings";
-import { welcomePackage } from "@voyzu/welcome/voyzu-package";
-import welcomePackageJson from "@voyzu/welcome/package.json";
-import welcomeTopNav from "@voyzu/welcome/navigation/top-nav";
-import { voyzuPackageManagementPackage } from "@voyzu/package-management/voyzu-package";
-import packageManagementPackageJson from "@voyzu/package-management/package.json";
-import { packageManagementSettingsLeftNav } from "@voyzu/package-management/navigation/settings";
-import { systemInfoPackage } from "@voyzu/system-info/voyzu-package";
-import systemInfoPackageJson from "@voyzu/system-info/package.json";
-import { systemInfoSettingsLeftNav } from "@voyzu/system-info/navigation/settings";
-import { uiReferencePackage } from "@voyzu/ui-reference/voyzu-package";
-import uiReferencePackageJson from "@voyzu/ui-reference/package.json";
-import uiReferenceTopNav from "@voyzu/ui-reference/navigation/top-nav";
-import uiReferenceLeftNavDefinition from "@voyzu/ui-reference/navigation/left-nav";
-import { apiReferencePackage } from "@voyzu/api-reference/voyzu-package";
-import apiReferencePackageJson from "@voyzu/api-reference/package.json";
-import apiReferenceTopNav from "@voyzu/api-reference/navigation/top-nav";
-import apiReferenceLeftNavDefinition from "@voyzu/api-reference/navigation/left-nav";
+import { preinstalledNavigation } from "../../.generated/navigation";
 import {
   createInstalledPackageDomains,
   installedPackageLeftNav,
   installedPackageMainRegistrations,
   installedPackagePageRoutes,
 } from "../../.generated/navigation/packages";
-import { VoyzuBrand } from "./top-nav/VoyzuBrand";
-import { SurfaceLeftNav } from "./SurfaceLeftNav";
+import { preinstalledPageRoutes } from "../../.generated/page-routes";
 import { PackageTopNav } from "./packages/PackageTopNav";
+import { SurfaceLeftNav } from "./SurfaceLeftNav";
 import { SessionUserMenu } from "./top-nav/SessionUserMenu";
-
-type PreinstalledRoute = Omit<VoyzuSurfaceRoute, "breadcrumbBase"> & {
-  readonly breadcrumbBase?: readonly VoyzuBreadcrumbItem[];
-};
-
-type PreinstalledModule = {
-  readonly pageRoutes: Readonly<Record<string, PreinstalledRoute>>;
-  readonly apiDefinitions: Readonly<Record<string, unknown>>;
-};
-
-type PreinstalledPackage = {
-  readonly modules: readonly PreinstalledModule[];
-};
-
-function apiReferencePath(
-  packageName: string,
-  route: PreinstalledRoute,
-): string | undefined {
-  const moduleId = route.id.match(/^voyzu\.(.+)\.page\./)?.[1];
-  return moduleId
-    ? `/api-reference/${packageName.replace("/", "-")}/${moduleId}`
-    : undefined;
-}
-
-function mutableRoute(
-  route: PreinstalledRoute,
-  helpBaseUrl: string,
-  packageName: string,
-  hasApiDefinitions: boolean,
-): VoyzuSurfaceRoute {
-  return {
-    ...route,
-    packageName,
-    helpBaseUrl,
-    apiDocsUrl: route.apiDocsUrl
-      ?? (hasApiDefinitions ? apiReferencePath(packageName, route) : undefined),
-    breadcrumbBase: "breadcrumbBase" in route && route.breadcrumbBase
-      ? [...route.breadcrumbBase]
-      : undefined,
-  } as VoyzuSurfaceRoute;
-}
-
-function packagePageRoutes(
-  definition: PreinstalledPackage,
-  pageRootPaths: readonly string[],
-  packageName: string,
-  helpBaseUrl: string,
-): VoyzuSurfaceRoute[] {
-  return definition.modules.flatMap((module) => {
-    const hasApiDefinitions = Object.keys(module.apiDefinitions).length > 0;
-    return Object.values(module.pageRoutes).map((route) => {
-      if (!pageRootPaths.some((rootPath) => route.path === rootPath || route.path.startsWith(`${rootPath}/`))) {
-        throw new Error(`Package ${packageName} route ${route.path} is outside its declared page root paths.`);
-      }
-      return mutableRoute(route, helpBaseUrl, packageName, hasApiDefinitions);
-    });
-  });
-}
+import { VoyzuBrand } from "./top-nav/VoyzuBrand";
 
 type ReadonlyNavItem = Omit<Readonly<VoyzuSurfaceNavItem>, "children"> & {
   readonly children?: readonly ReadonlyNavItem[];
 };
+
+type ReadonlyNavigationGroup = {
+  readonly label?: string;
+  readonly items: readonly ReadonlyNavItem[];
+};
+
+type NavigationDefinition = {
+  readonly domains?: readonly {
+    readonly label: string;
+    readonly routeId: string;
+    readonly routeIds: readonly string[];
+    readonly topNavigationVisible?: boolean;
+    readonly leftNav: readonly ReadonlyNavigationGroup[];
+  }[];
+  readonly topNav?: {
+    readonly label: string;
+    readonly routeId: string;
+  };
+  readonly leftNav?: readonly ReadonlyNavigationGroup[];
+};
+
+type PreinstalledNavigationRegistration = {
+  readonly packageName: string;
+  readonly navigation: NavigationDefinition;
+};
+
+const navigationRegistrations = preinstalledNavigation as
+  readonly PreinstalledNavigationRegistration[];
 
 function mutableNavItem(item: ReadonlyNavItem): VoyzuSurfaceNavItem {
   return {
@@ -115,149 +60,83 @@ function mutableNavItem(item: ReadonlyNavItem): VoyzuSurfaceNavItem {
 }
 
 function mutableLeftNav(
-  definition: readonly {
-    readonly label?: string;
-    readonly items: readonly ReadonlyNavItem[];
-  }[],
+  groups: readonly ReadonlyNavigationGroup[] = [],
 ): VoyzuSurfaceNavGroup[] {
-  return definition.map((group) => ({
+  return groups.map((group) => ({
     ...group,
     items: group.items.map(mutableNavItem),
   }));
 }
 
-const authPageRoutes = packagePageRoutes(
-  voyzuAuthPackage,
-  authPackage.voyzu.pageRootPaths,
-  authPackage.name,
-  authPackage.voyzu.settings.helpBaseUrl,
-);
-const auditPageRoutes = packagePageRoutes(
-  voyzuAuditPackage,
-  auditPackage.voyzu.pageRootPaths,
-  auditPackage.name,
-  auditPackage.voyzu.settings.helpBaseUrl,
-);
-const localizationPageRoutes = packagePageRoutes(
-  voyzuLocalizationPackage,
-  localizationPackage.voyzu.pageRootPaths,
-  localizationPackage.name,
-  localizationPackage.voyzu.settings.helpBaseUrl,
-);
-const welcomePageRoutes = packagePageRoutes(
-  welcomePackage,
-  welcomePackageJson.voyzu.pageRootPaths,
-  welcomePackageJson.name,
-  welcomePackageJson.voyzu.settings.helpBaseUrl,
-);
-const uiReferencePageRoutes = packagePageRoutes(
-  uiReferencePackage,
-  uiReferencePackageJson.voyzu.pageRootPaths,
-  uiReferencePackageJson.name,
-  uiReferencePackageJson.voyzu.settings.helpBaseUrl,
-);
-const apiReferencePageRoutes = packagePageRoutes(
-  apiReferencePackage,
-  apiReferencePackageJson.voyzu.pageRootPaths,
-  apiReferencePackageJson.name,
-  apiReferencePackageJson.voyzu.settings.helpBaseUrl,
-);
-const packageManagementPageRoutes = packagePageRoutes(
-  voyzuPackageManagementPackage,
-  packageManagementPackageJson.voyzu.pageRootPaths,
-  packageManagementPackageJson.name,
-  packageManagementPackageJson.voyzu.settings.helpBaseUrl,
-);
-const systemInfoPageRoutes = packagePageRoutes(
-  systemInfoPackage,
-  systemInfoPackageJson.voyzu.pageRootPaths,
-  systemInfoPackageJson.name,
-  systemInfoPackageJson.voyzu.settings.helpBaseUrl,
+const routeById = new Map(
+  preinstalledPageRoutes.map((route) => [route.id, route]),
 );
 
-const welcomeDefaultRoute = welcomePageRoutes.find(({ id }) => id === welcomeTopNav.routeId);
-if (!welcomeDefaultRoute) {
-  throw new Error("Welcome top-nav route was not found.");
+function requiredRoute(routeId: string, packageName: string): VoyzuSurfaceRoute {
+  const route = routeById.get(routeId);
+  if (!route) {
+    throw new Error(`Package ${packageName} navigation route ${routeId} was not found.`);
+  }
+  return route;
 }
-const welcomeSurfaceDomain: VoyzuComposedSurfaceDomain = {
-  id: welcomePackageJson.name,
-  packageName: welcomePackageJson.name,
-  label: welcomeTopNav.label,
-  defaultPath: welcomeDefaultRoute.path,
-  routePaths: welcomePageRoutes.map(({ id, path }) => ({ id, path })),
-  leftNav: [],
-};
 
-const uiReferenceLeftNav = mutableLeftNav(uiReferenceLeftNavDefinition);
-const uiReferenceDefaultRoute = uiReferencePageRoutes.find(
-  ({ id }) => id === uiReferenceTopNav.routeId,
+const preinstalledSurfaceDomains: VoyzuComposedSurfaceDomain[] =
+  navigationRegistrations.flatMap(({ packageName, navigation }) => {
+    if (navigation.domains) {
+      return navigation.domains.map((domain) => {
+        const defaultRoute = requiredRoute(domain.routeId, packageName);
+        const domainRoutes = domain.routeIds.map((routeId) =>
+          requiredRoute(routeId, packageName));
+        return {
+          id: domain.routeId,
+          packageName,
+          label: domain.label,
+          defaultPath: defaultRoute.path,
+          routePaths: domainRoutes.map(({ id, path }) => ({ id, path })),
+          leftNav: mutableLeftNav(domain.leftNav),
+          topNavigationVisible: domain.topNavigationVisible,
+        };
+      });
+    }
+    if (!navigation.topNav) return [];
+    const defaultRoute = requiredRoute(navigation.topNav.routeId, packageName);
+    const packageRoutes = preinstalledPageRoutes.filter(
+      (route) =>
+        route.path === defaultRoute.path
+        || route.path.startsWith(`${defaultRoute.path}/`),
+    );
+    return [{
+      id: packageName,
+      packageName,
+      label: navigation.topNav.label,
+      defaultPath: defaultRoute.path,
+      routePaths: packageRoutes.map(({ id, path }) => ({ id, path })),
+      leftNav: mutableLeftNav(navigation.leftNav),
+    }];
+  });
+
+const installedSurfaceDomains = createInstalledPackageDomains(
+  preinstalledPageRoutes,
 );
-if (!uiReferenceDefaultRoute) {
-  throw new Error("UI Reference top-nav route was not found.");
-}
-const uiReferenceSurfaceDomain: VoyzuComposedSurfaceDomain = {
-  id: uiReferencePackageJson.name,
-  packageName: uiReferencePackageJson.name,
-  label: uiReferenceTopNav.label,
-  defaultPath: uiReferenceDefaultRoute.path,
-  routePaths: uiReferencePageRoutes.map(({ id, path }) => ({ id, path })),
-  leftNav: uiReferenceLeftNav,
-};
-const apiReferenceLeftNav = mutableLeftNav(apiReferenceLeftNavDefinition);
-const apiReferenceDefaultRoute = apiReferencePageRoutes.find(
-  ({ id }) => id === apiReferenceTopNav.routeId,
-);
-if (!apiReferenceDefaultRoute) {
-  throw new Error("API Reference top-nav route was not found.");
-}
-const apiReferenceSurfaceDomain: VoyzuComposedSurfaceDomain = {
-  id: apiReferencePackageJson.name,
-  packageName: apiReferencePackageJson.name,
-  label: apiReferenceTopNav.label,
-  defaultPath: apiReferenceDefaultRoute.path,
-  routePaths: apiReferencePageRoutes.map(({ id, path }) => ({ id, path })),
-  leftNav: apiReferenceLeftNav,
-};
-const composedSurfaceDomains = createInstalledPackageDomains([
-  ...authPageRoutes,
-  ...auditPageRoutes,
-  ...welcomePageRoutes,
-  ...uiReferencePageRoutes,
-  ...apiReferencePageRoutes,
-  ...packageManagementPageRoutes,
-  ...systemInfoPageRoutes,
-  ...localizationPageRoutes,
-]);
 const packageSurfaceDomains = [
-  welcomeSurfaceDomain,
-  uiReferenceSurfaceDomain,
-  apiReferenceSurfaceDomain,
-  ...composedSurfaceDomains,
+  ...preinstalledSurfaceDomains,
+  ...installedSurfaceDomains,
 ];
+
+const settingsNavigation = navigationRegistrations.filter(
+  ({ navigation }) => !navigation.topNav && !navigation.domains,
+);
+const settingsLeftNav: VoyzuSurfaceNavGroup[] = [{
+  label: "Settings",
+  items: settingsNavigation.flatMap(({ navigation }) =>
+    mutableLeftNav(navigation.leftNav).flatMap((group) => group.items)),
+}];
 
 const pageRoutes: VoyzuSurfaceRoute[] = [
-  ...authPageRoutes,
-  ...auditPageRoutes,
-  ...welcomePageRoutes,
-  ...uiReferencePageRoutes,
-  ...apiReferencePageRoutes,
-  ...packageManagementPageRoutes,
-  ...systemInfoPageRoutes,
-  ...localizationPageRoutes,
+  ...preinstalledPageRoutes,
   ...installedPackagePageRoutes,
 ];
-
-const localizationItems = mutableLeftNav(localizationSettingsLeftNav).flatMap((group) => group.items);
-const packageManagementItems = packageManagementSettingsLeftNav.flatMap((group) => group.items);
-const systemInfoItems = systemInfoSettingsLeftNav.flatMap((group) => group.items);
-const auditItems = auditSettingsLeftNav.flatMap((group) => group.items);
-const settingsLeftNav: VoyzuSurfaceNavGroup[] = authSettingsLeftNav.map(
-  (group, index) => ({
-    ...group,
-    items: index === 0 ? [...group.items, ...localizationItems, ...packageManagementItems, ...systemInfoItems, ...auditItems] : [...group.items],
-  }),
-);
-const settingsPageRoutes = [...authPageRoutes, ...localizationPageRoutes, ...packageManagementPageRoutes, ...systemInfoPageRoutes, ...auditPageRoutes].filter(
+const settingsPageRoutes = preinstalledPageRoutes.filter(
   ({ path }) => path.startsWith("/settings/"),
 );
 const settingsRoutePaths = settingsPageRoutes.map(({ id, path }) => ({ id, path }));
@@ -281,11 +160,9 @@ export const voyzuSurfaceConfig = {
       packageDomains: packageSurfaceDomains,
     }),
   },
-
   pageRoutes,
   leftNav: [
-    ...uiReferenceLeftNav,
-    ...apiReferenceLeftNav,
+    ...preinstalledSurfaceDomains.flatMap((domain) => domain.leftNav),
     ...installedPackageLeftNav,
     ...settingsLeftNav,
   ],

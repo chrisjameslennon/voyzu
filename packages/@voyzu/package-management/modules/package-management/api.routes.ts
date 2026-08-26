@@ -12,15 +12,6 @@ import {
   InstalledPackageResponseDto,
   InstalledPackageUpdateRequestDto,
 } from "@voyzu/package-management/types";
-import {
-  handleGet,
-  handleGetHomePage,
-  handleList,
-  handleMove,
-  handleRefresh,
-  handleUpdate,
-  handleUpdateHomePage,
-} from "./server/api/installed-package.http.handlers";
 
 const tag = ["Package Management"];
 
@@ -54,7 +45,7 @@ export const apiDefinitions = {
   list: {
     method: "GET",
     path: "/installed-packages",
-    handler: handleList,
+    loadHandler: () => import("./server/api/installed-package.http.handlers").then((module) => module.handleList),
     summary: "List Packages",
     description:
       "Lists the packages currently recorded as installed in this Voyzu instance.",
@@ -70,7 +61,7 @@ export const apiDefinitions = {
   get: {
     method: "GET",
     path: "/installed-packages/[id]",
-    handler: handleGet,
+    loadHandler: () => import("./server/api/installed-package.http.handlers").then((module) => module.handleGet),
     request: { path: idPathParameter },
     summary: "Get Package",
     description: "Gets one installed package record.",
@@ -87,7 +78,7 @@ export const apiDefinitions = {
   update: {
     method: "PUT",
     path: "/installed-packages/[id]",
-    handler: handleUpdate,
+    loadHandler: () => import("./server/api/installed-package.http.handlers").then((module) => module.handleUpdate),
     request: {
       path: idPathParameter,
       contentType: "application/json",
@@ -112,7 +103,7 @@ export const apiDefinitions = {
   move: {
     method: "PUT",
     path: "/installed-packages/[id]/navigation-order",
-    handler: handleMove,
+    loadHandler: () => import("./server/api/installed-package.http.handlers").then((module) => module.handleMove),
     request: {
       path: idPathParameter,
       contentType: "application/json",
@@ -136,7 +127,7 @@ export const apiDefinitions = {
   refresh: {
     method: "POST",
     path: "/installed-package-reconciliation",
-    handler: handleRefresh,
+    loadHandler: () => import("./server/api/installed-package.http.handlers").then((module) => module.handleRefresh),
     summary: "Refresh Package Inventory",
     description:
       "Reconciles package-management records with packages installed on the filesystem.",
@@ -152,7 +143,7 @@ export const apiDefinitions = {
   getHomePage: {
     method: "GET",
     path: "/package-settings/home-page",
-    handler: handleGetHomePage,
+    loadHandler: () => import("./server/api/installed-package.http.handlers").then((module) => module.handleGetHomePage),
     summary: "Get Home Page",
     description: "Gets the application start-page route.",
     tags: tag,
@@ -167,7 +158,7 @@ export const apiDefinitions = {
   updateHomePage: {
     method: "PUT",
     path: "/package-settings/home-page",
-    handler: handleUpdateHomePage,
+    loadHandler: () => import("./server/api/installed-package.http.handlers").then((module) => module.handleUpdateHomePage),
     request: {
       contentType: "application/json",
       body: HomePageRouteUpdateRequestDto,

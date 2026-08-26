@@ -7,8 +7,14 @@ import type {
   ApiRouteDefinition,
 } from "@voyzu/types/api";
 
-export interface VoyzuApiModuleRoute extends Omit<ApiRouteDefinition, "handler"> {
-  handler: (request: NextRequest, context: { params: Promise<any> }) => Promise<NextResponse>;
+export type VoyzuApiRouteHandler = (
+  request: NextRequest,
+  context: { params: Promise<any> },
+) => Promise<NextResponse>;
+
+export interface VoyzuApiModuleRoute extends Omit<ApiRouteDefinition, "handler" | "loadHandler"> {
+  handler?: VoyzuApiRouteHandler;
+  loadHandler?: () => Promise<VoyzuApiRouteHandler>;
 }
 
 export type VoyzuApiParameterDefinition = ApiParameterDefinition;
@@ -22,5 +28,6 @@ export interface VoyzuApiModule {
 
 export interface VoyzuApiConfig {
   basePath: "/api";
-  modules: VoyzuApiModule[];
+  routes?: VoyzuApiModuleRoute[];
+  modules?: VoyzuApiModule[];
 }

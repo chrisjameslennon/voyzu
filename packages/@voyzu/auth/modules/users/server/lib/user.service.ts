@@ -8,8 +8,6 @@ import type { UserUpdateRequestDto } from "@voyzu/auth/types";
 import type { UserResponseDto } from "@voyzu/auth/types";
 import { getDb, withTransaction, type DbExecutor } from "@voyzu/capability/db";
 import { BusinessRuleError, ConflictError, DataError, NotFoundError, InputValidationError } from "@voyzu/capability/errors";
-import { events as platformEvents } from "@voyzu/capability/events";
-import { events } from "../../events";
 import { UserRepo } from "../db/user.repo";
 import type { UserRow } from "../db/user.row.types";
 import { getCurrentActorType, getCurrentUser } from "./current-user.service";
@@ -115,7 +113,6 @@ export async function updateCurrentUserProfile(input: UserProfileUpdateRequestDt
         audit: auditStamp(currentUser),
       });
       const user = toDto(row, await getAuditActors(row, repo));
-      await platformEvents.dispatch(events.userUpdated, user, { transaction: db });
       return user;
     });
   } catch (err) {
@@ -135,9 +132,7 @@ export async function changeCurrentUserPassword(input: UserPasswordUpdateRequest
   try {
     await withTransaction(async (db) => {
       const repo = new UserRepo(db);
-      const row = await repo.updatePassword(currentUser.code, await hashPassword(input.password), auditStamp(currentUser));
-      const user = toDto(row, await getAuditActors(row, repo));
-      await platformEvents.dispatch(events.userPasswordChanged, user, { transaction: db });
+      await repo.updatePassword(currentUser.code, await hashPassword(input.password), auditStamp(currentUser));
     });
   } catch (err) {
     if (err instanceof DataError) throw new NotFoundError(`User ${currentUser.code} not found`);
@@ -167,7 +162,6 @@ export async function createUser(input: UserCreateRequestDto): Promise<UserRespo
         audit: auditStamp(currentUser),
       });
       const user = toDto(row, await getAuditActors(row, repo));
-      await platformEvents.dispatch(events.userCreated, user, { transaction: client });
       return user;
     });
   } catch (err) {
@@ -188,9 +182,7 @@ export async function changeUserPassword(code: string, input: UserPasswordUpdate
   try {
     await withTransaction(async (db) => {
       const repo = new UserRepo(db);
-      const row = await repo.updatePassword(code, await hashPassword(input.password), auditStamp(currentUser));
-      const user = toDto(row, await getAuditActors(row, repo));
-      await platformEvents.dispatch(events.userPasswordChanged, user, { transaction: db });
+      await repo.updatePassword(code, await hashPassword(input.password), auditStamp(currentUser));
     });
   } catch (err) {
     if (err instanceof DataError) throw new NotFoundError(`User ${code} not found`);
@@ -205,7 +197,6 @@ export async function updateUser(code: string, input: UserUpdateRequestDto): Pro
     return await withTransaction(async (client) => {
       const repo = new UserRepo(client);
       const user = await updateUserWithRepo(repo, currentUser, code, input);
-      await platformEvents.dispatch(events.userUpdated, user, { transaction: client });
       return user;
     });
   } catch (err) {
@@ -240,8 +231,6 @@ export async function deleteUser(code: string): Promise<void> {
     const repo = new UserRepo(db);
     const [row] = await ensureUsersExist([normalizedCode], repo);
     await ensureAtLeastOneActiveAdminAfterMutation(repo, [row]);
-    const user = toDto(row, await getAuditActors(row, repo));
-    await platformEvents.dispatch(events.userDeleted, user, { transaction: db });
     await repo.delete(normalizedCode);
   });
 }
@@ -275,7 +264,6 @@ export async function batchCreateUsers(inputs: UserCreateRequestDto[]): Promise<
         });
         users.push(toDto(row, await getAuditActors(row, repo)));
       }
-      await platformEvents.dispatch(events.usersCreated, users, { transaction: db });
       return users;
     });
   } catch (err) {
@@ -295,7 +283,6 @@ export async function batchUpdateUsers(inputs: UserBatchUpdateRequestDto[]): Pro
       for (const input of inputs) {
         users.push(await updateUserWithRepo(repo, currentUser, input.code, input));
       }
-      await platformEvents.dispatch(events.usersUpdated, users, { transaction: db });
       return users;
     });
   } catch (err) {
@@ -327,7 +314,6 @@ export async function batchPatchUsers(inputs: UserBatchPatchRequestDto[]): Promi
           status: existing.status,
         }));
       }
-      await platformEvents.dispatch(events.usersUpdated, users, { transaction: db });
       return users;
     });
   } catch (err) {
@@ -343,7 +329,6 @@ export async function activateUser(code: string): Promise<UserResponseDto> {
   const currentUser = await requireCurrentAdmin();
   return withTransaction(async (db) => {
     const [user] = await transitionUserStatus(db, currentUser, [code], "ACTIVE");
-    await platformEvents.dispatch(events.userActivated, user, { transaction: db });
     return user;
   });
 }
@@ -352,7 +337,6 @@ export async function deactivateUser(code: string): Promise<UserResponseDto> {
   const currentUser = await requireCurrentAdmin();
   return withTransaction(async (db) => {
     const [user] = await transitionUserStatus(db, currentUser, [code], "INACTIVE");
-    await platformEvents.dispatch(events.userDeactivated, user, { transaction: db });
     return user;
   });
 }
@@ -366,8 +350,6 @@ export async function batchDeleteUsers(codes: string[]): Promise<void> {
     const repo = new UserRepo(db);
     const rows = await ensureUsersExist(normalizedCodes, repo);
     await ensureAtLeastOneActiveAdminAfterMutation(repo, rows);
-    const users = await Promise.all(rows.map(async (row) => toDto(row, await getAuditActors(row, repo))));
-    await platformEvents.dispatch(events.usersDeleted, users, { transaction: db });
     await repo.batchDelete(normalizedCodes);
   });
 }
@@ -376,7 +358,6 @@ export async function activateUsers(codes: string[]): Promise<UserResponseDto[]>
   const currentUser = await requireCurrentAdmin();
   return withTransaction(async (db) => {
     const users = await transitionUserStatus(db, currentUser, codes, "ACTIVE");
-    await platformEvents.dispatch(events.usersActivated, users, { transaction: db });
     return users;
   });
 }
@@ -385,7 +366,6 @@ export async function deactivateUsers(codes: string[]): Promise<UserResponseDto[
   const currentUser = await requireCurrentAdmin();
   return withTransaction(async (db) => {
     const users = await transitionUserStatus(db, currentUser, codes, "INACTIVE");
-    await platformEvents.dispatch(events.usersDeactivated, users, { transaction: db });
     return users;
   });
 }

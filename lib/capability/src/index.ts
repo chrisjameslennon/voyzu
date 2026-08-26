@@ -19,11 +19,6 @@ export {
   type DatabaseUrlValidationResult,
   type DbExecutor,
 } from "./db";
-export {
-  events,
-  type VoyzuEventContext,
-  type VoyzuEventHandler,
-} from "./events";
 export { operation, type VoyzuOperationDefinition } from "./operations";
 export {
   businessRuleError,

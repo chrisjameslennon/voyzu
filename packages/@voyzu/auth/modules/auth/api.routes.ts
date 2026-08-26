@@ -9,11 +9,6 @@ import {
   InternalServerErrorResponseDto,
   UnauthorizedErrorResponseDto,
 } from "@voyzu/types";
-import {
-  handleLogin,
-  handleLogout,
-  handleMe,
-} from "./server/auth.http.handlers";
 
 const commonResponses = {
   "400": {
@@ -38,7 +33,7 @@ export const apiDefinitions = {
   login: {
     method: "POST",
     path: "/auth/session",
-    handler: handleLogin,
+    loadHandler: () => import("./server/auth.http.handlers").then((module) => module.handleLogin),
     request: {
       contentType: "application/json",
       body: AuthLoginRequestDto,
@@ -77,7 +72,7 @@ export const apiDefinitions = {
   logout: {
     method: "DELETE",
     path: "/auth/session",
-    handler: handleLogout,
+    loadHandler: () => import("./server/auth.http.handlers").then((module) => module.handleLogout),
     summary: "Log out",
     description: "Clears the authenticated UI session cookie.",
     tags: ["Auth"],
@@ -108,7 +103,7 @@ export const apiDefinitions = {
   me: {
     method: "GET",
     path: "/auth/session",
-    handler: handleMe,
+    loadHandler: () => import("./server/auth.http.handlers").then((module) => module.handleMe),
     summary: "Get current session",
     description: "Returns the current UI authentication session state.",
     tags: ["Auth"],

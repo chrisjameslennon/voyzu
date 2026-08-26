@@ -5,6 +5,7 @@ export type {
   VoyzuApiCookieDefinition,
   VoyzuApiModule,
   VoyzuApiModuleRoute,
+  VoyzuApiRouteHandler,
   VoyzuApiParameterDefinition,
   VoyzuApiRequestDefinition,
   VoyzuApiResponseDefinition,

@@ -11,7 +11,7 @@ export interface BreadcrumbItem {
 }
 
 interface BreadcrumbContextValue {
-  base: BreadcrumbItem[];
+  base: readonly BreadcrumbItem[];
 }
 
 const BreadcrumbContext = createContext<BreadcrumbContextValue>({
@@ -19,7 +19,7 @@ const BreadcrumbContext = createContext<BreadcrumbContextValue>({
 });
 
 interface BreadcrumbsProviderProps {
-  base: BreadcrumbItem[];
+  base: readonly BreadcrumbItem[];
   children: ReactNode;
 }
 

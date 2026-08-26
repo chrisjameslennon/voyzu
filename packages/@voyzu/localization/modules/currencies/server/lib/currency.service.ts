@@ -1,12 +1,10 @@
 import { getDb, withTransaction, type DbExecutor } from "@voyzu/capability/db";
 import { BusinessRuleError, ConflictError, DataError, InputValidationError, NotFoundError } from "@voyzu/capability/errors";
-import { events as platformEvents } from "@voyzu/capability/events";
 import { createCreationAuditStamp, createUpdateAuditStamp, withAuditActors, withCreationAudit, withUpdateAudit } from "@voyzu/localization/common/server";
 import type { CurrencyBatchPatchRequestDto, CurrencyBatchUpdateRequestDto, CurrencyCreateRequestDto, CurrencyPatchRequestDto, CurrencyResponseDto, CurrencyUpdateRequestDto } from "@voyzu/localization/types/modules/currencies";
 import type { Filter, ListOptions } from "@voyzu/types/params";
 
 import { Deactivate, Delete } from "../../domain/operation-policy";
-import { events } from "../../events";
 import { CurrencyRepo } from "../db/currency.repo";
 import type { CurrencyRow } from "../db/currency.row.types";
 
@@ -56,7 +54,6 @@ export async function createCurrency(input: CurrencyCreateRequestDto): Promise<C
     return await withTransaction(async (db) => {
       const row = await new CurrencyRepo(db).insert(withCreationAudit(toInsertRow(input), await createCreationAuditStamp()));
       const currency = await enrichRow(row);
-      await platformEvents.dispatch(events.currencyCreated, currency, { transaction: db });
       return currency;
     });
   } catch (err) {
@@ -72,7 +69,6 @@ export async function updateCurrency(code: string, input: CurrencyUpdateRequestD
     return await withTransaction(async (db) => {
       const row = await new CurrencyRepo(db).update(code, withUpdateAudit(toUpdateRow(input), await createUpdateAuditStamp()));
       const currency = await enrichRow(row);
-      await platformEvents.dispatch(events.currencyUpdated, currency, { transaction: db });
       return currency;
     });
   } catch (err) {
@@ -88,7 +84,6 @@ export async function patchCurrency(code: string, input: CurrencyPatchRequestDto
     return await withTransaction(async (db) => {
       const row = await new CurrencyRepo(db).patch(code, withUpdateAudit(toPatchRow(input), await createUpdateAuditStamp()));
       const currency = await enrichRow(row);
-      await platformEvents.dispatch(events.currencyUpdated, currency, { transaction: db });
       return currency;
     });
   } catch (err) {
@@ -105,8 +100,6 @@ export async function deleteCurrency(code: string): Promise<void> {
     const existing = await repo.get(code);
     if (!existing) throw new NotFoundError(`Currency ${code} not found`);
     throwIfBlocked(Delete({ code: existing.code }));
-    const currency = await enrichRow(existing);
-    await platformEvents.dispatch(events.currencyDeleted, currency, { transaction: db });
     await repo.delete(code);
   });
 }
@@ -122,7 +115,6 @@ export async function batchCreateCurrencies(inputs: CurrencyCreateRequestDto[]):
         const row = await repo.insert(withCreationAudit(toInsertRow(input), audit));
         results.push(await enrichRow(row));
       }
-      await platformEvents.dispatch(events.currenciesCreated, results, { transaction: client });
       return results;
     });
   } catch (err) {
@@ -148,7 +140,6 @@ export async function batchUpdateCurrencies(inputs: CurrencyBatchUpdateRequestDt
         const row = await repo.update(input.code, withUpdateAudit(toUpdateRow(input), audit));
         results.push(await enrichRow(row));
       }
-      await platformEvents.dispatch(events.currenciesUpdated, results, { transaction: client });
       return results;
     });
   } catch (err) {
@@ -169,7 +160,6 @@ export async function batchPatchCurrencies(inputs: CurrencyBatchPatchRequestDto[
         const row = await repo.patch(input.code, withUpdateAudit(toPatchRow(input), audit));
         results.push(await enrichRow(row));
       }
-      await platformEvents.dispatch(events.currenciesUpdated, results, { transaction: client });
       return results;
     });
   } catch (err) {
@@ -193,8 +183,6 @@ export async function batchDeleteCurrencies(codes: string[]): Promise<void> {
 
     for (const currency of existing) throwIfBlocked(Delete({ code: currency.code }));
 
-    const currencies = await enrichRows(existing);
-    await platformEvents.dispatch(events.currenciesDeleted, currencies, { transaction: db });
     await repo.batchDelete(normalizedCodes);
   });
 }
@@ -202,7 +190,6 @@ export async function batchDeleteCurrencies(codes: string[]): Promise<void> {
 export async function activateCurrency(code: string): Promise<CurrencyResponseDto> {
   return withTransaction(async (db) => {
     const [currency] = await transitionCurrencyStatus(db, [code], "ACTIVE");
-    await platformEvents.dispatch(events.currencyActivated, currency, { transaction: db });
     return currency;
   });
 }
@@ -210,7 +197,6 @@ export async function activateCurrency(code: string): Promise<CurrencyResponseDt
 export async function deactivateCurrency(code: string): Promise<CurrencyResponseDto> {
   return withTransaction(async (db) => {
     const [currency] = await transitionCurrencyStatus(db, [code], "INACTIVE");
-    await platformEvents.dispatch(events.currencyDeactivated, currency, { transaction: db });
     return currency;
   });
 }
@@ -218,7 +204,6 @@ export async function deactivateCurrency(code: string): Promise<CurrencyResponse
 export async function activateCurrencies(codes: string[]): Promise<CurrencyResponseDto[]> {
   return withTransaction(async (db) => {
     const currencies = await transitionCurrencyStatus(db, codes, "ACTIVE");
-    await platformEvents.dispatch(events.currenciesActivated, currencies, { transaction: db });
     return currencies;
   });
 }
@@ -226,7 +211,6 @@ export async function activateCurrencies(codes: string[]): Promise<CurrencyRespo
 export async function deactivateCurrencies(codes: string[]): Promise<CurrencyResponseDto[]> {
   return withTransaction(async (db) => {
     const currencies = await transitionCurrencyStatus(db, codes, "INACTIVE");
-    await platformEvents.dispatch(events.currenciesDeactivated, currencies, { transaction: db });
     return currencies;
   });
 }

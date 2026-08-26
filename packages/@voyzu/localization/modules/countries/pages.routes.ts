@@ -1,31 +1,12 @@
-import {
-  handleActivate as handleCountriesActivate,
-  handleBatchActivate as handleCountriesBatchActivate,
-  handleBatchCreate as handleCountriesBatchCreate,
-  handleBatchDeactivate as handleCountriesBatchDeactivate,
-  handleBatchDelete as handleCountriesBatchDelete,
-  handleBatchGet as handleCountriesBatchGet,
-  handleBatchPatch as handleCountriesBatchPatch,
-  handleBatchUpdate as handleCountriesBatchUpdate,
-  handleCreate as handleCountriesCreate,
-  handleDeactivate as handleCountriesDeactivate,
-  handleDelete as handleCountriesDelete,
-  handleFilter as handleCountriesFilter,
-  handleGet as handleCountriesGet,
-  handleList as handleCountriesList,
-  handlePatch as handleCountriesPatch,
-  handleSearch as handleCountriesSearch,
-  handleUpdate as handleCountriesUpdate,
-} from "@voyzu/localization/countries/server";
-import { CountriesListPage, CountryDetailPage } from "@voyzu/localization/countries/server";
-
 export const pageRoutes = {
   list: {
     id: "voyzu.countries.page.list",
     pageTitle: "Countries",
     helpPath: "modules-help/organization-financial-settings/country",
     path: "/settings/localization/countries",
-    Page: CountriesListPage,
+    loadPage: () =>
+      import("./server/pages/CountriesListPage")
+        .then((module) => module.CountriesListPage),
     breadcrumbBase: [
       {
         label: "Settings",
@@ -42,7 +23,9 @@ export const pageRoutes = {
     pageTitle: "Country",
     helpPath: "modules-help/organization-financial-settings/country",
     path: "/settings/localization/countries/[code]",
-    Page: CountryDetailPage,
+    loadPage: () =>
+      import("./server/pages/CountryDetailPage")
+        .then((module) => module.CountryDetailPage),
     breadcrumbBase: [
       {
         label: "Settings",

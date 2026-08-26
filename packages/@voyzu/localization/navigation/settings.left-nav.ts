@@ -1,7 +1,7 @@
 import type { VoyzuPackageNavigationGroup } from "@voyzu/types/framework";
 
-import { countriesModule } from "../modules/countries/module";
-import { currenciesModule } from "../modules/currencies/module";
+import { pageRoutes as countriesPageRoutes } from "../modules/countries/pages.routes";
+import { pageRoutes as currenciesPageRoutes } from "../modules/currencies/pages.routes";
 
 export const localizationSettingsLeftNav = [{
   items: [{
@@ -9,8 +9,8 @@ export const localizationSettingsLeftNav = [{
     icon: "globe",
     path: "#localization",
     children: [
-      { label: "Countries", routeId: countriesModule.pageRoutes.list.id },
-      { label: "Currencies", routeId: currenciesModule.pageRoutes.list.id },
+      { label: "Countries", routeId: countriesPageRoutes.list.id },
+      { label: "Currencies", routeId: currenciesPageRoutes.list.id },
     ],
   }],
 }] as const satisfies readonly VoyzuPackageNavigationGroup[];

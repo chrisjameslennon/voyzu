@@ -1,4 +1,4 @@
-import { usersModule } from "../modules/users/module";
+import { pageRoutes as usersPageRoutes } from "../modules/users/pages.routes";
 
 export const settingsLeftNav = [
   {
@@ -7,7 +7,7 @@ export const settingsLeftNav = [
       {
         label: "Users",
         icon: "person",
-        routeId: usersModule.pageRoutes.list.id,
+        routeId: usersPageRoutes.list.id,
       },
     ],
   },

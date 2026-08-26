@@ -1,13 +1,12 @@
-import { handleActivate as handleCurrenciesActivate, handleBatchActivate as handleCurrenciesBatchActivate, handleBatchCreate as handleCurrenciesBatchCreate, handleBatchDeactivate as handleCurrenciesBatchDeactivate, handleBatchDelete as handleCurrenciesBatchDelete, handleBatchGet as handleCurrenciesBatchGet, handleBatchPatch as handleCurrenciesBatchPatch, handleBatchUpdate as handleCurrenciesBatchUpdate, handleCreate as handleCurrenciesCreate, handleDeactivate as handleCurrenciesDeactivate, handleDelete as handleCurrenciesDelete, handleFilter as handleCurrenciesFilter, handleGet as handleCurrenciesGet, handleList as handleCurrenciesList, handlePatch as handleCurrenciesPatch, handleSearch as handleCurrenciesSearch, handleUpdate as handleCurrenciesUpdate } from "@voyzu/localization/currencies/server";
-import { CurrenciesListPage, CurrencyDetailPage } from "@voyzu/localization/currencies/server";
-
 export const pageRoutes = {
   list: {
     id: "voyzu.currencies.page.list",
     pageTitle: "Currencies",
     helpPath: "modules-help/organization-financial-settings/currency",
     path: "/settings/localization/currencies",
-    Page: CurrenciesListPage,
+    loadPage: () =>
+      import("./server/pages/CurrenciesListPage")
+        .then((module) => module.CurrenciesListPage),
     breadcrumbBase: [
       {
         label: "Settings",
@@ -24,7 +23,9 @@ export const pageRoutes = {
     pageTitle: "Currency",
     helpPath: "modules-help/organization-financial-settings/currency",
     path: "/settings/localization/currencies/[code]",
-    Page: CurrencyDetailPage,
+    loadPage: () =>
+      import("./server/pages/CurrencyDetailPage")
+        .then((module) => module.CurrencyDetailPage),
     breadcrumbBase: [
       {
         label: "Settings",

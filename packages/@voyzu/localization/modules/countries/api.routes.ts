@@ -1,24 +1,4 @@
 import Type from "typebox";
-import {
-  handleActivate as handleCountriesActivate,
-  handleBatchActivate as handleCountriesBatchActivate,
-  handleBatchCreate as handleCountriesBatchCreate,
-  handleBatchDeactivate as handleCountriesBatchDeactivate,
-  handleBatchDelete as handleCountriesBatchDelete,
-  handleBatchGet as handleCountriesBatchGet,
-  handleBatchPatch as handleCountriesBatchPatch,
-  handleBatchUpdate as handleCountriesBatchUpdate,
-  handleCreate as handleCountriesCreate,
-  handleDeactivate as handleCountriesDeactivate,
-  handleDelete as handleCountriesDelete,
-  handleFilter as handleCountriesFilter,
-  handleGet as handleCountriesGet,
-  handleList as handleCountriesList,
-  handlePatch as handleCountriesPatch,
-  handleSearch as handleCountriesSearch,
-  handleUpdate as handleCountriesUpdate,
-} from "@voyzu/localization/countries/server";
-import { CountriesListPage, CountryDetailPage } from "@voyzu/localization/countries/server";
 import { BusinessRuleErrorResponseDto, ConflictErrorResponseDto, EntityNotFoundErrorResponseDto, FilterRequestDto, InputValidationErrorResponseDto, InternalServerErrorResponseDto } from "@voyzu/types";
 import { CountryResponseDto } from "../../types/modules/countries/country.response.dto";
 import { CountryPatchRequestDto } from "../../types/modules/countries/country.patch.request.dto";
@@ -36,7 +16,7 @@ export const apiDefinitions = {
   list: {
     method: "GET",
     path: "/localization/countries",
-    handler: (request: any) => handleCountriesList(request),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleList),
     summary: "List",
     description: "Lists countries.",
     tags: ["Countries"],
@@ -48,7 +28,7 @@ export const apiDefinitions = {
   create: {
     method: "POST",
     path: "/localization/countries",
-    handler: (request: any) => handleCountriesCreate(request),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleCreate),
     request: { contentType: "application/json", body: CountryCreateRequestDto },
     summary: "Create",
     description: "Creates a country. Status defaults to ACTIVE and cannot be supplied in the request body.",
@@ -63,7 +43,7 @@ export const apiDefinitions = {
   filter: {
     method: "POST",
     path: "/localization/countries/filter",
-    handler: (request: any) => handleCountriesFilter(request),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleFilter),
     request: { contentType: "application/json", body: FilterRequestDto },
     summary: "Filter",
     description: "Filters countries using the shared filter request body.",
@@ -76,7 +56,7 @@ export const apiDefinitions = {
   search: {
     method: "GET",
     path: "/localization/countries/search",
-    handler: (request: any) => handleCountriesSearch(request),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleSearch),
     request: { query: { parameters: { q: { description: "Search text used to match country records.", required: true } }, schema: Type.Object({ q: { type: "string" } }) } },
     summary: "Search",
     description: "Searches countries.",
@@ -90,7 +70,7 @@ export const apiDefinitions = {
   batchCreate: {
     method: "POST",
     path: "/localization/countries/batch/create",
-    handler: (request: any) => handleCountriesBatchCreate(request),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleBatchCreate),
     request: { contentType: "application/json", body: Type.Array(CountryCreateRequestDto) },
     summary: "Batch Create",
     description: "Creates multiple countries. Status defaults to ACTIVE and cannot be supplied in the request body.",
@@ -105,7 +85,7 @@ export const apiDefinitions = {
   batchGet: {
     method: "POST",
     path: "/localization/countries/batch/get",
-    handler: (request: any) => handleCountriesBatchGet(request),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleBatchGet),
     request: { contentType: "application/json", body: CountryCodesRequestDto },
     summary: "Batch Get",
     description: "Gets multiple countries by code.",
@@ -119,7 +99,7 @@ export const apiDefinitions = {
   batchUpdate: {
     method: "PUT",
     path: "/localization/countries/batch/update",
-    handler: (request: any) => handleCountriesBatchUpdate(request),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleBatchUpdate),
     request: { contentType: "application/json", body: Type.Array(CountryBatchUpdateRequestDto) },
     summary: "Batch Update",
     description: "Updates multiple countries. Status cannot be changed by this request; code identifies each row.",
@@ -134,7 +114,7 @@ export const apiDefinitions = {
   batchPatch: {
     method: "PATCH",
     path: "/localization/countries/batch/patch",
-    handler: (request: any) => handleCountriesBatchPatch(request),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleBatchPatch),
     request: { contentType: "application/json", body: Type.Array(CountryBatchPatchRequestDto) },
     summary: "Batch Patch",
     description: "Patches multiple countries. Status cannot be changed by this request; code identifies each row.",
@@ -149,7 +129,7 @@ export const apiDefinitions = {
   batchDelete: {
     method: "POST",
     path: "/localization/countries/batch/delete",
-    handler: (request: any) => handleCountriesBatchDelete(request),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleBatchDelete),
     request: { contentType: "application/json", body: CountryCodesRequestDto },
     summary: "Batch Delete",
     description: "Deletes multiple countries. Countries with postings cannot be deleted.",
@@ -165,7 +145,7 @@ export const apiDefinitions = {
   batchActivate: {
     method: "POST",
     path: "/localization/countries/batch/activate",
-    handler: (request: any) => handleCountriesBatchActivate(request),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleBatchActivate),
     request: { contentType: "application/json", body: CountryCodesRequestDto },
     summary: "Batch Activate",
     description: "Sets multiple countries to ACTIVE.",
@@ -180,7 +160,7 @@ export const apiDefinitions = {
   batchDeactivate: {
     method: "POST",
     path: "/localization/countries/batch/deactivate",
-    handler: (request: any) => handleCountriesBatchDeactivate(request),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleBatchDeactivate),
     request: { contentType: "application/json", body: CountryCodesRequestDto },
     summary: "Batch Deactivate",
     description: "Sets multiple countries to INACTIVE.",
@@ -195,7 +175,7 @@ export const apiDefinitions = {
   get: {
     method: "GET",
     path: "/localization/countries/[code]",
-    handler: (request: any, context: any) => handleCountriesGet(request, context),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleGet),
     request: { path: { code: { description: "Country code.", schema: { type: "string" } } } },
     summary: "Get",
     description: "Gets a country.",
@@ -209,7 +189,7 @@ export const apiDefinitions = {
   update: {
     method: "PUT",
     path: "/localization/countries/[code]",
-    handler: (request: any, context: any) => handleCountriesUpdate(request, context),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleUpdate),
     request: { path: { code: { description: "Country code.", schema: { type: "string" } } }, contentType: "application/json", body: CountryUpdateRequestDto },
     summary: "Update",
     description: "Updates a country. Status and code cannot be changed by this request.",
@@ -224,7 +204,7 @@ export const apiDefinitions = {
   patch: {
     method: "PATCH",
     path: "/localization/countries/[code]",
-    handler: (request: any, context: any) => handleCountriesPatch(request, context),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handlePatch),
     request: { path: { code: { description: "Country code.", schema: { type: "string" } } }, contentType: "application/json", body: CountryPatchRequestDto },
     summary: "Patch",
     description: "Patches a country. Status and code cannot be changed by this request.",
@@ -239,7 +219,7 @@ export const apiDefinitions = {
   delete: {
     method: "DELETE",
     path: "/localization/countries/[code]",
-    handler: (request: any, context: any) => handleCountriesDelete(request, context),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleDelete),
     request: { path: { code: { description: "Country code.", schema: { type: "string" } } } },
     summary: "Delete",
     description: "Deletes a country. Countries with postings cannot be deleted.",
@@ -254,7 +234,7 @@ export const apiDefinitions = {
   activate: {
     method: "POST",
     path: "/localization/countries/[code]/activate",
-    handler: (request: any, context: any) => handleCountriesActivate(request, context),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleActivate),
     request: { path: { code: { description: "Country code.", schema: { type: "string" } } } },
     summary: "Activate",
     description: "Sets a country to ACTIVE.",
@@ -268,7 +248,7 @@ export const apiDefinitions = {
   deactivate: {
     method: "POST",
     path: "/localization/countries/[code]/deactivate",
-    handler: (request: any, context: any) => handleCountriesDeactivate(request, context),
+    loadHandler: () => import("./server/api/country.http.handlers").then((module) => module.handleDeactivate),
     request: { path: { code: { description: "Country code.", schema: { type: "string" } } } },
     summary: "Deactivate",
     description: "Sets a country to INACTIVE.",

@@ -9,29 +9,6 @@ import {
   UserUpdateRequestDto,
 } from "@voyzu/auth/types";
 import {
-  handleActivate as handleActivateUser,
-  handleBatchActivate,
-  handleBatchCreate,
-  handleBatchDeactivate,
-  handleBatchDelete,
-  handleBatchGet,
-  handleBatchPatch,
-  handleBatchUpdate,
-  handleChangeCurrentPassword,
-  handleChangePassword,
-  handleCreate as handleCreateUser,
-  handleCurrentProfile,
-  handleDeactivate as handleDeactivateUser,
-  handleDelete as handleDeleteUser,
-  handleFilter as handleFilterUsers,
-  handleGet as handleGetUser,
-  handlePatch as handlePatchUser,
-  handleSearch as handleSearchUsers,
-  handleUpdateCurrentProfile,
-  handleUpdate as handleUpdateUser,
-  handleList as handleUsersList,
-} from "@voyzu/auth/users/server";
-import {
   BusinessRuleErrorResponseDto,
   CodesRequestDto,
   ConflictErrorResponseDto,
@@ -77,7 +54,7 @@ export const apiDefinitions = {
   list: {
     method: "GET",
     path: "/users",
-    handler: (request: any) => handleUsersList(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleList),
     summary: "List",
     description: "List Users.",
     tags: ["Users"],
@@ -96,7 +73,7 @@ export const apiDefinitions = {
   create: {
     method: "POST",
     path: "/users",
-    handler: (request: any) => handleCreateUser(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleCreate),
     request: {
       contentType: "application/json",
       body: UserCreateRequestDto,
@@ -127,7 +104,7 @@ export const apiDefinitions = {
   filter: {
     method: "POST",
     path: "/user-queries",
-    handler: (request: any) => handleFilterUsers(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleFilter),
     request: {
       contentType: "application/json",
       body: FilterRequestDto,
@@ -146,7 +123,7 @@ export const apiDefinitions = {
   search: {
     method: "GET",
     path: "/user-search-results",
-    handler: (request: any) => handleSearchUsers(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleSearch),
     request: {
       query: {
         parameters: {
@@ -172,7 +149,7 @@ export const apiDefinitions = {
   batchGet: {
     method: "POST",
     path: "/user-selections",
-    handler: (request: any) => handleBatchGet(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleBatchGet),
     request: {
       contentType: "application/json",
       body: CodesRequestDto,
@@ -191,7 +168,7 @@ export const apiDefinitions = {
   batchCreate: {
     method: "POST",
     path: "/user-batches",
-    handler: (request: any) => handleBatchCreate(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleBatchCreate),
     request: {
       contentType: "application/json",
       body: Type.Array(UserCreateRequestDto, { minItems: 1 }),
@@ -210,7 +187,7 @@ export const apiDefinitions = {
   batchUpdate: {
     method: "PUT",
     path: "/user-batches",
-    handler: (request: any) => handleBatchUpdate(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleBatchUpdate),
     request: {
       contentType: "application/json",
       body: Type.Array(UserBatchUpdateRequestDto, { minItems: 1 }),
@@ -229,7 +206,7 @@ export const apiDefinitions = {
   batchPatch: {
     method: "PATCH",
     path: "/user-batches",
-    handler: (request: any) => handleBatchPatch(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleBatchPatch),
     request: {
       contentType: "application/json",
       body: Type.Array(UserBatchPatchRequestDto, { minItems: 1 }),
@@ -248,7 +225,7 @@ export const apiDefinitions = {
   profile: {
     method: "GET",
     path: "/users/me",
-    handler: (request: any) => handleCurrentProfile(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleCurrentProfile),
     summary: "Profile",
     description: "Profile Users.",
     tags: ["Users"],
@@ -267,7 +244,7 @@ export const apiDefinitions = {
   updateProfile: {
     method: "PUT",
     path: "/users/me",
-    handler: (request: any) => handleUpdateCurrentProfile(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleUpdateCurrentProfile),
     request: {
       contentType: "application/json",
       body: UserProfileUpdateRequestDto,
@@ -294,7 +271,7 @@ export const apiDefinitions = {
   profilePassword: {
     method: "PUT",
     path: "/users/me/password",
-    handler: (request: any) => handleChangeCurrentPassword(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleChangeCurrentPassword),
     request: {
       contentType: "application/json",
       body: UserPasswordUpdateRequestDto,
@@ -318,7 +295,7 @@ export const apiDefinitions = {
   get: {
     method: "GET",
     path: "/users/[code]",
-    handler: (request: any, context: any) => handleGetUser(request, context),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleGet),
     request: {
       path: {
         code: {
@@ -349,8 +326,7 @@ export const apiDefinitions = {
   update: {
     method: "PUT",
     path: "/users/[code]",
-    handler: (request: any, context: any) =>
-      handleUpdateUser(request, context),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleUpdate),
     request: {
       path: {
         code: {
@@ -387,8 +363,7 @@ export const apiDefinitions = {
   patch: {
     method: "PATCH",
     path: "/users/[code]",
-    handler: (request: any, context: any) =>
-      handlePatchUser(request, context),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handlePatch),
     request: {
       path: {
         code: {
@@ -413,8 +388,7 @@ export const apiDefinitions = {
   delete: {
     method: "DELETE",
     path: "/users/[code]",
-    handler: (request: any, context: any) =>
-      handleDeleteUser(request, context),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleDelete),
     request: {
       path: {
         code: {
@@ -442,8 +416,7 @@ export const apiDefinitions = {
   activate: {
     method: "PUT",
     path: "/users/[code]/activation",
-    handler: (request: any, context: any) =>
-      handleActivateUser(request, context),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleActivate),
     request: {
       path: {
         code: {
@@ -466,8 +439,7 @@ export const apiDefinitions = {
   deactivate: {
     method: "DELETE",
     path: "/users/[code]/activation",
-    handler: (request: any, context: any) =>
-      handleDeactivateUser(request, context),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleDeactivate),
     request: {
       path: {
         code: {
@@ -490,8 +462,7 @@ export const apiDefinitions = {
   changePassword: {
     method: "PUT",
     path: "/users/[code]/password",
-    handler: (request: any, context: any) =>
-      handleChangePassword(request, context),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleChangePassword),
     request: {
       path: {
         code: {
@@ -525,7 +496,7 @@ export const apiDefinitions = {
   batchActivate: {
     method: "PUT",
     path: "/user-batches/activation",
-    handler: (request: any) => handleBatchActivate(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleBatchActivate),
     request: {
       contentType: "application/json",
       body: CodesRequestDto,
@@ -552,7 +523,7 @@ export const apiDefinitions = {
   batchDeactivate: {
     method: "DELETE",
     path: "/user-batches/activation",
-    handler: (request: any) => handleBatchDeactivate(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleBatchDeactivate),
     request: {
       contentType: "application/json",
       body: CodesRequestDto,
@@ -579,7 +550,7 @@ export const apiDefinitions = {
   batchDelete: {
     method: "DELETE",
     path: "/user-batches",
-    handler: (request: any) => handleBatchDelete(request),
+    loadHandler: () => import("./server/api/user.http.handlers").then((module) => module.handleBatchDelete),
     request: {
       contentType: "application/json",
       body: CodesRequestDto,

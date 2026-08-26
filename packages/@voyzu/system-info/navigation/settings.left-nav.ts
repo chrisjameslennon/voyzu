@@ -1,4 +1,4 @@
-import { systemInfoModule } from "../modules/system-info/module";
+import { pageRoutes as systemInfoPageRoutes } from "../modules/system-info/pages.routes";
 
 export const systemInfoSettingsLeftNav = [
   {
@@ -7,7 +7,7 @@ export const systemInfoSettingsLeftNav = [
       {
         label: "System Information",
         icon: "info",
-        routeId: systemInfoModule.pageRoutes.home.id,
+        routeId: systemInfoPageRoutes.home.id,
       },
     ],
   },

@@ -28,8 +28,11 @@ An included package must:
 - export `./voyzu-package`;
 - contain `voyzu.package.ts` with at least one module or database installation file.
 
-Packages marked `voyzu.preinstalled` are supplied directly by the platform and
-are excluded when composing the platform source tree. Installed runtime
+Packages marked `voyzu.preinstalled` are supplied directly by the platform.
+They are excluded from installed-package composition, but compose discovers
+their exported `./<module>/pages.routes`, `./<module>/api.routes`, and optional
+`./navigation` surfaces to generate the platform page-route, API-route, and
+navigation indexes. Installed runtime
 packages cannot declare themselves preinstalled.
 
 Packages may export `./navigation/top-nav` and `./navigation/left-nav` when they
@@ -40,13 +43,15 @@ into the runtime, package visibility is controlled only by Package Management.
 
 The composer:
 
-1. discovers the package set from `.run/packages`;
-2. adds package workspace dependencies to the web application;
-3. adds package names to Next.js `transpilePackages`;
-4. generates page, navigation, and API registries;
-5. publishes each package's optional `public-assets` directory beneath
+1. discovers preinstalled page-route, API-route, and navigation surfaces;
+2. generates the preinstalled page-route, API-route, and navigation indexes;
+3. discovers the installed package set from `.run/packages`;
+4. adds package workspace dependencies to the web application;
+5. adds package names to Next.js `transpilePackages`;
+6. generates installed-package navigation, API, and operation registries;
+7. publishes each package's optional `public-assets` directory beneath
    `apps/web/public/<full-package-name>`;
-6. runs the runtime workspace installation.
+8. runs the runtime workspace installation.
 
 For example, `@acme/inventory/public-assets/logo.svg` is published as
 `apps/web/public/@acme/inventory/logo.svg` and served at

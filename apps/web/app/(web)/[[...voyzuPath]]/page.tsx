@@ -1,5 +1,3 @@
-import "../../../.generated/events/register";
-
 import { createVoyzuSurfaceRouter } from "@voyzu/ui-surface/server";
 import { getCurrentUser } from "@voyzu/auth/users/server";
 import { areInstalledPackagePageRoutesVisible, getHomePageRoute } from "@voyzu/package-management/server";

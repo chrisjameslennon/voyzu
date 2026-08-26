@@ -3,6 +3,8 @@ node_modules
 .next
 **/.next
 /apps/web/.generated/navigation/
+/apps/web/.generated/api-routes/
+/apps/web/.generated/page-routes/
 next.config.local.ts
 **/next-env.d.ts
 .env.local*
