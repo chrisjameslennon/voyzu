@@ -158,27 +158,28 @@ API paths identify resources with nouns and use standard HTTP method and status 
 
 ### `operations.ts`
 
-`operations.ts` is the module's stable programmatic surface. It contains thin, server-only wrappers over service methods and adds no validation, business rules, persistence, or HTTP behaviour.
+`operations.ts` is the module's stable, server-only command surface. It declares
+TypeBox contracts and lazy typed loaders. It adds boundary validation, but no
+business rules, persistence, or HTTP behaviour, and it must not eagerly import
+the service module.
 
 ```ts
 import "server-only";
 
-import * as service from "./server/lib/stock.service";
+import { operation } from "@voyzu/capability/operations";
+import Type from "typebox";
 
-function operation<TArgs extends unknown[], TResult>(
-  serviceMethod: (...args: TArgs) => TResult,
-) {
-  return (...args: TArgs): TResult => serviceMethod(...args);
-}
-
-export const createStockItem = operation(service.createStockItem);
-export const updateStockItem = operation(service.updateStockItem);
-export const deleteStockItem = operation(service.deleteStockItem);
+export const createStockItem = operation.defineLazy(
+  {
+    parameters: Type.Tuple([StockItemCreateRequestDto]),
+    result: StockItemResponseDto,
+  },
+  () => import("./server/lib/stock.service")
+    .then((module) => module.createStockItem),
+);
 
 export const operations = {
   createStockItem,
-  updateStockItem,
-  deleteStockItem,
 } as const;
 ```
 

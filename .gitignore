@@ -5,6 +5,7 @@ node_modules
 /apps/web/.generated/navigation/
 /apps/web/.generated/api-routes/
 /apps/web/.generated/page-routes/
+/apps/web/.generated/operations/preinstalled.ts
 next.config.local.ts
 **/next-env.d.ts
 .env.local*

@@ -185,7 +185,10 @@ export const stockModule = {
 } as const satisfies VoyzuPackageModuleDefinition;
 ```
 
-`operations.ts` is the module's public programmatic surface and is a thin wrapper over services. Cross-package callers use the composed command registry; API handlers continue to call services directly.
+`operations.ts` is the module's public command surface. It declares TypeBox
+contracts and lazy typed service loaders so registering a command does not load
+its service or the rest of its package. Cross-package callers use the composed
+command registry; API handlers continue to call services directly.
 
 ## `navigation/`
 

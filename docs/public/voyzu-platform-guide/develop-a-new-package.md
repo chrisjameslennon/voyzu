@@ -361,28 +361,27 @@ Services under `server/lib` own business orchestration and transactions. They
 call repositories, apply business validation, map persistence rows to DTOs, and
 invoke optional cross-package commands when required.
 
-`operations.ts` is a thin, server-only programmatic facade over those services.
-It adds no validation or business behavior:
+`operations.ts` is a server-only command manifest. It declares boundary
+validation and lazy typed service loaders, without business behavior:
 
 ```ts
 // modules/orders/operations.ts
 import "server-only";
 
-import * as service from "./server/lib/order.service";
+import { operation } from "@voyzu/capability/operations";
+import Type from "typebox";
 
-export const createOrder = (...args: Parameters<typeof service.createOrder>) =>
-  service.createOrder(...args);
-
-export const listOrders = (...args: Parameters<typeof service.listOrders>) =>
-  service.listOrders(...args);
-
-export const deleteOrder = (...args: Parameters<typeof service.deleteOrder>) =>
-  service.deleteOrder(...args);
+export const createOrder = operation.defineLazy(
+  {
+    parameters: Type.Tuple([OrderCreateRequestDto]),
+    result: OrderResponseDto,
+  },
+  () => import("./server/lib/order.service")
+    .then((module) => module.createOrder),
+);
 
 export const operations = {
   createOrder,
-  deleteOrder,
-  listOrders,
 } as const;
 ```
 

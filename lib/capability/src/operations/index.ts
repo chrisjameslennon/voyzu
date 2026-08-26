@@ -11,12 +11,15 @@ export interface VoyzuOperationDefinition {
 }
 
 type OperationHandler = (...args: any[]) => any;
+type OperationLoader = () => Promise<OperationHandler>;
+type LoadedOperation<TLoader extends OperationLoader> = Awaited<ReturnType<TLoader>>;
+type LazyOperation<TLoader extends OperationLoader> = (
+  ...args: Parameters<LoadedOperation<TLoader>>
+) => Promise<Awaited<ReturnType<LoadedOperation<TLoader>>>>;
 
 type DefinedOperation = {
   handler: OperationHandler;
   definition: VoyzuOperationDefinition;
-  parameterValidator: Validator;
-  resultValidator: Validator;
 };
 
 type RegisteredOperation = DefinedOperation & {
@@ -58,30 +61,50 @@ function define<TArgs extends unknown[], TResult>(
   definition: VoyzuOperationDefinition,
   handler: (...args: TArgs) => TResult,
 ): (...args: TArgs) => Promise<Awaited<TResult>> {
-  const parameterValidator = Schema.Compile(definition.parameters);
-  const resultValidator = Schema.Compile(definition.result);
+  return defineLazy(definition, async () => handler);
+}
 
-  const wrapped = async (...args: TArgs): Promise<Awaited<TResult>> => {
-    if (!parameterValidator.Check(args)) {
+function defineLazy<TLoader extends OperationLoader>(
+  definition: VoyzuOperationDefinition,
+  loadHandler: TLoader,
+): LazyOperation<TLoader> {
+  let loadedHandler: Promise<OperationHandler> | undefined;
+  let validators: { parameter: Validator; result: Validator } | undefined;
+
+  const getHandler = () => {
+    loadedHandler ??= loadHandler();
+    return loadedHandler;
+  };
+
+  const getValidators = () => {
+    validators ??= {
+      parameter: Schema.Compile(definition.parameters),
+      result: Schema.Compile(definition.result),
+    };
+    return validators;
+  };
+
+  const wrapped = async (...args: unknown[]): Promise<unknown> => {
+    const operationValidators = getValidators();
+    if (!operationValidators.parameter.Check(args)) {
       throw new InputValidationError(
-        `Invalid operation arguments: ${messages(parameterValidator, args, "parameters").join("; ")}`,
+        `Invalid operation arguments: ${messages(operationValidators.parameter, args, "parameters").join("; ")}`,
       );
     }
 
+    const handler = await getHandler();
     const result = await handler(...args);
-    if (!resultValidator.Check(result)) {
-      invalidResult("operation", messages(resultValidator, result, "result"));
+    if (!operationValidators.result.Check(result)) {
+      invalidResult("operation", messages(operationValidators.result, result, "result"));
     }
-    return result as Awaited<TResult>;
+    return result;
   };
 
   definitions.set(wrapped, {
     handler: wrapped,
     definition,
-    parameterValidator,
-    resultValidator,
   });
-  return wrapped;
+  return wrapped as LazyOperation<TLoader>;
 }
 
 function registerModule(
@@ -137,6 +160,7 @@ function has(name: string): boolean {
 
 export const operation = {
   define,
+  defineLazy,
   registerModule,
   callOptional,
   call,

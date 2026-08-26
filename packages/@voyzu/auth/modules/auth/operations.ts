@@ -1,12 +1,23 @@
 import "server-only";
 
-import * as service from "./server/auth.service";
+import { UserRole } from "@voyzu/auth/types";
+import { operation } from "@voyzu/capability/operations";
+import Type from "typebox";
 
-function operation<TArgs extends unknown[], TResult>(serviceMethod: (...args: TArgs) => TResult) {
-  return (...args: TArgs): TResult => serviceMethod(...args);
-}
+const AuthenticatedUser = Type.Object({
+  id: Type.Integer({ minimum: 1 }),
+  code: Type.String(),
+  displayName: Type.String(),
+  role: UserRole,
+});
 
-export const authenticateUser = operation(service.authenticateUser);
+export const authenticateUser = operation.defineLazy(
+  {
+    parameters: Type.Tuple([Type.String(), Type.String()]),
+    result: AuthenticatedUser,
+  },
+  () => import("./server/auth.service").then((module) => module.authenticateUser),
+);
 
 export const operations = {
   authenticateUser,

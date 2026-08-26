@@ -9,15 +9,15 @@ providing package. This keeps the packages decoupled.
 
 ## Define an operation
 
-Define the parameter tuple and result with TypeBox, then wrap the service
-method with `operation.define`:
+Define the parameter tuple and result with TypeBox, then give
+`operation.defineLazy` a direct, typed loader for the service method:
 
 ```ts
 // organizations/operations.ts
 import { operation } from "@voyzu/capability/operations";
 import Type from "typebox";
 
-export const patchOrganization = operation.define(
+export const patchOrganization = operation.defineLazy(
   {
     parameters: Type.Tuple([
       Type.String(),
@@ -25,7 +25,8 @@ export const patchOrganization = operation.define(
     ]),
     result: OrganizationResponseDto,
   },
-  service.patchOrganization,
+  () => import("./server/lib/organization.service")
+    .then((module) => module.patchOrganization),
 );
 
 export const operations = { patchOrganization } as const;
@@ -36,8 +37,22 @@ operation under its global name, in this example
 `@voyzu/erp-core.patchOrganization`. Operation names must be unique within the
 package.
 
-The wrapper validates arguments before calling the service and validates its
-result before returning it. Business validation remains in the service layer.
+The operations manifest imports schemas but not the service module. The wrapper
+loads and caches the service method on its first call, validates arguments
+before calling it, and validates its result before returning it. Business
+validation remains in the service layer. `operation.define` remains available
+when a handler is already lightweight and does not introduce an eager service
+dependency.
+
+Operations are request-response commands: callers always await completion and
+receive either the result or the error. They are asynchronous JavaScript
+functions because service loading and persistence are asynchronous; they are
+not fire-and-forget messages.
+
+A database executor is not injected automatically. Add an explicit final
+`DbExecutor` parameter only when a caller must pass a shared transaction across
+package boundaries. The caller owns that transaction and every participating
+service uses the supplied executor rather than opening a nested transaction.
 
 ## Call an operation
 
@@ -109,7 +124,7 @@ entries shaped like `./<module>/operations`. For example:
 }
 ```
 
-The composer generates:
+The composer generates an installed-package registry:
 
 ```text
 apps/web/.generated/operations/register.ts
@@ -128,16 +143,24 @@ operation.registerModule(
 );
 ```
 
-Only functions created with `operation.define` are added to the callable
-registry. Voyzu derives each global name from the package name and exported
-operation key, such as `@voyzu/erp-core.patchOrganization`. Operation keys
-must therefore be unique across all modules in the same package.
+Preinstalled platform operations use a separate generated simple index:
 
-At Node.js application startup, Next.js instrumentation imports the generated
-registration file. Its registration calls populate the platform's in-memory
-operation registry before application code handles requests. The package
-operations test runner loads the same generated registration file before
-running tests.
+```text
+apps/web/.generated/operations/preinstalled.ts
+```
+
+`npm run dev` regenerates the preinstalled index without disturbing the
+installed-package composition. Only functions created with `operation.define`
+or `operation.defineLazy` are added to the callable registry. Voyzu derives
+each global name from the package name and exported operation key, such as
+`@voyzu/erp-core.patchOrganization`. Operation keys must therefore be unique
+across all modules in the same package.
+
+At Node.js application startup, Next.js instrumentation imports both generated
+registration files. Their registration calls populate the platform's in-memory
+operation registry before application code handles requests. Importing these
+files loads only operation schemas and lazy loaders; service modules remain
+outside the startup dependency graph until their command is called.
 
 Recompose after changing installed packages or adding an operations-module
 export, and restart the application so the new registry is loaded. Generated

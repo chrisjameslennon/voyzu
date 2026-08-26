@@ -20,7 +20,6 @@ import {
   deactivateUsers,
   deleteUser,
   filterUsers,
-  getCurrentActorType,
   getCurrentUser,
   getUser,
   listUsers,
@@ -29,6 +28,7 @@ import {
   updateCurrentUserProfile,
   updateUser,
 } from "@voyzu/auth/users/operations";
+import { getCurrentActorType } from "@voyzu/auth/users/server";
 import { runWithCurrentUserContext } from "../../../modules/users/server/lib/current-user-context";
 
 const TEST_PREFIX = "OPTEST";

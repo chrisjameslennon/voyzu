@@ -1,28 +1,100 @@
 import "server-only";
 
-import * as service from "./server/lib/country.service";
+import { operation } from "@voyzu/capability/operations";
+import {
+  CountryBatchPatchRequestDto,
+  CountryBatchUpdateRequestDto,
+  CountryCreateRequestDto,
+  CountryPatchRequestDto,
+  CountryResponseDto,
+  CountryUpdateRequestDto,
+} from "@voyzu/localization/types/modules/countries";
+import { Filter, ListOptions } from "@voyzu/types";
+import Type, { type TSchema } from "typebox";
 
-function operation<TArgs extends unknown[], TResult>(service: (...args: TArgs) => TResult) {
-  return (...args: TArgs): TResult => service(...args);
-}
+const CountryList = Type.Array(CountryResponseDto);
+const Codes = Type.Array(Type.String());
+const optionalListOptions = (first: TSchema) =>
+  Type.Union([Type.Tuple([first]), Type.Tuple([first, ListOptions])]);
+const loadService = () => import("./server/lib/country.service");
 
-export const createCountry = operation(service.createCountry);
-export const getCountry = operation(service.getCountry);
-export const updateCountry = operation(service.updateCountry);
-export const patchCountry = operation(service.patchCountry);
-export const deleteCountry = operation(service.deleteCountry);
-export const listCountries = operation(service.listCountries);
-export const filterCountries = operation(service.filterCountries);
-export const searchCountries = operation(service.searchCountries);
-export const batchCreateCountries = operation(service.batchCreateCountries);
-export const batchGetCountries = operation(service.batchGetCountries);
-export const batchUpdateCountries = operation(service.batchUpdateCountries);
-export const batchPatchCountries = operation(service.batchPatchCountries);
-export const batchDeleteCountries = operation(service.batchDeleteCountries);
-export const activateCountry = operation(service.activateCountry);
-export const deactivateCountry = operation(service.deactivateCountry);
-export const activateCountries = operation(service.activateCountries);
-export const deactivateCountries = operation(service.deactivateCountries);
+export const createCountry = operation.defineLazy(
+  { parameters: Type.Tuple([CountryCreateRequestDto]), result: CountryResponseDto },
+  () => loadService().then((module) => module.createCountry),
+);
+export const getCountry = operation.defineLazy(
+  {
+    parameters: Type.Tuple([Type.String()]),
+    result: Type.Union([CountryResponseDto, Type.Null()]),
+  },
+  () => loadService().then((module) => module.getCountry),
+);
+export const updateCountry = operation.defineLazy(
+  {
+    parameters: Type.Tuple([Type.String(), CountryUpdateRequestDto]),
+    result: CountryResponseDto,
+  },
+  () => loadService().then((module) => module.updateCountry),
+);
+export const patchCountry = operation.defineLazy(
+  {
+    parameters: Type.Tuple([Type.String(), CountryPatchRequestDto]),
+    result: CountryResponseDto,
+  },
+  () => loadService().then((module) => module.patchCountry),
+);
+export const deleteCountry = operation.defineLazy(
+  { parameters: Type.Tuple([Type.String()]), result: Type.Undefined() },
+  () => loadService().then((module) => module.deleteCountry),
+);
+export const listCountries = operation.defineLazy(
+  { parameters: Type.Tuple([]), result: CountryList },
+  () => loadService().then((module) => module.listCountries),
+);
+export const filterCountries = operation.defineLazy(
+  { parameters: optionalListOptions(Type.Array(Filter)), result: CountryList },
+  () => loadService().then((module) => module.filterCountries),
+);
+export const searchCountries = operation.defineLazy(
+  { parameters: optionalListOptions(Type.String()), result: CountryList },
+  () => loadService().then((module) => module.searchCountries),
+);
+export const batchCreateCountries = operation.defineLazy(
+  { parameters: Type.Tuple([Type.Array(CountryCreateRequestDto)]), result: CountryList },
+  () => loadService().then((module) => module.batchCreateCountries),
+);
+export const batchGetCountries = operation.defineLazy(
+  { parameters: Type.Tuple([Codes]), result: CountryList },
+  () => loadService().then((module) => module.batchGetCountries),
+);
+export const batchUpdateCountries = operation.defineLazy(
+  { parameters: Type.Tuple([Type.Array(CountryBatchUpdateRequestDto)]), result: CountryList },
+  () => loadService().then((module) => module.batchUpdateCountries),
+);
+export const batchPatchCountries = operation.defineLazy(
+  { parameters: Type.Tuple([Type.Array(CountryBatchPatchRequestDto)]), result: CountryList },
+  () => loadService().then((module) => module.batchPatchCountries),
+);
+export const batchDeleteCountries = operation.defineLazy(
+  { parameters: Type.Tuple([Codes]), result: Type.Undefined() },
+  () => loadService().then((module) => module.batchDeleteCountries),
+);
+export const activateCountry = operation.defineLazy(
+  { parameters: Type.Tuple([Type.String()]), result: CountryResponseDto },
+  () => loadService().then((module) => module.activateCountry),
+);
+export const deactivateCountry = operation.defineLazy(
+  { parameters: Type.Tuple([Type.String()]), result: CountryResponseDto },
+  () => loadService().then((module) => module.deactivateCountry),
+);
+export const activateCountries = operation.defineLazy(
+  { parameters: Type.Tuple([Codes]), result: CountryList },
+  () => loadService().then((module) => module.activateCountries),
+);
+export const deactivateCountries = operation.defineLazy(
+  { parameters: Type.Tuple([Codes]), result: CountryList },
+  () => loadService().then((module) => module.deactivateCountries),
+);
 
 export const operations = {
   createCountry,
