@@ -6,6 +6,8 @@ import {
   SearchableSelectClearablePreview,
   SearchableSelectErrorPreview,
   SearchableSelectDisabledPreview,
+  SearchableSelectMultiNonSearchablePreview,
+  SearchableSelectMultiPreview,
 } from "./searchable-select-previews";
 import pageStyles from "../../page.module.css";
 
@@ -46,6 +48,37 @@ const COUNTRIES = [
   options={CURRENCIES}
   placeholder="Select a currency…"
   searchable={false}
+/>`,
+  },
+  {
+    name: "Searchable multi-select",
+    description: "Pass multiple with an array value to select several options. Search filters the visible options without clearing selections, and the dropdown remains open while options are toggled.",
+    preview: <SearchableSelectMultiPreview />,
+    code: `const [values, setValues] = useState<string[]>(["nz", "au"]);
+
+<SearchableSelect
+  multiple
+  value={values}
+  onChange={setValues}
+  options={COUNTRIES}
+  placeholder="Select countries…"
+  searchPlaceholder="Search countries…"
+  ariaLabel="Countries"
+  clearable
+/>`,
+  },
+  {
+    name: "Non-searchable multi-select",
+    description: "Multi-select remains available when searchable={false}. Use this combination for short lists that are quicker to scan than search.",
+    preview: <SearchableSelectMultiNonSearchablePreview />,
+    code: `<SearchableSelect
+  multiple
+  searchable={false}
+  value={values}
+  onChange={setValues}
+  options={CURRENCIES}
+  placeholder="Select currencies…"
+  ariaLabel="Currencies"
 />`,
   },
   {
@@ -114,8 +147,9 @@ const COUNTRIES = [
 ];
 
 const PROP_TABLE = [
-  { name: "value", type: "string", required: "✓", description: "The selected option value, or empty string for no selection" },
-  { name: "onChange", type: "(value: string) => void", required: "✓", description: "Called with the option value when the user makes a selection" },
+  { name: "multiple", type: "boolean", required: "", description: "Use multi-select mode with an array value (default: false)" },
+  { name: "value", type: "string | string[]", required: "✓", description: "The selected value, or selected values when multiple is true" },
+  { name: "onChange", type: "(value: string | string[]) => void", required: "✓", description: "Called immediately when the selection changes; the value shape follows multiple" },
   { name: "options", type: "{ value: string; label: string; code?: string }[]", required: "✓", description: "The options to display" },
   { name: "placeholder", type: "string", required: "", description: "Trigger text shown when no option is selected" },
   { name: "searchPlaceholder", type: "string", required: "", description: "Placeholder inside the search input" },
@@ -125,6 +159,9 @@ const PROP_TABLE = [
   { name: "hasError", type: "boolean", required: "", description: "Applies red border for validation error state" },
   { name: "disabled", type: "boolean", required: "", description: "Disables the select — muted style, no pointer events" },
   { name: "dropdownWidth", type: "string | number", required: "", description: "Override the dropdown width (default: matches the trigger width)" },
+  { name: "dropdownAlign", type: '"left" | "right"', required: "", description: "Align the dropdown with the left or right edge of the trigger" },
+  { name: "ariaLabel", type: "string", required: "", description: "Accessible name when no external label is referenced" },
+  { name: "ariaLabelledBy", type: "string", required: "", description: "ID of an element that labels the control" },
 ];
 
 export default async function Page() {
@@ -137,7 +174,7 @@ export default async function Page() {
         <h1 className={pageStyles.title}>Searchable Select</h1>
         <p className={pageStyles.description}>
           A custom dropdown with optional search filtering. Replaces native {"<select>"} elements throughout the application.
-          Supports code badges for ledger accounts, clearable selection, error state, and a non-searchable mode for short lists.
+          Supports single and multiple selection, code badges for ledger accounts, clearable selection, error state, and a non-searchable mode for short lists.
         </p>
         <div className={pageStyles.importBlock}>
           <code>import {"{ SearchableSelect }"} from &quot;@voyzu/ui-components&quot;</code>

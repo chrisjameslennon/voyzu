@@ -67,6 +67,44 @@ export function SearchableSelectNonSearchablePreview() {
   );
 }
 
+export function SearchableSelectMultiPreview() {
+  const [values, setValues] = useState<string[]>(["nz", "au"]);
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", width: "100%", maxWidth: "20rem" }}>
+      <SearchableSelect
+        multiple
+        value={values}
+        onChange={setValues}
+        options={COUNTRIES}
+        placeholder="Select countries…"
+        searchPlaceholder="Search countries…"
+        ariaLabel="Countries"
+        clearable
+      />
+      <p style={{ fontSize: "0.75rem", color: "var(--voyzu-color-text-tertiary)", margin: 0 }}>
+        Values: <strong>{values.length ? values.join(", ") : "(none)"}</strong>
+      </p>
+    </div>
+  );
+}
+
+export function SearchableSelectMultiNonSearchablePreview() {
+  const [values, setValues] = useState<string[]>(["NZD"]);
+  return (
+    <div style={{ width: "100%", maxWidth: "20rem" }}>
+      <SearchableSelect
+        multiple
+        searchable={false}
+        value={values}
+        onChange={setValues}
+        options={CURRENCIES}
+        placeholder="Select currencies…"
+        ariaLabel="Currencies"
+      />
+    </div>
+  );
+}
+
 export function SearchableSelectCodeBadgePreview() {
   const [value, setValue] = useState("");
   return (

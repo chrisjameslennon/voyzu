@@ -59,6 +59,12 @@ export type { JsonSchema, PropertiesPanelMode, PropertiesPanelProps } from "./pr
 export { Radio } from "./radio/radio";
 export { RadioGroup } from "./radio-group/radio-group";
 export { SearchableSelect } from "./searchable-select/searchable-select";
+export type {
+  SearchableMultiSelectProps,
+  SearchableSelectOption,
+  SearchableSelectProps,
+  SearchableSingleSelectProps,
+} from "./searchable-select/searchable-select";
 export { SystemInformationCard } from "./system-information-card/system-information-card";
 export { SplitButton } from "./split-button/split-button";
 export type { SplitButtonItem } from "./split-button/split-button";
