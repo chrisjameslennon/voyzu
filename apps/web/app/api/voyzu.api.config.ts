@@ -1,13 +1,13 @@
 import type { VoyzuApiConfig } from "@voyzu/api";
 import { capabilityModule } from "@voyzu/api/capability-module";
 
-import { preinstalledApiRoutes } from "../../.generated/api-routes";
+import { preInstalledApiRoutes } from "../../.generated/api-routes/pre-installed";
 import { installedApiRoutes } from "../../.generated/api-routes/installed";
 
 export const voyzuApiConfig = {
   basePath: "/api",
   routes: [
-    ...preinstalledApiRoutes,
+    ...preInstalledApiRoutes,
     ...installedApiRoutes,
     ...Object.values(capabilityModule.apiDefinitions),
   ],

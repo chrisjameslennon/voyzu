@@ -8,9 +8,13 @@ import { useIsTablet } from "@voyzu/ui-layout";
 import styles from "@voyzu/ui-surface/css-modules/surface.module.css";
 import type { VoyzuComposedSurfaceDomain } from "@voyzu/ui-surface/types";
 import {
-  PackageLeftNavHeader,
-  hasPackageLeftNavHeader,
-} from "../../../.generated/navigation/left-nav-headers";
+  PackageLeftNavHeader as PreInstalledPackageLeftNavHeader,
+  hasPackageLeftNavHeader as hasPreInstalledPackageLeftNavHeader,
+} from "../../../.generated/navigation/pre-installed-headers";
+import {
+  PackageLeftNavHeader as InstalledPackageLeftNavHeader,
+  hasPackageLeftNavHeader as hasInstalledPackageLeftNavHeader,
+} from "../../../.generated/navigation/installed-headers";
 
 import { toNavItem } from "../common/nav";
 
@@ -49,8 +53,11 @@ export function PackageLeftNav({ domains, navigationDomains }: PackageLeftNavPro
     label: group.label,
     items: group.items.map((item) => toNavItem(item, routePathById)),
   }));
-  const hasLeftNavHeader = activeDomain
-    ? hasPackageLeftNavHeader(activeDomain.packageName, pathname)
+  const hasPreInstalledHeader = activeDomain
+    ? hasPreInstalledPackageLeftNavHeader(activeDomain.packageName, pathname)
+    : false;
+  const hasInstalledHeader = activeDomain
+    ? hasInstalledPackageLeftNavHeader(activeDomain.packageName, pathname)
     : false;
   const handleNavigate = (path: string) => {
     if (!path.startsWith("#")) router.push(path);
@@ -74,8 +81,14 @@ export function PackageLeftNav({ domains, navigationDomains }: PackageLeftNavPro
           isCollapsed={effectiveIsCollapsed}
           setIsCollapsed={setIsCollapsed}
           isCollapseLocked={isTablet}
-          headerSlot={hasLeftNavHeader ? (
-            <PackageLeftNavHeader
+          headerSlot={hasPreInstalledHeader ? (
+            <PreInstalledPackageLeftNavHeader
+              packageName={activeDomain!.packageName}
+              domainId={activeDomain!.id}
+              isCollapsed={effectiveIsCollapsed}
+            />
+          ) : hasInstalledHeader ? (
+            <InstalledPackageLeftNavHeader
               packageName={activeDomain!.packageName}
               domainId={activeDomain!.id}
               isCollapsed={effectiveIsCollapsed}

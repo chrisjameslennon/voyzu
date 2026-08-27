@@ -127,7 +127,7 @@ entries shaped like `./<module>/operations`. For example:
 The composer generates an installed-package registry:
 
 ```text
-apps/web/.generated/operations/register.ts
+apps/web/.generated/operations/installed.ts
 ```
 
 That file imports each module's exported `operations` object and registers it
@@ -146,7 +146,7 @@ operation.registerModule(
 Preinstalled platform operations use a separate generated simple index:
 
 ```text
-apps/web/.generated/operations/preinstalled.ts
+apps/web/.generated/operations/pre-installed.ts
 ```
 
 `npm run dev` regenerates the preinstalled index without disturbing the

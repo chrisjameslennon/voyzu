@@ -1,6 +1,5 @@
 import { createElement } from "react";
 import type {
-  VoyzuComposedSurfaceDomain,
   VoyzuSurfaceConfig,
   VoyzuSurfaceNavGroup,
   VoyzuSurfaceNavItem,
@@ -8,14 +7,18 @@ import type {
 } from "@voyzu/ui-surface/types";
 
 import apiReferenceGeneratedLeftNav from "../../.generated/api-reference/navigation.json";
-import { preinstalledNavigation } from "../../.generated/navigation";
+import {
+  createPreInstalledPackageDomains,
+  preInstalledNavigation,
+  preInstalledPackageMainRegistrations,
+} from "../../.generated/navigation/pre-installed";
 import {
   createInstalledPackageDomains,
-  installedPackageLeftNav,
+  installedNavigation,
   installedPackageMainRegistrations,
-} from "../../.generated/navigation/packages";
-import { preinstalledPageRoutes } from "../../.generated/page-routes";
-import { installedPackagePageRoutes } from "../../.generated/page-routes/installed";
+} from "../../.generated/navigation/installed";
+import { preInstalledPageRoutes } from "../../.generated/page-routes/pre-installed";
+import { installedPageRoutes } from "../../.generated/page-routes/installed";
 import { PackageTopNav } from "./packages/PackageTopNav";
 import { SurfaceLeftNav } from "./SurfaceLeftNav";
 import { SessionUserMenu } from "./top-nav/SessionUserMenu";
@@ -45,13 +48,12 @@ type NavigationDefinition = {
   readonly leftNav?: readonly ReadonlyNavigationGroup[];
 };
 
-type PreinstalledNavigationRegistration = {
-  readonly packageName: string;
-  readonly navigation: NavigationDefinition;
-};
+type NavigationRegistration = NavigationDefinition & { readonly packageName: string };
 
-const navigationRegistrations = preinstalledNavigation as
-  readonly PreinstalledNavigationRegistration[];
+const navigationRegistrations = [
+  ...preInstalledNavigation,
+  ...installedNavigation,
+] as readonly NavigationRegistration[];
 
 function mutableNavItem(item: ReadonlyNavItem): VoyzuSurfaceNavItem {
   return {
@@ -69,80 +71,31 @@ function mutableLeftNav(
   }));
 }
 
-const routeById = new Map(
-  preinstalledPageRoutes.map((route) => [route.id, route]),
-);
-
-function requiredRoute(routeId: string, packageName: string): VoyzuSurfaceRoute {
-  const route = routeById.get(routeId);
-  if (!route) {
-    throw new Error(`Package ${packageName} navigation route ${routeId} was not found.`);
-  }
-  return route;
-}
-
-const preinstalledSurfaceDomains: VoyzuComposedSurfaceDomain[] =
-  navigationRegistrations.flatMap(({ packageName, navigation }) => {
-    if (navigation.domains) {
-      return navigation.domains.map((domain) => {
-        const defaultRoute = requiredRoute(domain.routeId, packageName);
-        const domainRoutes = domain.routeIds.map((routeId) =>
-          requiredRoute(routeId, packageName));
-        return {
-          id: domain.routeId,
-          packageName,
-          label: domain.label,
-          defaultPath: defaultRoute.path,
-          routePaths: domainRoutes.map(({ id, path }) => ({ id, path })),
-          leftNav: mutableLeftNav(domain.leftNav),
-          topNavigationVisible: domain.topNavigationVisible,
-        };
-      });
-    }
-    if (!navigation.topNav) return [];
-    const defaultRoute = requiredRoute(navigation.topNav.routeId, packageName);
-    const packageRoutes = preinstalledPageRoutes.filter(
-      (route) =>
-        route.path === defaultRoute.path
-        || route.path.startsWith(`${defaultRoute.path}/`),
-    );
-    return [{
-      id: packageName,
-      packageName,
-      label: navigation.topNav.label,
-      defaultPath: defaultRoute.path,
-      routePaths: packageRoutes.map(({ id, path }) => ({ id, path })),
-      leftNav: [
-        ...mutableLeftNav(navigation.leftNav),
-        ...(packageName === "@voyzu/api-reference"
-          ? mutableLeftNav(apiReferenceGeneratedLeftNav)
-          : []),
-      ],
-    }];
-  });
-
-const installedSurfaceDomains = createInstalledPackageDomains(
-  preinstalledPageRoutes,
-);
+const preInstalledSurfaceDomains = createPreInstalledPackageDomains(installedPageRoutes);
+const installedSurfaceDomains = createInstalledPackageDomains(preInstalledPageRoutes);
 const packageSurfaceDomains = [
-  ...preinstalledSurfaceDomains,
+  ...preInstalledSurfaceDomains.map((domain) =>
+    domain.packageName === "@voyzu/api-reference"
+      ? { ...domain, leftNav: [...domain.leftNav, ...mutableLeftNav(apiReferenceGeneratedLeftNav)] }
+      : domain
+  ),
   ...installedSurfaceDomains,
 ];
 
 const settingsNavigation = navigationRegistrations.filter(
-  ({ navigation }) => !navigation.topNav && !navigation.domains,
+  ({ topNav, domains }) => !topNav && !domains,
 );
 const settingsLeftNav: VoyzuSurfaceNavGroup[] = [{
   label: "Settings",
-  items: settingsNavigation.flatMap(({ navigation }) =>
-    mutableLeftNav(navigation.leftNav).flatMap((group) => group.items)),
+  items: settingsNavigation.flatMap(({ leftNav }) =>
+    mutableLeftNav(leftNav).flatMap((group) => group.items)),
 }];
 
 const pageRoutes: VoyzuSurfaceRoute[] = [
-  ...preinstalledPageRoutes,
-  ...installedPackagePageRoutes,
+  ...preInstalledPageRoutes,
+  ...installedPageRoutes,
 ];
-const settingsPageRoutes = preinstalledPageRoutes.filter(
+const settingsPageRoutes = pageRoutes.filter(
   ({ path }) => path.startsWith("/settings/"),
 );
 const settingsRoutePaths = settingsPageRoutes.map(({ id, path }) => ({ id, path }));
@@ -168,10 +121,12 @@ export const voyzuSurfaceConfig = {
   },
   pageRoutes,
   leftNav: [
-    ...preinstalledSurfaceDomains.flatMap((domain) => domain.leftNav),
-    ...installedPackageLeftNav,
+    ...packageSurfaceDomains.flatMap((domain) => domain.leftNav),
     ...settingsLeftNav,
   ],
   leftNavRouteIds,
-  mainRegistrations: installedPackageMainRegistrations,
+  mainRegistrations: [
+    ...preInstalledPackageMainRegistrations,
+    ...installedPackageMainRegistrations,
+  ],
 } satisfies VoyzuSurfaceConfig;
