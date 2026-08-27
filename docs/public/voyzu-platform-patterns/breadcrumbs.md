@@ -49,7 +49,7 @@ repeated in `breadcrumbBase` or `slugs`.
 
 ## Define the route hierarchy
 
-Set `breadcrumbBase` beside `path` and `Page` in the module's top-level
+Set `breadcrumbBase` beside `path` and `loadPage` in the module's top-level
 `pages.routes.ts`.
 
 For a list page, provide the stable surface area and any navigation group:
@@ -58,7 +58,8 @@ For a list page, provide the stable surface area and any navigation group:
 {
   id: "acme.stock.page.list",
   path: "/warehousing/stock",
-  Page: StockListPage,
+  loadPage: () => import("./server/pages/StockListPage")
+    .then((module) => module.StockListPage),
   breadcrumbBase: [
     { label: "Warehousing", href: "/warehousing/stock" },
   ],
@@ -71,7 +72,8 @@ For a detail page, add the containing list as the final base item:
 {
   id: "acme.stock.page.detail",
   path: "/warehousing/stock/[code]",
-  Page: StockDetailPage,
+  loadPage: () => import("./server/pages/StockDetailPage")
+    .then((module) => module.StockDetailPage),
   breadcrumbBase: [
     { label: "Warehousing", href: "/warehousing/stock" },
     { label: "Stock", href: "/warehousing/stock" },

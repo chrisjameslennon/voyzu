@@ -25,7 +25,7 @@ reference and operator instructions.
 | `npm run voyzu:list-packages` | Reads the installed package's `package.json` name and version for display. |
 | `npm run voyzu:build` and `npm run voyzu:start` | Build and run the composed application, including the package's registered pages, APIs, and dependencies. |
 | `npm run voyzu:update` | Re-composes installed packages after updating Voyzu. It does not re-run package SQL or package scripts. |
-| `npm run voyzu:initialize` | Applies the install definitions of preinstalled platform packages in platform dependency order. Ordinary installable packages do not participate in initialization. |
+| `npm run voyzu:initialize` | Applies the install definitions of pre-installed platform packages in platform dependency order. Ordinary installable packages do not participate in initialization. |
 
 Repository commands such as `voyzu:add-repo`, `voyzu:update-repo`, and
 `voyzu:update-repos` manage source checkouts but do not install, execute, or
@@ -196,13 +196,18 @@ not completed.
 
 ## Composition support
 
-Composition expects `voyzu.package.ts` to register imported module identifiers
-in its `modules` array. Each registered module must provide `pageRoutes` and
-`apiDefinitions`, even when one of those collections is empty.
+`voyzu.package.ts` registers complete module definitions for lifecycle commands,
+but application composition discovers route and command surfaces only from
+explicit `./<module>/pages.routes`, `./<module>/api.routes`, and
+`./<module>/operations` exports. Navigation uses the single optional
+`./navigation` export. There are no fallbacks through the package manifest,
+module manifest, or legacy navigation exports.
 
-Depending on the package exports, composition may also consume navigation,
-static assets, styles, documentation settings, and other package metadata. It
-writes navigation, operation, and API Reference output beneath
+Composition also consumes static assets, documentation settings, dependencies,
+owned route roots, and other package metadata. It validates pre-installed and
+installed packages through the same descriptor and surface rules, then writes
+paired `pre-installed.ts` and `installed.ts` navigation, page-route, API-route,
+and operation output beneath
 `apps/web/.generated`. The platform wildcard page and API handlers consume the
 composed route definitions at runtime. API
 documentation generation reads API route definitions and referenced DTOs from
@@ -227,7 +232,9 @@ Before publishing or installing a package, confirm that:
 * `package.json` has valid Voyzu metadata, version, dependencies, and owned root
   paths;
 * `voyzu.package.ts` exports a valid default definition;
-* every registered module satisfies the module contract;
+* every complete module satisfies the module contract;
+* every composed surface has the required direct package export;
+* page routes, API routes, and operations use lazy implementation loaders;
 * install and uninstall paths exist and remain inside the package;
 * installation and seed SQL are idempotent;
 * uninstall SQL is dependency-safe and preserves platform audit records;

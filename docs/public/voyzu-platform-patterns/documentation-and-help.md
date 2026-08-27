@@ -55,7 +55,8 @@ export const pageRoutes = {
   list: {
     id: "acme.stock.page.list",
     path: "/warehousing/stock",
-    Page: StockListPage,
+    loadPage: () => import("./server/pages/StockListPage")
+      .then((module) => module.StockListPage),
     pageTitle: "Stock",
     helpPath: "stock/stock-items",
     auth: { required: true, minRole: "STANDARD" },

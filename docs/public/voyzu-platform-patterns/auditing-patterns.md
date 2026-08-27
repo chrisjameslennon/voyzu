@@ -160,6 +160,6 @@ Packages own their audit list and detail pages. They may use the neutral audit D
 
 ## Package dependency
 
-A package that uses audit helpers or audit tables must declare `@voyzu/audit` as a peer dependency. Audit is preinstalled by Voyzu, so it is not listed in the package's `voyzu.dependencies` array.
+A package that uses audit helpers or audit tables must declare `@voyzu/audit` as a peer dependency. Audit is pre-installed by Voyzu, so it is not listed in the package's `voyzu.dependencies` array.
 
 The platform creates nullable `audit_event.organization_id` without a foreign key because Audit is installed independently of ERP Core. ERP Core adds the organization foreign key after it creates the `organization` table. Packages without an organization scope leave `organization_id` null. Deleting an organization sets the audit reference to null so the permanent audit history remains.

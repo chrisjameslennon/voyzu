@@ -80,6 +80,7 @@ dependencies, and exposes its public entry points.
   "name": "@acme/customer-orders",
   "version": "0.1.0",
   "description": "Customer order management for Voyzu.",
+  "repository": "https://github.com/acme/customer-orders.git",
   "private": true,
   "type": "module",
   "voyzu": {
@@ -96,6 +97,18 @@ dependencies, and exposes its public entry points.
     "./voyzu-package": {
       "types": "./voyzu.package.ts",
       "import": "./voyzu.package.ts"
+    },
+    "./navigation": {
+      "types": "./navigation/index.ts",
+      "import": "./navigation/index.ts"
+    },
+    "./modules/orders": {
+      "types": "./modules/orders/module.ts",
+      "import": "./modules/orders/module.ts"
+    },
+    "./orders/pages.routes": {
+      "types": "./modules/orders/pages.routes.ts",
+      "import": "./modules/orders/pages.routes.ts"
     },
     "./orders/api.routes": {
       "types": "./modules/orders/api.routes.ts",
@@ -124,6 +137,11 @@ dependencies, and exposes its public entry points.
   }
 }
 ```
+
+The composer discovers pages, APIs, operations, and navigation from these
+dedicated exports. It does not inspect `voyzu.package.ts` or `module.ts` as a
+fallback. Omit `./navigation` when the package has no navigation, and omit a
+module surface only when that module does not provide it.
 
 Declare host-provided libraries as `peerDependencies`. Put only
 package-specific runtime libraries in `dependencies`. The Voyzu platform is
@@ -246,22 +264,23 @@ export const ordersModule = {
 export default ordersModule;
 ```
 
-Use empty objects for `pageRoutes` or `apiDefinitions` when the module does not
-provide that kind of route.
+This complete module manifest is registered by `voyzu.package.ts`, but the
+application composer imports the exported sibling surfaces directly. Use empty
+objects for `pageRoutes` or `apiDefinitions` when the module does not provide
+that kind of route.
 
 ### Register page routes
 
 `pages.routes.ts` is the authoritative page registry:
 
-```tsx
+```ts
 // modules/orders/pages.routes.ts
-import { OrderDetailPage, OrdersListPage } from "./server";
-
 export const pageRoutes = {
   list: {
     id: "acme.customer-orders.orders.page.list",
     path: "/customer-orders",
-    Page: OrdersListPage,
+    loadPage: () => import("./server/pages/OrdersListPage")
+      .then((module) => module.OrdersListPage),
     pageTitle: "Customer Orders",
     helpPath: "customer-orders/orders",
     breadcrumbBase: [],
@@ -270,7 +289,8 @@ export const pageRoutes = {
   detail: {
     id: "acme.customer-orders.orders.page.detail",
     path: "/customer-orders/[code]",
-    Page: OrderDetailPage,
+    loadPage: () => import("./server/pages/OrderDetailPage")
+      .then((module) => module.OrderDetailPage),
     pageTitle: "Customer Order",
     helpPath: "customer-orders/orders",
     breadcrumbBase: [
@@ -282,7 +302,9 @@ export const pageRoutes = {
 ```
 
 Route IDs must be stable and globally unique. Page paths must remain within a
-root declared by `voyzu.pageRootPaths`.
+root declared by `voyzu.pageRootPaths`. Keep the route manifest lightweight:
+`loadPage` must dynamically import the specific page module rather than
+statically importing a page or server barrel.
 
 ### Register API routes
 
@@ -424,17 +446,17 @@ paths:
 
 ```ts
 // navigation/top-nav.ts
-import { ordersModule } from "../modules/orders/module";
+import { pageRoutes } from "../modules/orders/pages.routes";
 
 export default {
   label: "Customer Orders",
-  routeId: ordersModule.pageRoutes.list.id,
+  routeId: pageRoutes.list.id,
 } as const;
 ```
 
 ```ts
 // navigation/left-nav.ts
-import { ordersModule } from "../modules/orders/module";
+import { pageRoutes } from "../modules/orders/pages.routes";
 
 export default [
   {
@@ -442,15 +464,28 @@ export default [
       {
         label: "Orders",
         icon: "receipt_long",
-        routeId: ordersModule.pageRoutes.list.id,
+        routeId: pageRoutes.list.id,
       },
     ],
   },
 ] as const;
 ```
 
-Expose each contributed navigation file through `package.json` using
-`./navigation/top-nav` and `./navigation/left-nav` exports.
+Combine the declarations in the package navigation entry point:
+
+```ts
+// navigation/index.ts
+import leftNav from "./left-nav";
+import topNav from "./top-nav";
+
+export const navigation = { topNav, leftNav } as const;
+export default navigation;
+```
+
+Expose only this entry point through `package.json` as `./navigation`.
+Navigation may import lightweight page-route manifests to reuse IDs, but it
+must not import `module.ts`, page components, handlers, services, or server
+barrels.
 
 ## Add tests
 
@@ -524,16 +559,18 @@ npm run dev
 ```
 
 Voyzu mirrors editable linked-package source into the transient runtime. Run
-composition after changing package exports, module registration, page or API
-routes, navigation, assets, or API schemas:
+composition after changing package exports, page or API routes, operations,
+navigation, assets, or API schemas:
 
 ```shell
 npm run voyzu:compose
 ```
 
-Composition generates navigation, operation, and API Reference files
-beneath `apps/web/.generated`. The platform wildcard page and API handlers use
-these registries at runtime. Never edit generated files directly.
+Composition validates pre-installed and installed packages together and
+generates matching `pre-installed.ts` and `installed.ts` navigation, page-route,
+API-route, and operation registries beneath `apps/web/.generated`, along with
+the API Reference output. The platform wildcard page and API handlers use these
+registries at runtime. Never edit generated files directly.
 
 See [Commands](commands.md) for the complete command reference.
 

@@ -32,8 +32,10 @@ export const patchOrganization = operation.defineLazy(
 export const operations = { patchOrganization } as const;
 ```
 
-Include `operations` in the module definition. Voyzu composition registers the
-operation under its global name, in this example
+Include `operations` in the complete module definition, and expose the manifest
+directly as `./<module>/operations`. Composition discovers the dedicated export,
+not the module definition, and registers the operation under its global name,
+in this example
 `@voyzu/erp-core.patchOrganization`. Operation names must be unique within the
 package.
 
@@ -143,14 +145,16 @@ operation.registerModule(
 );
 ```
 
-Preinstalled platform operations use a separate generated simple index:
+Pre-installed platform operations use the matching generated registry:
 
 ```text
 apps/web/.generated/operations/pre-installed.ts
 ```
 
-`npm run dev` regenerates the preinstalled index without disturbing the
-installed-package composition. Only functions created with `operation.define`
+`pre-installed.ts` and `installed.ts` have the same imports, validation rules,
+registration calls, and registry shape. The split only allows `npm run dev` to
+regenerate the pre-installed registry without disturbing installed-package
+composition. Only functions created with `operation.define`
 or `operation.defineLazy` are added to the callable registry. Voyzu derives
 each global name from the package name and exported operation key, such as
 `@voyzu/erp-core.patchOrganization`. Operation keys must therefore be unique
@@ -161,6 +165,10 @@ registration files. Their registration calls populate the platform's in-memory
 operation registry before application code handles requests. Importing these
 files loads only operation schemas and lazy loaders; service modules remain
 outside the startup dependency graph until their command is called.
+
+There is no fallback through `voyzu.package.ts`, `module.ts`, or a package
+barrel. If the `./<module>/operations` export is absent, those operations are
+not composed.
 
 Recompose after changing installed packages or adding an operations-module
 export, and restart the application so the new registry is loaded. Generated

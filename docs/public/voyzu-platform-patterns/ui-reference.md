@@ -1,6 +1,6 @@
 # UI patterns
 
-Voyzu provides a preinstalled UI Reference package for the components, styles, and responsive patterns used by application modules. Treat the running reference pages and the exported TypeScript types as the source of truth for a component's current API.
+Voyzu provides a pre-installed UI Reference package for the components, styles, and responsive patterns used by application modules. Treat the running reference pages and the exported TypeScript types as the source of truth for a component's current API.
 
 ## Open the UI Reference
 

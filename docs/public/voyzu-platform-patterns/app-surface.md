@@ -6,18 +6,21 @@ The application surface supplies the desktop and mobile application frame, navig
 
 ## Declare page routes in the package
 
-A UI-capable package exposes page routes through the modules listed in its `voyzu.package.ts`. A route is the source of truth for its URL, page component, title, authorization, breadcrumbs and help link. Modules remain a way to organize code inside the package; the installed package is the unit that Voyzu composes and manages.
+A UI-capable package exposes each module's page routes directly through a
+`./<module>/pages.routes` package export. A route is the source of truth for its
+URL, lazy page loader, title, authorization, breadcrumbs, and help link.
+Modules remain a way to organize code inside the package; the package is the
+unit that Voyzu composes and manages.
 
-```tsx
+```ts
 // packages/@acme/warehousing/modules/stock/pages.routes.ts
-import { StockDetailPage, StockListPage } from "@acme/warehousing/modules/stock/server";
-
 export const pageRoutes = {
   list: {
     id: "acme.stock.page.list",
     path: "/warehousing/stock",
     pageTitle: "Stock",
-    Page: StockListPage,
+    loadPage: () => import("./server/pages/StockListPage")
+      .then((module) => module.StockListPage),
     breadcrumbBase: [{ label: "Warehousing", href: "/warehousing/stock" }],
     helpPath: "packages/warehousing/stock",
     auth: { required: true, minRole: "STANDARD" },
@@ -26,7 +29,8 @@ export const pageRoutes = {
     id: "acme.stock.page.detail",
     path: "/warehousing/stock/[code]",
     pageTitle: "Stock item",
-    Page: StockDetailPage,
+    loadPage: () => import("./server/pages/StockDetailPage")
+      .then((module) => module.StockDetailPage),
     breadcrumbBase: [{ label: "Warehousing", href: "/warehousing/stock" }],
     helpPath: "packages/warehousing/stock",
     auth: { required: true, minRole: "STANDARD" },
@@ -34,27 +38,30 @@ export const pageRoutes = {
 } as const;
 ```
 
-Voyzu supports static and dynamic path segments. Composition adds package page definitions to the surface registry, and the platform wildcard page matches the requested path and supplies its parameters. The surface router retains authorization, package visibility, framing, breadcrumbs and help behavior. Keep page components in a server-only page entry point when they access the database or other private server functionality.
+Voyzu supports static and dynamic path segments. Composition adds package page
+definitions to the surface registry, and the platform wildcard page matches the
+requested path and supplies its parameters. The surface router retains
+authorization, package visibility, framing, breadcrumbs, and help behavior.
+The route manifest imports no page or server barrel eagerly; `loadPage` loads
+the selected server page only when the route is rendered.
 
 The supported route authorization roles are `STANDARD` and `ADMIN`. A public route must set `auth.required` to `false` deliberately; authenticated package pages should normally set it to `true`.
 
-## Export the package definition
+## Export the route surface
 
-The package definition must contain every internal module whose routes or APIs should be composed.
+Expose the lightweight route manifest directly:
 
-```ts
-// packages/@acme/warehousing/voyzu.package.ts
-import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
-import { stockModule } from "./modules/stock/module";
-
-const packageDefinition = {
-  modules: [stockModule],
-} as const satisfies VoyzuPackageDefinition;
-
-export default packageDefinition;
+```jsonc
+{
+  "exports": {
+    "./stock/pages.routes": "./modules/stock/pages.routes.ts"
+  }
+}
 ```
 
-The package's `package.json` must expose `./voyzu-package`. Composition imports that package definition and registers the page and API definitions collected from its `modules` array.
+The package still exposes `./voyzu-package` for lifecycle commands and may
+compose `stockModule` in that manifest. Page composition does not traverse that
+manifest or `module.ts`, and there is no fallback discovery path.
 
 ## Understand UI domains
 
@@ -75,10 +82,11 @@ The route list must include detail, report and other domain pages even when they
 
 ## Declare one or more UI domains
 
-Export an array from `navigation/domains.ts`. The `routeId` is the default route and must also be present in `routeIds`.
+Build a navigation object in `navigation/index.ts`. The `routeId` is the default
+route and must also be present in `routeIds`.
 
 ```ts
-// packages/@acme/operations/navigation/domains.ts
+// packages/@acme/operations/navigation/index.ts
 import type { VoyzuPackageNavigationDomain } from "@voyzu/types/framework";
 
 const domains = [
@@ -123,7 +131,8 @@ const domains = [
   },
 ] as const satisfies readonly VoyzuPackageNavigationDomain[];
 
-export default domains;
+export const navigation = { domains } as const;
+export default navigation;
 ```
 
 Expose it from `package.json`:
@@ -132,7 +141,7 @@ Expose it from `package.json`:
 {
   "exports": {
     "./voyzu-package": "./voyzu.package.ts",
-    "./navigation/domains": "./navigation/domains.ts"
+    "./navigation": "./navigation/index.ts"
   }
 }
 ```
@@ -141,7 +150,9 @@ Domain labels should be short and distinct because they appear in both desktop a
 
 ## Use the single-domain shorthand
 
-A package with exactly one UI domain may instead expose `./navigation/top-nav` and, optionally, `./navigation/left-nav`. The top-navigation route becomes the default route, and all page routes in the package belong to that domain.
+A package with exactly one UI domain may return `topNav` and optional `leftNav`
+properties from the same `./navigation` export. The top-navigation route becomes
+the default route, and all page routes in the package belong to that domain.
 
 ```ts
 // packages/@acme/warehousing/navigation/top-nav.ts
@@ -149,6 +160,15 @@ export default {
   label: "Warehousing",
   routeId: "acme.stock.page.list",
 } as const;
+```
+
+```ts
+// packages/@acme/warehousing/navigation/index.ts
+import leftNav from "./left-nav";
+import topNav from "./top-nav";
+
+export const navigation = { topNav, leftNav } as const;
+export default navigation;
 ```
 
 Left navigation is an array of groups. A group may have a heading, and an item identifies a composed route by `routeId`. Items may contain nested children. A domain may omit left navigation completely.
@@ -189,14 +209,20 @@ These controls do not affect API routes, uninstall the package, run uninstall sc
 
 The install and link-package workflows compose packages automatically. Composition:
 
-1. discovers the platform and installed packages in the runtime workspace;
-2. imports each package's `voyzu.package.ts` through its public export;
-3. collects page routes and API definitions;
-4. includes optional domain navigation or single-domain navigation exports;
-5. writes navigation, operation, and API Reference output beneath
+1. discovers pre-installed and installed packages in the runtime workspace;
+2. reads each package's metadata and dedicated surface exports;
+3. imports exported page-route and API-route manifests and validates their lazy
+   loaders and owned roots;
+4. imports the optional common `./navigation` export;
+5. writes navigation, page-route, API-route, operation, and API Reference output beneath
    `apps/web/.generated` for the platform wildcard handlers to consume;
    and
 6. updates the runtime workspace and Next.js transpilation metadata.
+
+Pre-installed packages and independently installed packages pass through the
+same descriptor and surface validation and produce registries with the same
+shape. They are kept in paired `pre-installed.ts` and `installed.ts` files only
+so platform startup can refresh one group without erasing the other.
 
 `.generated` files are runtime output and must not be edited. Restart the web
 server after installing, linking, or recomposing
@@ -208,14 +234,15 @@ By default, the application frame owns the top navigation and optional left navi
 
 Set `unframed: true` only when a route must bypass the complete application frame. This removes the top navigation, left navigation, normal main wrapper, and breadcrumb provider; the page component is responsible for the entire response layout.
 
-```tsx
+```ts
 // packages/@acme/analytics/modules/dashboard/pages.routes.ts
 export const pageRoutes = {
   dashboard: {
     id: "acme.dashboard.page.main",
     path: "/analytics/dashboard",
     pageTitle: "Dashboard",
-    Page: DashboardPage,
+    loadPage: () => import("./server/pages/DashboardPage")
+      .then((module) => module.DashboardPage),
     unframed: true,
     auth: { required: true, minRole: "STANDARD" },
   },

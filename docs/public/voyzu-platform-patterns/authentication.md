@@ -87,7 +87,8 @@ export const pageRoutes = {
     id: "acme.inventory-items.page.list",
     path: "/inventory/items",
     pageTitle: "Inventory items",
-    Page: InventoryItemsListPage,
+    loadPage: () => import("./server/pages/InventoryItemsListPage")
+      .then((module) => module.InventoryItemsListPage),
     auth: { required: true, minRole: "STANDARD" },
   },
 } as const;

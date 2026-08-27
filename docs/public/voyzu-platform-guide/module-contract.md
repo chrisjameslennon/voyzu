@@ -54,22 +54,24 @@ export default {
 
 Do not add a module-level `index.ts` barrel. Import the manifest, operations, or explicitly exported server entry point directly.
 
+The module registration above belongs to the package lifecycle contract. The
+application composer does not import this manifest to discover pages, APIs, or
+operations. Export each lightweight sibling surface directly from
+`package.json` as `./<module>/pages.routes`, `./<module>/api.routes`, and
+`./<module>/operations`.
+
 ### `pages.routes.ts`
 
 `pages.routes.ts` is the authoritative collection of the module's browser pages. Voyzu adds it to the surface registry used by the platform wildcard page to match paths and compose authorization, metadata, help, and navigation references.
 
 ```ts
-import {
-  StockDetailPage,
-  StockListPage,
-} from "@acme/warehousing/modules/stock/server";
-
 export const pageRoutes = {
   list: {
     id: "acme.warehousing.stock.page.list",
     path: "/warehousing/stock",
     pageTitle: "Stock",
-    Page: StockListPage,
+    loadPage: () => import("./server/pages/StockListPage")
+      .then((module) => module.StockListPage),
     helpPath: "stock/overview",
     auth: { required: true, minRole: "STANDARD" },
   },
@@ -77,7 +79,8 @@ export const pageRoutes = {
     id: "acme.warehousing.stock.page.detail",
     path: "/warehousing/stock/[code]",
     pageTitle: "Stock item",
-    Page: StockDetailPage,
+    loadPage: () => import("./server/pages/StockDetailPage")
+      .then((module) => module.StockDetailPage),
     breadcrumbBase: [
       { label: "Stock", href: "/warehousing/stock" },
     ],
@@ -86,7 +89,16 @@ export const pageRoutes = {
 } as const;
 ```
 
-Every page route requires a stable, application-wide `id`, a path within a page root owned by the package, a title, and a React page component. Dynamic segments use Next.js bracket syntax such as `[code]`, `[...path]`, and `[[...path]]`; Next.js extracts those parameters before Voyzu supplies them to the page.
+Every page route requires a stable, application-wide `id`, a path within a page
+root owned by the package, a title, and a lazy `loadPage` function. The route
+manifest must not statically import its page component or a server barrel. The
+page module and its server dependencies enter the runtime graph only after the
+route is selected. Dynamic segments use Next.js bracket syntax such as
+`[code]`, `[...path]`, and `[[...path]]`; Next.js extracts those parameters
+before Voyzu supplies them to the page.
+
+Expose the manifest as `./<module>/pages.routes`; composition imports this
+lightweight surface directly.
 
 Use an empty object when the module has no pages:
 
@@ -280,14 +292,18 @@ server/
 
 ### `server/index.ts`
 
-`server/index.ts` is a controlled server entry point used by route registration and composition. It exposes only the server-rendered page components or other runtime entries that must be resolved through the package export.
+`server/index.ts` is an optional controlled server entry point for deliberate
+public server APIs. Route registration and composition do not use it; page and
+API loaders dynamically import their specific implementation modules.
 
 ```ts
 export { StockListPage } from "./pages/StockListPage";
 export { StockDetailPage } from "./pages/StockDetailPage";
 ```
 
-Expose this entry point explicitly through the owning package's `package.json`. Programmatic consumers use `operations.ts`; they must not import private service or server file paths.
+Expose this entry point explicitly through the owning package's `package.json`
+only when another deliberate consumer needs it. Programmatic consumers normally
+use `operations.ts`; they must not import private service or server file paths.
 
 ```jsonc
 {

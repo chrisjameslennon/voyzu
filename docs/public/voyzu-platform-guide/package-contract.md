@@ -62,9 +62,9 @@ The following is illustrative JSON with comments. Remove the comments in a real 
 
   "exports": {
     "./voyzu-package": "./voyzu.package.ts",
-    "./navigation/top-nav": "./navigation/top-nav.ts",
-    "./navigation/left-nav": "./navigation/left-nav.ts",
-    "./stock": "./modules/stock/module.ts",
+    "./navigation": "./navigation/index.ts",
+    "./modules/stock": "./modules/stock/module.ts",
+    "./stock/pages.routes": "./modules/stock/pages.routes.ts",
     "./stock/api.routes": "./modules/stock/api.routes.ts",
     "./stock/operations": "./modules/stock/operations.ts",
     "./types": "./types/index.ts"
@@ -81,11 +81,30 @@ The following is illustrative JSON with comments. Remove the comments in a real 
 
 Only paths declared in `exports` are public. Do not use filesystem dependencies or expose private implementation files.
 
+The composer discovers application surfaces from exports with these exact
+shapes:
+
+| Export | Purpose | Loading rule |
+|---|---|---|
+| `./<module>/pages.routes` | Browser page declarations | Each route provides a lazy `loadPage` function. |
+| `./<module>/api.routes` | HTTP route declarations | Each route provides a lazy `loadHandler` function. |
+| `./<module>/operations` | Cross-package command declarations | Each operation should use `operation.defineLazy`. |
+| `./navigation` | Optional package navigation declaration | May import route manifests for their IDs, but not page, handler, or service implementations. |
+| `./navigation/left-nav-header` | Optional client left-navigation header | Composed into the separate header registry. |
+
+These exports are the composition boundary. The composer does not fall back to
+loading `voyzu.package.ts`, `module.ts`, package barrels, server barrels, or
+implementation files to find routes or operations. A package that owns page or
+API roots must export the corresponding route surfaces.
+
 Page and API root paths reserve separate namespaces. A package may use the same root in both namespaces, but two packages cannot own overlapping roots within the same namespace. Use an empty array when the package owns no roots. The Voyzu platform itself is implicit and is not listed in `voyzu.dependencies`.
 
 ### `voyzu.package.ts`
 
-`voyzu.package.ts` is the package manifest. It composes the package's modules and optional lifecycle and script registrations.
+`voyzu.package.ts` is the package lifecycle manifest. It composes the package's
+modules and optional install, uninstall, and script registrations. Install and
+script commands load this manifest deliberately; route, navigation, and
+operation composition do not use it for discovery.
 
 ```ts
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
@@ -186,6 +205,29 @@ export const stockModule = {
 } as const satisfies VoyzuPackageModuleDefinition;
 ```
 
+The module manifest remains useful to the package lifecycle contract and to
+code that deliberately consumes the complete module definition. It is not a
+route or operation registry. Voyzu imports the separately exported
+`pages.routes.ts`, `api.routes.ts`, and `operations.ts` surfaces when composing
+the application, so none of those generated registrations pulls in
+`module.ts` or `voyzu.package.ts`.
+
+`pages.routes.ts` contains metadata and lazy page loaders. It must not import
+page implementations eagerly:
+
+```ts
+export const pageRoutes = {
+  list: {
+    id: "acme.warehousing.stock.page.list",
+    path: "/warehousing/stock",
+    pageTitle: "Stock",
+    loadPage: () => import("./server/pages/StockListPage")
+      .then((module) => module.StockListPage),
+    auth: { required: true, minRole: "STANDARD" },
+  },
+} as const;
+```
+
 `operations.ts` is the module's public command surface. It declares TypeBox
 contracts and lazy typed service loaders so registering a command does not load
 its service or the rest of its package. Cross-package callers use the composed
@@ -197,8 +239,18 @@ command registry; API handlers continue to call services directly.
 
 ```text
 navigation/
+├─ index.ts
 ├─ left-nav.ts
 └─ top-nav.ts
+```
+
+```ts
+// navigation/index.ts
+import leftNav from "./left-nav";
+import topNav from "./top-nav";
+
+export const navigation = { topNav, leftNav } as const;
+export default navigation;
 ```
 
 ```ts
@@ -223,7 +275,11 @@ export default [
 ] as const;
 ```
 
-A package spanning multiple navigation domains exports `./navigation/domains` instead. Each domain declares its label, entry route, owned route IDs, and left navigation.
+A package spanning multiple navigation domains returns `domains` from the same
+`./navigation` export instead. Each domain declares its label, entry route,
+owned route IDs, and left navigation. There are no separate composer fallbacks
+for legacy `./navigation/top-nav`, `./navigation/left-nav`, or
+`./navigation/domains` exports.
 
 ## `public-assets/`
 
@@ -330,7 +386,28 @@ Uninstall SQL removes package-owned data and database objects but must preserve 
 
 ## Composition boundary
 
-Voyzu composes installed packages into the runtime workspace, derives generated routing and navigation files, installs the resulting dependencies, and copies public assets. Package authors edit package source only; generated composition files are transient and must not be edited.
+Voyzu composes both pre-installed platform packages and independently installed
+packages through the same package descriptor, surface validation, route types,
+lazy-loading rules, and generated registry shapes. Pre-installed packages are
+regular conforming packages that happen to ship in the Voyzu repository and
+participate in platform initialization. They declare `voyzu.preinstalled: true`;
+independently installed packages must not. Their code receives no route,
+navigation, API, or operation fallback.
+
+The two groups are written separately so ordinary development startup can
+refresh platform output without erasing an installed-package composition:
+
+| Surface | Pre-installed | Installed |
+|---|---|---|
+| Page routes | `apps/web/.generated/page-routes/pre-installed.ts` | `apps/web/.generated/page-routes/installed.ts` |
+| API routes | `apps/web/.generated/api-routes/pre-installed.ts` | `apps/web/.generated/api-routes/installed.ts` |
+| Navigation | `apps/web/.generated/navigation/pre-installed.ts` | `apps/web/.generated/navigation/installed.ts` |
+| Left-nav headers | `apps/web/.generated/navigation/pre-installed-headers.tsx` | `apps/web/.generated/navigation/installed-headers.tsx` |
+| Operations | `apps/web/.generated/operations/pre-installed.ts` | `apps/web/.generated/operations/installed.ts` |
+
+Voyzu derives these transient registries, installs the resulting dependencies,
+and copies public assets. Package authors edit package source only; generated
+composition files must not be edited.
 
 ```text
 packages/@acme/warehousing/        <- package source

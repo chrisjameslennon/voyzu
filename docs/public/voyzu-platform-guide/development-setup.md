@@ -85,7 +85,7 @@ Do not commit `.env.local` or disclose its contents.
 
 ## 6. Initialize Voyzu and create the bootstrap administrator
 
-Initialize the preinstalled Voyzu packages and create the bootstrap administrator:
+Initialize the pre-installed Voyzu packages and create the bootstrap administrator:
 
 ```shell
 npm run voyzu:initialize

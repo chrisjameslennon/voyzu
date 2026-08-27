@@ -59,7 +59,7 @@ A package must not override Voyzu tokens on `:root`, replace global platform sty
 
 ## Inspect the theme
 
-Run Voyzu and open its preinstalled UI Reference package:
+Run Voyzu and open its pre-installed UI Reference package:
 
 ```shell
 npm run dev

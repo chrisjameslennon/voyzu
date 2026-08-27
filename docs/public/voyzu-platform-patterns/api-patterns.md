@@ -7,8 +7,9 @@ apps/web/app/api/[[...voyzuApiPath]]/route.ts
 ```
 
 Packages do not maintain Next.js route files. Each module declares its routes
-in `apiDefinitions`; composition adds the package modules to the shared registry,
-and the wildcard handler matches the request path and HTTP method.
+in an exported `apiDefinitions` surface; composition imports that lightweight
+surface directly, and the wildcard handler matches the request path and HTTP
+method.
 
 ## Define routes in `api.routes.ts`
 
@@ -319,9 +320,11 @@ objects so that internal schema changes do not silently change the public API.
 ## Compose API changes
 
 Run `npm run voyzu:compose` after adding or changing an API definition or DTO.
-Composition regenerates the preinstalled API index and, during full package
-composition, the installed-package API index. The documentation build consumes
-both indexes, generates package-grouped API documentation beneath
+Composition regenerates `api-routes/pre-installed.ts` and, during full package
+composition, `api-routes/installed.ts`. Both package groups use the same route
+type, lazy-loader validation, root ownership checks, and registry shape. The
+documentation build consumes both indexes, generates package-grouped API
+documentation beneath
 `apps/web/.generated/api-reference`, and writes the combined OpenAPI document.
 The installed index is preserved by ordinary `npm run dev` startup, so starting
 the platform does not discard an existing installed-package composition.

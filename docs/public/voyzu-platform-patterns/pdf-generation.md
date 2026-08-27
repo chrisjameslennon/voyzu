@@ -51,14 +51,16 @@ export const pageRoutes = {
     id: "acme.financeReports.page.trialBalance",
     path: "/finance/reports/trial-balance",
     pageTitle: "Trial Balance",
-    Page: TrialBalanceReportPage,
+    loadPage: () => import("./server/pages/TrialBalanceReportPage")
+      .then((module) => module.TrialBalanceReportPage),
     auth: { required: true, minRole: "STANDARD" },
   },
   reportPrintable: {
     id: "acme.financeReports.page.trialBalance.printable",
     path: "/finance/reports/trial-balance/printable",
     pageTitle: "Trial Balance",
-    Page: TrialBalanceReportPage,
+    loadPage: () => import("./server/pages/TrialBalanceReportPage")
+      .then((module) => module.TrialBalanceReportPage),
     unframed: true,
     auth: { required: true, minRole: "STANDARD" },
   },
