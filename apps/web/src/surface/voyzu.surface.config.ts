@@ -13,9 +13,9 @@ import {
   createInstalledPackageDomains,
   installedPackageLeftNav,
   installedPackageMainRegistrations,
-  installedPackagePageRoutes,
 } from "../../.generated/navigation/packages";
 import { preinstalledPageRoutes } from "../../.generated/page-routes";
+import { installedPackagePageRoutes } from "../../.generated/page-routes/installed";
 import { PackageTopNav } from "./packages/PackageTopNav";
 import { SurfaceLeftNav } from "./SurfaceLeftNav";
 import { SessionUserMenu } from "./top-nav/SessionUserMenu";

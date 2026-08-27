@@ -3,7 +3,6 @@ import "server-only";
 export type {
   VoyzuApiConfig,
   VoyzuApiCookieDefinition,
-  VoyzuApiModule,
   VoyzuApiModuleRoute,
   VoyzuApiRouteHandler,
   VoyzuApiParameterDefinition,

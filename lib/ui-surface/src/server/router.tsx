@@ -124,12 +124,7 @@ export function createVoyzuPageRenderer({
         }
       }
 
-      const PageComponent = route.loadPage
-        ? await route.loadPage()
-        : route.Page;
-      if (!PageComponent) {
-        throw new Error(`Page route ${route.id} has no page implementation.`);
-      }
+      const PageComponent = await route.loadPage();
       const activeRoute = route.helpPathResolver
         ? { ...route, helpPath: route.helpPathResolver({ path, params: routeParams, searchParams: query }) }
         : route;

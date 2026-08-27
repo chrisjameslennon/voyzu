@@ -12,9 +12,8 @@ export type VoyzuApiRouteHandler = (
   context: { params: Promise<any> },
 ) => Promise<NextResponse>;
 
-export interface VoyzuApiModuleRoute extends Omit<ApiRouteDefinition, "handler" | "loadHandler"> {
-  handler?: VoyzuApiRouteHandler;
-  loadHandler?: () => Promise<VoyzuApiRouteHandler>;
+export interface VoyzuApiModuleRoute extends Omit<ApiRouteDefinition, "loadHandler"> {
+  loadHandler: () => Promise<VoyzuApiRouteHandler>;
 }
 
 export type VoyzuApiParameterDefinition = ApiParameterDefinition;
@@ -22,12 +21,7 @@ export type VoyzuApiCookieDefinition = ApiCookieDefinition;
 export type VoyzuApiRequestDefinition = ApiRequestDefinition;
 export type VoyzuApiResponseDefinition = ApiResponseDefinition;
 
-export interface VoyzuApiModule {
-  apiDefinitions: Record<string, VoyzuApiModuleRoute>;
-}
-
 export interface VoyzuApiConfig {
   basePath: "/api";
-  routes?: VoyzuApiModuleRoute[];
-  modules?: VoyzuApiModule[];
+  routes: VoyzuApiModuleRoute[];
 }

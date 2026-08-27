@@ -46,6 +46,5 @@ export interface ApiRouteDefinition {
   tags?: readonly string[];
   request?: ApiRequestDefinition;
   responses: Record<string, ApiResponseDefinition>;
-  handler?: (...args: any[]) => any;
-  loadHandler?: () => Promise<(...args: any[]) => any>;
+  loadHandler: () => Promise<(...args: any[]) => any>;
 }

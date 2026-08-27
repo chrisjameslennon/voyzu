@@ -307,7 +307,7 @@ function validateRegistrations(registrations: readonly ApiDocumentationRegistrat
       const key = `${route.method} ${route.path}`;
       if (routeKeys.has(key)) throw new Error(`Duplicate documented API route: ${key}`);
       routeKeys.add(key);
-      if (route.handler || typeof route.loadHandler !== "function") {
+      if (typeof route.loadHandler !== "function") {
         throw new Error(`${key} must use a lazy loadHandler`);
       }
       if (!route.summary || !route.description || !route.responses) {

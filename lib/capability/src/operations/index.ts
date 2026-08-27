@@ -57,13 +57,6 @@ function invalidResult(name: string, errors: readonly string[]): void {
   console.error(message);
 }
 
-function define<TArgs extends unknown[], TResult>(
-  definition: VoyzuOperationDefinition,
-  handler: (...args: TArgs) => TResult,
-): (...args: TArgs) => Promise<Awaited<TResult>> {
-  return defineLazy(definition, async () => handler);
-}
-
 function defineLazy<TLoader extends OperationLoader>(
   definition: VoyzuOperationDefinition,
   loadHandler: TLoader,
@@ -159,7 +152,6 @@ function has(name: string): boolean {
 }
 
 export const operation = {
-  define,
   defineLazy,
   registerModule,
   callOptional,

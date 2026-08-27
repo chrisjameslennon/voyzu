@@ -33,11 +33,7 @@ function matchApiRoute(
   path: string,
   method: string,
 ): { route: VoyzuApiModuleRoute; params: Record<string, string> } | null {
-  const routes = [
-    ...(config.routes ?? []),
-    ...(config.modules ?? []).flatMap((module) => Object.values(module.apiDefinitions)),
-  ];
-  for (const route of routes) {
+  for (const route of config.routes) {
     if (route.method !== method) continue;
 
     const routeParts = route.path.split("/").filter(Boolean);
@@ -72,12 +68,7 @@ export async function handleVoyzuApiRoute(
   if (invalidRequest) return invalidRequest;
 
   const handle = async () => {
-    const handler = route.loadHandler
-      ? await route.loadHandler()
-      : route.handler;
-    if (!handler) {
-      throw new Error(`API route ${route.method} ${route.path} has no handler.`);
-    }
+    const handler = await route.loadHandler();
     return handler(request, { params: Promise.resolve(params) });
   };
   let response: NextResponse;

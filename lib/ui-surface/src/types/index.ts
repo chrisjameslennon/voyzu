@@ -30,8 +30,7 @@ export interface VoyzuSurfaceRoute {
   packageName?: string;
   path: string;
   pageTitle: string;
-  Page?: (props: Record<string, unknown>) => ReactNode | Promise<ReactNode>;
-  loadPage?: () => Promise<
+  loadPage: () => Promise<
     (props: Record<string, unknown>) => ReactNode | Promise<ReactNode>
   >;
   breadcrumbBase?: readonly VoyzuBreadcrumbItem[];
