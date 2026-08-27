@@ -31,24 +31,25 @@ function findPlatformRoot(startDirectory: string): string {
 export async function buildApiReference(): Promise<void> {
   const platformRoot = findPlatformRoot(SCRIPT_DIRECTORY);
   const generatedFilesDirectory = "apps/web/.generated/api-reference";
-  const apiRouteIndexPath = path.join(
+  const apiRoutesDirectory = path.join(
     platformRoot,
     "apps",
     "web",
     ".generated",
     "api-routes",
-    "index.ts",
   );
-  const generatedIndex = await import(pathToFileURL(apiRouteIndexPath).href) as {
-    preinstalledApiRouteModules: ApiDocumentationRegistration[];
+  const preInstalledIndex = await import(pathToFileURL(
+    path.join(apiRoutesDirectory, "pre-installed.ts"),
+  ).href) as {
+    preInstalledApiRouteModules: ApiDocumentationRegistration[];
   };
   const installedIndex = await import(pathToFileURL(
-    path.join(path.dirname(apiRouteIndexPath), "installed.ts"),
+    path.join(apiRoutesDirectory, "installed.ts"),
   ).href) as {
     installedApiRouteModules: ApiDocumentationRegistration[];
   };
   const registrations: ApiDocumentationRegistration[] = [
-    ...generatedIndex.preinstalledApiRouteModules,
+    ...preInstalledIndex.preInstalledApiRouteModules,
     ...installedIndex.installedApiRouteModules,
     {
       packageName: "@voyzu/api",
