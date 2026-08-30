@@ -13,6 +13,7 @@ import type {
   EditableGridHandle,
   EditableGridValidationResult,
 } from "@voyzu/ui-components";
+import styles from "./editable-grid-previews.module.css";
 
 type InventoryRow = {
   id: number;
@@ -193,6 +194,34 @@ export function EditableGridCalculatedPreview() {
         { id: 2, item: "Travel", quantity: 3, unitPrice: 75.5, total: 0 },
       ]}
       ariaLabel="Calculated columns example"
+    />
+  );
+}
+
+type TypographyRow = {
+  id: number;
+  reference: string;
+  item: string;
+  variance: number;
+  note: string;
+};
+
+const TYPOGRAPHY_COLUMNS: EditableGridColumn<TypographyRow>[] = [
+  { key: "reference", label: "Reference", type: "text", readOnly: true, width: 150, valueClassName: styles.monospace },
+  { key: "item", label: "Item", type: "text", readOnly: true, width: 220, valueClassName: styles.strong },
+  { key: "variance", label: "Variance", type: "number", readOnly: true, width: 110, valueClassName: styles.dangerStrong },
+  { key: "note", label: "Note", type: "text", readOnly: true, width: 220, valueClassName: styles.mutedItalic },
+];
+
+export function EditableGridTypographyPreview() {
+  return (
+    <EditableGrid
+      columns={TYPOGRAPHY_COLUMNS}
+      initialRows={[
+        { id: 1, reference: "COUNT-000042", item: "Premium Coffee Beans", variance: -8, note: "Recount required" },
+        { id: 2, reference: "COUNT-000043", item: "Gift Shipping Box", variance: 3, note: "Packaging adjustment" },
+      ]}
+      ariaLabel="Custom value typography example"
     />
   );
 }

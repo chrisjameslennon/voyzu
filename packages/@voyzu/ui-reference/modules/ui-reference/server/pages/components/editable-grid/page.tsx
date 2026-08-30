@@ -5,6 +5,7 @@ import {
   EditableGridCellTypesPreview,
   EditableGridReadOnlyPreview,
   EditableGridRowsAndStatePreview,
+  EditableGridTypographyPreview,
   EditableGridValidationPreview,
 } from "./editable-grid-previews";
 
@@ -96,6 +97,47 @@ const columns: EditableGridColumn<Row>[] = [
 ];`,
   },
   {
+    name: "Value typography and emphasis",
+    description: "Use valueClassName to apply a CSS class to displayed cell values. It accepts either a class name or a function of the value and row, enabling semantic emphasis without changing stored data.",
+    preview: <EditableGridTypographyPreview />,
+    code: `import styles from "./stocktake.module.css";
+
+const columns: EditableGridColumn<Row>[] = [
+  {
+    key: "reference",
+    label: "Reference",
+    type: "text",
+    readOnly: true,
+    valueClassName: styles.monospace,
+  },
+  {
+    key: "variance",
+    label: "Variance",
+    type: "number",
+    readOnly: true,
+    valueClassName: styles.dangerStrong,
+  },
+  {
+    key: "status",
+    label: "Status",
+    type: "text",
+    readOnly: true,
+    valueClassName: (value) =>
+      value === "Exception" ? styles.dangerStrong : styles.muted,
+  },
+];
+
+// stocktake.module.css
+.dangerStrong {
+  color: var(--voyzu-color-danger-text);
+  font-weight: 700;
+}
+
+.monospace {
+  font-family: ui-monospace, "Cascadia Code", Menlo, Consolas, monospace;
+}`,
+  },
+  {
     name: "Adding, deleting, and observing state",
     description: "Row controls are opt-in. The grid owns its working copy; onRowsChange provides snapshots for surrounding UI, while getRows returns the current snapshot on demand.",
     preview: <EditableGridRowsAndStatePreview />,
@@ -144,6 +186,7 @@ const COLUMN_PROPS = [
   { name: "rules", type: "readonly FieldRule[]", required: "", description: "Existing required, pattern, minLength, maxLength, or custom validation rules." },
   { name: "calculate", type: "(row: Readonly<T>) => T[keyof T]", required: "", description: "Computes the column after initialization and every row edit. Implies read-only." },
   { name: "format", type: "(value, row) => string", required: "", description: "Formats display text without changing the stored value." },
+  { name: "valueClassName", type: "string | ((value, row) => string | undefined)", required: "", description: "CSS class applied to the displayed value. Use a callback for conditional semantic or typographic styling. It does not change the editor or stored value." },
 ];
 
 const METHODS = [

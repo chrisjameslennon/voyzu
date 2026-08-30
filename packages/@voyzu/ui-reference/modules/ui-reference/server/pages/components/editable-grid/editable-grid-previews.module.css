@@ -1,0 +1,17 @@
+.strong {
+  font-weight: 700;
+}
+
+.dangerStrong {
+  color: var(--voyzu-color-danger-text);
+  font-weight: 700;
+}
+
+.mutedItalic {
+  color: var(--voyzu-color-text-tertiary);
+  font-style: italic;
+}
+
+.monospace {
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+}
