@@ -258,8 +258,23 @@ export function SearchableSelect(props: SearchableSelectProps) {
         aria-labelledby={ariaLabelledBy}
         aria-invalid={hasError || undefined}
         className={`${styles.trigger} ${gridStyling ? styles.gridTrigger : ""} ${isOpen ? styles.triggerOpen : ""} ${hasError ? styles.inputError : ""} ${disabled ? styles.triggerDisabled : ""} ${clearable && hasValue ? styles.triggerClearable : ""} ${className ?? ""}`}
+        style={
+          gridStyling
+            ? {
+                fontFamily: "var(--voyzu-font-family)",
+                fontSize: "0.78125rem",
+                fontWeight: 400,
+                lineHeight: "normal",
+              }
+            : undefined
+        }
       >
-        <span className={hasValue ? styles.triggerValue : styles.triggerPlaceholder}>{triggerText}</span>
+        <span
+          className={hasValue ? styles.triggerValue : styles.triggerPlaceholder}
+          style={gridStyling ? { fontSize: "0.78125rem", fontWeight: 400 } : undefined}
+        >
+          {triggerText}
+        </span>
       </button>
 
       {clearable && hasValue && !disabled && (
