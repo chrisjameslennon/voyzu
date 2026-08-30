@@ -28,7 +28,10 @@
 
 .gridTrigger {
   border-radius: 0;
-  font: inherit;
+  font-family: var(--voyzu-font-family);
+  font-size: 0.8125rem !important;
+  font-weight: 400 !important;
+  line-height: normal;
 }
 
 .triggerClearable {

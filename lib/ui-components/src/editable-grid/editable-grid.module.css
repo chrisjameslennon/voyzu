@@ -165,7 +165,10 @@
   border: 0;
   border-radius: 0;
   background: var(--voyzu-color-surface);
-  font: inherit;
+  font-family: var(--voyzu-font-family);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: normal;
   box-shadow: none !important;
 }
 

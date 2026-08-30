@@ -77,7 +77,7 @@ export interface EditableGridProps<T extends EditableGridRow> {
 }
 
 type CellPosition = { row: number; column: number };
-type EditState = CellPosition & { draft: string };
+type EditState = CellPosition & { draft: string; selectOnFocus: boolean };
 
 function cellString(value: unknown, type: EditableGridCellType): string {
   if (type === "checkbox") return value === true ? "true" : "";
@@ -172,19 +172,27 @@ function EditableGridInner<T extends EditableGridRow>(
     () => validationResult(rows, columns),
     [rows, columns],
   );
+  const editingRow = editing?.row;
+  const editingColumn = editing?.column;
+  const selectEditorOnFocus = editing?.selectOnFocus;
 
   useEffect(() => {
     if (validationAttempted) onValidationChange?.(validation);
   }, [onValidationChange, validation, validationAttempted]);
 
   useEffect(() => {
-    if (editing) {
+    if (editingRow !== undefined && editingColumn !== undefined) {
       editRef.current?.focus();
-      if (editRef.current instanceof HTMLInputElement) editRef.current.select();
+      if (
+        selectEditorOnFocus &&
+        editRef.current instanceof HTMLInputElement
+      ) {
+        editRef.current.select();
+      }
       return;
     }
     if (selected) cellRefs.current.get(`${selected.row}:${selected.column}`)?.focus();
-  }, [editing, selected]);
+  }, [editingColumn, editingRow, selectEditorOnFocus, selected]);
 
   function publishRows(nextRows: T[]) {
     setRows(nextRows);
@@ -229,6 +237,7 @@ function EditableGridInner<T extends EditableGridRow>(
     setEditing({
       ...position,
       draft: initialDraft ?? cellString(row[column.key], column.type),
+      selectOnFocus: initialDraft === undefined,
     });
   }
 
@@ -434,9 +443,18 @@ function EditableGridInner<T extends EditableGridRow>(
                         <input
                           ref={editRef as RefObject<HTMLInputElement>}
                           className={styles.editor}
-                          type={column.type}
+                          type={column.type === "number" ? "text" : column.type}
+                          inputMode={column.type === "number" ? "decimal" : undefined}
                           value={editing.draft}
-                          onChange={(event) => setEditing({ ...editing, draft: event.target.value })}
+                          onChange={(event) => {
+                            const draft = event.target.value;
+                            if (
+                              column.type !== "number" ||
+                              /^-?(?:\d+)?(?:\.\d*)?$/.test(draft)
+                            ) {
+                              setEditing({ ...editing, draft });
+                            }
+                          }}
                           onBlur={() => commitEditing()}
                           onKeyDown={handleEditorKeyDown}
                         />
