@@ -35,6 +35,7 @@ function detectMMDD(): boolean {
  */
 function formatLong(dateStr: string, isMMDD: boolean): string {
   if (!dateStr) return "";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr) || !isValidDate(dateStr)) return "";
   const [yr, mo, dy] = dateStr.split("-").map(Number);
   const monthName = new Intl.DateTimeFormat(undefined, { month: "long" }).format(new Date(yr, mo - 1, dy));
   return isMMDD ? `${monthName} ${dy} ${yr}` : `${dy} ${monthName} ${yr}`;
@@ -43,6 +44,7 @@ function formatLong(dateStr: string, isMMDD: boolean): string {
 /** YYYY-MM-DD → locale display (dd/mm/yyyy or mm/dd/yyyy) */
 function toDisplay(dateStr: string, isMMDD: boolean): string {
   if (!dateStr) return "";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr) || !isValidDate(dateStr)) return "";
   const [y, m, d] = dateStr.split("-");
   if (!y || !m || !d) return "";
   return isMMDD ? `${m}/${d}/${y}` : `${d}/${m}/${y}`;

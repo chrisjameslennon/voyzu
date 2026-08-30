@@ -48,6 +48,7 @@ export interface EditableGridColumn<T extends EditableGridRow> {
   rules?: readonly FieldRule[];
   calculate?: (row: Readonly<T>) => T[Extract<keyof T, string>];
   format?: (value: T[Extract<keyof T, string>], row: Readonly<T>) => string;
+  valueClassName?: string | ((value: T[Extract<keyof T, string>], row: Readonly<T>) => string | undefined);
 }
 
 export interface EditableGridValidationResult {
@@ -459,7 +460,16 @@ function EditableGridInner<T extends EditableGridRow>(
                           onKeyDown={handleEditorKeyDown}
                         />
                       ) : (
-                        <span className={styles.cellValue}>{displayValue(row, column)}</span>
+                        <span
+                          className={[
+                            styles.cellValue,
+                            typeof column.valueClassName === "function"
+                              ? column.valueClassName(row[column.key], row)
+                              : (column.valueClassName ?? ""),
+                          ].filter(Boolean).join(" ")}
+                        >
+                          {displayValue(row, column)}
+                        </span>
                       )}
                     </td>
                   );
