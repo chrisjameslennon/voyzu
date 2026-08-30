@@ -426,6 +426,7 @@ function EditableGridInner<T extends EditableGridRow>(
                             searchPlaceholder={column.searchPlaceholder ?? "Search..."}
                             hasError={isInvalid}
                             codeBadge={false}
+                            gridStyling
                             className={styles.selectEditor}
                           />
                         </div>

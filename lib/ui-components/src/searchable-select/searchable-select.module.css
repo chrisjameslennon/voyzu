@@ -4,6 +4,10 @@
   position: relative;
 }
 
+.gridRoot {
+  font: inherit;
+}
+
 .trigger {
   width: 100%;
   padding: 0.625rem 2.75rem 0.625rem 1rem;
@@ -20,6 +24,11 @@
   text-align: left;
   cursor: pointer;
   transition: all var(--voyzu-transition-fast);
+}
+
+.gridTrigger {
+  border-radius: 0;
+  font: inherit;
 }
 
 .triggerClearable {
@@ -127,6 +136,11 @@
   max-height: 325px;
 }
 
+.gridPanel {
+  border-radius: 0;
+  font: inherit;
+}
+
 /* ── Search ── */
 
 .search {
@@ -148,6 +162,10 @@
   border-radius: var(--voyzu-radius-compact);
   outline: none;
   color: var(--voyzu-color-text-label);
+}
+
+.gridSearchInput {
+  border-radius: 0;
 }
 
 .searchInput::placeholder {

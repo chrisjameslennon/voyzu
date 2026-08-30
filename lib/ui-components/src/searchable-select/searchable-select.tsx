@@ -23,6 +23,7 @@ interface SearchableSelectBaseProps {
   dropdownWidth?: "auto" | "trigger" | number;
   dropdownAlign?: "left" | "right";
   disabled?: boolean;
+  gridStyling?: boolean;
   className?: string;
   id?: string;
   ariaLabel?: string;
@@ -56,6 +57,7 @@ export function SearchableSelect(props: SearchableSelectProps) {
     dropdownWidth = "trigger",
     dropdownAlign = "left",
     disabled = false,
+    gridStyling = false,
     className,
     ariaLabel,
     ariaLabelledBy,
@@ -238,7 +240,10 @@ export function SearchableSelect(props: SearchableSelectProps) {
   const hasValue = selectedValues.length > 0;
 
   return (
-    <div ref={wrapRef} className={styles.root}>
+    <div
+      ref={wrapRef}
+      className={`${styles.root} ${gridStyling ? styles.gridRoot : ""}`}
+    >
       <button
         type="button"
         id={id}
@@ -252,7 +257,7 @@ export function SearchableSelect(props: SearchableSelectProps) {
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         aria-invalid={hasError || undefined}
-        className={`${styles.trigger} ${isOpen ? styles.triggerOpen : ""} ${hasError ? styles.inputError : ""} ${disabled ? styles.triggerDisabled : ""} ${clearable && hasValue ? styles.triggerClearable : ""} ${className ?? ""}`}
+        className={`${styles.trigger} ${gridStyling ? styles.gridTrigger : ""} ${isOpen ? styles.triggerOpen : ""} ${hasError ? styles.inputError : ""} ${disabled ? styles.triggerDisabled : ""} ${clearable && hasValue ? styles.triggerClearable : ""} ${className ?? ""}`}
       >
         <span className={hasValue ? styles.triggerValue : styles.triggerPlaceholder}>{triggerText}</span>
       </button>
@@ -269,7 +274,7 @@ export function SearchableSelect(props: SearchableSelectProps) {
           id={panelId}
           role="dialog"
           aria-label={ariaLabel ?? (props.multiple ? "Choose options" : "Choose an option")}
-          className={styles.panel}
+          className={`${styles.panel} ${gridStyling ? styles.gridPanel : ""}`}
           style={{ top: panelPos.top, bottom: panelPos.bottom, left: panelPos.left, width: panelPos.width, maxHeight: panelPos.maxHeight }}
           onKeyDown={(event) => {
             if (event.key === "Escape") {
@@ -288,7 +293,7 @@ export function SearchableSelect(props: SearchableSelectProps) {
                 aria-expanded={props.multiple ? undefined : true}
                 aria-controls={listId}
                 aria-activedescendant={!props.multiple ? activeOptionId : undefined}
-                className={styles.searchInput}
+                className={`${styles.searchInput} ${gridStyling ? styles.gridSearchInput : ""}`}
                 placeholder={searchPlaceholder}
                 value={search}
                 onChange={(event) => { setSearch(event.target.value); setActiveIndex(0); }}

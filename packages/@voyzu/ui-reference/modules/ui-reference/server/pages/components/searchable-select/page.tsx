@@ -158,6 +158,7 @@ const PROP_TABLE = [
   { name: "clearable", type: "boolean", required: "", description: "Show an × button in the trigger to clear the selection" },
   { name: "hasError", type: "boolean", required: "", description: "Applies red border for validation error state" },
   { name: "disabled", type: "boolean", required: "", description: "Disables the select — muted style, no pointer events" },
+  { name: "gridStyling", type: "boolean", required: "", description: "Uses compact inherited typography and square borders for editable-grid cells" },
   { name: "dropdownWidth", type: "string | number", required: "", description: "Override the dropdown width (default: matches the trigger width)" },
   { name: "dropdownAlign", type: '"left" | "right"', required: "", description: "Align the dropdown with the left or right edge of the trigger" },
   { name: "ariaLabel", type: "string", required: "", description: "Accessible name when no external label is referenced" },
