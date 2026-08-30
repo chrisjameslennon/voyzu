@@ -255,14 +255,14 @@ export function SearchableSelect(props: SearchableSelectProps) {
         className={`${styles.trigger} ${isOpen ? styles.triggerOpen : ""} ${hasError ? styles.inputError : ""} ${disabled ? styles.triggerDisabled : ""} ${clearable && hasValue ? styles.triggerClearable : ""} ${className ?? ""}`}
       >
         <span className={hasValue ? styles.triggerValue : styles.triggerPlaceholder}>{triggerText}</span>
-        <span className="material-symbols-outlined" aria-hidden="true">expand_more</span>
       </button>
 
       {clearable && hasValue && !disabled && (
         <button type="button" className={styles.clearBtn} aria-label="Clear selection" onClick={clear}>
-          <span className="material-symbols-outlined" aria-hidden="true">close</span>
+          <span className="material-symbols-outlined" style={{ fontSize: "12.6px" }} aria-hidden="true">close</span>
         </button>
       )}
+      <span className={`material-symbols-outlined ${styles.chevron} ${disabled ? styles.chevronDisabled : ""}`} aria-hidden="true">expand_more</span>
 
       {isOpen && panelPos && (
         <div
