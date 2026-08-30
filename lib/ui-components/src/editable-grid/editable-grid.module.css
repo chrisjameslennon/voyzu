@@ -165,11 +165,18 @@
   border: 0;
   border-radius: 0;
   background: var(--voyzu-color-surface);
-  font-family: var(--voyzu-font-family);
-  font-size: 0.8125rem;
-  font-weight: 400;
-  line-height: normal;
+  font-family: inherit;
+  font-size: 0.796875rem !important;
+  font-weight: inherit;
+  line-height: inherit;
   box-shadow: none !important;
+}
+
+.selectCellControl button > span:first-child {
+  font-family: inherit !important;
+  font-size: 0.796875rem !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
 }
 
 .selectEditor > span:last-child {

@@ -26,12 +26,9 @@
   transition: all var(--voyzu-transition-fast);
 }
 
-.gridTrigger {
+.trigger.gridTrigger {
   border-radius: 0;
-  font-family: var(--voyzu-font-family);
-  font-size: 0.78125rem !important;
-  font-weight: 400 !important;
-  line-height: normal;
+  font: inherit;
 }
 
 .gridTrigger .triggerValue,
