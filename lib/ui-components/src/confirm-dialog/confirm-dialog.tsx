@@ -9,6 +9,7 @@ export interface ConfirmDialogProps {
   title: string;
   message: ReactNode;
   icon?: string;
+  size?: "default" | "wide";
   confirmLabel?: string;
   confirmVariant?: "danger" | "primary";
   onClose: () => void;
@@ -20,6 +21,7 @@ export function ConfirmDialog({
   title,
   message,
   icon,
+  size = "default",
   confirmLabel = "Confirm",
   confirmVariant = "danger",
   onClose,
@@ -29,7 +31,7 @@ export function ConfirmDialog({
 
   return (
     <div className={styles.backdrop}>
-      <div className={styles.dialog}>
+      <div className={`${styles.dialog} ${size === "wide" ? styles.dialogWide : ""}`}>
         <div className={styles.heading}>
           {icon ? (
             <span className={`material-symbols-outlined ${styles.icon}`} aria-hidden="true">

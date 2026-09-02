@@ -75,6 +75,7 @@ export interface EditableGridProps<T extends EditableGridRow> {
   emptyText?: string;
   ariaLabel?: string;
   className?: string;
+  mobileLayout?: "table" | "cards";
 }
 
 type CellPosition = { row: number; column: number };
@@ -156,6 +157,7 @@ function EditableGridInner<T extends EditableGridRow>(
     emptyText = "No rows",
     ariaLabel = "Editable grid",
     className,
+    mobileLayout = "table",
   }: EditableGridProps<T>,
   ref: ForwardedRef<EditableGridHandle<T>>,
 ) {
@@ -486,6 +488,77 @@ function EditableGridInner<T extends EditableGridRow>(
           </tbody>
         </table>
       </div>
+      {mobileLayout === "cards" && (
+        <div className={styles.mobileCards} aria-label={ariaLabel}>
+          {rows.length === 0 ? (
+            <div className={styles.mobileEmpty}>{emptyText}</div>
+          ) : rows.map((row, rowIndex) => (
+            <section className={styles.mobileCard} key={row.id}>
+              <div className={styles.mobileCardHeader}>
+                <strong>Line {rowIndex + 1}</strong>
+                {allowDeleteRows && (
+                  <button type="button" className={styles.mobileDeleteButton} aria-label={`Delete row ${rowIndex + 1}`} onClick={() => deleteRow(rowIndex)}>
+                    <span className="material-symbols-outlined" aria-hidden="true">delete</span>
+                  </button>
+                )}
+              </div>
+              <div className={styles.mobileFields}>
+                {columns.map((column, columnIndex) => {
+                  const isReadOnly = column.readOnly || Boolean(column.calculate);
+                  const isInvalid = cellIsInvalid(row, column);
+                  const value = row[column.key];
+                  const valueClassName = typeof column.valueClassName === "function"
+                    ? column.valueClassName(value, row)
+                    : column.valueClassName;
+                  return (
+                    <div className={styles.mobileField} key={column.key}>
+                      <label className={styles.mobileLabel}>{column.label}</label>
+                      {isReadOnly ? (
+                        <div className={[styles.mobileReadOnly, valueClassName ?? ""].filter(Boolean).join(" ")}>
+                          {displayValue(row, column) || "—"}
+                        </div>
+                      ) : column.type === "select" ? (
+                        <SearchableSelect
+                          value={cellString(value, column.type)}
+                          onChange={(nextValue) => updateCell(rowIndex, columnIndex, nextValue)}
+                          options={[...(column.options ?? [])]}
+                          searchable={column.searchable ?? true}
+                          placeholder={column.placeholder ?? "Select..."}
+                          searchPlaceholder={column.searchPlaceholder ?? "Search..."}
+                          hasError={isInvalid}
+                          codeBadge={false}
+                        />
+                      ) : column.type === "checkbox" ? (
+                        <input
+                          className={styles.mobileCheckbox}
+                          type="checkbox"
+                          checked={value === true}
+                          aria-invalid={isInvalid || undefined}
+                          onChange={(event) => updateCell(rowIndex, columnIndex, event.target.checked)}
+                        />
+                      ) : (
+                        <input
+                          className={[styles.mobileInput, isInvalid ? styles.mobileInputInvalid : ""].filter(Boolean).join(" ")}
+                          type={column.type === "number" ? "number" : "text"}
+                          inputMode={column.type === "number" ? "decimal" : undefined}
+                          value={cellString(value, column.type)}
+                          aria-invalid={isInvalid || undefined}
+                          placeholder={column.placeholder}
+                          onChange={(event) => updateCell(
+                            rowIndex,
+                            columnIndex,
+                            column.type === "number" && event.target.value !== "" ? Number(event.target.value) : event.target.value,
+                          )}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
+      )}
       {allowAddRows && (
         <div className={styles.footer}>
           <button type="button" className={styles.addButton} disabled={!createRow} onClick={addRow}>
