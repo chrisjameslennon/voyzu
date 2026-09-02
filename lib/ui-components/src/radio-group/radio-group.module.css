@@ -8,6 +8,7 @@
   align-items: center;
   gap: var(--voyzu-space-inline);
   cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: var(--voyzu-font-size-body);
+  font-weight: var(--voyzu-font-weight-body);
+  color: var(--voyzu-color-text);
 }
