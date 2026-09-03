@@ -20,9 +20,9 @@
       "types": "./src/db/index.ts",
       "import": "./src/db/index.ts"
     },
-    "./operations": {
-      "types": "./src/operations/index.ts",
-      "import": "./src/operations/index.ts"
+    "./commands": {
+      "types": "./src/commands/index.ts",
+      "import": "./src/commands/index.ts"
     },
     "./runtime": {
       "types": "./src/runtime/index.ts",

@@ -6,16 +6,16 @@ import {
   exportAuditEvents,
   getAuditEvent,
   listAuditEvents,
-} from "@voyzu/audit/audit/operations";
+} from "@voyzu/audit/audit/commands";
 import { getDb, getPool } from "@voyzu/capability/db";
 
-const packageCode = "@voyzu/operations-test";
+const packageCode = "@voyzu/commands-test";
 let eventId: number;
 
 before(async () => {
   const { rows } = await getDb().query(
     `INSERT INTO audit_event (package_code, actor_type, actor_id, action, entity_type, entity_id, entity_code, mutation_id)
-     VALUES ($1, 'SYSTEM', 'operations-test', 'INSERT', 'operations_test', '1', 'OPTEST', 'operations-test')
+     VALUES ($1, 'SYSTEM', 'commands-test', 'INSERT', 'operations_test', '1', 'OPTEST', 'commands-test')
      RETURNING id`,
     [packageCode],
   );
@@ -36,7 +36,7 @@ test("countAuditEvents returns the platform audit count", async () => {
   assert.ok(await countAuditEvents() >= 1);
 });
 
-test("listAuditEvents filters through the public operation", async () => {
+test("listAuditEvents filters through the public command", async () => {
   const result = await listAuditEvents({ packageCode });
   assert.equal(result.totalMatching, 1);
   assert.equal(result.items[0]?.id, eventId);

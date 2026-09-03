@@ -2,7 +2,7 @@
 
 Voyzu business functionality is delivered through packages. A package owns its
 identity, lifecycle resources, public contracts, and one or more modules. Each
-module represents a coherent capability with its own pages, APIs, operations,
+module represents a coherent capability with its own pages, APIs, commands,
 UI, services, and persistence.
 
 This guide uses the
@@ -54,7 +54,7 @@ packages/@acme/customer-orders/
 ├─ public-assets/
 ├─ scripts/
 ├─ tests/
-│  └─ operations/
+│  └─ commands/
 │     └─ orders/
 ├─ types/
 ├─ uninstall/
@@ -114,9 +114,9 @@ dependencies, and exposes its public entry points.
       "types": "./modules/orders/api.routes.ts",
       "import": "./modules/orders/api.routes.ts"
     },
-    "./orders/operations": {
-      "types": "./modules/orders/operations.ts",
-      "import": "./modules/orders/operations.ts"
+    "./orders/commands": {
+      "types": "./modules/orders/commands.ts",
+      "import": "./modules/orders/commands.ts"
     },
     "./types": {
       "types": "./types/index.ts",
@@ -138,7 +138,7 @@ dependencies, and exposes its public entry points.
 }
 ```
 
-The composer discovers pages, APIs, operations, and navigation from these
+The composer discovers pages, APIs, commands, and navigation from these
 dedicated exports. It does not inspect `voyzu.package.ts` or `module.ts` as a
 fallback. Omit `./navigation` when the package has no navigation, and omit a
 module surface only when that module does not provide it.
@@ -235,7 +235,7 @@ modules/orders/
 ├─ types/                   # Optional module-private schemas
 ├─ api.routes.ts
 ├─ module.ts
-├─ operations.ts
+├─ commands.ts
 └─ pages.routes.ts
 ```
 
@@ -252,13 +252,13 @@ Do not add a module-root `index.ts` barrel. Import the module manifest from
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
 import { apiDefinitions } from "./api.routes";
-import { operations } from "./operations";
+import { commands } from "./commands";
 import { pageRoutes } from "./pages.routes";
 
 export const ordersModule = {
   pageRoutes,
   apiDefinitions,
-  operations,
+  commands,
 } as const satisfies VoyzuPackageModuleDefinition;
 
 export default ordersModule;
@@ -381,23 +381,23 @@ HTTP handlers call services directly. They normalize validated transport values,
 map known errors, and return responses; they do not own persistence or business
 rules.
 
-### Implement services and operations
+### Implement services and commands
 
 Services under `server/lib` own business orchestration and transactions. They
 call repositories, apply business validation, map persistence rows to DTOs, and
 invoke optional cross-package commands when required.
 
-`operations.ts` is a server-only command manifest. It declares boundary
+`commands.ts` is a server-only command manifest. It declares boundary
 validation and lazy typed service loaders, without business behavior:
 
 ```ts
-// modules/orders/operations.ts
+// modules/orders/commands.ts
 import "server-only";
 
-import { operation } from "@voyzu/capability/operations";
+import { command } from "@voyzu/capability/commands";
 import Type from "typebox";
 
-export const createOrder = operation.defineLazy(
+export const createOrder = command.defineLazy(
   {
     parameters: Type.Tuple([OrderCreateRequestDto]),
     result: OrderResponseDto,
@@ -406,12 +406,12 @@ export const createOrder = operation.defineLazy(
     .then((module) => module.createOrder),
 );
 
-export const operations = {
+export const commands = {
   createOrder,
 } as const;
 ```
 
-Use operations for tests and deliberate programmatic access. HTTP handlers
+Use commands for tests and deliberate programmatic access. HTTP handlers
 continue to call services directly.
 
 ## Register the package manifest
@@ -489,13 +489,13 @@ barrels.
 
 ## Add tests
 
-Tests live at package level and mirror the module operations surface:
+Tests live at package level and mirror the module commands surface:
 
 ```text
 tests/
-└─ operations/
+└─ commands/
    └─ orders/
-      └─ orders.operations.test.ts
+      └─ orders.commands.test.ts
 ```
 
 ```ts
@@ -503,9 +503,9 @@ import { describe, expect, it } from "vitest";
 import {
   createOrder,
   deleteOrder,
-} from "@acme/customer-orders/modules/orders/operations";
+} from "@acme/customer-orders/modules/orders/commands";
 
-describe("orders operations", () => {
+describe("orders commands", () => {
   it("creates an order", async () => {
     const code = `ORDER_${Date.now()}`;
     try {
@@ -522,7 +522,7 @@ describe("orders operations", () => {
 });
 ```
 
-All functions exposed through `operations.ts` should be tested. Use unique
+All functions exposed through `commands.ts` should be tested. Use unique
 fixtures and remove created business records so tests are repeatable; generated
 audit history may remain. See [Testing patterns](../voyzu-platform-patterns/tests.md).
 
@@ -559,7 +559,7 @@ npm run dev
 ```
 
 Voyzu mirrors editable linked-package source into the transient runtime. Run
-composition after changing package exports, page or API routes, operations,
+composition after changing package exports, page or API routes, commands,
 navigation, assets, or API schemas:
 
 ```shell
@@ -568,7 +568,7 @@ npm run voyzu:compose
 
 Composition validates pre-installed and installed packages together and
 generates matching `pre-installed.ts` and `installed.ts` navigation, page-route,
-API-route, and operation registries beneath `apps/web/.generated`, along with
+API-route, and command registries beneath `apps/web/.generated`, along with
 the API Reference output. The platform wildcard page and API handlers use these
 registries at runtime. Never edit generated files directly.
 
@@ -577,7 +577,7 @@ See [Commands](commands.md) for the complete command reference.
 ## Reference package
 
 The Ice Creams package demonstrates CRUD pages, REST APIs, TypeBox DTOs,
-business validation, persistence, auditing, reports, sample data, and operation
+business validation, persistence, auditing, reports, sample data, and command
 tests.
 
 [View the Ice Creams reference package on GitHub](https://github.com/chrisjameslennon/voyzu-packages/tree/main/packages/%40voyzu/ice-creams).

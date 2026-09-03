@@ -3,7 +3,7 @@ export type {
   VoyzuPackageDefinition,
   VoyzuPackageInstallDefinition,
   VoyzuPackageMetadata,
-  VoyzuModuleOperation,
+  VoyzuModuleCommand,
   VoyzuPackageModuleDefinition,
   VoyzuPackageScript,
   VoyzuPackageScripts,

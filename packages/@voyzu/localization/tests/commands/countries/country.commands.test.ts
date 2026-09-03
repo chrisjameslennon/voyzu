@@ -24,7 +24,7 @@ import {
   batchGetCountries,
   batchUpdateCountries,
   batchPatchCountries,
-} from "../../../modules/countries/operations";
+} from "../../../modules/countries/commands";
 
 before(async () => {
   await getPool().query("DELETE FROM country WHERE code = ANY($1::text[])", [["XW", "XY", "XZ"]]);
@@ -54,7 +54,7 @@ after(async () => {
   await getPool().end();
 });
 
-describe("country operations", () => {
+describe("country commands", () => {
   it("creates a country", async () => {
     const country = await createCountry({
       code: "XZ",

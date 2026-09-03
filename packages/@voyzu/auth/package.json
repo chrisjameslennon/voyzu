@@ -34,7 +34,7 @@
     "./auth": "./modules/auth/module.ts",
     "./auth/api.routes": "./modules/auth/api.routes.ts",
     "./auth/pages.routes": "./modules/auth/pages.routes.ts",
-    "./auth/operations": "./modules/auth/operations.ts",
+    "./auth/commands": "./modules/auth/commands.ts",
     "./auth/client": "./modules/auth/client/index.ts",
     "./auth/server": "./modules/auth/server/index.ts",
     "./auth/server/api-basic-auth": "./modules/auth/server/api-basic-auth.ts",
@@ -43,7 +43,7 @@
     "./users": "./modules/users/module.ts",
     "./users/api.routes": "./modules/users/api.routes.ts",
     "./users/pages.routes": "./modules/users/pages.routes.ts",
-    "./users/operations": "./modules/users/operations.ts",
+    "./users/commands": "./modules/users/commands.ts",
     "./users/client": "./modules/users/client/index.ts",
     "./users/server": "./modules/users/server/index.ts"
   },

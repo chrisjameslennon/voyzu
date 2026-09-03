@@ -25,7 +25,7 @@ import {
   batchDeleteCurrencies,
   deactivateCurrencies,
   deactivateCurrency,
-} from "../../../modules/currencies/operations";
+} from "../../../modules/currencies/commands";
 
 const createdCodes: string[] = [];
 const testCodes = ["SVA", "SVB", "ZZC", "ZZD"];
@@ -39,7 +39,7 @@ after(async () => {
   await getPool().end();
 });
 
-describe("currency operations", () => {
+describe("currency commands", () => {
   it("creates a currency (minimal fields)", async () => {
     const input: CurrencyCreateRequestDto = {
       code: "SVA",

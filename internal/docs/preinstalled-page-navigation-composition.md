@@ -25,7 +25,7 @@ Explicitly out of scope for this change:
 
 - packages from the separate `voyzu-packages` repository
 - API routes
-- operations
+- commands
 - slots and other extension surfaces
 - React navigation components such as left-nav headers
 
@@ -39,9 +39,9 @@ Voyzu is package based, so the application must compose the page routes and navi
 
 The problem is not the size of the route or navigation definition files themselves. They are small. The problem is what they import transitively.
 
-Today a runtime import of a package definition can make the complete package/module graph reachable. A lightweight need such as finding a page path can therefore pull in page implementations, API handlers, operations, services, repositories, and their dependencies.
+Today a runtime import of a package definition can make the complete package/module graph reachable. A lightweight need such as finding a page path can therefore pull in page implementations, API handlers, commands, services, repositories, and their dependencies.
 
-The runtime should be able to know that `/settings/users` exists without importing the implementation of the Users page, and without importing unrelated Auth API or operation code.
+The runtime should be able to know that `/settings/users` exists without importing the implementation of the Users page, and without importing unrelated Auth API or command code.
 
 The intended separation is:
 
@@ -95,12 +95,12 @@ import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
 import { apiDefinitions } from "./api.routes";
 import { pageRoutes } from "./pages.routes";
-import { operations } from "./operations";
+import { commands } from "./commands";
 
 export const usersModule = {
   pageRoutes,
   apiDefinitions,
-  operations,
+  commands,
 } as const satisfies VoyzuPackageModuleDefinition;
 ```
 
@@ -287,7 +287,7 @@ The convention for preinstalled modules is:
 ./<module-name>/pages.routes
 ```
 
-`voyzu compose` may discover page-route surfaces from `package.json` exports using this convention, in the same general manner that it already discovers exported event and operation surfaces.
+`voyzu compose` may discover page-route surfaces from `package.json` exports using this convention, in the same general manner that it already discovers exported event and command surfaces.
 
 ---
 
@@ -357,7 +357,7 @@ export const settingsLeftNav = [
 ] as const;
 ```
 
-This gives good type safety, but importing `usersModule` also reaches `api.routes.ts`, `operations.ts`, and `pages.routes.ts`.
+This gives good type safety, but importing `usersModule` also reaches `api.routes.ts`, `commands.ts`, and `pages.routes.ts`.
 
 Once `pages.routes.ts` is safe to import globally, navigation should reference it directly:
 
@@ -624,7 +624,7 @@ The following must not be imported merely to match `/settings/users`:
 @voyzu/auth/voyzu.package.ts
 @voyzu/auth/modules/users/module.ts
 @voyzu/auth/modules/users/api.routes.ts
-@voyzu/auth/modules/users/operations.ts
+@voyzu/auth/modules/users/commands.ts
 UsersListPage.tsx
 UserDetailPage.tsx
 UserProfilePage.tsx
@@ -653,7 +653,7 @@ This change must not:
 
 - migrate packages in the `voyzu-packages` repository;
 - redesign API composition;
-- redesign operations;
+- redesign commands;
 - convert page implementations into string entry points;
 - duplicate page route metadata into generated files;
 - duplicate navigation metadata into generated files;

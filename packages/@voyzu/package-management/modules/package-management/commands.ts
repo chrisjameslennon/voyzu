@@ -1,6 +1,6 @@
 import "server-only";
 
-import { operation } from "@voyzu/capability/operations";
+import { command } from "@voyzu/capability/commands";
 import {
   HomePageRouteResponseDto,
   InstalledPackageResponseDto,
@@ -12,22 +12,22 @@ const HomePageRoute = HomePageRouteResponseDto.properties.route;
 const PackageCode = Type.Union([Type.String(), Type.Undefined()]);
 const loadService = () => import("./server/lib/installed-package.service");
 
-export const reconcileInstalledPackages = operation.defineLazy(
+export const reconcileInstalledPackages = command.defineLazy(
   { parameters: Type.Tuple([]), result: InstalledPackageList },
   () => loadService().then((module) => module.reconcileInstalledPackages),
 );
-export const listInstalledPackages = operation.defineLazy(
+export const listInstalledPackages = command.defineLazy(
   { parameters: Type.Tuple([]), result: InstalledPackageList },
   () => loadService().then((module) => module.listInstalledPackages),
 );
-export const getInstalledPackage = operation.defineLazy(
+export const getInstalledPackage = command.defineLazy(
   {
     parameters: Type.Tuple([Type.Integer({ minimum: 1 })]),
     result: Type.Union([InstalledPackageResponseDto, Type.Null()]),
   },
   () => loadService().then((module) => module.getInstalledPackage),
 );
-export const updateInstalledPackageVisibility = operation.defineLazy(
+export const updateInstalledPackageVisibility = command.defineLazy(
   {
     parameters: Type.Tuple([
       Type.Integer({ minimum: 1 }),
@@ -38,15 +38,15 @@ export const updateInstalledPackageVisibility = operation.defineLazy(
   },
   () => loadService().then((module) => module.updateInstalledPackageVisibility),
 );
-export const getHomePageRoute = operation.defineLazy(
+export const getHomePageRoute = command.defineLazy(
   { parameters: Type.Tuple([]), result: HomePageRoute },
   () => loadService().then((module) => module.getHomePageRoute),
 );
-export const updateHomePageRoute = operation.defineLazy(
+export const updateHomePageRoute = command.defineLazy(
   { parameters: Type.Tuple([HomePageRoute]), result: HomePageRoute },
   () => loadService().then((module) => module.updateHomePageRoute),
 );
-export const moveInstalledPackage = operation.defineLazy(
+export const moveInstalledPackage = command.defineLazy(
   {
     parameters: Type.Tuple([
       Type.Integer({ minimum: 1 }),
@@ -56,16 +56,16 @@ export const moveInstalledPackage = operation.defineLazy(
   },
   () => loadService().then((module) => module.moveInstalledPackage),
 );
-export const areInstalledPackagePageRoutesVisible = operation.defineLazy(
+export const areInstalledPackagePageRoutesVisible = command.defineLazy(
   { parameters: Type.Tuple([PackageCode]), result: Type.Boolean() },
   () => loadService().then((module) => module.areInstalledPackagePageRoutesVisible),
 );
-export const isInstalledPackageTopNavigationVisible = operation.defineLazy(
+export const isInstalledPackageTopNavigationVisible = command.defineLazy(
   { parameters: Type.Tuple([PackageCode]), result: Type.Boolean() },
   () => loadService().then((module) => module.isInstalledPackageTopNavigationVisible),
 );
 
-export const operations = {
+export const commands = {
   reconcileInstalledPackages,
   listInstalledPackages,
   getInstalledPackage,

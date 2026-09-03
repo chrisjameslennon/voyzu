@@ -5,45 +5,45 @@ import Schema, { type Validator } from "typebox/schema";
 
 import { InputValidationError } from "../errors";
 
-export interface VoyzuOperationDefinition {
+export interface VoyzuCommandDefinition {
   parameters: TSchema;
   result: TSchema;
 }
 
-type OperationHandler = (...args: any[]) => any;
-type OperationLoader = () => Promise<OperationHandler>;
-type LoadedOperation<TLoader extends OperationLoader> = Awaited<ReturnType<TLoader>>;
-type LazyOperation<TLoader extends OperationLoader> = (
-  ...args: Parameters<LoadedOperation<TLoader>>
-) => Promise<Awaited<ReturnType<LoadedOperation<TLoader>>>>;
+type CommandHandler = (...args: any[]) => any;
+type CommandLoader = () => Promise<CommandHandler>;
+type LoadedCommand<TLoader extends CommandLoader> = Awaited<ReturnType<TLoader>>;
+type LazyCommand<TLoader extends CommandLoader> = (
+  ...args: Parameters<LoadedCommand<TLoader>>
+) => Promise<Awaited<ReturnType<LoadedCommand<TLoader>>>>;
 
-type DefinedOperation = {
-  handler: OperationHandler;
-  definition: VoyzuOperationDefinition;
+type DefinedCommand = {
+  handler: CommandHandler;
+  definition: VoyzuCommandDefinition;
 };
 
-type RegisteredOperation = DefinedOperation & {
+type RegisteredCommand = DefinedCommand & {
   name: string;
   packageName: string;
   moduleName: string;
-  operationName: string;
+  commandName: string;
 };
 
-type OperationRegistryState = {
-  definitions: WeakMap<OperationHandler, DefinedOperation>;
-  registry: Map<string, RegisteredOperation>;
+type CommandRegistryState = {
+  definitions: WeakMap<CommandHandler, DefinedCommand>;
+  registry: Map<string, RegisteredCommand>;
 };
 
-const operationGlobal = globalThis as typeof globalThis & {
-  __voyzuOperationRegistry?: OperationRegistryState;
+const commandGlobal = globalThis as typeof globalThis & {
+  __voyzuCommandRegistry?: CommandRegistryState;
 };
 
-operationGlobal.__voyzuOperationRegistry ??= {
-  definitions: new WeakMap<OperationHandler, DefinedOperation>(),
-  registry: new Map<string, RegisteredOperation>(),
+commandGlobal.__voyzuCommandRegistry ??= {
+  definitions: new WeakMap<CommandHandler, DefinedCommand>(),
+  registry: new Map<string, RegisteredCommand>(),
 };
 
-const { definitions, registry } = operationGlobal.__voyzuOperationRegistry;
+const { definitions, registry } = commandGlobal.__voyzuCommandRegistry;
 
 function messages(validator: Validator, value: unknown, path: string): string[] {
   return validator.Errors(value)[1].map((error) =>
@@ -57,11 +57,11 @@ function invalidResult(name: string, errors: readonly string[]): void {
   console.error(message);
 }
 
-function defineLazy<TLoader extends OperationLoader>(
-  definition: VoyzuOperationDefinition,
+function defineLazy<TLoader extends CommandLoader>(
+  definition: VoyzuCommandDefinition,
   loadHandler: TLoader,
-): LazyOperation<TLoader> {
-  let loadedHandler: Promise<OperationHandler> | undefined;
+): LazyCommand<TLoader> {
+  let loadedHandler: Promise<CommandHandler> | undefined;
   let validators: { parameter: Validator; result: Validator } | undefined;
 
   const getHandler = () => {
@@ -78,17 +78,17 @@ function defineLazy<TLoader extends OperationLoader>(
   };
 
   const wrapped = async (...args: unknown[]): Promise<unknown> => {
-    const operationValidators = getValidators();
-    if (!operationValidators.parameter.Check(args)) {
+    const commandValidators = getValidators();
+    if (!commandValidators.parameter.Check(args)) {
       throw new InputValidationError(
-        `Invalid operation arguments: ${messages(operationValidators.parameter, args, "parameters").join("; ")}`,
+        `Invalid command arguments: ${messages(commandValidators.parameter, args, "parameters").join("; ")}`,
       );
     }
 
     const handler = await getHandler();
     const result = await handler(...args);
-    if (!operationValidators.result.Check(result)) {
-      invalidResult("operation", messages(operationValidators.result, result, "result"));
+    if (!commandValidators.result.Check(result)) {
+      invalidResult("command", messages(commandValidators.result, result, "result"));
     }
     return result;
   };
@@ -97,25 +97,25 @@ function defineLazy<TLoader extends OperationLoader>(
     handler: wrapped,
     definition,
   });
-  return wrapped as LazyOperation<TLoader>;
+  return wrapped as LazyCommand<TLoader>;
 }
 
 function registerModule(
   packageName: string,
   moduleName: string,
-  moduleOperations: Readonly<Record<string, OperationHandler>>,
+  moduleCommands: Readonly<Record<string, CommandHandler>>,
 ): () => void {
   const registeredNames: string[] = [];
 
-  for (const [operationName, handler] of Object.entries(moduleOperations)) {
+  for (const [commandName, handler] of Object.entries(moduleCommands)) {
     const defined = definitions.get(handler);
     if (!defined) continue;
 
-    const name = `${packageName}.${operationName}`;
+    const name = `${packageName}.${commandName}`;
     const existing = registry.get(name);
     if (existing && existing.moduleName !== moduleName) {
       throw new Error(
-        `Duplicate operation ${name} is exported by ${existing.moduleName} and ${moduleName}`,
+        `Duplicate command ${name} is exported by ${existing.moduleName} and ${moduleName}`,
       );
     }
 
@@ -124,7 +124,7 @@ function registerModule(
       name,
       packageName,
       moduleName,
-      operationName,
+      commandName,
     });
     registeredNames.push(name);
   }
@@ -143,7 +143,7 @@ async function callOptional(name: string, ...args: unknown[]): Promise<unknown |
 
 async function call(name: string, ...args: unknown[]): Promise<unknown> {
   const registered = registry.get(name);
-  if (!registered) throw new Error(`Operation ${name} is not available`);
+  if (!registered) throw new Error(`Command ${name} is not available`);
   return registered.handler(...args);
 }
 
@@ -151,7 +151,7 @@ function has(name: string): boolean {
   return registry.has(name);
 }
 
-export const operation = {
+export const command = {
   defineLazy,
   registerModule,
   callOptional,

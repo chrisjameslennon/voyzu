@@ -24,7 +24,7 @@
     "./audit": "./modules/audit/module.ts",
     "./audit/api.routes": "./modules/audit/api.routes.ts",
     "./audit/pages.routes": "./modules/audit/pages.routes.ts",
-    "./audit/operations": "./modules/audit/operations.ts",
+    "./audit/commands": "./modules/audit/commands.ts",
     "./common": "./modules/common/module.ts",
     "./types": "./types/index.ts",
     "./client": "./modules/common/client/index.ts",

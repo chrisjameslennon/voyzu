@@ -1,6 +1,6 @@
 import "server-only";
 
-import { operation } from "@voyzu/capability/operations";
+import { command } from "@voyzu/capability/commands";
 import {
   AuditEventListResponseDto,
   AuditEventResponseDto,
@@ -28,17 +28,17 @@ const optionalFilters = (filters: TSchema) => Type.Union([
   Type.Tuple([filters]),
 ]);
 
-export const countAuditEvents = operation.defineLazy(
+export const countAuditEvents = command.defineLazy(
   { parameters: Type.Tuple([]), result: Type.Number() },
   () => import("./server/lib/audit-event.service").then((module) => module.countAuditEvents),
 );
 
-export const listAuditEvents = operation.defineLazy(
+export const listAuditEvents = command.defineLazy(
   { parameters: optionalFilters(AuditEventFilters), result: AuditEventListResponseDto },
   () => import("./server/lib/audit-event.service").then((module) => module.listAuditEvents),
 );
 
-export const exportAuditEvents = operation.defineLazy(
+export const exportAuditEvents = command.defineLazy(
   {
     parameters: optionalFilters(AuditEventExportFilters),
     result: Type.Array(AuditEventResponseDto),
@@ -46,7 +46,7 @@ export const exportAuditEvents = operation.defineLazy(
   () => import("./server/lib/audit-event.service").then((module) => module.exportAuditEvents),
 );
 
-export const getAuditEvent = operation.defineLazy(
+export const getAuditEvent = command.defineLazy(
   {
     parameters: Type.Tuple([Type.Integer({ minimum: 1 })]),
     result: Type.Union([AuditEventResponseDto, Type.Null()]),
@@ -54,7 +54,7 @@ export const getAuditEvent = operation.defineLazy(
   () => import("./server/lib/audit-event.service").then((module) => module.getAuditEvent),
 );
 
-export const operations = {
+export const commands = {
   countAuditEvents,
   listAuditEvents,
   exportAuditEvents,

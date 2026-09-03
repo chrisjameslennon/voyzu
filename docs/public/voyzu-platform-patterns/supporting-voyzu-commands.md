@@ -199,7 +199,7 @@ not completed.
 `voyzu.package.ts` registers complete module definitions for lifecycle commands,
 but application composition discovers route and command surfaces only from
 explicit `./<module>/pages.routes`, `./<module>/api.routes`, and
-`./<module>/operations` exports. Navigation uses the single optional
+`./<module>/commands` exports. Navigation uses the single optional
 `./navigation` export. There are no fallbacks through the package manifest,
 module manifest, or legacy navigation exports.
 
@@ -207,7 +207,7 @@ Composition also consumes static assets, documentation settings, dependencies,
 owned route roots, and other package metadata. It validates pre-installed and
 installed packages through the same descriptor and surface rules, then writes
 paired `pre-installed.ts` and `installed.ts` navigation, page-route, API-route,
-and operation output beneath
+and command output beneath
 `apps/web/.generated`. The platform wildcard page and API handlers consume the
 composed route definitions at runtime. API
 documentation generation reads API route definitions and referenced DTOs from
@@ -234,11 +234,11 @@ Before publishing or installing a package, confirm that:
 * `voyzu.package.ts` exports a valid default definition;
 * every complete module satisfies the module contract;
 * every composed surface has the required direct package export;
-* page routes, API routes, and operations use lazy implementation loaders;
+* page routes, API routes, and commands use lazy implementation loaders;
 * install and uninstall paths exist and remain inside the package;
 * installation and seed SQL are idempotent;
 * uninstall SQL is dependency-safe and preserves platform audit records;
-* optional TypeScript operations are explicitly exposed through `scripts`;
+* optional TypeScript scripts are explicitly exposed through `scripts`;
 * routes and navigation stay within the package's declared roots;
 * API definitions and DTO schema descriptions are complete enough to generate the API
   Reference; and

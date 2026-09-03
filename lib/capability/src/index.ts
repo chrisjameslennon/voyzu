@@ -19,7 +19,7 @@ export {
   type DatabaseUrlValidationResult,
   type DbExecutor,
 } from "./db";
-export { operation, type VoyzuOperationDefinition } from "./operations";
+export { command, type VoyzuCommandDefinition } from "./commands";
 export {
   businessRuleError,
   conflictError,

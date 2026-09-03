@@ -12,7 +12,7 @@ import {
   reconcileInstalledPackages,
   updateHomePageRoute,
   updateInstalledPackageVisibility,
-} from "@voyzu/package-management/package-management/operations";
+} from "@voyzu/package-management/package-management/commands";
 
 let originalHomePage: string;
 let originalAuthVisibility: { id: number; topNavigationVisible: boolean; pageRoutesVisible: boolean } | undefined;
@@ -48,7 +48,7 @@ test("reconcileInstalledPackages and listInstalledPackages expose the package in
   assert.deepEqual(listed.map(({ code }) => code), reconciled.map(({ code }) => code));
 });
 
-test("getInstalledPackage and visibility operations expose an installed package", async () => {
+test("getInstalledPackage and visibility commands expose an installed package", async () => {
   const target = (await listInstalledPackages()).find(({ code }) => code === "@voyzu/auth")
     ?? (await listInstalledPackages())[0];
   assert.ok(target);
@@ -62,8 +62,8 @@ test("getInstalledPackage and visibility operations expose an installed package"
 });
 
 test("getHomePageRoute and updateHomePageRoute round-trip the platform setting", async () => {
-  assert.equal(await updateHomePageRoute("/operation-test"), "/operation-test");
-  assert.equal(await getHomePageRoute(), "/operation-test");
+  assert.equal(await updateHomePageRoute("/command-test"), "/command-test");
+  assert.equal(await getHomePageRoute(), "/command-test");
 });
 
 test("moveInstalledPackage accepts a navigation boundary move", async () => {

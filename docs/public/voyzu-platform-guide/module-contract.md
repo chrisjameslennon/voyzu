@@ -1,6 +1,6 @@
 # Module contract
 
-A module is a cohesive application capability owned by one Voyzu package. It keeps its page and API contracts separate from its implementation and exposes a stable operations surface for tests and module-to-module communication.
+A module is a cohesive application capability owned by one Voyzu package. It keeps its page and API contracts separate from its implementation and exposes a stable commands surface for tests and module-to-module communication.
 
 A module resides beneath the owning package's `modules/` directory:
 
@@ -14,7 +14,7 @@ packages/@acme/warehousing/
       ├─ types/
       ├─ api.routes.ts
       ├─ module.ts
-      ├─ operations.ts
+      ├─ commands.ts
       └─ pages.routes.ts
 ```
 
@@ -30,13 +30,13 @@ Only the folders and root files required by the module need to be present. A ser
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
 import { apiDefinitions } from "./api.routes";
-import { operations } from "./operations";
+import { commands } from "./commands";
 import { pageRoutes } from "./pages.routes";
 
 export const stockModule = {
   pageRoutes,
   apiDefinitions,
-  operations,
+  commands,
 } as const satisfies VoyzuPackageModuleDefinition;
 
 export default stockModule;
@@ -52,13 +52,13 @@ export default {
 };
 ```
 
-Do not add a module-level `index.ts` barrel. Import the manifest, operations, or explicitly exported server entry point directly.
+Do not add a module-level `index.ts` barrel. Import the manifest, commands, or explicitly exported server entry point directly.
 
 The module registration above belongs to the package lifecycle contract. The
 application composer does not import this manifest to discover pages, APIs, or
-operations. Export each lightweight sibling surface directly from
+commands. Export each lightweight sibling surface directly from
 `package.json` as `./<module>/pages.routes`, `./<module>/api.routes`, and
-`./<module>/operations`.
+`./<module>/commands`.
 
 ### `pages.routes.ts`
 
@@ -170,9 +170,9 @@ export const apiDefinitions = {} as const;
 
 API paths identify resources with nouns and use standard HTTP method and status semantics. See [API patterns](../voyzu-platform-patterns/api-patterns.md) and [Validation layers](../voyzu-platform-patterns/validation-layers.md).
 
-### `operations.ts`
+### `commands.ts`
 
-`operations.ts` is the module's stable, server-only command surface. It declares
+`commands.ts` is the module's stable, server-only command surface. It declares
 TypeBox contracts and lazy typed loaders. It adds boundary validation, but no
 business rules, persistence, or HTTP behaviour, and it must not eagerly import
 the service module.
@@ -180,10 +180,10 @@ the service module.
 ```ts
 import "server-only";
 
-import { operation } from "@voyzu/capability/operations";
+import { command } from "@voyzu/capability/commands";
 import Type from "typebox";
 
-export const createStockItem = operation.defineLazy(
+export const createStockItem = command.defineLazy(
   {
     parameters: Type.Tuple([StockItemCreateRequestDto]),
     result: StockItemResponseDto,
@@ -192,22 +192,22 @@ export const createStockItem = operation.defineLazy(
     .then((module) => module.createStockItem),
 );
 
-export const operations = {
+export const commands = {
   createStockItem,
 } as const;
 ```
 
-Operations are called by package-level operation tests and may be called by other modules. Code already inside the owning module calls its service methods directly. HTTP handlers also call services directly rather than routing through operations.
+Commands are called by package-level command tests and may be called by other modules. Code already inside the owning module calls its service methods directly. HTTP handlers also call services directly rather than routing through commands.
 
-Cross-package callers use the composed operation registry rather than importing
-the providing package. See [Operation patterns](../voyzu-platform-patterns/operations.md).
+Cross-package callers use the composed command registry rather than importing
+the providing package. See [Command patterns](../voyzu-platform-patterns/commands.md).
 
-Expose operations intended for external use through the package's `package.json`:
+Expose commands intended for external use through the package's `package.json`:
 
 ```jsonc
 {
   "exports": {
-    "./stock/operations": "./modules/stock/operations.ts"
+    "./stock/commands": "./modules/stock/commands.ts"
   }
 }
 ```
@@ -261,7 +261,7 @@ Server services remain the authority and must enforce the rule even when the cli
 
 ## `types/`
 
-`types/` is optional for module-private schemas and types. Public DTOs shared by API definitions, operations, or other packages normally belong in the owning package's top-level `types/` folder and are exported through `package.json`.
+`types/` is optional for module-private schemas and types. Public DTOs shared by API definitions, commands, or other packages normally belong in the owning package's top-level `types/` folder and are exported through `package.json`.
 
 ```ts
 // types/stock-selection.dto.ts
@@ -303,7 +303,7 @@ export { StockDetailPage } from "./pages/StockDetailPage";
 
 Expose this entry point explicitly through the owning package's `package.json`
 only when another deliberate consumer needs it. Programmatic consumers normally
-use `operations.ts`; they must not import private service or server file paths.
+use `commands.ts`; they must not import private service or server file paths.
 
 ```jsonc
 {
@@ -416,26 +416,26 @@ Keep server-rendered pages out of client-safe barrels. A Node-safe service entry
 
 ## Package-level tests
 
-Module operation tests live in the owning package's top-level `tests/operations/[module-name]/` folder rather than inside the module.
+Module command tests live in the owning package's top-level `tests/commands/[module-name]/` folder rather than inside the module.
 
 ```text
 packages/@acme/warehousing/
 └─ tests/
-   └─ operations/
+   └─ commands/
       └─ stock/
-         └─ stock.operations.test.ts
+         └─ stock.commands.test.ts
 ```
 
 ```ts
-import { operations } from "../../../modules/stock/operations";
+import { commands } from "../../../modules/stock/commands";
 
 it("creates a stock item", async () => {
-  const item = await operations.createStockItem(input);
+  const item = await commands.createStockItem(input);
   expect(item.code).toBe(input.code);
 });
 ```
 
-Test every exported operation. Tests should clean up the records they create; intentional audit records may remain. See [Testing](../voyzu-platform-patterns/tests.md).
+Test every exported command. Tests should clean up the records they create; intentional audit records may remain. See [Testing](../voyzu-platform-patterns/tests.md).
 
 ## Reference module
 

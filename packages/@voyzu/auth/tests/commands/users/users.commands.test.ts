@@ -27,12 +27,12 @@ import {
   searchUsers,
   updateCurrentUserProfile,
   updateUser,
-} from "@voyzu/auth/users/operations";
+} from "@voyzu/auth/users/commands";
 import { getCurrentActorType } from "@voyzu/auth/users/server";
 import { runWithCurrentUserContext } from "../../../modules/users/server/lib/current-user-context";
 
 const TEST_PREFIX = "OPTEST";
-const PASSWORD = "operation-test-password";
+const PASSWORD = "command-test-password";
 let admin: UserResponseDto;
 
 function uniqueCode(): string {
@@ -43,7 +43,7 @@ function input(code = uniqueCode(), overrides: Partial<UserCreateRequestDto> = {
   return {
     code,
     email: null,
-    displayName: `Operation test ${code}`,
+    displayName: `Command test ${code}`,
     password: PASSWORD,
     confirmPassword: PASSWORD,
     role: "STANDARD",
@@ -73,7 +73,7 @@ async function cleanTestUsers(): Promise<void> {
 before(async () => {
   await cleanTestUsers();
   const seededAdmin = await getUser("ADMIN");
-  assert.ok(seededAdmin, "The seeded ADMIN user is required for user operation tests");
+  assert.ok(seededAdmin, "The seeded ADMIN user is required for user command tests");
   admin = seededAdmin;
 });
 
@@ -90,21 +90,21 @@ test("listUsers, filterUsers, searchUsers, and getUser expose user reads", async
   assert.equal((await getUser(created.code))?.id, created.id);
 });
 
-test("current-user operations use the external caller context", async () => {
+test("current-user commands use the external caller context", async () => {
   const created = await create();
   await asUser(created, async () => {
     assert.equal((await getCurrentUser())?.code, created.code);
     assert.equal(await currentUserCanManageUsers(), false);
     assert.equal(getCurrentActorType(), "API");
-    const updated = await updateCurrentUserProfile({ displayName: "Updated by operation", email: null });
-    assert.equal(updated.displayName, "Updated by operation");
+    const updated = await updateCurrentUserProfile({ displayName: "Updated by command", email: null });
+    assert.equal(updated.displayName, "Updated by command");
     await changeCurrentUserPassword({ password: `${PASSWORD}-changed`, confirmPassword: `${PASSWORD}-changed` });
   }, "API");
   assert.equal(await asUser(created, async () => getCurrentActorType(), "API"), "API");
   assert.equal(await asAdmin(() => currentUserCanManageUsers()), true);
 });
 
-test("createUser, updateUser, and patchUser mutate through operations", async () => {
+test("createUser, updateUser, and patchUser mutate through commands", async () => {
   const created = await create({ role: "STANDARD" });
   const updated = await asAdmin(() => updateUser(created.code, {
     code: created.code,

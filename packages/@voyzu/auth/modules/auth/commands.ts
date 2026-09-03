@@ -1,7 +1,7 @@
 import "server-only";
 
 import { UserRole } from "@voyzu/auth/types";
-import { operation } from "@voyzu/capability/operations";
+import { command } from "@voyzu/capability/commands";
 import Type from "typebox";
 
 const AuthenticatedUser = Type.Object({
@@ -11,7 +11,7 @@ const AuthenticatedUser = Type.Object({
   role: UserRole,
 });
 
-export const authenticateUser = operation.defineLazy(
+export const authenticateUser = command.defineLazy(
   {
     parameters: Type.Tuple([Type.String(), Type.String()]),
     result: AuthenticatedUser,
@@ -19,6 +19,6 @@ export const authenticateUser = operation.defineLazy(
   () => import("./server/auth.service").then((module) => module.authenticateUser),
 );
 
-export const operations = {
+export const commands = {
   authenticateUser,
 } as const;

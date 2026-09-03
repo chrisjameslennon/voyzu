@@ -2,12 +2,12 @@ import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
 import { apiDefinitions } from "./api.routes";
 import { pageRoutes } from "./pages.routes";
-import { operations } from "./operations";
+import { commands } from "./commands";
 
 export const packageManagementModule = {
   pageRoutes,
   apiDefinitions,
-  operations,
+  commands,
 } as const satisfies VoyzuPackageModuleDefinition;
 
 export default packageManagementModule;

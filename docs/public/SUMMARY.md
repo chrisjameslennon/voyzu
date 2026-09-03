@@ -30,7 +30,7 @@
 * [Authentication](voyzu-platform-patterns/authentication.md)
 * [Theming](voyzu-platform-patterns/theming.md)
 * [UI patterns](voyzu-platform-patterns/ui-reference.md)
-* [Operation patterns](voyzu-platform-patterns/operations.md)
+* [Command patterns](voyzu-platform-patterns/commands.md)
 * [API patterns](voyzu-platform-patterns/api-patterns.md)
 * [Supporting Voyzu commands](voyzu-platform-patterns/supporting-voyzu-commands.md)
 * [Testing patterns](voyzu-platform-patterns/tests.md)
