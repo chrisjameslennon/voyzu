@@ -4,6 +4,7 @@ DECLARE
   v_organization_id  BIGINT;
   v_entity_id   TEXT;
   v_entity_code TEXT;
+  v_entity_code_field TEXT;
   v_action      TEXT;
   v_old_record  JSONB;
   v_new_record  JSONB;
@@ -25,6 +26,10 @@ BEGIN
     RAISE EXCEPTION 'audit_trigger_fn requires a package code for %.%', TG_TABLE_SCHEMA, TG_TABLE_NAME;
   END IF;
   v_package_code := BTRIM(TG_ARGV[0]);
+  v_entity_code_field := CASE
+    WHEN TG_NARGS > 1 THEN COALESCE(NULLIF(BTRIM(TG_ARGV[1]), ''), 'code')
+    ELSE 'code'
+  END;
 
   v_action := TG_OP;
 
@@ -73,7 +78,7 @@ BEGIN
   IF TG_OP IN ('INSERT','UPDATE') THEN
     v_new_record := to_jsonb(NEW);
     v_entity_id := COALESCE(v_new_record->>'id', v_new_record->>'code');
-    v_entity_code := v_new_record->>'code';
+    v_entity_code := v_new_record->>v_entity_code_field;
     v_organization_id := NULLIF(v_new_record->>'organization_id','')::BIGINT;
     IF TG_OP = 'INSERT' THEN
       v_actor_type := v_new_record->>'creation_actor_type';
@@ -91,7 +96,7 @@ BEGIN
     v_old_record := to_jsonb(OLD);
     IF TG_OP = 'DELETE' THEN
       v_entity_id := COALESCE(v_old_record->>'id', v_old_record->>'code');
-      v_entity_code := v_old_record->>'code';
+      v_entity_code := v_old_record->>v_entity_code_field;
       v_organization_id := NULLIF(v_old_record->>'organization_id','')::BIGINT;
       v_actor_type := COALESCE(v_old_record->>'deletion_actor_type', v_old_record->>'updated_actor_type');
       v_actor_id := COALESCE(v_old_record->>'deletion_user_id', v_old_record->>'updated_user_id');
