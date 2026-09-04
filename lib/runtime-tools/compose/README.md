@@ -57,7 +57,7 @@ The composer:
 3. discovers the installed package set from `.run/packages`;
 4. adds package workspace dependencies to the web application;
 5. adds package names to Next.js `transpilePackages`;
-6. generates installed-package navigation, API, and command registries;
+6. generates installed-package navigation, API, command, and component registries;
 7. publishes each package's optional `public-assets` directory beneath
    `apps/web/public/<full-package-name>`;
 8. runs the runtime workspace installation.
