@@ -1,5 +1,12 @@
 import "server-only";
 
+export { ComponentSlot, component } from "./components";
+export type {
+  VoyzuComponent,
+  VoyzuComponentDefinition,
+  VoyzuComponentLoader,
+} from "./components";
+
 export {
   createVoyzuPageRenderer,
   createVoyzuSurfaceRouter,

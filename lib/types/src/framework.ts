@@ -1,11 +1,18 @@
 import type { ApiRouteDefinition } from "./api";
 
 export type VoyzuModuleCommand = (...args: any[]) => any;
+export type VoyzuModuleComponent = (props: any) => any;
+
+export interface VoyzuModuleComponentDefinition {
+  id: string;
+  loadComponent: () => Promise<VoyzuModuleComponent>;
+}
 
 export interface VoyzuPackageModuleDefinition {
   pageRoutes: Readonly<Record<string, unknown>>;
   apiDefinitions: Readonly<Record<string, ApiRouteDefinition>>;
   commands?: Readonly<Record<string, VoyzuModuleCommand>>;
+  components?: Readonly<Record<string, VoyzuModuleComponentDefinition>>;
 }
 
 /**
@@ -34,8 +41,13 @@ export interface VoyzuPackageNavigationItem {
   children?: readonly VoyzuPackageNavigationItem[];
 }
 
+export type VoyzuSettingsNavigationSlotId =
+  | "settings.main"
+  | "settings.integration";
+
 export interface VoyzuPackageNavigationGroup {
   label?: string;
+  slotId?: VoyzuSettingsNavigationSlotId;
   items: readonly VoyzuPackageNavigationItem[];
 }
 

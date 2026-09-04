@@ -77,6 +77,7 @@ export interface VoyzuSurfaceNavItem {
 
 export interface VoyzuSurfaceNavGroup {
   label?: string;
+  slotId?: string;
   items: VoyzuSurfaceNavItem[];
 }
 

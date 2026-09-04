@@ -30,6 +30,7 @@ type ReadonlyNavItem = Omit<Readonly<VoyzuSurfaceNavItem>, "children"> & {
 
 type ReadonlyNavigationGroup = {
   readonly label?: string;
+  readonly slotId?: string;
   readonly items: readonly ReadonlyNavItem[];
 };
 
@@ -82,14 +83,25 @@ const packageSurfaceDomains = [
   ...installedSurfaceDomains,
 ];
 
-const settingsNavigation = navigationRegistrations.filter(
-  ({ topNav, domains }) => !topNav && !domains,
+const settingsNavigationGroups = navigationRegistrations.flatMap(({ topNav, domains, leftNav }) =>
+  mutableLeftNav(leftNav).filter(({ slotId }) =>
+    (!topNav && !domains) || slotId?.startsWith("settings."),
+  ),
 );
-const settingsLeftNav: VoyzuSurfaceNavGroup[] = [{
-  label: "Settings",
-  items: settingsNavigation.flatMap(({ leftNav }) =>
-    mutableLeftNav(leftNav).flatMap((group) => group.items)),
-}];
+const settingsLeftNav: VoyzuSurfaceNavGroup[] = [
+  {
+    label: "Settings",
+    items: settingsNavigationGroups
+      .filter(({ slotId }) => !slotId || slotId === "settings.main")
+      .flatMap(({ items }) => items),
+  },
+  {
+    label: "Integration",
+    items: settingsNavigationGroups
+      .filter(({ slotId }) => slotId === "settings.integration")
+      .flatMap(({ items }) => items),
+  },
+].filter(({ items }) => items.length > 0);
 
 const pageRoutes: VoyzuSurfaceRoute[] = [
   ...preInstalledPageRoutes,
