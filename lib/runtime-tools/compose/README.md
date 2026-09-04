@@ -7,6 +7,15 @@ End users normally run it through the generated project script:
 npm run voyzu:compose
 ```
 
+To regenerate the composition without running the workspace dependency
+installation, pass `--no-install`:
+
+```shell
+npm run voyzu:compose -- --no-install
+```
+
+Package inventory reconciliation and API reference generation still run.
+
 `voyzu:install-package` invokes compose automatically.
 
 Installed packages are discovered beneath `.run/packages` using their
@@ -53,6 +62,8 @@ The composer:
    `apps/web/public/<full-package-name>`;
 8. runs the runtime workspace installation.
 
+Step 8 is skipped when `--no-install` is supplied.
+
 For example, `@acme/inventory/public-assets/logo.svg` is published as
 `apps/web/public/@acme/inventory/logo.svg` and served at
 `/@acme/inventory/logo.svg`. Composition replaces the package-owned target
@@ -64,5 +75,6 @@ The lower-level command remains available for platform development:
 node lib/runtime-tools/compose/voyzu-compose.mjs \
   --packages-root ../packages \
   --runtime . \
-  --workspace ..
+  --workspace .. \
+  --no-install
 ```
