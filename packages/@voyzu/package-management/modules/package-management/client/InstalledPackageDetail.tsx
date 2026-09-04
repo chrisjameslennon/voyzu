@@ -165,7 +165,7 @@ export function InstalledPackageDetail({
             <label className={detail.fieldGroup}>
               <span className={typography.fieldLabel}>Show top navigation</span>
               <ToggleSwitch
-                checked={topNavigationVisible}
+                checked={installedPackage.hasTopNavigation && topNavigationVisible}
                 onChange={setTopNavigationVisible}
                 disabled={!installedPackage.hasTopNavigation}
               />

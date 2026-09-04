@@ -119,7 +119,8 @@ export async function discoverInstalledPackages(): Promise<DiscoveredPackage[]> 
         preinstalled: manifest.voyzu.preinstalled === true,
         hasTopNavigation:
           hasExport(manifest, "./navigation/top-nav")
-          || hasExport(manifest, "./navigation/domains"),
+          || hasExport(manifest, "./navigation/domains")
+          || (manifest.voyzu.preinstalled !== true && hasExport(manifest, "./navigation")),
         pageRootPaths: manifest.voyzu.pageRootPaths ?? [],
         apiRootPaths: manifest.voyzu.apiRootPaths ?? [],
       });

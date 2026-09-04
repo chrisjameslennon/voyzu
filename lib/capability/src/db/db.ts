@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from "node:async_hooks";
 import { Pool, type PoolClient, type QueryResult } from "pg";
 
 import {
@@ -13,6 +14,13 @@ let databaseUrlValidation: DatabaseUrlValidationResult | null = null;
 export type DbExecutor = {
   query: (text: string, params?: unknown[]) => Promise<QueryResult<Record<string, unknown>>>;
 };
+
+const dbGlobal = globalThis as typeof globalThis & {
+  __voyzuDbTransactionStorage?: AsyncLocalStorage<DbExecutor>;
+};
+
+dbGlobal.__voyzuDbTransactionStorage ??= new AsyncLocalStorage<DbExecutor>();
+const transactionStorage = dbGlobal.__voyzuDbTransactionStorage;
 
 function getDatabaseUrlValidation(): DatabaseUrlValidationResult {
   databaseUrlValidation ??= validateDatabaseUrl();
@@ -66,6 +74,9 @@ export function getPool(): Pool {
 }
 
 export function getDb(): DbExecutor {
+  const transactionDb = transactionStorage.getStore();
+  if (transactionDb) return transactionDb;
+
   db ??= {
     async query(text, params) {
       try {
@@ -82,6 +93,9 @@ export function getDb(): DbExecutor {
 export async function withTransaction<T>(
   fn: (client: DbExecutor) => Promise<T>,
 ): Promise<T> {
+  const existingTransaction = transactionStorage.getStore();
+  if (existingTransaction) return fn(existingTransaction);
+
   let client: PoolClient;
 
   try {
@@ -110,7 +124,10 @@ export async function withTransaction<T>(
       },
     };
 
-    const result = await fn(transactionDb);
+    const result = await transactionStorage.run(
+      transactionDb,
+      () => fn(transactionDb),
+    );
     await queryQueue;
 
     await client.query("COMMIT");
