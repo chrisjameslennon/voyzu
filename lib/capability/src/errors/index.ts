@@ -5,6 +5,7 @@ export {
   DataError,
   DatabaseError,
   InputValidationError,
+  NotImplementedError,
   NotFoundError,
   UnauthorizedError,
 } from "./application-errors";
