@@ -114,8 +114,8 @@ export const apiDefinitions = {
     tags: tag,
     responses: {
       "200": {
-        description: "The reordered package.",
-        body: InstalledPackageResponseDto,
+        description: "The reordered package inventory.",
+        body: Type.Array(InstalledPackageResponseDto),
       },
       "404": { description: "The installed package was not found." },
       "422": {
