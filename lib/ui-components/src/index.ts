@@ -90,3 +90,6 @@ export type {
   FormatRule,
   RequiredRule,
 } from "./lib/validation/use-form-validation";
+
+export { Textarea, type TextareaProps } from "./textarea/textarea";
+export { ContextSwitcher, type ContextSwitcherProps, type ContextSwitcherOption } from "./context-switcher/context-switcher";

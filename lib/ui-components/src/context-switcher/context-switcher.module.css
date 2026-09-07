@@ -1,0 +1,120 @@
+.context {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem 0;
+  position: relative;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.contextCollapsed {
+  align-items: center;
+  padding: 1rem 0.75rem 0;
+}
+
+.label,
+.panelLabel {
+  color: var(--voyzu-color-text-tertiary);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.label { margin-bottom: 0.5rem; }
+.panelLabel { margin: 0 0 0.75rem; font-weight: 800; }
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--voyzu-color-border);
+  border-radius: var(--voyzu-radius-control);
+  background: var(--voyzu-color-surface);
+  box-shadow: var(--voyzu-shadow-surface);
+  color: var(--voyzu-color-text);
+  font-family: var(--voyzu-font-family);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+}
+
+.trigger:hover:not(:disabled) { border-color: var(--voyzu-color-border-strong, var(--voyzu-color-border)); }
+
+
+.triggerCollapsed {
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+}
+
+.triggerLeft { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+.dot { width: 0.625rem; height: 0.625rem; flex-shrink: 0; border-radius: var(--voyzu-radius-pill); background: var(--voyzu-color-success); }
+.dotArchived { background: var(--voyzu-color-text-tertiary); }
+.name,
+.optionName,
+.optionMeta { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chevron { color: var(--voyzu-color-text-tertiary); font-size: 1.25rem; transition: transform var(--voyzu-transition-normal); }
+.chevronOpen { transform: rotate(180deg); }
+
+.panel {
+  position: absolute;
+  top: 100%;
+  left: 0.75rem;
+  width: 37.5rem;
+  z-index: 999;
+  margin-top: 0.5rem;
+  padding: 2rem;
+  border: 1px solid var(--voyzu-color-surface-secondary);
+  border-radius: 1rem;
+  background: var(--voyzu-color-surface);
+  box-shadow: var(--voyzu-shadow-surface);
+}
+
+.panelCollapsed { left: 4rem; top: 1rem; width: 18rem; }
+
+
+
+
+
+
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; max-height: 25rem; overflow-y: auto; padding-right: 0.5rem; }
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 4rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--voyzu-color-border);
+  border-radius: var(--voyzu-radius-control);
+  background: var(--voyzu-color-surface);
+  color: var(--voyzu-color-text);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.option:hover:not(:disabled) { background: var(--voyzu-color-surface-muted); }
+.option:disabled, .option[aria-disabled="true"], .trigger:disabled { opacity: 0.6; cursor: not-allowed; }
+.optionActive { border-color: var(--voyzu-color-brand); background: var(--voyzu-color-brand-subtle); color: var(--voyzu-color-brand); }
+.avatar { display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: var(--voyzu-radius-compact); font-weight: 800; }
+.optionContent { display: block; flex: 1; min-width: 0; }
+.optionName { display: block; font-size: 0.875rem; font-weight: 700; }
+.optionMeta { display: block; margin-top: 0.125rem; color: var(--voyzu-color-text-tertiary); font-size: 0.6875rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.025em; }
+.panelCollapsed .grid { grid-template-columns: 1fr; }
+
+@media (max-width: 767px) {
+  .panel { left: 0.75rem; right: 0.75rem; width: auto; padding: 1rem; }
+  .grid { grid-template-columns: 1fr; }
+}
+
+.headerAction { margin-bottom: 1rem; }
+.option:focus-visible, .trigger:focus-visible { outline: 2px solid var(--voyzu-color-primary-focus-ring); outline-offset: 2px; }
+.panel { max-width: calc(100vw - 2rem); max-height: min(36rem, 70dvh); overflow-y: auto; }
+.avatar { background: var(--voyzu-color-info-bg); color: var(--voyzu-color-info-text); }

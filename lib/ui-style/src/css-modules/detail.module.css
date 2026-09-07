@@ -6,6 +6,30 @@
   min-width: 0;
 }
 
+/* Reusable form and document presentation. Page placement belongs to ui-layout. */
+.stack { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+.actions { display: flex; align-items: center; gap: var(--voyzu-space-inline); flex-wrap: wrap; }
+.fieldWithAction { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--voyzu-space-inline); align-items: center; }
+.choiceLabel { display: inline-flex; align-items: center; gap: var(--voyzu-space-inline); color: var(--voyzu-color-text); font-size: var(--voyzu-font-size-body); font-weight: var(--voyzu-font-weight-body); }
+.fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.dividedStack { display: flex; flex-direction: column; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--voyzu-color-surface-secondary); }
+.infoPanel { padding: 1rem; border: 1px solid var(--voyzu-color-info-border); border-radius: var(--voyzu-radius-surface); background: var(--voyzu-color-info-bg); }
+.infoPanelHeading { margin: 0 0 1rem; color: var(--voyzu-color-info-text); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.link { color: var(--voyzu-color-link); font-weight: 600; text-decoration: underline; text-underline-offset: 0.15em; }
+.dangerText { color: var(--voyzu-color-danger); font-weight: 700; }
+.emptyCell { padding: 1.5rem; text-align: center; color: var(--voyzu-color-text-tertiary); }
+.table .emptyCell { padding: 1.5rem; text-align: center; color: var(--voyzu-color-text-tertiary); }
+.scrollTable { max-height: 16rem; overflow: auto; }
+.metadata { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 0; }
+.metadata dt, .metricCards dt { color: var(--voyzu-color-text-secondary); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+.metadata dd, .metricCards dd { margin: 0.375rem 0 0; color: var(--voyzu-color-text); font-weight: 600; overflow-wrap: anywhere; }
+.metricCards { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1rem; margin: 0; }
+.metricCards > div { padding: 1rem; border: 1px solid var(--voyzu-color-border); border-radius: var(--voyzu-radius-control); background: var(--voyzu-color-surface-muted); }
+.metricCards dd { font-size: 1.125rem; }
+@media (max-width: 767px) {
+  .fieldWithAction, .metadata { grid-template-columns: 1fr; }
+}
+
 .title h1 {
   overflow-wrap: anywhere;
 }

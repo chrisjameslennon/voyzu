@@ -6,6 +6,8 @@ const auth = {
 const helpPath = "voyzu-platform-patterns/ui-reference";
 
 export const pageRoutes = {
+  textarea: { id: "voyzu.ui-reference.page.textarea", path: "/ui-reference/components/textarea", pageTitle: "Textarea", loadPage: () => import("./server/pages/components/textarea/page").then((module) => module.default), helpPath, auth },
+  contextSwitcher: { id: "voyzu.ui-reference.page.context-switcher", path: "/ui-reference/components/context-switcher", pageTitle: "Context Switcher", loadPage: () => import("./server/pages/components/context-switcher/page").then((module) => module.default), helpPath, auth },
   alert: { id: "voyzu.ui-reference.page.alert", path: "/ui-reference", pageTitle: "Alert", loadPage: () => import("./server/pages/components/alert/page").then((module) => module.default), helpPath, auth },
   badge: { id: "voyzu.ui-reference.page.badge", path: "/ui-reference/components/badge", pageTitle: "Badge", loadPage: () => import("./server/pages/components/badge/page").then((module) => module.default), helpPath, auth },
   breadcrumbs: { id: "voyzu.ui-reference.page.breadcrumbs", path: "/ui-reference/components/breadcrumbs", pageTitle: "Breadcrumbs", loadPage: () => import("./server/pages/components/breadcrumbs/page").then((module) => module.default), helpPath, auth },

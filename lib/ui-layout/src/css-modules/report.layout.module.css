@@ -194,3 +194,53 @@
     white-space: nowrap;
   }
 }
+
+/* Tabbed document detail and fixed-width printable previews. */
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 1rem;
+}
+.documentShell {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  overflow-x: auto;
+}
+.portraitDocument {
+  box-sizing: border-box;
+  width: 210mm;
+  flex: 0 0 210mm;
+}
+.landscapeDocument { max-width: 297mm; }
+.detailsTab {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 22rem);
+  gap: var(--vz-grid-gap);
+  padding-top: 1rem;
+  align-items: start;
+}
+.detailsMain,
+.detailsRail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--vz-grid-gap);
+  min-width: 0;
+}
+@media (max-width: 1023px) {
+  .detailsTab { grid-template-columns: 1fr; }
+}
+@media (max-width: 767px) {
+  .toolbar { justify-content: flex-start; flex-wrap: wrap; }
+  .documentShell { justify-content: flex-start; }
+}
+
+.filterRange { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+.filterControl { width: 12.5rem; max-width: 100%; }
+.filterAlignment { align-items: flex-end; }
