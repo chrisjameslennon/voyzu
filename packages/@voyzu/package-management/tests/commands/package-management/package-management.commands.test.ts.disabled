@@ -1,3 +1,4 @@
+// TODO(contracts-tests): legacy command test retained, disabled while commands are removed.
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
 

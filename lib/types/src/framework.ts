@@ -1,6 +1,6 @@
 import type { ApiRouteDefinition } from "./api";
+import type { PackageContracts } from "./contracts";
 
-export type VoyzuModuleCommand = (...args: any[]) => any;
 export type VoyzuModuleComponent = (props: any) => any;
 
 export interface VoyzuModuleComponentDefinition {
@@ -11,7 +11,6 @@ export interface VoyzuModuleComponentDefinition {
 export interface VoyzuPackageModuleDefinition {
   pageRoutes: Readonly<Record<string, unknown>>;
   apiDefinitions: Readonly<Record<string, ApiRouteDefinition>>;
-  commands?: Readonly<Record<string, VoyzuModuleCommand>>;
   components?: Readonly<Record<string, VoyzuModuleComponentDefinition>>;
 }
 
@@ -90,6 +89,7 @@ export interface VoyzuPackageDefinition<
   TModule extends VoyzuPackageModuleDefinition = VoyzuPackageModuleDefinition,
 > {
   modules: readonly TModule[];
+  contracts?: PackageContracts;
   install?: VoyzuPackageInstallDefinition;
   uninstall?: VoyzuPackageUninstallDefinition;
   scripts?: VoyzuPackageScripts;

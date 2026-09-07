@@ -1,6 +1,6 @@
 # Module contract
 
-A module is a cohesive application capability owned by one Voyzu package. It keeps its page and API contracts separate from its implementation and exposes a stable commands surface for tests and module-to-module communication.
+A module is a cohesive application capability owned by one Voyzu package. It keeps its page and API contracts separate from its implementation and keeps business services private to the package. Cross-package communication uses semantic capability and master-data contracts registered by `voyzu.package.ts`.
 
 A module resides beneath the owning package's `modules/` directory:
 
@@ -14,7 +14,6 @@ packages/@acme/warehousing/
       ├─ types/
       ├─ api.routes.ts
       ├─ module.ts
-      ├─ commands.ts
       └─ pages.routes.ts
 ```
 
@@ -30,13 +29,11 @@ Only the folders and root files required by the module need to be present. A ser
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
 import { apiDefinitions } from "./api.routes";
-import { commands } from "./commands";
 import { pageRoutes } from "./pages.routes";
 
 export const stockModule = {
   pageRoutes,
   apiDefinitions,
-  commands,
 } as const satisfies VoyzuPackageModuleDefinition;
 
 export default stockModule;
@@ -52,13 +49,10 @@ export default {
 };
 ```
 
-Do not add a module-level `index.ts` barrel. Import the manifest, commands, or explicitly exported server entry point directly.
+Do not add a module-level `index.ts` barrel. Import the manifest or an explicit same-package server entry point directly.
 
 The module registration above belongs to the package lifecycle contract. The
-application composer does not import this manifest to discover pages, APIs, or
-commands. Export each lightweight sibling surface directly from
-`package.json` as `./<module>/pages.routes`, `./<module>/api.routes`, and
-`./<module>/commands`.
+application composer discovers pages and APIs through lightweight `package.json` exports: `./<module>/pages.routes` and `./<module>/api.routes`. Semantic contracts are instead read from the root `voyzu.package.ts`; see [Contracts](contracts.md).
 
 ### `pages.routes.ts`
 
@@ -170,47 +164,9 @@ export const apiDefinitions = {} as const;
 
 API paths identify resources with nouns and use standard HTTP method and status semantics. See [API patterns](../voyzu-platform-patterns/api-patterns.md) and [Validation layers](../voyzu-platform-patterns/validation-layers.md).
 
-### `commands.ts`
+### Cross-package contracts
 
-`commands.ts` is the module's stable, server-only command surface. It declares
-TypeBox contracts and lazy typed loaders. It adds boundary validation, but no
-business rules, persistence, or HTTP behaviour, and it must not eagerly import
-the service module.
-
-```ts
-import "server-only";
-
-import { command } from "@voyzu/capability/commands";
-import Type from "typebox";
-
-export const createStockItem = command.defineLazy(
-  {
-    parameters: Type.Tuple([StockItemCreateRequestDto]),
-    result: StockItemResponseDto,
-  },
-  () => import("./server/lib/stock.service")
-    .then((module) => module.createStockItem),
-);
-
-export const commands = {
-  createStockItem,
-} as const;
-```
-
-Commands are called by package-level command tests and may be called by other modules. Code already inside the owning module calls its service methods directly. HTTP handlers also call services directly rather than routing through commands.
-
-Cross-package callers use the composed command registry rather than importing
-the providing package. See [Command patterns](../voyzu-platform-patterns/commands.md).
-
-Expose commands intended for external use through the package's `package.json`:
-
-```jsonc
-{
-  "exports": {
-    "./stock/commands": "./modules/stock/commands.ts"
-  }
-}
-```
+The command system has been removed. Define semantic capability and master-data contracts in `voyzu.package.ts`. Same-package consumers and HTTP handlers call their services directly; cross-package consumers use the platform contract runtime, never provider service imports. See [Contracts](contracts.md).
 
 ## `client/`
 
@@ -261,7 +217,7 @@ Server services remain the authority and must enforce the rule even when the cli
 
 ## `types/`
 
-`types/` is optional for module-private schemas and types. Public DTOs shared by API definitions, commands, or other packages normally belong in the owning package's top-level `types/` folder and are exported through `package.json`.
+`types/` is optional for module-private schemas and types. Public DTOs shared by API definitions or semantic contracts normally belong in the owning package's top-level `types/` folder and are exported through `package.json`.
 
 ```ts
 // types/stock-selection.dto.ts
@@ -303,7 +259,7 @@ export { StockDetailPage } from "./pages/StockDetailPage";
 
 Expose this entry point explicitly through the owning package's `package.json`
 only when another deliberate consumer needs it. Programmatic consumers normally
-use `commands.ts`; they must not import private service or server file paths.
+use semantic contracts; they must not import private service or server file paths.
 
 ```jsonc
 {
@@ -334,7 +290,7 @@ TypeBox validation belongs to the API route and is performed by the router. Hand
 
 ### `server/db/`
 
-`server/db/` owns repositories, SQL, and persistence row types. Repositories accept a database executor so services can use the same transaction across repositories and cross-package commands.
+`server/db/` owns repositories, SQL, and persistence row types. Repositories accept a database executor so services can use the same transaction across repositories and cross-package capabilities.
 
 ```text
 server/db/
@@ -360,7 +316,7 @@ Pages and HTTP handlers must not issue ad hoc persistence queries for module-own
 
 ### `server/lib/`
 
-`server/lib/` contains services, mappers, and business validators. Services orchestrate transactions, persistence, auditing, business rules, DTO mapping, and command calls.
+`server/lib/` contains services, mappers, and business validators. Services orchestrate transactions, persistence, auditing, business rules, DTO mapping, and semantic capability calls.
 
 ```text
 server/lib/
@@ -416,26 +372,7 @@ Keep server-rendered pages out of client-safe barrels. A Node-safe service entry
 
 ## Package-level tests
 
-Module command tests live in the owning package's top-level `tests/commands/[module-name]/` folder rather than inside the module.
-
-```text
-packages/@acme/warehousing/
-└─ tests/
-   └─ commands/
-      └─ stock/
-         └─ stock.commands.test.ts
-```
-
-```ts
-import { commands } from "../../../modules/stock/commands";
-
-it("creates a stock item", async () => {
-  const item = await commands.createStockItem(input);
-  expect(item.code).toBe(input.code);
-});
-```
-
-Test every exported command. Tests should clean up the records they create; intentional audit records may remain. See [Testing](../voyzu-platform-patterns/tests.md).
+Package-level integration tests belong beneath `tests/`. The organization/Finance contract integration test exercises real services, schema-validated composition and shared-transaction rollback. Historical command tests are retained as `.ts.disabled` during migration rather than rewritten. See [Contracts](contracts.md).
 
 ## Reference module
 

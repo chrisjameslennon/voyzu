@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./contracts": { "types": "./src/contracts.ts", "import": "./src/contracts.ts" },
     ".": {
       "types": "./src/index.ts",
       "import": "./src/index.ts"

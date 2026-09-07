@@ -1,5 +1,4 @@
 import type { AuditEventListResponseDto, AuditEventResponseDto } from "@voyzu/audit/types";
-import { command } from "@voyzu/capability/commands";
 import { getDb } from "@voyzu/capability/db";
 import { AuditEventRepo, type AuditEventFilters } from "../db/audit-event.repo";
 import type { AuditEventRow } from "../db/audit-event.row.types";
@@ -21,7 +20,8 @@ async function addOrganizationCodes(rows: AuditEventRow[]): Promise<AuditEventRo
     return rows;
   }
 
-  const organizations = await command.callOptional("@voyzu/erp-core.listOrganizations");
+  // TODO(contracts, retrieval): restore @voyzu/erp-core.listOrganizations; integration temporarily unavailable.
+  const organizations: unknown = undefined;
   if (!Array.isArray(organizations)) return rows;
 
   const codesById = new Map(

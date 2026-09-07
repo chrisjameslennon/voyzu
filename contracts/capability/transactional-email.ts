@@ -1,26 +1,11 @@
-// File: capabilities/transactional-email.ts
-
-export interface TransactionalEmailCapability {
-  send(input: {
-    to: string[];
-    subject: string;
-
-    html?: string;
-    text?: string;
-
-    from?: string;
-    replyTo?: string;
-  }): Promise<{
-    messageId?: string;
-  }>;
-}
-
-/*
-await capabilities
-  .use("platform.transactional-email")
-  .send({
-    to: ["customer@example.com"],
-    subject: "Your invoice",
-    html: "<p>Thanks for your business.</p>",
-  });
-  */
+import Type from "typebox";
+export const transactionalEmailCapability = {
+  send: {
+    input: Type.Object({
+      to: Type.Array(Type.String()), subject: Type.String(),
+      html: Type.Optional(Type.String()), text: Type.Optional(Type.String()),
+      from: Type.Optional(Type.String()), replyTo: Type.Optional(Type.String()),
+    }, { additionalProperties: false }),
+    output: Type.Object({ messageId: Type.Optional(Type.String()) }, { additionalProperties: false }),
+  },
+} as const;

@@ -1,5 +1,2 @@
-import {TransactionalEmailCapability} from "./transactional-email";
-
-interface CapabilityMap {
-  "platform.transactional-email": TransactionalEmailCapability;
-}
+import { transactionalEmailCapability } from "./transactional-email";
+export const capabilityContracts = { "platform.transactional-email": transactionalEmailCapability } as const;

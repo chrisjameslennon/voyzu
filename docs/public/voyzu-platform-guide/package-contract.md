@@ -66,7 +66,6 @@ The following is illustrative JSON with comments. Remove the comments in a real 
     "./modules/stock": "./modules/stock/module.ts",
     "./stock/pages.routes": "./modules/stock/pages.routes.ts",
     "./stock/api.routes": "./modules/stock/api.routes.ts",
-    "./stock/commands": "./modules/stock/commands.ts",
     "./types": "./types/index.ts"
   },
 
@@ -88,13 +87,12 @@ shapes:
 |---|---|---|
 | `./<module>/pages.routes` | Browser page declarations | Each route provides a lazy `loadPage` function. |
 | `./<module>/api.routes` | HTTP route declarations | Each route provides a lazy `loadHandler` function. |
-| `./<module>/commands` | Cross-package command declarations | Each command should use `command.defineLazy`. |
 | `./navigation` | Optional package navigation declaration | May import route manifests for their IDs, but not page, handler, or service implementations. |
 | `./navigation/left-nav-header` | Optional client left-navigation header | Composed into the separate header registry. |
 
 These exports are the composition boundary. The composer does not fall back to
 loading `voyzu.package.ts`, `module.ts`, package barrels, server barrels, or
-implementation files to find routes or commands. A package that owns page or
+implementation files to find routes. A package that owns page or
 API roots must export the corresponding route surfaces.
 
 Page and API root paths reserve separate namespaces. A package may use the same root in both namespaces, but two packages cannot own overlapping roots within the same namespace. Use an empty array when the package owns no roots. The Voyzu platform itself is implicit and is not listed in `voyzu.dependencies`.
@@ -103,8 +101,7 @@ Page and API root paths reserve separate namespaces. A package may use the same 
 
 `voyzu.package.ts` is the package lifecycle manifest. It composes the package's
 modules and optional install, uninstall, and script registrations. Install and
-script commands load this manifest deliberately; route, navigation, and
-command composition do not use it for discovery.
+script commands load this manifest deliberately. Semantic contract composition also reads its optional `contracts` section. Route and navigation discovery still use their existing lightweight exports.
 
 ```ts
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
@@ -176,7 +173,7 @@ Voyzu runs object SQL before seed SQL, using the order declared in each array.
 
 ## `modules/`
 
-`modules/` contains the package's application capabilities. Each module owns its routes, commands, UI, services, persistence, and business validation. See the [Module contract](module-contract.md) for the detailed structure and rules.
+`modules/` contains the package's application capabilities. Each module owns its routes, UI, services, persistence, and business validation. See the [Module contract](module-contract.md) for the detailed structure and rules.
 
 ```text
 modules/
@@ -185,7 +182,6 @@ modules/
    ├─ server/
    ├─ api.routes.ts
    ├─ module.ts
-   ├─ commands.ts
    └─ pages.routes.ts
 ```
 
@@ -195,20 +191,18 @@ modules/
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
 import { apiDefinitions } from "./api.routes";
-import { commands } from "./commands";
 import { pageRoutes } from "./pages.routes";
 
 export const stockModule = {
   pageRoutes,
   apiDefinitions,
-  commands,
 } as const satisfies VoyzuPackageModuleDefinition;
 ```
 
 The module manifest remains useful to the package lifecycle contract and to
 code that deliberately consumes the complete module definition. It is not a
-route or command registry. Voyzu imports the separately exported
-`pages.routes.ts`, `api.routes.ts`, and `commands.ts` surfaces when composing
+route registry. Voyzu imports the separately exported
+`pages.routes.ts` and `api.routes.ts` surfaces when composing
 the application, so none of those generated registrations pulls in
 `module.ts` or `voyzu.package.ts`.
 
@@ -228,10 +222,7 @@ export const pageRoutes = {
 } as const;
 ```
 
-`commands.ts` is the module's public command surface. It declares TypeBox
-contracts and lazy typed service loaders so registering a command does not load
-its service or the rest of its package. Cross-package callers use the composed
-command registry; API handlers continue to call services directly.
+Cross-package capabilities and master data are declared through the root manifest’s `contracts.defines` and `contracts.implements`. They are not discovered through `package.json` command exports. Same-package code imports its own services directly. See [Contracts](contracts.md).
 
 ## `navigation/`
 
@@ -317,28 +308,7 @@ npm run voyzu:run-script @acme/warehousing sampleData
 
 ## `tests/`
 
-`tests/` contains package-level tests. Command tests mirror the public commands surface by module.
-
-```text
-tests/
-└─ commands/
-   └─ stock/
-      └─ stock.commands.test.ts
-```
-
-```ts
-import { describe, expect, it } from "vitest";
-import { commands } from "../../../modules/stock/commands";
-
-describe("stock commands", () => {
-  it("returns a stock item", async () => {
-    const item = await commands.getStockItem("ITEM-001");
-    expect(item.code).toBe("ITEM-001");
-  });
-});
-```
-
-Tests must clean up records they create unless the retained record is an intentional audit record.
+`tests/` contains package-level integration tests. Contract integration tests exercise real providers, schema validation and shared-transaction rollback. Historical command tests are retained as `.ts.disabled` during migration, not rewritten. Tests must clean up their records, preferably using transaction rollback.
 
 ## `types/`
 
@@ -392,7 +362,7 @@ lazy-loading rules, and generated registry shapes. Pre-installed packages are
 regular conforming packages that happen to ship in the Voyzu repository and
 participate in platform initialization. They declare `voyzu.preinstalled: true`;
 independently installed packages must not. Their code receives no route,
-navigation, API, or command fallback.
+navigation, API, or semantic-contract fallback.
 
 The two groups are written separately so ordinary development startup can
 refresh platform output without erasing an installed-package composition:
@@ -403,7 +373,7 @@ refresh platform output without erasing an installed-package composition:
 | API routes | `apps/web/.generated/api-routes/pre-installed.ts` | `apps/web/.generated/api-routes/installed.ts` |
 | Navigation | `apps/web/.generated/navigation/pre-installed.ts` | `apps/web/.generated/navigation/installed.ts` |
 | Left-nav headers | `apps/web/.generated/navigation/pre-installed-headers.tsx` | `apps/web/.generated/navigation/installed-headers.tsx` |
-| Commands | `apps/web/.generated/commands/pre-installed.ts` | `apps/web/.generated/commands/installed.ts` |
+| Semantic contracts | Root `voyzu.package.ts` manifests + platform definitions | Workspace `contracts/index.ts` (or standalone `.generated/contracts/index.ts`), bridged by `apps/web/.generated/contracts/installed.ts` |
 
 Voyzu derives these transient registries, installs the resulting dependencies,
 and copies public assets. Package authors edit package source only; generated

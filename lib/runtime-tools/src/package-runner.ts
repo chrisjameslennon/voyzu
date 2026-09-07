@@ -4,6 +4,7 @@ import { pathToFileURL } from "node:url";
 
 import { config } from "dotenv";
 import { Pool } from "pg";
+import { existsSync } from "node:fs";
 
 type PackageModule = {
   pageRoutes: Record<string, unknown>;
@@ -230,6 +231,11 @@ if (action === "install") {
 } else if (action === "uninstall") {
   await uninstall(instanceRoot, packageDirectory, packageName, definition);
 } else if (action === "run" && scriptName) {
+  const workspace = process.env.VOYZU_WORKSPACE_ROOT;
+  const contracts = workspace && resolve(workspace) !== resolve(instanceRoot)
+    ? resolve(workspace, "contracts/index.ts")
+    : resolve(instanceRoot, ".generated/contracts/index.ts");
+  if (existsSync(contracts)) await import(pathToFileURL(contracts).href);
   await runScript(packageName, definition, scriptName, parameters);
 } else {
   usage();

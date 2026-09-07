@@ -20,9 +20,9 @@
       "types": "./src/db/index.ts",
       "import": "./src/db/index.ts"
     },
-    "./commands": {
-      "types": "./src/commands/index.ts",
-      "import": "./src/commands/index.ts"
+    "./contracts": {
+      "types": "./src/contracts/index.ts",
+      "import": "./src/contracts/index.ts"
     },
     "./runtime": {
       "types": "./src/runtime/index.ts",
