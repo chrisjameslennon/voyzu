@@ -74,8 +74,8 @@
   padding: 2rem;
   border: 1px solid var(--voyzu-color-surface-secondary);
   border-radius: 1rem;
-  background: var(--voyzu-color-surface);
-  box-shadow: var(--voyzu-shadow-surface);
+  background: var(--voyzu-color-surface-muted);
+  box-shadow: var(--voyzu-shadow-elevated);
 }
 
 .panelCollapsed { left: 4rem; top: 1rem; width: 18rem; }
@@ -100,7 +100,7 @@
   text-align: left;
   cursor: pointer;
 }
-.option:hover:not(:disabled) { background: var(--voyzu-color-surface-muted); }
+.option:hover:not(:disabled):not(.optionActive) { background: var(--voyzu-color-surface-secondary); }
 .option:disabled, .option[aria-disabled="true"], .trigger:disabled { opacity: 0.6; cursor: not-allowed; }
 .optionActive { border-color: var(--voyzu-color-brand); background: var(--voyzu-color-brand-subtle); color: var(--voyzu-color-brand); }
 .avatar { display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: var(--voyzu-radius-compact); font-weight: 800; }
