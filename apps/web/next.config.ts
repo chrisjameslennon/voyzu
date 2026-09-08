@@ -65,7 +65,7 @@ function installationMode(instanceRoot: string): "development" | "production" {
 
 export default function nextConfig(phase: string): NextConfig {
   const configStarted = performance.now();
-  if (phase === PHASE_DEVELOPMENT_SERVER) console.log("loading web configuration ...");
+  if (phase === PHASE_DEVELOPMENT_SERVER) console.log("[voyzu] loading web configuration ...");
   const installationRoot = findInstallationRoot(process.cwd());
   const sourceRoot = installationRoot
     ? undefined
@@ -106,7 +106,9 @@ export default function nextConfig(phase: string): NextConfig {
     );
   }
 
-  if (phase === PHASE_DEVELOPMENT_SERVER) console.log(`web configuration loaded in ${Math.round(performance.now() - configStarted)} ms`);
+  if (phase === PHASE_DEVELOPMENT_SERVER) {
+    console.log(`[voyzu] web configuration loaded in ${Math.round(performance.now() - configStarted)} ms`);
+  }
   return {
     turbopack: runtimeRoot
       ? {
