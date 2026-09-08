@@ -7,9 +7,6 @@ export async function register(): Promise<void> {
       await import("./.generated/contracts/installed");
       if (development) {
         console.log(`contract configuration loaded in ${Math.round(performance.now() - started)} ms`);
-        const webStarted = Number(process.env.VOYZU_WEB_START_MS);
-        if (webStarted > 0) console.log(`web server loaded in ${Date.now() - webStarted} ms`);
-        console.log("Ready for first web server call");
       }
     } catch (error) {
       if (development) console.error("contract configuration failed to load");
