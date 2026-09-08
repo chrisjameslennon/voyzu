@@ -1,7 +1,8 @@
+import "server-only";
 import { randomUUID } from "node:crypto";
 
 import type { ActorType } from "@voyzu/types/modules/core";
-import { getCurrentActorType, getCurrentUser } from "@voyzu/auth/users/server";
+import { capabilities } from "../contracts";
 
 export interface UpdateAuditStamp {
   actorType: ActorType;
@@ -13,10 +14,10 @@ export interface UpdateAuditStamp {
 export type CreationAuditStamp = UpdateAuditStamp;
 
 export async function createUpdateAuditStamp(): Promise<UpdateAuditStamp> {
-  const currentUser = await getCurrentUser();
+  const identity = await capabilities.use("platform.identity").current({});
   return {
-    actorType: getCurrentActorType(),
-    userId: currentUser ? String(currentUser.id) : null,
+    actorType: identity.actorType,
+    userId: identity.user ? String(identity.user.id) : null,
     mutationId: randomUUID(),
     timestamp: new Date().toISOString(),
   };

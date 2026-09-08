@@ -43,7 +43,6 @@
     "./types/modules/*.dto": "./types/modules/*.dto.ts"
   },
   "peerDependencies": {
-    "@voyzu/audit": "^0.1.0",
     "@voyzu/auth": "^0.1.0",
     "@voyzu/capability": "^0.1.0",
     "@voyzu/types": "^0.1.0",

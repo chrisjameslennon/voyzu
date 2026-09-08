@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./identity": { "types": "./src/identity.ts", "import": "./src/identity.ts" },
     "./contracts": { "types": "./src/contracts.ts", "import": "./src/contracts.ts" },
     ".": {
       "types": "./src/index.ts",

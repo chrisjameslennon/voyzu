@@ -8,4 +8,4 @@ export {
   withUpdateAudit,
   type CreationAuditStamp,
   type UpdateAuditStamp,
-} from "@voyzu/audit/stamps";
+} from "@voyzu/capability/audit";

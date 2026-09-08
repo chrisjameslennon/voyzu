@@ -12,6 +12,7 @@ export interface VoyzuPackageModuleDefinition {
   pageRoutes: Readonly<Record<string, unknown>>;
   apiDefinitions: Readonly<Record<string, ApiRouteDefinition>>;
   components?: Readonly<Record<string, VoyzuModuleComponentDefinition>>;
+  clientComponents?: Readonly<Record<string, VoyzuModuleComponentDefinition>>;
 }
 
 /**

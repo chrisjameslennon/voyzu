@@ -1,19 +1,13 @@
+import "server-only";
 import type { AuditUserDto } from "@voyzu/types/modules/core";
-import { getDb } from "@voyzu/capability/db";
-import { UserRepo } from "@voyzu/auth/users/server";
+import { capabilities } from "../contracts";
 
 export async function getAuditActor(userId: string | null | undefined): Promise<AuditUserDto | null> {
   if (!userId) return null;
   const parsed = Number(userId);
-  if (!Number.isInteger(parsed)) return null;
-  const row = await new UserRepo(getDb()).getById(parsed);
-  return row
-    ? {
-        id: row.id,
-        code: row.code,
-        displayName: row.display_name,
-      }
-    : null;
+  if (!Number.isInteger(parsed) || parsed < 1) return null;
+  const { users } = await capabilities.use("platform.identity").lookup({ ids: [parsed] });
+  return users[0] ?? null;
 }
 
 export async function getAuditActors(row: {
@@ -23,11 +17,12 @@ export async function getAuditActors(row: {
   creationUser: AuditUserDto | null;
   updatedUser: AuditUserDto | null;
 }> {
-  const [creationUser, updatedUser] = await Promise.all([
-    getAuditActor(row.creation_user_id),
-    getAuditActor(row.updated_user_id),
-  ]);
-  return { creationUser, updatedUser };
+  const ids = [...new Set([row.creation_user_id, row.updated_user_id].map(Number).filter((id) => Number.isInteger(id) && id > 0))];
+  const users = ids.length ? (await capabilities.use("platform.identity").lookup({ ids })).users : [];
+  return {
+    creationUser: users.find((user) => user.id === Number(row.creation_user_id)) ?? null,
+    updatedUser: users.find((user) => user.id === Number(row.updated_user_id)) ?? null,
+  };
 }
 
 export async function withAuditActors<T extends {

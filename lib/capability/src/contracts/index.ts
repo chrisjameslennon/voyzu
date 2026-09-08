@@ -1,13 +1,26 @@
 import "server-only";
 import type { Static, TSchema } from "typebox";
 import Schema from "typebox/schema";
-import type { CapabilityContract, MasterDataContract, PackageContracts } from "@voyzu/types/contracts";
+import type { CapabilityContract, MasterDataContract, MasterDataComposition, PackageContracts } from "@voyzu/types/contracts";
 import { withTransaction } from "../db/db";
 import { InputValidationError } from "../errors";
 
 /** Augmented by the composed instance, not by direct provider imports. */
 export interface CapabilityContracts {}
 export interface MasterDataContracts {}
+export interface MasterDataCompositions {}
+type Root<K extends keyof MasterDataCompositions> = MasterDataCompositions[K] extends { root: infer R extends keyof MasterDataContracts } ? R : never;
+type NamedData<K extends keyof MasterDataCompositions> = {
+  [P in MasterDataContracts[Root<K>] extends { key: infer A extends string } ? A : "data"]: Data<Root<K>>;
+} & {
+  [E in MasterDataCompositions[K] extends { extensions: readonly (infer N extends keyof MasterDataContracts)[] } ? N : never as MasterDataContracts[E] extends { extends: { key: infer A extends string } } ? A : never]: Data<E> | null;
+};
+type DataName = keyof MasterDataContracts | keyof MasterDataCompositions;
+type GetId<K extends DataName> = K extends keyof MasterDataContracts ? Id<K> : K extends keyof MasterDataCompositions ? Id<Root<K>> : never;
+type GetData<K extends DataName> = K extends keyof MasterDataContracts ? Data<K> : K extends keyof MasterDataCompositions ? NamedData<K> : never;
+/** Type-only access to the composed master-data shape, including from client code. */
+export type MasterDataValue<K extends DataName> = GetData<K>;
+type ListName = { [K in keyof MasterDataContracts]: MasterDataContracts[K] extends { list: true } ? K : never }[keyof MasterDataContracts];
 type CapabilityMethods<C> = {
   [M in keyof C]: C[M] extends { input: infer I extends TSchema; output: infer O extends TSchema }
     ? (input: Static<I>) => Promise<Static<O>> : never;
@@ -38,6 +51,7 @@ function validate(schema: TSchema, value: unknown, label: string, input = false)
 export function resolveContractConfiguration(packages: readonly ContractPackage[]) {
   const capabilityDefinitions = new Map<string, CapabilityContract>();
   const dataDefinitions = new Map<string, MasterDataContract>();
+  const compositions = new Map<string, MasterDataComposition>();
   const capabilityProviders = new Map<string, NonNullable<NonNullable<PackageContracts["implements"]>["capabilities"]>[string]>();
   const dataProviders = new Map<string, NonNullable<NonNullable<PackageContracts["implements"]>["masterData"]>[string]>();
   const owners = new Map<string, string>();
@@ -64,6 +78,9 @@ export function resolveContractConfiguration(packages: readonly ContractPackage[
       if (typeof provider.load !== "function") throw new ContractError(`${name} requires a provider loader`);
       add(capabilityProviders, "capability provider", name, provider, pkg.name);
     }
+    for (const [name, definition] of Object.entries(pkg.contracts?.defines?.compositions ?? {})) {
+      add(compositions, "master-data composition", name, definition, pkg.name);
+    }
     for (const [name, provider] of Object.entries(pkg.contracts?.implements?.masterData ?? {})) {
       if (typeof provider.get !== "function") throw new ContractError(`${name} requires a master-data getter`);
       add(dataProviders, "master-data provider", name, provider, pkg.name);
@@ -71,6 +88,10 @@ export function resolveContractConfiguration(packages: readonly ContractPackage[
   }
   for (const name of capabilityProviders.keys()) if (!capabilityDefinitions.has(name)) throw new ContractError(`Undefined capability ${name}`);
   for (const name of dataProviders.keys()) if (!dataDefinitions.has(name)) throw new ContractError(`Undefined master data ${name}`);
+  for (const [name, provider] of dataProviders) {
+    if (dataDefinitions.get(name)?.list && typeof provider.list !== "function") throw new ContractError(`${name} requires a master-data list provider`);
+    if (provider.list && !dataDefinitions.get(name)?.list) throw new ContractError(`${name} does not declare listing`);
+  }
   const extensionKeys = new Set<string>();
   for (const [name, definition] of dataDefinitions) {
     if (!definition.extends) continue;
@@ -80,12 +101,24 @@ export function resolveContractConfiguration(packages: readonly ContractPackage[
     if (extensionKeys.has(`${root}:${key}`)) throw new ContractError(`Duplicate extension key ${root}.${key}`);
     extensionKeys.add(`${root}:${key}`);
   }
-  return { capabilityDefinitions, dataDefinitions, capabilityProviders, dataProviders };
+  for (const [name, composition] of compositions) {
+    if (dataDefinitions.has(name)) throw new ContractError(`Composition ${name} conflicts with master data`);
+    const root = dataDefinitions.get(composition.root);
+    if (!root || root.extends) throw new ContractError(`Invalid root ${composition.root} for ${name}`);
+    const keys = new Set([root.key ?? "data"]);
+    for (const extension of composition.extensions) {
+      const definition = dataDefinitions.get(extension);
+      if (definition?.extends?.root !== composition.root) throw new ContractError(`${extension} does not extend ${composition.root}`);
+      if (keys.has(definition.extends.key)) throw new ContractError(`Duplicate composition key ${name}.${definition.extends.key}`);
+      keys.add(definition.extends.key);
+    }
+  }
+  return { capabilityDefinitions, dataDefinitions, capabilityProviders, dataProviders, compositions };
 }
 
 /** Load compose-validated configuration; request/response validation still runs on every call. */
 function createContractRuntime(configuration: ReturnType<typeof resolveContractConfiguration>) {
-  const { capabilityDefinitions, dataDefinitions, capabilityProviders, dataProviders } = configuration;
+  const { capabilityDefinitions, dataDefinitions, capabilityProviders, dataProviders, compositions } = configuration;
   const loaded = new Map<string, Promise<Methods>>();
   function optional<K extends keyof CapabilityContracts & string>(name: K): CapabilityMethods<CapabilityContracts[K]> | undefined {
     const definition = capabilityDefinitions.get(name);
@@ -134,8 +167,28 @@ function createContractRuntime(configuration: ReturnType<typeof resolveContractC
     return result;
   }
   const masterData = {
-    async get<K extends keyof MasterDataContracts & string>(name: K, id: Id<K>): Promise<Data<K> | null> {
-      return await getRaw(name, id) as Data<K> | null;
+    async get<K extends DataName & string>(name: K, id: GetId<K>): Promise<GetData<K> | null> {
+      const composition = compositions.get(name);
+      if (!composition) return await getRaw(name, id) as GetData<K> | null;
+      // Missing implementations are configuration errors, even for an absent root record.
+      for (const part of [composition.root, ...composition.extensions]) {
+        if (!dataProviders.has(part)) throw new ContractError(`No implementation for master data ${part}`);
+      }
+      const root = await getRaw(composition.root, id);
+      if (root === null) return null;
+      const result: Record<string, unknown> = { [dataDefinitions.get(composition.root)!.key ?? "data"]: root };
+      for (const extension of composition.extensions) result[dataDefinitions.get(extension)!.extends!.key] = await getRaw(extension, id);
+      return result as GetData<K>;
+    },
+    async list<K extends ListName & string>(name: K): Promise<Data<K>[]> {
+      const definition = dataDefinitions.get(name);
+      if (!definition?.list) throw new ContractError(`${name} does not declare listing`);
+      const provider = dataProviders.get(name);
+      if (!provider?.list) throw new ContractError(`No list implementation for master data ${name}`);
+      const rows = await provider.list();
+      if (!Array.isArray(rows)) throw new ContractError(`${name} list must return an array`);
+      for (const row of rows) validate(definition.data, row, `${name} list data`);
+      return rows as Data<K>[];
     },
     async compose<K extends keyof MasterDataContracts & string>(name: K, id: Id<K>, requestedExtensions?: readonly (keyof MasterDataContracts & string)[]): Promise<Composed<K> | null> {
       const definition = dataDefinitions.get(name);
@@ -181,5 +234,6 @@ export const capabilities: Runtime["capabilities"] = {
 };
 export const masterData: Runtime["masterData"] = {
   get: (name, id) => runtime().masterData.get(name, id),
+  list: (name) => runtime().masterData.list(name),
   compose: (name, id, extensions) => runtime().masterData.compose(name, id, extensions),
 };

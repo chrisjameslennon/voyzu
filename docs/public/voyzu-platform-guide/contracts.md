@@ -43,6 +43,70 @@ await masterData.compose("erp.organization", organizationId, ["erp.organization.
 
 ## Composition and scripts
 
+### Users and current identity
+
+Platform defines `platform.user` master data; Auth implements `get(code)` and `list()`.
+It preserves the public user DTO, including numeric record ID, code, email, display
+name, role, status, access mode, implementer access and audit metadata. Passwords and
+password hashes are excluded. Lookup uses the existing user code, not the numeric ID.
+
+`platform.identity.current({})` returns a smaller current-user snapshot with ID, code,
+display name, role, status and access mode, plus actor type and permissions. Auth grants
+`users.manage` and `audit.view` to active administrators. The separate identity `lookup`
+method still returns only actor display information, not full user records.
+
+ERP Core consumes these contracts without Auth imports. Organization assignments and
+selection rules remain in ERP Core: current users must be active with UI access, and
+standard users see only assigned organizations. Admin checks remain in both API handlers
+and services. Master-data retrieval is an internal server interface, not a new public
+endpoint or an authorization bypass; callers retain their access checks.
+
+### Named master-data compositions and listing
+
+Base data, extensions and named compositions are distinct declarations. Platform owns
+`platform.country`; Localization implements its retrieval. ERP Core defines
+`erp.country.finance`, and Finance implements it using the existing country tax
+settings shape. No consumer imports the provider or another package's schema.
+
+ERP Core declares the business view in `contracts.defines.compositions`:
+
+```ts
+const compositions = {
+  "erp.country": {
+    root: "platform.country",
+    extensions: ["erp.country.finance"],
+  },
+} as const;
+
+await masterData.get("platform.country", "NZ"); // Base country DTO or null
+await masterData.get("erp.country", "NZ"); // { country, finance } or null
+await masterData.list("platform.country"); // Complete country DTO array
+await masterData.get("platform.currency", "NZD"); // Complete currency DTO or null
+await masterData.list("platform.currency"); // Complete currency DTO array
+```
+
+A named composition references an existing root and extension identities; it does
+not copy the base schema or have its own provider. Compose validates references,
+name collisions and result-key collisions. Nested compositions are not supported.
+Every named extension requires an implementor at call time, even if the root record
+does not exist. An absent root returns null; an absent extension record is represented
+by a null value under its declared key. This differs from the older ad hoc `compose`
+method's optional `extensions` object, which remains unchanged.
+
+Collection retrieval is opt-in: declare `list: true` on the master-data contract and
+implement `list: () => Promise<Data[]>` alongside `get`. It returns the unfiltered
+collection in provider order, with every record validated. There is no pagination,
+filtering or named-composition listing in this initial API. Country listing preserves
+the existing report's behaviour, including inactive countries.
+
+Platform also defines `platform.currency`, implemented by Localization. Its existing
+string identifiers, optional symbol, status and audit metadata are preserved. Listing
+keeps provider ordering and inactive records; callers apply their existing active-only
+selection filters. Currency has no extensions or named composition at present.
+
+Declarations stay at the owner's top-level `contracts/`. The generated runtime
+supplies consumer types, including named result keys and nullable extension records.
+
 Development composition writes `.run/contracts/index.ts`, containing registration plus generated TypeScript map augmentation. Web instrumentation imports a generated bridge; the package script runner imports the same registry. Platform-only composition uses `.generated/contracts/` to avoid overwriting platform-owned definitions.
 
 Compose resolves providers and validates contract structure, schemas, duplicates and extension relationships. Generated configuration contains schema snapshots and lazy provider imports. Startup loads these maps without importing package manifests eagerly or repeating composition validation. Request/response validation and transaction handling still run when contracts are called. Provider implementations are loaded on first use.

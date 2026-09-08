@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { capabilities } from "@voyzu/capability/contracts";
+import { AccessProvider } from "@voyzu/ui-surface/client";
 
 import {
   getSurfaceSlot,
@@ -18,14 +20,17 @@ interface SurfaceFrameProps {
   children: ReactNode;
 }
 
-export function SurfaceFrame({
+export async function SurfaceFrame({
   slots,
   activeRoute,
   showLeftNav,
   Main,
   children,
 }: SurfaceFrameProps) {
+  // Refreshed with the page render/navigation, not cached in a persistent root layout.
+  const identity = await capabilities.optional("platform.identity")?.current({}) ?? null;
   return (
+    <AccessProvider identity={identity}>
     <div className={styles.frame}>
       <SurfaceTopNav
         slots={slots}
@@ -44,5 +49,6 @@ export function SurfaceFrame({
         <main className={styles.main}>{children}</main>
       )}
     </div>
+    </AccessProvider>
   );
 }

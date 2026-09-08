@@ -55,14 +55,14 @@ The trigger writes to `audit_event` and `audit_change`. Update events contain on
 
 ## Supply audit information
 
-Import audit-stamp helpers from the public audit package:
+Import audit-stamp helpers from the platform library:
 
 ```ts
 // packages/@acme/warehousing/modules/stock/server/lib/stock.service.ts
 import {
   createUpdateAuditStamp,
   withUpdateAudit,
-} from "@voyzu/audit/stamps";
+} from "@voyzu/capability/audit";
 
 const audit = await createUpdateAuditStamp();
 const row = withUpdateAudit(
@@ -109,15 +109,16 @@ Audit links may filter by entity type, entity ID, entity code, or mutation ID. U
 
 ## Display audit information
 
-The `@voyzu/audit` package provides a deliberately dumb `AuditPanel` component for detail pages. It displays the entity ID and supplied creation and update information. It does not fetch audit data, select audit records, or decide where the user should go.
+The Audit package provides `audit.panel` through client-component composition. This single component displays the entity ID and supplied creation/update information. It does not fetch audit history. It uses the platform access context to decide whether to show the audit-log link; the Audit routes still enforce authorization independently.
 
-The calling package supplies the audit metadata. It may also supply both `auditHref` and `onNavigate` to display a **View audit information** button and control its destination. If either property is omitted, the panel displays the system information without the button.
+The calling package supplies the audit metadata and both `auditHref` and `onNavigate`. The button appears only when both are supplied and the current user has `audit.view`. Without permission or an access provider, the metadata still displays without a link.
 
 ```tsx
 "use client";
 
 import { useRouter } from "next/navigation";
-import { AuditPanel } from "@voyzu/audit/client";
+import { clientComponent } from "@voyzu/ui-surface/client";
+const AuditPanel = clientComponent.use("audit.panel");
 
 export function StockItemAuditPanel({ stockItem }: StockItemAuditPanelProps) {
   const router = useRouter();
@@ -132,7 +133,7 @@ export function StockItemAuditPanel({ stockItem }: StockItemAuditPanelProps) {
       updatedActorType={stockItem.audit.updated.actorType}
       updatedUser={stockItem.audit.updated.user}
       auditHref={
-        `/warehousing/audit?entityType=stock_item&entityId=${stockItem.id}` +
+        `/settings/audit?entityType=stock_item&entityId=${stockItem.id}` +
         `&from=stock-item&fromCode=${encodeURIComponent(stockItem.code)}`
       }
       onNavigate={(href) => router.push(href)}
@@ -141,7 +142,24 @@ export function StockItemAuditPanel({ stockItem }: StockItemAuditPanelProps) {
 }
 ```
 
-The calling package owns the audit list page and its navigation behavior. Its `auditHref` should identify the entity using `entityType` with `entityId` or `entityCode`, or use `mutationId` when the link should show one business mutation. It should also carry enough return context for the audit page's Back button to return to the originating detail page. The panel itself does not assume any package routes or use UI components from a business package.
+The Audit package owns the Settings audit log and its retrieval. Calling packages link to it; they do not implement their own audit-history lists. The link should identify the entity or mutation and preserve return-navigation context. Panel props use platform types, not Audit package imports.
+
+## Identity and access boundaries
+
+Stamp creation calls the platform-defined `platform.identity.current` capability.
+Actor enrichment calls `platform.identity.lookup` with deduplicated user IDs (creation
+and update actors are fetched together). Auth implements both methods. Missing
+identity providers fail explicitly; audit helpers do not silently stamp an unknown
+actor after a lookup failure. Database transactions continue through the shared
+executor. Audit DTOs remain in `@voyzu/types/modules/core`.
+
+The web page frame supplies a request-scoped identity/permission snapshot through
+`AccessProvider`; `useCurrentAccess` lives in `@voyzu/ui-surface/client`. The panel
+does not import Auth or call `/api/users/me`. The snapshot refreshes on server page
+navigation or `router.refresh()`; it is not a live permission subscription. Auth maps
+active administrators to `audit.view`, matching the audit log's admin-only access.
+
+See [client-component composition](../voyzu-platform-guide/client-components.md).
 
 ## Query audit events
 

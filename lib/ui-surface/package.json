@@ -23,6 +23,7 @@
     "./css-modules/surface.module.css": "./src/css-modules/surface.module.css"
   },
   "peerDependencies": {
+    "@voyzu/types": "*",
     "@voyzu/ui-components": "*",
     "next": "^16",
     "react": "^19",

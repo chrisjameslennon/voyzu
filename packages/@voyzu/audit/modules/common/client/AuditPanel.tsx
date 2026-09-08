@@ -1,49 +1,113 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { UserResponseDto } from "@voyzu/auth/types";
-import { SystemInformationCard } from "@voyzu/ui-components";
+import { Button, Badge } from "@voyzu/ui-components";
+import { useCurrentAccess } from "@voyzu/ui-surface/client";
+import type { AuditPanelProps } from "@voyzu/ui-surface/types";
 
-export interface AuditPanelProps {
-  id: string | number;
-  creationDate: string;
-  updatedDate: string;
-  creationActorType?: string | null;
-  creationUser?: { code: string; displayName: string } | null;
-  updatedActorType?: string | null;
-  updatedUser?: { code: string; displayName: string } | null;
-  auditHref?: string;
-  onNavigate?: (href: string) => void;
+import styles from "@voyzu/ui-style/css-modules/detail.module.css";
+
+interface SystemInformationActor {
+  code: string;
+  displayName: string;
 }
 
-export function AuditPanel(props: AuditPanelProps) {
-  const [canViewAudit, setCanViewAudit] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
+function formatDate(value: string) {
+  if (!value) return "-";
+  try {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  } catch {
+    return value;
+  }
+}
 
-    async function loadCurrentUser() {
-      try {
-        const response = await fetch("/api/users/me", { cache: "no-store" });
-        if (cancelled || !response.ok) return;
-        const user = await response.json() as UserResponseDto;
-        setCanViewAudit(user.role === "ADMIN");
-      } catch {
-        // Fail closed when the current user's access cannot be determined.
-      }
-    }
+function auditHrefWithAllDates(auditHref: string): string {
+  if (auditHref.includes("mutationId=")) return auditHref;
+  if (auditHref.includes("dateMode=")) return auditHref;
+  return `${auditHref}${auditHref.includes("?") ? "&" : "?"}dateMode=all`;
+}
 
-    void loadCurrentUser();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
+export function AuditPanel({
+  id,
+  creationDate,
+  updatedDate,
+  creationActorType,
+  creationUser,
+  updatedActorType,
+  updatedUser,
+  auditHref,
+  onNavigate,
+}: AuditPanelProps) {
+  const { can } = useCurrentAccess();
   return (
-    <SystemInformationCard
-      {...props}
-      auditHref={canViewAudit ? props.auditHref : undefined}
-      onNavigate={canViewAudit ? props.onNavigate : undefined}
-    />
+    <div className={styles.systemCard}>
+      <h3 className={styles.systemTitle}>
+        <span className="material-symbols-outlined">info</span>
+        System Information
+      </h3>
+      <div className={styles.systemBody}>
+        <div className={styles.systemRow}>ID: <strong>{id}</strong></div>
+        <div className={styles.systemRow}>Created <strong>{formatDate(creationDate)}</strong></div>
+        <AuditViaRow label="Created via" actorType={creationActorType} />
+        <AuditUserRow label="Created by" actor={creationUser} />
+        <div className={styles.systemRow}>Updated <strong>{formatDate(updatedDate)}</strong></div>
+        <AuditViaRow label="Updated via" actorType={updatedActorType} />
+        <AuditUserRow label="Updated by" actor={updatedUser} />
+        {can("audit.view") && auditHref && onNavigate && (
+          <div className={styles.systemFooter}>
+            <Button
+              variant="secondary"
+              className={styles.fullWidthAction}
+              onClick={() => onNavigate(auditHrefWithAllDates(auditHref))}
+            >
+              View audit information
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AuditViaRow({
+  label,
+  actorType,
+}: {
+  label: string;
+  actorType?: string | null;
+}) {
+  return (
+    <div className={`${styles.systemRow} ${styles.systemActorRow}`}>
+      <span>{label}:</span>
+      <strong>{actorType || ""}</strong>
+    </div>
+  );
+}
+
+function AuditUserRow({
+  label,
+  actor,
+}: {
+  label: string;
+  actor?: SystemInformationActor | null;
+}) {
+  return (
+    <div className={`${styles.systemRow} ${styles.systemActorRow}`}>
+      <span>{label}:</span>
+      {actor ? (
+        <>
+          <strong>{actor.displayName}</strong>
+          <Badge variant="soft" size="small" color="neutral">
+            {actor.code}
+          </Badge>
+        </>
+      ) : null}
+    </div>
   );
 }

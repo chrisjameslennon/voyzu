@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Viewport } from "next";
+import { ComposedClientComponents } from "../../.generated/components/client";
 
 import "@voyzu/ui-style/css/reset.css";
 import "@voyzu/ui-layout/css/breakpoints.css";
@@ -37,7 +38,7 @@ export default function RootLayout({
           MozOsxFontSmoothing: "grayscale",
         }}
       >
-        {children}
+        <ComposedClientComponents>{children}</ComposedClientComponents>
       </body>
     </html>
   );

@@ -12,11 +12,18 @@ export interface MasterDataContract {
   data: TSchema;
   key?: string;
   extends?: { root: string; key: string };
+  /** Opt in to unfiltered collection retrieval. */
+  list?: true;
+}
+export interface MasterDataComposition {
+  root: string;
+  extensions: readonly string[];
 }
 export interface PackageContracts {
   defines?: {
     capabilities?: Readonly<Record<string, CapabilityContract>>;
     masterData?: Readonly<Record<string, MasterDataContract>>;
+    compositions?: Readonly<Record<string, MasterDataComposition>>;
   };
   implements?: {
     capabilities?: Readonly<Record<string, {
@@ -24,6 +31,7 @@ export interface PackageContracts {
     }>>;
     masterData?: Readonly<Record<string, {
       get: (id: any) => Promise<any>;
+      list?: () => Promise<any[]>;
     }>>;
   };
 }

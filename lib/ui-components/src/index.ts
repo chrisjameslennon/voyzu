@@ -65,7 +65,6 @@ export type {
   SearchableSelectProps,
   SearchableSingleSelectProps,
 } from "./searchable-select/searchable-select";
-export { SystemInformationCard } from "./system-information-card/system-information-card";
 export { SplitButton } from "./split-button/split-button";
 export type { SplitButtonItem } from "./split-button/split-button";
 export { TabGroup } from "./tab-group/tab-group";
