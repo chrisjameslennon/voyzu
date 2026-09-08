@@ -364,8 +364,8 @@ participate in platform initialization. They declare `voyzu.preinstalled: true`;
 independently installed packages must not. Their code receives no route,
 navigation, API, or semantic-contract fallback.
 
-The two groups are written separately so ordinary development startup can
-refresh platform output without erasing an installed-package composition:
+The two groups have separate generated files, but both are generated only by
+explicit composition. Development startup loads them without regeneration:
 
 | Surface | Pre-installed | Installed |
 |---|---|---|

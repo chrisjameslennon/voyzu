@@ -64,6 +64,8 @@ function installationMode(instanceRoot: string): "development" | "production" {
 }
 
 export default function nextConfig(phase: string): NextConfig {
+  const configStarted = performance.now();
+  if (phase === PHASE_DEVELOPMENT_SERVER) console.log("loading web configuration ...");
   const installationRoot = findInstallationRoot(process.cwd());
   const sourceRoot = installationRoot
     ? undefined
@@ -75,6 +77,26 @@ export default function nextConfig(phase: string): NextConfig {
   const mode = installationRoot
     ? installationMode(installationRoot)
     : undefined;
+  // Check only generated entry points consumed by the app, never optional package folders.
+  // Compose emits empty registries when a feature has no contributors.
+  const platformRoot = runtimeRoot ? join(runtimeRoot, "voyzu") : sourceRoot;
+  if (platformRoot) {
+    const generatedRoot = join(platformRoot, "apps", "web", ".generated");
+    const required = [
+      "page-routes/pre-installed.ts", "page-routes/installed.ts",
+      "api-routes/pre-installed.ts", "api-routes/installed.ts",
+      "navigation/pre-installed.ts", "navigation/installed.ts",
+      "navigation/pre-installed-headers.tsx", "navigation/installed-headers.tsx",
+      "components/pre-installed.ts", "components/installed.ts",
+      "contracts/installed.ts",
+    ];
+    const missing = required.filter((file) => !existsSync(join(generatedRoot, file)));
+    const contractEntry = runtimeRoot
+      ? join(runtimeRoot, "contracts", "index.ts")
+      : join(platformRoot, ".generated", "contracts", "index.ts");
+    if (!existsSync(contractEntry)) missing.push(contractEntry);
+    if (missing.length) throw new Error(`Voyzu runtime has not been composed. Run npm run voyzu:compose -- --no-install first. Missing generated entry points: ${missing.join(", ")}`);
+  }
   if (instanceRoot) {
     loadEnvConfig(
       instanceRoot,
@@ -84,6 +106,7 @@ export default function nextConfig(phase: string): NextConfig {
     );
   }
 
+  if (phase === PHASE_DEVELOPMENT_SERVER) console.log(`web configuration loaded in ${Math.round(performance.now() - configStarted)} ms`);
   return {
     turbopack: runtimeRoot
       ? {

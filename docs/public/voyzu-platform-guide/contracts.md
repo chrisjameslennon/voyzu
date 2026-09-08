@@ -45,6 +45,10 @@ await masterData.compose("erp.organization", organizationId, ["erp.organization.
 
 Development composition writes `.run/contracts/index.ts`, containing registration plus generated TypeScript map augmentation. Web instrumentation imports a generated bridge; the package script runner imports the same registry. Platform-only composition uses `.generated/contracts/` to avoid overwriting platform-owned definitions.
 
+Compose resolves providers and validates contract structure, schemas, duplicates and extension relationships. Generated configuration contains schema snapshots and lazy provider imports. Startup loads these maps without importing package manifests eagerly or repeating composition validation. Request/response validation and transaction handling still run when contracts are called. Provider implementations are loaded on first use.
+
+Dev, build and typecheck no longer generate registries implicitly. Next configuration checks only required generated entry points and asks you to run compose if they are missing. Empty feature registries are valid; optional package folders are not required. Routes added to an already-composed route module still update through development file watching; adding a new route module requires compose.
+
 Run `npm run voyzu:compose -- --no-install` after changing contract definitions or providers. Chokidar copies package files but does not replace contract registration generation. Generated files are not source contracts.
 
 The initial organization and finance schemas preserve every existing DTO field and numeric ID. The financial-entity storage model, service names and existing APIs remain unchanged.

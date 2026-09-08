@@ -35,7 +35,7 @@ function validate(schema: TSchema, value: unknown, label: string, input = false)
 }
 
 /** Pure registration/validation: never calls providers or touches the database. */
-export function createContracts(packages: readonly ContractPackage[]) {
+export function resolveContractConfiguration(packages: readonly ContractPackage[]) {
   const capabilityDefinitions = new Map<string, CapabilityContract>();
   const dataDefinitions = new Map<string, MasterDataContract>();
   const capabilityProviders = new Map<string, NonNullable<NonNullable<PackageContracts["implements"]>["capabilities"]>[string]>();
@@ -80,6 +80,12 @@ export function createContracts(packages: readonly ContractPackage[]) {
     if (extensionKeys.has(`${root}:${key}`)) throw new ContractError(`Duplicate extension key ${root}.${key}`);
     extensionKeys.add(`${root}:${key}`);
   }
+  return { capabilityDefinitions, dataDefinitions, capabilityProviders, dataProviders };
+}
+
+/** Load compose-validated configuration; request/response validation still runs on every call. */
+function createContractRuntime(configuration: ReturnType<typeof resolveContractConfiguration>) {
+  const { capabilityDefinitions, dataDefinitions, capabilityProviders, dataProviders } = configuration;
   const loaded = new Map<string, Promise<Methods>>();
   function optional<K extends keyof CapabilityContracts & string>(name: K): CapabilityMethods<CapabilityContracts[K]> | undefined {
     const definition = capabilityDefinitions.get(name);
@@ -153,9 +159,17 @@ export function createContracts(packages: readonly ContractPackage[]) {
   return { capabilities, masterData };
 }
 
+/** Validated programmatic registration, used by isolated integration tests. */
+export function createContracts(packages: readonly ContractPackage[]) {
+  return createContractRuntime(resolveContractConfiguration(packages));
+}
 type Runtime = ReturnType<typeof createContracts>;
 const shared = globalThis as typeof globalThis & { __voyzuContracts?: Runtime };
 export function registerContracts(packages: readonly ContractPackage[]) { shared.__voyzuContracts = createContracts(packages); }
+/** Only generated compose output should call this; structural checks belong to compose. */
+export function registerComposedContracts(configuration: ReturnType<typeof resolveContractConfiguration>) {
+  shared.__voyzuContracts = createContractRuntime(configuration);
+}
 function runtime(): Runtime {
   if (!shared.__voyzuContracts) throw new ContractError("Contracts have not been composed/registered for this instance");
   return shared.__voyzuContracts;

@@ -28,8 +28,6 @@
     "dev:next": "node lib/runtime-tools/run-npm.mjs run dev -w @voyzu/web",
     "lint": "oxlint .",
     "postinstall": "node scripts/postinstall.mjs",
-    "prebuild": "node lib/runtime-tools/compose/voyzu-compose.mjs --runtime . --empty-if-missing",
-    "predev": "node lib/runtime-tools/compose/voyzu-compose.mjs --runtime . --empty-if-missing",
     "start": "node lib/runtime-tools/run-npm.mjs run start -w @voyzu/web",
     "typecheck": "node lib/runtime-tools/run-npm.mjs run typecheck -w @voyzu/web",
     "voyzu:add-repo": "node lib/runtime-tools/commands/voyzu.mjs add repo",
