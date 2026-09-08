@@ -122,6 +122,8 @@ export default function nextConfig(phase: string): NextConfig {
         ? { root: sourceRoot }
         : undefined,
     transpilePackages: [
+      // voyzu compose:packages:start
+      // voyzu compose:packages:end
       "@voyzu/api-reference",
       "@voyzu/capability",
       "@voyzu/auth",

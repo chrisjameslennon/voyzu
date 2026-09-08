@@ -52,93 +52,98 @@
   },
   "responses": {
     "200": {
-      "description": "The reordered package.",
+      "description": "The reordered package inventory.",
       "contentType": "application/json",
       "schema": {
-        "type": "object",
-        "required": [
-          "id",
-          "code",
-          "description",
-          "repository",
-          "topNavigationVisible",
-          "pageRoutesVisible",
-          "navOrder",
-          "preinstalled",
-          "hasTopNavigation",
-          "required",
-          "pageRootPaths",
-          "apiRootPaths"
-        ],
-        "properties": {
-          "id": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "code": {
-            "type": "string",
-            "pattern": "\\S"
-          },
-          "description": {
-            "type": "string"
-          },
-          "repository": {
-            "type": "string"
-          },
-          "topNavigationVisible": {
-            "type": "boolean"
-          },
-          "pageRoutesVisible": {
-            "type": "boolean"
-          },
-          "navOrder": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "preinstalled": {
-            "type": "boolean"
-          },
-          "hasTopNavigation": {
-            "type": "boolean"
-          },
-          "required": {
-            "type": "boolean"
-          },
-          "pageRootPaths": {
-            "type": "array",
-            "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "id",
+            "code",
+            "description",
+            "repository",
+            "topNavigationVisible",
+            "pageRoutesVisible",
+            "navOrder",
+            "preinstalled",
+            "hasTopNavigation",
+            "required",
+            "pageRootPaths",
+            "apiRootPaths"
+          ],
+          "properties": {
+            "id": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "code": {
               "type": "string",
-              "pattern": "^/(?!/)"
+              "pattern": "\\S"
+            },
+            "description": {
+              "type": "string"
+            },
+            "repository": {
+              "type": "string"
+            },
+            "topNavigationVisible": {
+              "type": "boolean"
+            },
+            "pageRoutesVisible": {
+              "type": "boolean"
+            },
+            "navOrder": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "preinstalled": {
+              "type": "boolean"
+            },
+            "hasTopNavigation": {
+              "type": "boolean"
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "pageRootPaths": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^/(?!/)"
+              }
+            },
+            "apiRootPaths": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^/(?!/)"
+              }
             }
           },
-          "apiRootPaths": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "pattern": "^/(?!/)"
-            }
-          }
-        },
-        "additionalProperties": false
+          "additionalProperties": false
+        }
       },
-      "example": {
-        "id": 1,
-        "code": "string",
-        "description": "string",
-        "repository": "string",
-        "topNavigationVisible": true,
-        "pageRoutesVisible": true,
-        "navOrder": 0,
-        "preinstalled": true,
-        "hasTopNavigation": true,
-        "required": true,
-        "pageRootPaths": [
-          "string"
-        ],
-        "apiRootPaths": [
-          "string"
-        ]
-      }
+      "example": [
+        {
+          "id": 1,
+          "code": "string",
+          "description": "string",
+          "repository": "string",
+          "topNavigationVisible": true,
+          "pageRoutesVisible": true,
+          "navOrder": 0,
+          "preinstalled": true,
+          "hasTopNavigation": true,
+          "required": true,
+          "pageRootPaths": [
+            "string"
+          ],
+          "apiRootPaths": [
+            "string"
+          ]
+        }
+      ]
     },
     "400": {
       "description": "Validation failed.",

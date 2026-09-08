@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 
-import { currentUserCanManageUsers } from "@voyzu/auth/users/server";
+import { capabilities } from "@voyzu/capability/contracts";
 import { BusinessRuleError, NotFoundError } from "@voyzu/capability/errors";
 import { businessRuleError, forbiddenError, notFoundError, ok, parseBody, serverError } from "@voyzu/capability/http";
 
@@ -20,7 +20,7 @@ import {
 } from "../lib/installed-package.service";
 
 async function requireAdmin() {
-  return await currentUserCanManageUsers()
+  return (await capabilities.use("platform.identity").current({})).permissions.includes("users.manage")
     ? null
     : forbiddenError("You do not have access");
 }

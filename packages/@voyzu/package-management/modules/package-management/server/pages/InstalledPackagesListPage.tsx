@@ -1,12 +1,12 @@
 import "server-only";
 
-import { currentUserCanManageUsers } from "@voyzu/auth/users/server";
+import { capabilities } from "@voyzu/capability/contracts";
 
 import { InstalledPackageList } from "../../client";
 import { getHomePageRoute, listInstalledPackages } from "../lib/installed-package.service";
 
 export async function InstalledPackagesListPage() {
-  const canManage = await currentUserCanManageUsers();
+  const canManage = (await capabilities.use("platform.identity").current({})).permissions.includes("users.manage");
   return (
     <InstalledPackageList
       pageTitle="Installed Packages"
