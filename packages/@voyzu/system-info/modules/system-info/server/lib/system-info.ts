@@ -159,8 +159,9 @@ async function readLocks(webRoot: string): Promise<LockInformation[]> {
   for (const candidate of candidates) {
     if (!(await exists(candidate.path))) continue;
     const [metadata, rawContents] = await Promise.all([
-      stat(candidate.path),
-      readFile(candidate.path, "utf8").catch(() => ""),
+      // Runtime-generated lock files must be inspected on the host, not bundled as assets.
+      stat(/* turbopackIgnore: true */ candidate.path),
+      readFile(/* turbopackIgnore: true */ candidate.path, "utf8").catch(() => ""),
     ]);
     const contents = rawContents.trim();
     let pid: number | undefined;
