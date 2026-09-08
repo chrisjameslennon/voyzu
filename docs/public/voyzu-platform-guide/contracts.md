@@ -61,6 +61,22 @@ standard users see only assigned organizations. Admin checks remain in both API 
 and services. Master-data retrieval is an internal server interface, not a new public
 endpoint or an authorization bypass; callers retain their access checks.
 
+### Organization directory
+
+Platform defines the optional `platform.organization-directory` capability with
+`list({})`, returning `{ organizations: [{ id, code, name }] }`. ERP Core implements
+the directory using its own repository. It includes active and inactive organizations,
+but excludes deleted records; it is not a current-user organization selector.
+
+Audit resolves it server-side with `capabilities.optional()` to supply filter options
+and enrich recorded organization IDs in list, detail and export results. Audit retains
+its existing authorization checks. Without an implementor, organization IDs remain
+usable and filter options are empty. Missing/deleted records cannot supply historical
+labels. Provider failures are not treated as an absent implementor.
+
+This keeps the platform independent of ERP-owned schemas, services, tables and HTTP
+routes. The directory does not change audit recording or add a database foreign key.
+
 ### Named master-data compositions and listing
 
 Base data, extensions and named compositions are distinct declarations. Platform owns

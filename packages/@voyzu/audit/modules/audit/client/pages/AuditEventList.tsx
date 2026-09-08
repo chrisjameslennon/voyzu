@@ -104,7 +104,7 @@ function rangeForPreset(value: string, year: FinancialYearResponseDto | undefine
 const columns: DataTableColumn<AuditEventResponseDto>[] = [
   { key: "code", label: "Code", width: 130 },
   { key: "packageCode", label: "Package", width: 190 },
-  { key: "organizationCode", label: "Organization", width: 130, render: (e) => e.organizationCode ?? "-" },
+  { key: "organizationCode", label: "Organization", width: 130, render: (e) => e.organizationCode ?? (e.organizationId == null ? "-" : String(e.organizationId)) },
   {
     key: "creationDate",
     label: "Timestamp",
@@ -207,7 +207,7 @@ export function AuditEventList({
   // Filter UI values
   const [search, setSearch] = useState("");
   const [organizationId, setOrganizationId] = useState(initialOrganizationId);
-  const [availableOrganizations, setAvailableOrganizations] = useState(organizations);
+  const availableOrganizations = organizations;
   const [packageCode, setPackageCode] = useState("");
   const [packageOptions, setPackageOptions] = useState([{ value: "", label: "All packages" }]);
   const [financialYears, setFinancialYears] = useState<FinancialYearResponseDto[]>(initialFinancialYears);
@@ -301,15 +301,6 @@ export function AuditEventList({
           ...packages.map((item) => ({ value: item.code, label: item.description || item.code, code: item.code })),
         ]);
       })
-      .catch(() => undefined);
-    return () => controller.abort();
-  }, []);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch("/api/organization/organizations", { signal: controller.signal })
-      .then((response) => response.ok ? response.json() : [])
-      .then((items: AuditOrganizationOption[]) => setAvailableOrganizations(items))
       .catch(() => undefined);
     return () => controller.abort();
   }, []);

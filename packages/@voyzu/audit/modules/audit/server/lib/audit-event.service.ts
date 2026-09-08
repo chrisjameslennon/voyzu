@@ -3,30 +3,17 @@ import { getDb } from "@voyzu/capability/db";
 import { AuditEventRepo, type AuditEventFilters } from "../db/audit-event.repo";
 import type { AuditEventRow } from "../db/audit-event.row.types";
 import { mapAuditEvent } from "./audit-event.mapper";
-
-type OrganizationReference = { id: number; code: string };
-
-function isOrganizationReference(value: unknown): value is OrganizationReference {
-  return typeof value === "object"
-    && value !== null
-    && "id" in value
-    && typeof value.id === "number"
-    && "code" in value
-    && typeof value.code === "string";
-}
+import { listAuditOrganizations } from "./organization-directory";
 
 async function addOrganizationCodes(rows: AuditEventRow[]): Promise<AuditEventRow[]> {
   if (!rows.some((row) => row.organization_id !== null && row.organization_code === null)) {
     return rows;
   }
 
-  // TODO(contracts, retrieval): restore @voyzu/erp-core.listOrganizations; integration temporarily unavailable.
-  const organizations: unknown = undefined;
-  if (!Array.isArray(organizations)) return rows;
+  const organizations = await listAuditOrganizations();
 
   const codesById = new Map(
     organizations
-      .filter(isOrganizationReference)
       .map((organization) => [organization.id, organization.code]),
   );
   return rows.map((row) => ({

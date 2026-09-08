@@ -16,6 +16,44 @@ Every business table should have an audit trigger that invokes the shared `audit
 
 Package schema and seed SQL belongs in the package's `install/` directory and is listed in installation order by `voyzu.package.ts`. SQL file names do not control execution order.
 
+## Database coupling
+
+A package owns the tables created by its install SQL. Database dependencies may point to the package's own tables or upstream to a package it depends on. They must not point sideways to a peer package or downstream to a package that depends on it.
+
+This rule applies equally to foreign keys, trigger functions, and SQL queries, including joins, reads, and writes. Moving a query into a repository does not make an otherwise prohibited dependency acceptable.
+
+For example:
+
+| Dependency | Permitted? |
+| --- | --- |
+| A business package → platform tables | Yes: all business packages depend on the platform |
+| Finance or Inventory → ERP Core tables | Yes: both depend on ERP Core |
+| Finance → Inventory tables, or Inventory → Finance tables | No: they are peers |
+| ERP Core → Finance or Inventory tables | No: these are downstream packages |
+| Platform → business-package tables | No: these are downstream packages |
+
+Table ownership is determined by installation, not by a table-name prefix. A generic audit trigger that reads the triggering row through `OLD`/`NEW` and writes Audit-owned tables is an upstream use of platform auditing; it must not query business-package tables by name.
+
+Use semantic contracts for cross-package operations that cannot use an allowed database dependency. Do not replace a forbidden query with a direct import of the other package's repository or service.
+
+## Master data
+
+Master data provides a named, read-only contract for retrieving shared records across package boundaries without importing the implementing package. Contract definitions live in the defining package's top-level `contracts/master-data/` directory and are registered through `voyzu.package.ts`.
+
+A root contract defines the base record. Other packages can define extensions and named compositions without modifying or copying that root definition. For example, the platform defines `platform.country`, ERP Core defines the finance extension and the `erp.country` composition, and Finance implements the tax information in that extension. The platform remains independent of Finance.
+
+```ts
+import { masterData } from "@voyzu/capability/contracts";
+
+const country = await masterData.get("platform.country", "NZ");
+const countryWithFinance = await masterData.get("erp.country", "NZ");
+// { country, finance } or null when the root record is missing
+```
+
+Master-data contracts preserve the underlying identifier and data shapes. Collection retrieval is available when the contract declares listing support. An explicitly required extension without an implementor raises an error; it is not silently ignored. Master data has no write API: use capabilities for cross-package business operations that modify data.
+
+See [Semantic contracts](../voyzu-platform-guide/contracts.md) for root definitions, extensions, named compositions, provider registration, and runtime validation.
+
 ## Data transfer objects (DTOs)
 
 A Data Transfer Object (DTO) is the definitive definition of data as it is described within the application. DTOs define data exchanged through the application and API boundaries.
@@ -69,6 +107,8 @@ Database row types are internal persistence shapes. Map them to DTOs rather than
 
 A Data Repository in Voyzu is code that controls read and write data access. Repositories own SQL and row mapping. All database access must be via a Data Repository. The general pattern is that a module service file calls a data repository file, and all interactions go through the service module.
 
+SQL queries and their execution belong in `.repo.ts` files, not in pages, handlers, services, or script entry points. This also applies to sample-data scripts and test lookups. Install SQL remains in the installation files described above. The platform System Info diagnostics are an explicit exception and may query PostgreSQL system information directly.
+
 Repositories accept a `DbExecutor` from `@voyzu/capability/db`. A service may
 pass the shared pool for an ordinary read or a transaction client for atomic
 work:
@@ -116,6 +156,7 @@ Dynamic identifiers, such as a permitted sort column, must be selected from an e
 
 ## See also
 
+* [Semantic contracts](../voyzu-platform-guide/contracts.md)
 * [Validation layers](validation-layers.md)
 * [Auditing patterns](auditing-patterns.md)
 * [API patterns](api-patterns.md)

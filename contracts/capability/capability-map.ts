@@ -1,3 +1,8 @@
 import { transactionalEmailCapability } from "./transactional-email";
 import { identityCapability } from "./identity";
-export const capabilityContracts = { "platform.transactional-email": transactionalEmailCapability, "platform.identity": identityCapability } as const;
+import { organizationDirectoryCapability } from "./organization-directory";
+export const capabilityContracts = {
+  "platform.transactional-email": transactionalEmailCapability,
+  "platform.identity": identityCapability,
+  "platform.organization-directory": organizationDirectoryCapability,
+} as const;

@@ -4,6 +4,7 @@ import { previousDaysRange } from "@voyzu/audit/server";
 import { detailBackHref, normalizeDetailBackSource } from "@voyzu/ui-surface";
 
 import { AuditEventList } from "../../client";
+import { listAuditOrganizations } from "../lib/organization-directory";
 
 interface OrganizationAuditEventsPageProps {
   surface?: { searchParams?: Record<string, string> };
@@ -22,6 +23,7 @@ function normalizeAuditLinkParams(searchParams: Record<string, string>) {
 }
 
 export async function AuditEventsPage({ surface }: OrganizationAuditEventsPageProps = {}) {
+  const organizations = await listAuditOrganizations();
   const { fromDate, toDate } = previousDaysRange(90);
   const searchParams = surface?.searchParams ?? {};
   const initialFilters = normalizeAuditLinkParams(searchParams);
@@ -33,7 +35,7 @@ export async function AuditEventsPage({ surface }: OrganizationAuditEventsPagePr
 
   return (
     <AuditEventList
-      organizations={[]}
+      organizations={organizations}
       initialFinancialYears={[]}
       initialSelectedYearCode=""
       initialDateFrom={hasLinkedEntityFilter ? "" : fromDate}
