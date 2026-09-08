@@ -62,4 +62,32 @@ export class InstalledPackageRepo {
       [code, navOrder],
     );
   }
+
+  lockInventory() {
+    return this.db.query("SELECT pg_advisory_xact_lock(hashtext('voyzu.installed-packages'))");
+  }
+
+  upsertDiscovered(code: string, description: string, navOrder: number) {
+    return this.db.query(`INSERT INTO installed_packages (code, description, nav_order)
+         VALUES ($1, $2, $3)
+         ON CONFLICT (code) DO UPDATE SET description = EXCLUDED.description`, [code, description, navOrder]);
+  }
+
+  deleteAll() {
+    return this.db.query("DELETE FROM installed_packages");
+  }
+
+  deleteNotIn(codes: string[]) {
+    return this.db.query("DELETE FROM installed_packages WHERE NOT (code = ANY($1::text[]))", [codes]);
+  }
+
+  getSetting(code: string) {
+    return this.db.query("SELECT value FROM voyzu_settings WHERE code = $1", [code]);
+  }
+
+  setSetting(code: string, value: string) {
+    return this.db.query(`INSERT INTO voyzu_settings (code, value)
+       VALUES ($1, $2)
+       ON CONFLICT (code) DO UPDATE SET value = EXCLUDED.value`, [code, value]);
+  }
 }

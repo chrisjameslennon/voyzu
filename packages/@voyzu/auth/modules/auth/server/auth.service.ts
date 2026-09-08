@@ -1,3 +1,4 @@
+import { UserRepo } from "../../users/server/db/user.repo";
 import { getDb } from "@voyzu/capability/db";
 import { UnauthorizedError } from "@voyzu/capability/errors";
 import { verifyPassword } from "../../users/server/lib/password-hash";
@@ -33,14 +34,7 @@ function mapAuthUser(row: Record<string, unknown>): AuthUserRow {
 
 export async function authenticateUser(identifier: string, password: string): Promise<AuthenticatedUser> {
   const login = identifier.trim();
-  const { rows } = await getDb().query(
-    `SELECT id, code, email, display_name, password_hash, role, status
-     FROM app_user
-     WHERE LOWER(code) = LOWER($1) OR LOWER(email) = LOWER($1)
-     ORDER BY CASE WHEN LOWER(code) = LOWER($1) THEN 0 ELSE 1 END
-     LIMIT 1`,
-    [login],
-  );
+  const { rows } = await new UserRepo(getDb()).findForAuthentication(login);
   const row = rows[0] ? mapAuthUser(rows[0]) : null;
 
   if (!row || row.status !== "ACTIVE" || !(await verifyPassword(password, row.password_hash))) {

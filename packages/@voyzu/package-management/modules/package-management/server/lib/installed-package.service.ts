@@ -33,30 +33,23 @@ function response(
 export async function reconcileInstalledPackages(): Promise<InstalledPackageResponseDto[]> {
   const inventory = await discoverInstalledPackages();
   return withTransaction(async (db) => {
-    await db.query("SELECT pg_advisory_xact_lock(hashtext('voyzu.installed-packages'))");
+    await new InstalledPackageRepo(db).lockInventory();
     const existing = await new InstalledPackageRepo(db).list();
     const existingByCode = new Map(existing.map((row) => [row.code, row]));
     let nextOrder = existing.reduce((maximum, row) => Math.max(maximum, row.nav_order), -1) + 1;
 
     for (const packageInfo of inventory) {
       const previous = existingByCode.get(packageInfo.code);
-      await db.query(
-        `INSERT INTO installed_packages (code, description, nav_order)
-         VALUES ($1, $2, $3)
-         ON CONFLICT (code) DO UPDATE SET description = EXCLUDED.description`,
-        [
-          packageInfo.code,
+      await new InstalledPackageRepo(db).upsertDiscovered(packageInfo.code,
           packageInfo.description,
-          previous?.nav_order ?? nextOrder++,
-        ],
-      );
+          previous?.nav_order ?? nextOrder++);
     }
 
     const names = inventory.map(({ code }) => code);
     if (names.length === 0) {
-      await db.query("DELETE FROM installed_packages");
+      await new InstalledPackageRepo(db).deleteAll();
     } else {
-      await db.query("DELETE FROM installed_packages WHERE NOT (code = ANY($1::text[]))", [names]);
+      await new InstalledPackageRepo(db).deleteNotIn(names);
     }
     const packages = await listInstalledPackagesWith(db, inventory);
     return packages;
@@ -126,21 +119,13 @@ export async function getHomePageRoute(): Promise<string> {
 }
 
 async function getHomePageRouteWith(db: DbExecutor): Promise<string> {
-  const { rows } = await db.query(
-    "SELECT value FROM voyzu_settings WHERE code = $1",
-    [HOME_PAGE_SETTING],
-  );
+  const { rows } = await new InstalledPackageRepo(db).getSetting(HOME_PAGE_SETTING);
   return rows[0]?.value ? String(rows[0].value) : "/welcome";
 }
 
 export async function updateHomePageRoute(route: string): Promise<string> {
   return withTransaction(async (db) => {
-    await db.query(
-      `INSERT INTO voyzu_settings (code, value)
-       VALUES ($1, $2)
-       ON CONFLICT (code) DO UPDATE SET value = EXCLUDED.value`,
-      [HOME_PAGE_SETTING, route],
-    );
+    await new InstalledPackageRepo(db).setSetting(HOME_PAGE_SETTING, route);
     return route;
   });
 }
@@ -150,7 +135,7 @@ export async function moveInstalledPackage(
   direction: "up" | "down",
 ): Promise<InstalledPackageResponseDto[]> {
   return withTransaction(async (db) => {
-    await db.query("SELECT pg_advisory_xact_lock(hashtext('voyzu.installed-packages'))");
+    await new InstalledPackageRepo(db).lockInventory();
     const repo = new InstalledPackageRepo(db);
     const inventory = await discoverInstalledPackages();
     const navigationNames = new Set(

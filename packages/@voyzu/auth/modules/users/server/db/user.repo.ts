@@ -197,4 +197,16 @@ export class UserRepo {
     };
   }
 
+
+  findForAuthentication(login: string) {
+    return this.db.query(`SELECT id, code, email, display_name, password_hash, role, status
+     FROM app_user
+     WHERE LOWER(code) = LOWER($1) OR LOWER(email) = LOWER($1)
+     ORDER BY CASE WHEN LOWER(code) = LOWER($1) THEN 0 ELSE 1 END
+     LIMIT 1`, [login]);
+  }
+
+  lookupIdentities(ids: number[]) {
+    return this.db.query("SELECT id, code, display_name FROM app_user WHERE id = ANY($1::int[])", [ids]);
+  }
 }
