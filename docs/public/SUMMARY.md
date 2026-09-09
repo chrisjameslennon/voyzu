@@ -9,11 +9,18 @@
   * [Self Hosting](installation-and-operation/deployment/self-hosting.md)
 * [Stack](installation-and-operation/stack.md)
 
+## Platform Concepts
+
+* [Semantic data contracts](platform-concepts/semantic-data-contracts.md)
+* [Semantic data contract meta](platform-concepts/semantic-data-contract-meta.md)
+* [Semantic data contract](platform-concepts/semantic-data-contract.md)
+
 ## Voyzu Platform Guide
 
 * [Development setup](voyzu-platform-guide/development-setup.md)
 * [Package contract](voyzu-platform-guide/package-contract.md)
 * [Module contract](voyzu-platform-guide/module-contract.md)
+* [Semantic contracts implementation](voyzu-platform-guide/contracts.md)
 * [Commands](voyzu-platform-guide/commands.md)
 * [Develop a new package](voyzu-platform-guide/develop-a-new-package.md)
 

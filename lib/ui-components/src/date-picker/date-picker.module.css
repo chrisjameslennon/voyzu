@@ -1,6 +1,8 @@
 .wrap {
   position: relative;
   width: 100%;
+  /* Compact full-date width; clearable controls grow to fit the extra button. */
+  min-width: 13.5rem;
 }
 
 /* ── Input + icon row ── */
@@ -30,6 +32,8 @@
 .textInput {
   flex: 1;
   min-width: 0;
+  width: 10.5rem;
+  box-sizing: border-box;
   padding: 0.625rem 1rem;
   font-size: var(--voyzu-font-size-body);
   font-weight: 500;

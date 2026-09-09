@@ -41,6 +41,85 @@ await masterData.compose("erp.organization", organizationId, ["erp.organization.
 
 `get` always errors for an absent implementor. `compose` includes implemented extensions by default. Explicitly named extensions without an implementor error, even if the root record is missing. Missing root records return null; missing extension records are omitted. Provider failures propagate. Master data has no write API in v1.
 
+### Examples
+
+Country data has separate owners for the base record and its Finance extension:
+
+```text
+platform.country
+│  Defined by: Platform
+│  Implemented by: Localization
+│
+└── erp.country.finance
+       Defined by: ERP Core
+       Implemented by: Finance
+```
+
+Localization supplies country data such as code and name. Finance supplies country
+tax settings. ERP Core defines the named composition `erp.country`, which combines
+their results:
+
+```text
+erp.country
+├── country   ← Localization's base country data
+└── finance   ← Finance's country tax settings
+```
+
+Organization follows the same ownership model, although ERP Core defines both the
+root and the extension contract:
+
+```text
+erp.organization
+│  Defined by: ERP Core
+│  Implemented by: ERP Core
+│
+└── erp.organization.finance
+       Defined by: ERP Core
+       Implemented by: Finance
+```
+
+`masterData.compose("erp.organization", organizationId)` combines the organization
+with its implemented extensions under `extensions`, including `extensions.finance`
+when a Finance record exists. The `organization-composed.ts` interface describes
+this result; it does not register a named composition.
+
+The split preserves data ownership without coupling packages. Localization and
+ERP Core remain usable without Finance, and neither needs to import Finance's
+implementation or query its tables. A single combined contract would make its one
+provider responsible for supplying both packages' data. Extensions instead let each
+provider supply only its own portion while consumers request a combined result.
+
+ERP Core owns the country composition as shared ERP vocabulary, not as the holder
+of all its records. Finance could define a Finance-specific named composition
+instead, referencing the same contract identities without importing Localization.
+
+#### Peer extensions, not nested extensions
+
+A package may implement one contract and define another extension for a different
+package to implement. Multiple peer extensions attached directly to the same root
+are supported:
+
+```text
+Organization
+├── Finance       — implemented by Finance
+└── FinanceExtra  — defined by Finance, implemented by another package
+```
+
+Extensions of extensions are not supported:
+
+```text
+Organization
+└── Finance
+    └── FinanceExtra  — nesting is rejected
+```
+
+Every extension must name a root contract, not another extension, as its parent.
+Named compositions likewise select direct extensions of a root; they cannot nest
+other compositions. Recursive extension support would require cycle detection,
+nested result types and rules for missing parent-extension records. Use peer
+extensions when separate ownership is sufficient; nesting is not needed merely
+because one package defines a contract that another implements.
+
 ## Composition and scripts
 
 ### Users and current identity

@@ -1,2 +1,5 @@
 root: ./docs/public
 title: "voyzu | documentation"
+structure:
+  readme: README.md
+  summary: SUMMARY.md
