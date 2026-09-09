@@ -3,7 +3,7 @@
 This proposes Voyzu's implementation of [semantic data contracts](semantic-data-contracts.md),
 not its current API. Voyzu's data services operate within the same runtime, enabling
 direct asynchronous calls, shared execution context and generated TypeScript types.
-Disconnected services may require different mechanisms or cannot offer the same guarantees.
+Disconnected services may require different mechanisms or may not be able to offer the same guarantees.
 
 ## A Voyzu contract
 
@@ -17,7 +17,6 @@ const contracts = {
   semanticDataDefinition: {
     defines: {
       "planet": {
-        entity: "planet",
         identifier: Type.String(),
         dataDefinition: Type.Object({ name: Type.String() }),
       },
@@ -36,7 +35,6 @@ const contracts = {
   semanticDataDefinition: {
     defines: {
       "planet.continents": {
-        entity: "planet",
         extends: "planet",
         identifier: Type.String(),
         dataDefinition: Type.Object({ continents: Type.Array(Type.String()) }),
@@ -57,7 +55,6 @@ const contracts = {
   semanticDataDefinition: {
     defines: {
       "planet.seas": {
-        entity: "planet",
         extends: "planet",
         identifier: Type.String(),
         dataDefinition: Type.Object({ seas: Type.Array(Type.String()) }),
@@ -77,7 +74,6 @@ const contracts = {
   semanticDataDefinition: {
     defines: {
       "planet.geography": {
-        entity: "planet",
         extends: "planet",
         identifier: Type.String(),
         extensions: ["planet.continents", "planet.seas"],
@@ -95,9 +91,8 @@ const contracts = {
 // }
 ```
 
-`entity` names the subject of the contract: all four definitions contribute to the
-`planet` entity. The contract name identifies a particular definition and resolves
-its provider or composition; the entity name does not select a provider. Contract
+The contract name identifies a particular definition and resolves
+its provider or composition. Contract
 names are semantic identifiers, independent of their defining or implementing
 service. The registry records those relationships separately.
 
@@ -188,7 +183,7 @@ silently overwrite contributions.
 
 ### Service Discovery
 
-In the above "Service F" example a request is made for `planet.geography` - but how does the system know which data services to request the various data from? For example Seas data comes from Service C - but how is this knowledge stored?
+In the above "Service F" example, a request is made for `planet.geography` - but how does the system know which data services to request the various data from? For example, seas data comes from Service C - but how is this knowledge stored?
 
 The Voyzu implementation is to create a shared platform registry of all semantic data contracts, their definitions and fulfillment. Only one service implementation per Semantic Data Contract definition is permitted.
 

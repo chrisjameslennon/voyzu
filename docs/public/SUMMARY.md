@@ -14,6 +14,7 @@
 * [Semantic data contracts](platform-concepts/semantic-data-contracts.md)
 * [Semantic data contract meta](platform-concepts/semantic-data-contract-meta.md)
 * [Semantic data contract](platform-concepts/semantic-data-contract.md)
+* [Semantic capability contract](platform-concepts/semantic-capability-contract.md)
 
 ## Voyzu Platform Guide
 
