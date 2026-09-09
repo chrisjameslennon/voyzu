@@ -1,16 +1,19 @@
 # Semantic data contract
 
-The semantic data contracts used by Voyzu, their implementing packages and the data
-they describe. This table covers master data and its named compositions, not
-capabilities. The composed result uses the full contract-name keys proposed in the
+The proposed semantic names for Voyzu's data contracts, their implementing packages
+and the data they describe. These names do not rename the current runtime contracts.
+This table covers master data and its named compositions, not
+capabilities. Results are unwrapped by default; `includeContractNames: true` wraps
+each contribution in its full contract name, as proposed in the
 [meta specification](semantic-data-contract-meta.md).
 
 | Entity Name | Contract name | Implemented by package | Data definition |
 | --- | --- | --- | --- |
-| Country | `platform.country` | `@voyzu/localization` | Country ID, code, name, currency code and currency summary, status and audit metadata. Lookup by country code. |
-| Country | `erp.country.finance` | `@voyzu/finance` | Country and currency identification, status, financial-period start month, tax filing anchor month and interval, tax authorities, tax rules and tax components including rates. Extends `platform.country`; lookup by country code. |
-| Country | `erp.country` | Composed from `@voyzu/localization` and `@voyzu/finance` | ERP Core's named composition of `platform.country` and `erp.country.finance`. Proposed result: `{ "platform.country": { ... }, "erp.country.finance": { ... } }`; lookup by country code. |
-| Currency | `platform.currency` | `@voyzu/localization` | Currency ID, code, name, optional symbol, status and audit metadata. Lookup by currency code. |
-| Organization | `erp.organization` | `@voyzu/erp-core` | Numeric ID, code, name, country code, base currency code, optional country/currency summaries, status and audit metadata. Lookup by organization ID. |
-| Organization | `erp.organization.finance` | `@voyzu/finance` | All organization fields plus nullable Finance company ID, Finance-enabled flag, tax filing anchor month and interval, optional report headings/footer, and whether postings exist. Extends `erp.organization`; lookup by organization ID. |
-| User | `platform.user` | `@voyzu/auth` | Numeric ID, code, nullable email, display name, role, access mode, implementer access, status and audit metadata. No credentials. Lookup by user code. |
+| Country | `country` | `@voyzu/localization` | Country ID, code, name, currency code and currency summary, status and audit metadata. Lookup by country code. |
+| Country | `country.finance` | `@voyzu/finance` | Financial-period start month, tax filing anchor month and interval, tax authorities, tax rules and tax components including rates. Supplies only the Finance contribution; extends `country`; lookup by country code. |
+| Country | `country.withFinance` | Composed from `@voyzu/localization` and `@voyzu/finance` | ERP Core's named composition of `country` and `country.finance`, merged into one unwrapped object by default. With `includeContractNames: true`: `{ "country": { ... }, "country.finance": { ... } }`; lookup by country code. |
+| Currency | `currency` | `@voyzu/localization` | Currency ID, code, name, optional symbol, status and audit metadata. Lookup by currency code. |
+| Organization | `organization` | `@voyzu/erp-core` | Numeric ID, code, name, country code, base currency code, optional country/currency summaries, status and audit metadata. Lookup by organization ID. |
+| Organization | `organization.finance` | `@voyzu/finance` | Nullable Finance company ID, Finance-enabled flag, tax filing anchor month and interval, optional report headings/footer, and whether postings exist. Supplies only the Finance contribution; extends `organization`; lookup by organization ID. |
+| Organization | `organization.withFinance` | Composed from `@voyzu/erp-core` and `@voyzu/finance` | Proposed named composition of `organization` and `organization.finance`, merged into one unwrapped object by default. With `includeContractNames: true`: `{ "organization": { ... }, "organization.finance": { ... } }`; lookup by organization ID. Replaces the combined response currently supplied by Finance when providers return only their own defined data. |
+| User | `user` | `@voyzu/auth` | Numeric ID, code, nullable email, display name, role, access mode, implementer access, status and audit metadata. No credentials. Lookup by user code. |
