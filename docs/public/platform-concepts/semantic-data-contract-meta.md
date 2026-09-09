@@ -16,15 +16,16 @@ The examples assume `import Type from "typebox"` in each service.
 const contracts = {
   defines: {
     semanticDataDefinition: {
-      "planet": {
+      "serviceA.planet": {
+        entity: "planet",
         identifier: Type.String(),
-        dataShape: Type.Object({ name: Type.String() }),
+        dataDefinition: Type.Object({ name: Type.String() }),
       },
     },
   },
 };
 
-// Example lookup: "planet", identifier: "Sol III"
+// Example lookup: "serviceA.planet", identifier: "Sol III"
 // Result: { name: "Earth" }
 ```
 
@@ -34,16 +35,17 @@ const contracts = {
 const contracts = {
   defines: {
     semanticDataDefinition: {
-      "planet.continents": {
-        extends: "planet",
+      "serviceB.continents": {
+        entity: "planet",
+        extends: "serviceA.planet",
         identifier: Type.String(),
-        dataShape: Type.Object({ continents: Type.Array(Type.String()) }),
+        dataDefinition: Type.Object({ continents: Type.Array(Type.String()) }),
       },
     },
   },
 };
 
-// Example lookup: "planet.continents", identifier: "Sol III"
+// Example lookup: "serviceB.continents", identifier: "Sol III"
 // Result: { continents: ["Africa", "Antarctica", "Asia", "Australia",
 //                        "Europe", "North America", "South America"] }
 ```
@@ -54,16 +56,17 @@ const contracts = {
 const contracts = {
   defines: {
     semanticDataDefinition: {
-      "planet.seas": {
-        extends: "planet",
+      "serviceC.seas": {
+        entity: "planet",
+        extends: "serviceA.planet",
         identifier: Type.String(),
-        dataShape: Type.Object({ seas: Type.Array(Type.String()) }),
+        dataDefinition: Type.Object({ seas: Type.Array(Type.String()) }),
       },
     },
   },
 };
 
-// Example lookup: "planet.seas", identifier: "Sol III"
+// Example lookup: "serviceC.seas", identifier: "Sol III"
 // Result: { seas: ["Mediterranean", "Caribbean", "Baltic"] }
 ```
 
@@ -73,23 +76,29 @@ const contracts = {
 const contracts = {
   defines: {
     semanticDataDefinition: {
-      "planet.geography": {
-        extends: "planet",
+      "serviceD.geography": {
+        entity: "planet",
+        extends: "serviceA.planet",
         identifier: Type.String(),
-        extensions: ["planet.continents", "planet.seas"],
+        extensions: ["serviceB.continents", "serviceC.seas"],
       },
     },
   },
 };
 
-// Example lookup: "planet.geography", identifier: "Sol III"
+// Example lookup: "serviceD.geography", identifier: "Sol III"
 // Result: {
-//   "planet": { name: "Earth" },
-//   "planet.continents": { continents: ["Africa", "Antarctica", "Asia",
+//   "serviceA.planet": { name: "Earth" },
+//   "serviceB.continents": { continents: ["Africa", "Antarctica", "Asia",
 //     "Australia", "Europe", "North America", "South America"] },
-//   "planet.seas": { seas: ["Mediterranean", "Caribbean", "Baltic"] },
+//   "serviceC.seas": { seas: ["Mediterranean", "Caribbean", "Baltic"] },
 // }
 ```
+
+`entity` names the subject of the contract: all four definitions contribute to the
+`planet` entity. The contract name identifies a particular definition and resolves
+its provider or composition; the entity name does not select a provider. A service
+prefix in these examples is a naming convention, not a direct service reference.
 
 `identifier` specifies the lookup argument's schema, not a database column. Here it accepts
 `"Sol III"`; `Type.Integer()` would require a number. Extensions receive that same
@@ -100,7 +109,7 @@ identifier. `dataShape` validates the returned record.
 Providers would declare the shape they implement and supply `get(identifier)` and
 `list()`. Definition and implementation need not belong to the same service.
 
-### Service E — implements planet.seas
+### Service E — implements serviceC.seas
 
 Service E implements the definition supplied by Service C. The in-memory records
 below stand in for Service E's own data source.
@@ -113,7 +122,7 @@ const records: Record<string, { seas: string[] }> = {
 const contracts = {
   implements: {
     semanticDataDefinition: {
-      "planet.seas": {
+      "serviceC.seas": {
         get: async (identifier: string) => records[identifier] ?? null,
         list: async () => Object.values(records),
       },
@@ -133,19 +142,19 @@ Service E supplies only the seas portion. Service D's composition requires no
 provider of its own: Voyzu would retrieve each contribution using the same
 identifier and assemble the result shown above under Service D.
 
-### Service F — retrieves planet.geography
+### Service F — retrieves serviceD.geography
 
 ```ts
-const geography = await semanticData.get("planet.geography", "Sol III");
+const geography = await semanticData.get("serviceD.geography", "Sol III");
 
 // Returns:
 // {
-//   "planet": { name: "Earth" },
-//   "planet.continents": {
+//   "serviceA.planet": { name: "Earth" },
+//   "serviceB.continents": {
 //     continents: ["Africa", "Antarctica", "Asia", "Australia",
 //                  "Europe", "North America", "South America"]
 //   },
-//   "planet.seas": {
+//   "serviceC.seas": {
 //     seas: ["Mediterranean", "Caribbean", "Baltic"]
 //   }
 // }
@@ -156,9 +165,9 @@ validate identifiers and returned data when called.
 
 ### Service Discovery
 
-In the above "Service F" example a request is made for `planet.geography` - but how does the system know which data services to request the various data from? For example Seas data comes from Service C - but how is this knowledge stored?
+In the above "Service F" example a request is made for `serviceD.geography` - but how does the system know which data services to request the various data from? For example Seas data comes from Service C - but how is this knowledge stored?
 
-The Voyzu implementation is to create a shared platform registry of all semantic data contracts, their definitions and fulfillment. Only one service implementation per data shape definition is permitted.
+The Voyzu implementation is to create a shared platform registry of all semantic data contracts, their definitions and fulfillment. Only one service implementation per Semantic Data Contract definition is permitted.
 
 In this example, Service C defines seas; Service E implements retrieval. Simplified
 registry representation (the planet and continent providers are not shown above):
@@ -166,20 +175,20 @@ registry representation (the planet and continent providers are not shown above)
 ```ts
 const registry = {
   definitions: {
-    "planet": serviceA.contracts.defines.semanticDataDefinition["planet"],
-    "planet.continents": serviceB.contracts.defines.semanticDataDefinition["planet.continents"],
-    "planet.seas": serviceC.contracts.defines.semanticDataDefinition["planet.seas"],
-    "planet.geography": serviceD.contracts.defines.semanticDataDefinition["planet.geography"],
+    "serviceA.planet": serviceA.contracts.defines.semanticDataDefinition["serviceA.planet"],
+    "serviceB.continents": serviceB.contracts.defines.semanticDataDefinition["serviceB.continents"],
+    "serviceC.seas": serviceC.contracts.defines.semanticDataDefinition["serviceC.seas"],
+    "serviceD.geography": serviceD.contracts.defines.semanticDataDefinition["serviceD.geography"],
   },
   implementations: {
-    "planet": planetProvider,
-    "planet.continents": continentsProvider,
-    "planet.seas": serviceE.contracts.implements.semanticDataDefinition["planet.seas"],
+    "serviceA.planet": planetProvider,
+    "serviceB.continents": continentsProvider,
+    "serviceC.seas": serviceE.contracts.implements.semanticDataDefinition["serviceC.seas"],
   },
 };
 
 // Resolve Service F's request for the composed shape.
-const definition = registry.definitions["planet.geography"];
+const definition = registry.definitions["serviceD.geography"];
 const shapes = [definition.extends, ...definition.extensions];
 
 const result = Object.fromEntries(await Promise.all(

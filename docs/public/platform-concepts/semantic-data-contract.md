@@ -5,7 +5,7 @@ they describe. This table covers master data and its named compositions, not
 capabilities. The composed result uses the full contract-name keys proposed in the
 [meta specification](semantic-data-contract-meta.md).
 
-| Object Name | Contract name | Implemented by package | Data definition |
+| Entity Name | Contract name | Implemented by package | Data definition |
 | --- | --- | --- | --- |
 | Country | `platform.country` | `@voyzu/localization` | Country ID, code, name, currency code and currency summary, status and audit metadata. Lookup by country code. |
 | Country | `erp.country.finance` | `@voyzu/finance` | Country and currency identification, status, financial-period start month, tax filing anchor month and interval, tax authorities, tax rules and tax components including rates. Extends `platform.country`; lookup by country code. |
