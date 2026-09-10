@@ -14,9 +14,9 @@ This Semantic Data Contract System should be:
 
 - **distributed** - Semantic Data Contracts can be defined by multiple services
 - **composable** - Semantic Data Contracts can be joined together to form other Semantic Data Contracts
-- **discoverable** - a given Service within a System should be able to discover its Semantic Data Contracts, and the implementors of those Contacts
+- **discoverable** - a given Service within a System should be able to discover its Semantic Data Contracts, and the implementors of those Contracts
 - **decoupled** - the service defining the Semantic Data Contract can be, but does not need to be, the implementer of the Contract
-- **resiliant** - services can be exchanged for other services without disrupting the system
+- **resilient** - services can be exchanged for other services without disrupting the system
 
 ## Proposed Draft Specification
 
@@ -27,14 +27,14 @@ _Version: 0.1_
 - **Data Service**. A software system from which data can be retrieved. Sometimes simply called "Service" in this document. 
 - **Entity**. A logical way to group data. For example `user` or `customer`.
 - **Semantic Data Contract**. A semantic definition of the shape of a discrete item of data. Sometimes called "Contract" here.
-- **Semantic Data Contract Catalog** An accessable listing of Semantic Data Contracts together with the Data Services that define and implement them
+- **Semantic Data Contract Catalog** An accessible listing of Semantic Data Contracts together with the Data Services that define and implement them
 - **Semantic Data Contract System**. a Data System whose participating services define, implement, discover, and consume a shared set of Semantic Data Contracts. Sometimes simply known as "System" in this document
 
-### Principals
+### Principles
 
 #### Semantic
 
-A Semantic Data Contract is a meaningful, structured, human reaible definition of a data grouping.
+A Semantic Data Contract is a meaningful, structured, human readable definition of a data grouping.
 
 #### Separation of definition from implementation
 
@@ -90,7 +90,7 @@ The name of the Semantic Data Contract must follow the format `{entity name}.{op
 
 #### Shared identifier
 
-Extension compositions depend on a shared identifier. The Root Semantic Data Contract, and only the Root Contract defines the identifier by suppling in the Contract:
+Extension compositions depend on a shared identifier. The Root Semantic Data Contract, and only the Root Contract defines the identifier by supplying in the Contract:
 - An **identifier name**
 - An **identifier data definition**, being the data type of the identifier
 
@@ -105,10 +105,26 @@ The important requirement is not that every service uses the same database prima
 
 #### Queries
 
-The Queries section lists all supported query operations, along with ther input and output data definitions. 
+The Queries section lists supported queries and their input definitions. Each query returns an array of records containing the entity identifier and the full data described by the Contract, with no extra fields.
 
+**Example**
 
+```
+planet.mountains:
+  extends: "planet"
 
+  dataDefinition:
+    fields:
+      mountains
+
+  queries:
+    getHighMountains:
+      inputDataDefinition:
+        minimumHeightMeters:
+          type: number
+```
+
+The output shape is implicit. Here, height is measured in metres above the planet's reference surface.
 
 ### Example
 
@@ -119,18 +135,25 @@ Consider Service A defining a `planet` Semantic Data Contract containing the pla
   As the root entity it must also define the identifier
 
     planet:
-      identifier: Planet_ID
+      identifier: PlanetId
       identifierDataDefinition: string
       dataDefinition:
         fields
           - name
 
   Service B defines "planet.mountains"
-    planet.
+    planet.mountains:
       extends: "planet"
-      dataDefinition
+
+      dataDefinition:
         fields:
           mountains
+
+      queries:
+        getHighMountains:
+          inputDataDefinition:
+            minimumHeightMeters:
+              type: number
 
   Service C defines "planet.atmosphere"
       extends: "planet"
@@ -144,10 +167,10 @@ Consider Service A defining a `planet` Semantic Data Contract containing the pla
           "planet.mountains"
           "planet.atmosphere"
 
-This means that Service D could return a Semantic Data Contract that is a valid definition of, for example:
+An implementor of Service D's Contract could return, for example:
 
   {
-      identifier: "Sol III",
+      PlanetId: "Sol III",
       name: "Earth",
       mountains: ["Mount Everest"],
       atmosphere: ["Nitrogen", "Oxygen"]
@@ -156,7 +179,7 @@ This means that Service D could return a Semantic Data Contract that is a valid 
 or:
 
   {
-      identifier: "Sol IV",
+      PlanetId: "Sol IV",
       name: "Mars",
       mountains: ["Olympus Mons"],
       atmosphere: ["Carbon dioxide"]
@@ -171,7 +194,7 @@ The above being examples only, not of course a complete listing of all planetary
 
 In addition to mandatory properties, a Semantic Data Contract must include one or both of:
 - a data definition
-- an extentions clause
+- an extensions clause
 
 A Contract may include an extends clause, but simply extending a Contract adds no value; the Contract must also define data or extend data (or both)
 
@@ -183,20 +206,19 @@ The same Semantic Data Contract can be generated by either extension or composit
 
 ```
   Service A defines "planet"
-      identifier: planet ID
+      identifier: PlanetId
+      identifierDataDefinition: string
       dataDefinition:
         fields:
             name
 
   Service B defines "planet.mountains"
-      identifier: planet ID
       extends: "planet"
       dataDefinition:
         fields:
           mountains
 
   Service C defines "planet.geography"
-      identifier: planet ID
       extends: "planet.mountains"
       dataDefinition:
         fields:
@@ -211,43 +233,50 @@ In this way, a hierarchy is established:
 
 Whether multi-level extensions are supported is up to the implementation. In general, composition is the simpler and more flexible approach.
 
-#### Composition across entities
-
-The flexible nature of Semantic Data Contracts means that it is possible to compose a Semantic Data Contract that mixes different entities. For example, an object could be defined that combines `planet.atmosphere` with, for example, `food.spicyHotDog`. This, of course, does not make a lot of sense, but there is nothing in this specification preventing such combinations.
-
-Where composing across entities may make sense would be an entity hierarchy - for example, a "solar system" Semantic Data Contract that combined planets with suns.
-
-When composing entities, care must be taken to avoid duplicate field names.
+For the combined result, retrieval assembles ancestor contributions using the shared identifier; each provider supplies only its own defined data.
 
 ### Implementing a Semantic Data Contract
 
 Any service can implement a Semantic Data Contract. The service must declare the name of the Semantic Data Contract it implements and be able to support data retrieval. The data retrieval methods are up to the implementation specification; at a minimum, the following methods must be supported:
 
 - `get (unique identifier)` Retrieve the Semantic Data Contract data object by unique identifier
-- `list` List all Semantic Data Contract data objects
+- all queries defined by the Contract
 
-Taking our planets example, a completely separate service, say Service E, could implement `planet.atmosphere` for the `planet` entity as follows:
+Taking our planets example, a completely separate service, say Service E, could implement `planet.mountains` as follows:
 
 ```
-Service E implements "planet.atmosphere"
-    identifier: planet ID
+Service E implements "planet.mountains"
+    uses the planet identifier defined by "planet"
 
-    get(planet ID)
-        retrieve the atmosphere for this planet from Service C's own data
-        return the record, or not found:
-            identifier: planet ID
-            data:
-                atmosphere: [...]
+    get(PlanetId)
+        retrieve the mountains for this planet from Service E's own data
+        return the full planet.mountains record, or not found
 
-    list()
-        retrieve all planet-atmosphere records from Service C's own data
-        return a list of records:
-            - identifier: "earth"
-              data:
-                  atmosphere: [...]
+        example input: "Sol III"
+        example output:
+            PlanetId: "Sol III"
+            mountains: ["Mount Everest"]
+
+    queries:
+        getHighMountains(minimumHeightMeters)
+            find planets with a mountain at or above minimumHeightMeters
+            using Service E's own data
+            return their full planet.mountains records, not filtered mountain lists
+
+            example input:
+                minimumHeightMeters: 8000
+            example output:
+                - PlanetId: "Sol III"
+                  mountains: ["Mount Everest"]
+                - PlanetId: "Sol IV"
+                  mountains: ["Olympus Mons"]
 ```
 
-Note that Service E supplies only the `atmosphere` portion of the data. It does not retrieve the planet's name from Service A or the mountains from Service B. The planet ID associates its record with the corresponding records supplied by those services. However, a request for a Service that implements Service D's composed `planet.geography` Semantic Data Contract returns the planet, mountains and atmosphere data together.
+Service E supplies the identifier and the `mountains` data defined by Service B.
+It does not retrieve the planet's name from Service A or its atmosphere from
+Service C. The shared planet identifier associates these contributions. A service
+implementing Service D's composed `planet.geography` returns the planet, mountains
+and atmosphere data together.
 
 ### Service Discovery
 
@@ -256,13 +285,13 @@ With the definition of a Semantic Data Contract able to be decoupled from its im
 | Semantic Data Contract name | Defining service | Implementing service |
 | --- | --- | --- |
 | `planet` | Service A | Service A |
-| `planet.mountains` | Service B | Service B |
-| `planet.atmosphere` | Service C | Service E |
+| `planet.mountains` | Service B | Service E |
+| `planet.atmosphere` | Service C | Service C |
 | `planet.geography` | Service D | Service F |
 
-In this example, Services A and B implement their own definitions, Service E
-implements Service C's definition, and a further Service F implements Service D's
-composition by retrieving and combining the contributions from A, B and E using
+In this example, Services A and C implement their own definitions, Service E
+implements Service B's definition, and a further Service F implements Service D's
+composition by retrieving and combining the contributions from A, E and C using
 the shared planet identifier.
 
 ## Specification Implementation
