@@ -28,7 +28,7 @@ _Version: 0.1_
 - **Entity**. A logical way to group data. For example `user` or `customer`.
 - **Semantic Data Contract**. A semantic definition of the shape of a discrete item of data. Sometimes called "Contract" here.
 - **Semantic Data Contract Catalog** An accessible listing of Semantic Data Contracts together with the Data Services that define and implement them
-- **Semantic Data Contract System**. a Data System whose participating services define, implement, discover, and consume a shared set of Semantic Data Contracts. Sometimes simply known as "System" in this document
+- **Semantic Data Contract System**. a Data System whose participating services define, implement, discover, and consume a shared set of Semantic Data Contracts. Sometimes simply known as "System" in this document.
 
 ### Principles
 
@@ -50,7 +50,7 @@ This is a specification for data retrieval across disparate services; data modif
 
 #### Not an attempt to describe the whole System
 
-A system of Semantic Data Contracts does not need to describe the data structure of the system as a whole. Individual Data Services may have private data, including data that interacts with data defined in Semantic Data Contracts. The requirement is that where data is provided that can be consumed by other services, this data is described by a Semantic Data Contract.
+A system of Semantic Data Contracts does not need to describe the data structure of the System as a whole. Individual Data Services may have private data, including data that interacts with data defined in Semantic Data Contracts. The requirement is that where data is provided that can be consumed by other Services, this data is described by a Semantic Data Contract.
 
 ### Semantic Data Contract definition
 
