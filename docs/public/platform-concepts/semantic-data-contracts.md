@@ -30,6 +30,10 @@ _Version: 0.1_
 - **Semantic Data Contract Catalog** An accessible listing of Semantic Data Contracts together with the Data Services that define and implement them
 - **Semantic Data Contract System**. a Data System whose participating services define, implement, discover, and consume a shared set of Semantic Data Contracts. Sometimes simply known as "System" in this document.
 
+### Relationship of this specification to the Semantic Capability Contract Specification
+
+This document sits beside the [Semantic Capability Contract Specification](./data-capability-contracts.md). The Specifications are not formally coupled together, but do work well together; this Semantic Data Contract Specification providing an interoperability framwwork for the exchange of read-only data, and the Capability Contract Specification providing an interoperability framework for data modification, as well as other, non data functionality.
+
 ### Principles
 
 #### Semantic
@@ -42,7 +46,8 @@ The Service defining the Semantic Data Contract is not necessarily the service i
 
 #### Technology agnostic
 
-A Semantic Data Contract should not depend on a particular technology, as different Services may use differing technology.
+A Semantic Data Contract should not depend on a particular technology, as different Services may use differing technology. A shared protocol, such as HTTP is generally useful to standardize on within a System.
+
 
 #### Data Retrieval, not modification
 
@@ -57,7 +62,7 @@ A system of Semantic Data Contracts does not need to describe the data structure
 A Semantic Data Contract should contain:
 
 - A **Semantic Data Contract name**, beginning with the Entity being described and unique across the System.
-- A semantically meaningful **definition** of data being defined
+- Optionally, a semantically meaningful **definition** of data being defined
 - Optionally, a **Semantic Data Contract definition** - for example, the various fields that make up the shape
 - Optionally a **queries** section defining the data query operations that can be performed on the object
 
@@ -304,11 +309,11 @@ The concrete definition of the above specification. For example, how Semantic Da
 
 ### Semantic contract definitions
 
-This document describes the various business objects (Semantic Data Contracts) and their fields that will be shared across the system.
+This document describes the various business objects (Semantic Data Contracts) and their fields that will be shared across the System.
 
 ### Technical contract implementation specification
 
-A technical implementation specification would be a separate document, and would generally be specific to a data service. It would describe the mechanisms used to fulfill the above meta specification and semantic definitions. This could include database information, middle tier technology, authorization and authentication and so on.
+A technical implementation specification would be a separate document, and would generally be specific to a Data Service. It would describe the mechanisms used to fulfill the above meta specification and semantic definitions. This could include database information, middle tier technology, authorization and authentication and so on.
 
 ## Appendix
 

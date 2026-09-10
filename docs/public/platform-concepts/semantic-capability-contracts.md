@@ -24,9 +24,14 @@ _Version: 0.1_
 ### Definitions
 
 - **Capability Service**. A software system that provides one or more Capability. Sometimes simply called "Service" in this document. 
+- **Entity**. A logical way to group data. For example `user` or `customer`.
 - **Semantic Capability Contract**. A semantic definition of the capability offered. Sometimes called "Contract" here.
 - **Semantic Capability Contract Catalog** An accessible listing of Semantic Capability Contracts together with the Capability Services that define and implement them
 - **Semantic Capability Contract System**. a software System whose participating services define, implement, discover, and consume a shared set of Semantic Capability Contracts. Sometimes simply known as "System" in this document.
+
+### Relationship of this specification to the Semantic Data Contract Specification
+
+This document sits beside the [Semantic Data Contract Specification](./semantic-capability-contracts.md). The Specifications are not formally coupled together, but do work well together; the Semantic Data Contract Specification providing an interoperability framwwork for the exchange of read-only data, and this Capability Contract Specification providing an interoperability framework for data modification, as well as other, non data functionality.
 
 ### Principles
 
@@ -40,23 +45,27 @@ The Service defining the Semantic Capability Contract is not necessarily the ser
 
 #### Technology agnostic
 
-A Semantic Capability Contract should not depend on a particular technology, as different Services may use differing technology.
+A Semantic Capability Contract should not depend on a particular technology, as different Services may use differing technology. A shared protocol, such as HTTP is generally useful to standardize on within a System.
 
 #### Not an attempt to describe the whole System
 
 A system of Semantic Capability Contracts does not need to describe all capabilities used within the System as a whole. Individual software Services may use private capabilities, including capabilties that interact with capabilties defined in Semantic Capability Contracts. The requirement is that where a capability is provided that can be consumed by other Services, this Capability is described by a Semantic Capability Contract.
 
+#### Not designed for data read operations
+
+Semantic Capability Contracts are useful for data modification and other operations that cause or request an action, and should not be used to retrieve data.
+
 ### Semantic Capability Contract definition
 
 A Semantic Capability Contract should contain:
 
-- A **Semantic Capability Contract name**, beginning with the Entity being described and unique across the System.
-- A semantically meaningful **definition** of data being defined
-- One or more ***functions** that optionally receive input and optionally return output
+- A **Semantic Capability Contract name**
+- Optionally, a semantically meaningful **definition** of the capability being offered
+- One or more **functions** that optionally receive input and optionally return output
 
 #### Semantic Capability Contract name
 
-The name of the Semantic Capability Contract must follow the format `{capability name}`. Periods (`.`) can be used to denote domains and sub domains if desired
+The name of the Semantic Capability Contract must follow the format `{capability name}`. Periods (`.`) can be used to denote domains and sub domains if desired. Funtions that perform data operations on an Entity, should begin with the name of that Entity.
 
 **Examples**
 
@@ -66,175 +75,87 @@ The name of the Semantic Capability Contract must follow the format `{capability
 
 #### Functions
 
-
+Functions perform work; they may modify data, perform operations such as processing and so on. They can optionally take input and optionally return output.
 
 ### Example
 
-Consider Service A defining a `planet` Semantic Capability Contract containing the planet's name. Services B and C define extensions describing its mountains and atmosphere. Service D combines these into `planet.geography`. This allows the separate contributions to be retrieved together using a composed Contract, without duplicating their definitions or owning their data:
-
 ```
-  Service A defines "planet"
-  As the root entity it must also define the identifier
+Service A defines "planet.terraforming"
 
-    planet:
-      identifier: PlanetId
-      identifierDataDefinition: string
-      dataDefinition:
-        fields
-          - name
+  planet.terraforming:
+    definition:
+      Provides operations for assessing and modifying a planet's habitability.
 
-  Service B defines "planet.mountains"
-    planet.mountains:
-      extends: "planet"
+    functions:
 
-      dataDefinition:
-        fields:
-          mountains
+      assessHabitability:
+        input:
+          planetId:
+            type: string
 
-      queries:
-        getHighMountains:
-          inputDataDefinition:
-            minimumHeightMeters:
-              type: number
+        output:
+          habitable:
+            type: boolean
+          score:
+            type: number
+          notes:
+            type: string
 
-  Service C defines "planet.atmosphere"
-      extends: "planet"
-      dataDefinition
-        fields:
-          atmosphere
 
-  Service D defines "planet.geography"
-      extends: "planet"
-      extensions:
-          "planet.mountains"
-          "planet.atmosphere"
+Service B implements "planet.terraforming"
 
-An implementor of Service D's Contract could return, for example:
+  assessHabitability(planetId)
+      assess the supplied planet
+      return its habitability assessment
 
-  {
-      PlanetId: "Sol III",
-      name: "Earth",
-      mountains: ["Mount Everest"],
-      atmosphere: ["Nitrogen", "Oxygen"]
-  }
 
-or:
+Example call:
+
+  planetTerraforming.assessHabitability(
+      planetId: "Sol IV"
+  )
+
+Example result:
 
   {
-      PlanetId: "Sol IV",
-      name: "Mars",
-      mountains: ["Olympus Mons"],
-      atmosphere: ["Carbon dioxide"]
+      habitable: false,
+      score: 42,
+      notes: "Atmosphere unsuitable for human life"
   }
-
-The above being examples only, not of course a complete listing of all planetary features.
 ```
 
 ### Further requirements 
 
-#### Semantic Capability Contract must add value
+#### No extensions
 
-In addition to mandatory properties, a Semantic Capability Contract must include one or both of:
-- a data definition
-- an extensions clause
+Unlike the Semantic Data Capability Specification, Semantic Capability Contracts do not allow extension. Services can of course work together - for example Service A could call Service B as a part of its operation. However this is informal and up to the Service implementor.
 
-A Contract may include an extends clause, but simply extending a Contract adds no value; the Contract must also define data or extend data (or both)
+#### Functions within a Contract must be implemented as a group
+
+Within a given namespace (Semantic Capability Contract) all functions must be declared as a group. A Service other than the defining Service can implement the functions, but all functions within the namespace must be implemented by that Service.
 
 ### Considerations
 
-#### Composition vs extension
+#### Long running operations
 
-The same Semantic Capability Contract can be generated by either extension or composition. For example, the above end result could also be achieved as follows:
-
-```
-  Service A defines "planet"
-      identifier: PlanetId
-      identifierDataDefinition: string
-      dataDefinition:
-        fields:
-            name
-
-  Service B defines "planet.mountains"
-      extends: "planet"
-      dataDefinition:
-        fields:
-          mountains
-
-  Service C defines "planet.geography"
-      extends: "planet.mountains"
-      dataDefinition:
-        fields:
-          atmosphere
-
-In this way, a hierarchy is established:
-
-  planet (entity: planet)
-  └── planet.mountains (entity: planet)
-      └── planet.geography (entity: planet)
-```
-
-Whether multi-level extensions are supported is up to the implementation. In general, composition is the simpler and more flexible approach.
-
-For the combined result, retrieval assembles ancestor contributions using the shared identifier; each provider supplies only its own defined data.
+If an operation that is designed to be user-facing could exceed a reasonable user wait time, then that operation should perform its work asynchrounously. A completed notification can be provided, for example by way of a web hook. This specification is currently agnostic towards notification protocols.
 
 ### Implementing a Semantic Capability Contract
 
-Any service can implement a Semantic Capability Contract. The service must declare the name of the Semantic Capability Contract it implements and be able to support data retrieval. The data retrieval methods are up to the implementation specification; at a minimum, the following methods must be supported:
-
-- `get (unique identifier)` Retrieve the Semantic Capability Contract data object by unique identifier
-- all queries defined by the Contract
-
-Taking our planets example, a completely separate service, say Service E, could implement `planet.mountains` as follows:
-
-```
-Service E implements "planet.mountains"
-    uses the planet identifier defined by "planet"
-
-    get(PlanetId)
-        retrieve the mountains for this planet from Service E's own data
-        return the full planet.mountains record, or not found
-
-        example input: "Sol III"
-        example output:
-            PlanetId: "Sol III"
-            mountains: ["Mount Everest"]
-
-    queries:
-        getHighMountains(minimumHeightMeters)
-            find planets with a mountain at or above minimumHeightMeters
-            using Service E's own data
-            return their full planet.mountains records, not filtered mountain lists
-
-            example input:
-                minimumHeightMeters: 8000
-            example output:
-                - PlanetId: "Sol III"
-                  mountains: ["Mount Everest"]
-                - PlanetId: "Sol IV"
-                  mountains: ["Olympus Mons"]
-```
-
-Service E supplies the identifier and the `mountains` data defined by Service B.
-It does not retrieve the planet's name from Service A or its atmosphere from
-Service C. The shared planet identifier associates these contributions. A service
-implementing Service D's composed `planet.geography` returns the planet, mountains
-and atmosphere data together.
+Any Service can implement a Semantic Capability Contract. The Service must declare the name of the Semantic Capability Contract it implements and must implement all functions in full. 
 
 ### Service Discovery
 
-With the definition of a Semantic Capability Contract able to be decoupled from its implementation, there needs to be a way to identify the implementor of a given Semantic Capability Contract. Various approaches are possible, the simplest being a published catalog of Semantic Capability Contracts, including implementation details. A simple example Semantic Capability Contract Catalogue, using our "planets" example:
+With the definition of a Semantic Capability Contract able to be decoupled from its implementation, there needs to be a way to identify the implementor of a given Semantic Capability Contract. Various approaches are possible, the simplest being a published catalog of Semantic Capability Contracts, including implementation details. A simple Semantic Capability Contract Catalogue could look like:
 
-| Semantic Capability Contract name | Defining service | Implementing service |
-| --- | --- | --- |
-| `planet` | Service A | Service A |
-| `planet.mountains` | Service B | Service E |
-| `planet.atmosphere` | Service C | Service C |
-| `planet.geography` | Service D | Service F |
+| Contract name | Functions | Defining service | Implementing service |
+| --- | --- | --- | --- |
+| `planet.terraforming` | `assessHabitability`, `beginTerraforming`, `cancelTerraforming` | Service A | Service B |
+| `planet.navigation` | `calculateRoute`, `calculateTravelTime`, `initiateJourney` | Service C | Service D |
+| `planet.orbit` | `placeSatellite`, `changeOrbit`, `deorbitSatellite` | Service E | Service E |
 
-In this example, Services A and C implement their own definitions, Service E
-implements Service B's definition, and a further Service F implements Service D's
-composition by retrieving and combining the contributions from A, E and C using
-the shared planet identifier.
+Services B and D implement contracts defined by A and C; Service E defines and
+implements its own contract. Each implementor supplies all functions in its contract.
 
 ## Specification Implementation
 
@@ -246,17 +167,17 @@ The concrete definition of the above specification. For example, how Semantic Ca
 
 ### Semantic contract definitions
 
-This document describes the various business objects (Semantic Capability Contracts) and their fields that will be shared across the system.
+This document describes the various namespaces and functions (Semantic Capability Contracts) and their parameters that will be shared across the System.
 
 ### Technical contract implementation specification
 
-A technical implementation specification would be a separate document, and would generally be specific to a data service. It would describe the mechanisms used to fulfill the above meta specification and semantic definitions. This could include database information, middle tier technology, authorization and authentication and so on.
+A technical implementation specification would be a separate document, and would generally be specific to a Service. It would describe the mechanisms used to fulfill the above meta specification and semantic definitions. This could include database information, middle tier technology, authorization and authentication and so on.
 
 ## Appendix
 
 ### Examples
 
-- [Voyzu meta Semantic Capability Contract](semantic-data-contract-meta.md) — Voyzu implementation with TypeScript examples.
-- [Voyzu Semantic Capability Contracts](semantic-data-contract.md) — Voyzu Semantic Capability Contracts and their data definitions.
+- [Voyzu meta Semantic Capability Contract](semantic-capability-contract-meta.md) — Voyzu implementation with TypeScript examples.
+- [Voyzu Semantic Capability Contracts](semantic-capability-contract.md) — Voyzu Semantic Capability Contracts and their functions.
 
 
