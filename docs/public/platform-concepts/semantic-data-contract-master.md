@@ -320,4 +320,5 @@ A technical implementation specification would be a separate document, and would
 ### Examples
 
 - [Voyzu Semantic Data Contract Implementation](semantic-data-contract-implementation.md) — Voyzu implementation with TypeScript examples.
+- [YAML Semantic Data Contract Implementation](semantic-data-contract-yaml-implementation.md) — YAML definitions, provider registration and retrieval examples.
 - [Voyzu Semantic Data Contracts](semantic-data-contract.md) — Voyzu Semantic Data Contracts and their data definitions.

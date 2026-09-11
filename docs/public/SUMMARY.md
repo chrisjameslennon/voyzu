@@ -13,6 +13,7 @@
 
 * [Master Semantic Data Contract](platform-concepts/semantic-data-contract-master.md)
 * [Semantic data contract implementation](platform-concepts/semantic-data-contract-implementation.md)
+* [YAML Semantic Data Contract Implementation](platform-concepts/semantic-data-contract-yaml-implementation.md)
 * [Semantic data contract](platform-concepts/semantic-data-contract.md)
 * [Semantic capability contract](platform-concepts/semantic-capability-contract.md)
 * [Master Semantic Capability Contract](platform-concepts/semantic-capability-contract-master.md)
