@@ -18,7 +18,7 @@ This Semantic Data Contract System should be:
 - **decoupled** - the service defining the Semantic Data Contract can be, but does not need to be, the implementer of the Contract
 - **resilient** - services can be exchanged for other services without disrupting the system
 
-## Proposed Draft Specification
+## Specification
 
 _Version: 0.1_
 
@@ -172,7 +172,7 @@ Consider Service A defining a `planet` Semantic Data Contract containing the pla
           "planet.mountains"
           "planet.atmosphere"
 
-An implementor of Service D's Contract could return, for example:
+An implementor of Service D's Contract returns, for example:
 
   {
       PlanetId: "Sol III",
@@ -247,7 +247,7 @@ Any service can implement a Semantic Data Contract. The service must declare the
 - `get (unique identifier)` Retrieve the Semantic Data Contract data object by unique identifier
 - all queries defined by the Contract
 
-Taking our planets example, a completely separate service, say Service E, could implement `planet.mountains` as follows:
+Taking our planets example, a completely separate service, Service E, implements `planet.mountains` as follows:
 
 ```
 Service E implements "planet.mountains"
@@ -313,7 +313,7 @@ This document describes the various business objects (Semantic Data Contracts) a
 
 ### Technical contract implementation specification
 
-A technical implementation specification would be a separate document, and would generally be specific to a Data Service. It would describe the mechanisms used to fulfill the above implementation specification and semantic definitions. This could include database information, middle tier technology, authorization and authentication and so on.
+A technical implementation specification is a separate document, generally specific to a Data Service. It describes the mechanisms used to fulfill the above implementation specification and semantic definitions. This can include database information, middle tier technology, authorization and authentication and so on.
 
 ## Appendix
 

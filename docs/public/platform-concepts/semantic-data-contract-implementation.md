@@ -1,7 +1,7 @@
 # Voyzu Semantic Data Contract Implementation
 
-This proposes Voyzu's implementation of [Master Semantic Data Contract](semantic-data-contract-master.md),
-not its current API. Services share a runtime, enabling direct asynchronous calls,
+This specifies Voyzu's implementation of [Master Semantic Data Contract](semantic-data-contract-master.md).
+Services share a runtime, enabling direct asynchronous calls,
 shared execution context and generated TypeScript types. Disconnected services
 may require different mechanisms.
 
@@ -159,7 +159,7 @@ the identifier and mountains, without retrieving planet names or atmosphere data
 
 ### Service F — implements planet.geography
 
-Voyzu could provide a composition helper to resolve and merge the declared
+Voyzu provides a composition helper to resolve and merge the declared
 contributions, avoiding duplicated definitions in the implementor:
 
 ```ts

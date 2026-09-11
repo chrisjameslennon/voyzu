@@ -1,10 +1,10 @@
 # Voyzu Semantic Data Contract
 
-This table lists the proposed semantic names for Voyzu's data contracts, their implementing packages
-and the data they describe. These names do not rename the current runtime contracts.
+This table lists the semantic names for Voyzu's data contracts, their implementing packages
+and the data they describe.
 This table covers master data and its named compositions, not
 capabilities. Results are unwrapped by default; `includeContractNames: true` wraps
-each contribution in its full contract name, as proposed in the
+each contribution in its full contract name, as specified in the
 [implementation](semantic-data-contract-implementation.md).
 
 | Entity Name | Contract name | Defined in package | Implemented by package | Data definition |
@@ -15,5 +15,5 @@ each contribution in its full contract name, as proposed in the
 | Currency | `currency` | Voyzu platform | `@voyzu/localization` | Currency ID, code, name, optional symbol, status and audit metadata. Lookup by currency code. |
 | Organization | `organization` | `@voyzu/erp-core` | `@voyzu/erp-core` | Numeric ID, code, name, country code, base currency code, optional country/currency summaries, status and audit metadata. Lookup by organization ID. |
 | Organization | `organization.finance` | `@voyzu/erp-core` | `@voyzu/finance` | Nullable Finance company ID, Finance-enabled flag, tax filing anchor month and interval, optional report headings/footer, and whether postings exist. Supplies only the Finance contribution; extends `organization`; lookup by organization ID. |
-| Organization | `organization.withFinance` | `@voyzu/erp-core` (proposed) | Composed from `@voyzu/erp-core` and `@voyzu/finance` | Proposed named composition of `organization` and `organization.finance`; lookup by organization ID. Replaces the combined response currently supplied by Finance when providers return only their own defined data. |
+| Organization | `organization.withFinance` | `@voyzu/erp-core` | Composed from `@voyzu/erp-core` and `@voyzu/finance` | Named composition of `organization` and `organization.finance`; lookup by organization ID. Providers return only their own defined data. |
 | User | `user` | Voyzu platform | `@voyzu/auth` | Numeric ID, code, nullable email, display name, role, access mode, implementer access, status and audit metadata. No credentials. Lookup by user code. |

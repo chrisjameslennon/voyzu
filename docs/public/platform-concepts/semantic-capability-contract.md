@@ -1,8 +1,7 @@
 # Semantic Capability Contract
 
-Voyzu contracts to retain as capabilities, with proposed method names.
-Retrieval methods planned for Semantic Data Contract migration are omitted here;
-their runtime implementations remain unchanged. Each row
+Voyzu's Semantic Capability Contracts and their methods.
+Data retrieval contracts are described separately as Semantic Data Contracts. Each row
 describes one method. `Id` is a positive integer.
 Outputs are the resolved asynchronous results.
 

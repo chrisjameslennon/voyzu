@@ -1,6 +1,6 @@
 # YAML Semantic Data Contract Implementation
 
-This proposes a YAML representation of the [Master Semantic Data Contract](semantic-data-contract-master.md). It is not an existing Voyzu API. YAML describes definitions and registrations; a runtime performs retrieval, validation and composition.
+This specifies a YAML representation of the [Master Semantic Data Contract](semantic-data-contract-master.md). YAML describes definitions and registrations; a runtime performs retrieval, validation and composition.
 
 ## Definitions
 

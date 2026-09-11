@@ -17,7 +17,7 @@ This Semantic Capability Contract System should be:
 - **decoupled** - the service defining the Semantic Capability Contract can be, but does not need to be, the implementer of the Contract
 - **resilient** - services can be exchanged for other services without disrupting the system
 
-## Proposed Draft Specification
+## Specification
 
 _Version: 0.1_
 
@@ -171,7 +171,7 @@ This document describes the various namespaces and functions (Semantic Capabilit
 
 ### Technical contract implementation specification
 
-A technical implementation specification would be a separate document, and would generally be specific to a Service. It would describe the mechanisms used to fulfill the above implementation specification and semantic definitions. This could include database information, middle tier technology, authorization and authentication and so on.
+A technical implementation specification is a separate document, generally specific to a Service. It describes the mechanisms used to fulfill the above implementation specification and semantic definitions. This can include database information, middle tier technology, authorization and authentication and so on.
 
 ## Appendix
 
