@@ -5,7 +5,7 @@ and the data they describe. These names do not rename the current runtime contra
 This table covers master data and its named compositions, not
 capabilities. Results are unwrapped by default; `includeContractNames: true` wraps
 each contribution in its full contract name, as proposed in the
-[meta specification](semantic-data-contract-meta.md).
+[implementation](semantic-data-contract-implementation.md).
 
 | Entity Name | Contract name | Defined in package | Implemented by package | Data definition |
 | --- | --- | --- | --- | --- |

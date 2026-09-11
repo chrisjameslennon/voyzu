@@ -1,6 +1,6 @@
-# Voyzu Meta Semantic Data Contract
+# Voyzu Semantic Data Contract Implementation
 
-This proposes Voyzu's implementation of [Semantic Data Contracts](semantic-data-contracts.md),
+This proposes Voyzu's implementation of [Master Semantic Data Contract](semantic-data-contract-master.md),
 not its current API. Services share a runtime, enabling direct asynchronous calls,
 shared execution context and generated TypeScript types. Disconnected services
 may require different mechanisms.

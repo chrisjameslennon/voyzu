@@ -1,4 +1,4 @@
-# Semantic Capability Contracts
+# Master Semantic Capability Contract
 
 ## The problem
 
@@ -31,7 +31,7 @@ _Version: 0.1_
 
 ### Relationship of this specification to the Semantic Data Contract Specification
 
-This document sits beside the [Semantic Data Contract Specification](./semantic-capability-contracts.md). The Specifications are not formally coupled together, but do work well together; the Semantic Data Contract Specification providing an interoperability framwwork for the exchange of read-only data, and this Capability Contract Specification providing an interoperability framework for data modification, as well as other, non data functionality.
+This document sits beside the [Master Semantic Data Contract](./semantic-data-contract-master.md). The Specifications are not formally coupled together, but do work well together; the Semantic Data Contract Specification providing an interoperability framwwork for the exchange of read-only data, and this Capability Contract Specification providing an interoperability framework for data modification, as well as other, non data functionality.
 
 ### Principles
 
@@ -161,7 +161,7 @@ implements its own contract. Each implementor supplies all functions in its cont
 
 A system specification implementation should define the above concepts and principles in greater detail. Three specifications are suggested as possibilities:
 
-### Meta contract specification
+### Implementation specification
 
 The concrete definition of the above specification. For example, how Semantic Capability Contract data definitions will be described, and so on.
 
@@ -171,13 +171,13 @@ This document describes the various namespaces and functions (Semantic Capabilit
 
 ### Technical contract implementation specification
 
-A technical implementation specification would be a separate document, and would generally be specific to a Service. It would describe the mechanisms used to fulfill the above meta specification and semantic definitions. This could include database information, middle tier technology, authorization and authentication and so on.
+A technical implementation specification would be a separate document, and would generally be specific to a Service. It would describe the mechanisms used to fulfill the above implementation specification and semantic definitions. This could include database information, middle tier technology, authorization and authentication and so on.
 
 ## Appendix
 
 ### Examples
 
-- [Voyzu meta Semantic Capability Contract](semantic-capability-contract-meta.md) — Voyzu implementation with TypeScript examples.
+- [Voyzu Semantic Capability Contract Implementation](semantic-capability-contract-implementation.md) — Voyzu implementation with TypeScript examples.
 - [Voyzu Semantic Capability Contracts](semantic-capability-contract.md) — Voyzu Semantic Capability Contracts and their functions.
 
 

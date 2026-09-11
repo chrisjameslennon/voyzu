@@ -1,6 +1,6 @@
-# Voyzu Meta Semantic Capability Contract
+# Voyzu Semantic Capability Contract Implementation
 
-This proposes Voyzu's implementation of [Semantic Capability Contracts](semantic-capability-contracts.md),
+This proposes Voyzu's implementation of [Master Semantic Capability Contract](semantic-capability-contract-master.md),
 not its current API. Services share a runtime, enabling direct asynchronous calls,
 shared execution context, database transactions and generated TypeScript types.
 Disconnected services may require different mechanisms.

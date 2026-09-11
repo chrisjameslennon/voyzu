@@ -11,12 +11,12 @@
 
 ## Platform Concepts
 
-* [Semantic data contracts](platform-concepts/semantic-data-contracts.md)
-* [Semantic data contract meta](platform-concepts/semantic-data-contract-meta.md)
+* [Master Semantic Data Contract](platform-concepts/semantic-data-contract-master.md)
+* [Semantic data contract implementation](platform-concepts/semantic-data-contract-implementation.md)
 * [Semantic data contract](platform-concepts/semantic-data-contract.md)
 * [Semantic capability contract](platform-concepts/semantic-capability-contract.md)
-* [Semantic capability contracts](platform-concepts/semantic-capability-contracts.md)
-* [Semantic capability contract meta](platform-concepts/semantic-capability-contract-meta.md)
+* [Master Semantic Capability Contract](platform-concepts/semantic-capability-contract-master.md)
+* [Semantic capability contract implementation](platform-concepts/semantic-capability-contract-implementation.md)
 
 ## Voyzu Platform Guide
 

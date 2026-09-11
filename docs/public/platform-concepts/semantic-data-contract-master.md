@@ -1,4 +1,4 @@
-# Semantic Data Contracts
+# Master Semantic Data Contract
 
 ## The problem
 
@@ -303,7 +303,7 @@ the shared planet identifier.
 
 A system specification implementation should define the above concepts and principles in greater detail. Three specifications are suggested as possibilities:
 
-### Meta contract specification
+### Implementation specification
 
 The concrete definition of the above specification. For example, how Semantic Data Contract data definitions will be described, and so on.
 
@@ -313,11 +313,11 @@ This document describes the various business objects (Semantic Data Contracts) a
 
 ### Technical contract implementation specification
 
-A technical implementation specification would be a separate document, and would generally be specific to a Data Service. It would describe the mechanisms used to fulfill the above meta specification and semantic definitions. This could include database information, middle tier technology, authorization and authentication and so on.
+A technical implementation specification would be a separate document, and would generally be specific to a Data Service. It would describe the mechanisms used to fulfill the above implementation specification and semantic definitions. This could include database information, middle tier technology, authorization and authentication and so on.
 
 ## Appendix
 
 ### Examples
 
-- [Voyzu meta Semantic Data Contract](semantic-data-contract-meta.md) — Voyzu implementation with TypeScript examples.
+- [Voyzu Semantic Data Contract Implementation](semantic-data-contract-implementation.md) — Voyzu implementation with TypeScript examples.
 - [Voyzu Semantic Data Contracts](semantic-data-contract.md) — Voyzu Semantic Data Contracts and their data definitions.
