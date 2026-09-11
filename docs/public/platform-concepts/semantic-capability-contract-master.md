@@ -178,6 +178,6 @@ A technical implementation specification is a separate document, generally speci
 ### Examples
 
 - [Voyzu Semantic Capability Contract Implementation](semantic-capability-contract-implementation.md) — Voyzu implementation with TypeScript examples.
-- [Voyzu Semantic Capability Contracts](semantic-capability-contract.md) — Voyzu Semantic Capability Contracts and their functions.
+- [Voyzu Semantic Capability Contract Directory](semantic-capability-contract-directory.md) — Voyzu Semantic Capability Contracts and their functions.
 
 

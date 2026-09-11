@@ -14,7 +14,7 @@ export interface UpdateAuditStamp {
 export type CreationAuditStamp = UpdateAuditStamp;
 
 export async function createUpdateAuditStamp(): Promise<UpdateAuditStamp> {
-  const identity = await capabilities.use("platform.identity").current({});
+  const identity = await capabilities.use("platform.identity").getCurrentIdentity({});
   return {
     actorType: identity.actorType,
     userId: identity.user ? String(identity.user.id) : null,

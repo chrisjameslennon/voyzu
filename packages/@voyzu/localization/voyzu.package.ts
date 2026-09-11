@@ -6,15 +6,15 @@ import { currenciesModule } from "./modules/currencies/module";
 
 export const voyzuLocalizationPackage = {
   contracts: {
-    implements: {
-      masterData: {
-        "platform.currency": {
+    semanticDataDefinition: {
+      implements: {
+        "currency": {
           get: (code: string) => import("./modules/currencies/server/lib/currency.service").then((module) => module.getCurrency(code)),
-          list: () => import("./modules/currencies/server/lib/currency.service").then((module) => module.listCurrencies()),
+          queries: { all: (_input: Record<string, never>) => import("./modules/currencies/server/lib/currency.service").then((module) => module.listCurrencies()) },
         },
-        "platform.country": {
+        "country": {
           get: (code: string) => import("./modules/countries/server/lib/country.service").then((module) => module.getCountry(code)),
-          list: () => import("./modules/countries/server/lib/country.service").then((module) => module.listCountries()),
+          queries: { all: (_input: Record<string, never>) => import("./modules/countries/server/lib/country.service").then((module) => module.listCountries()) },
         },
       },
     },

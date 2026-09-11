@@ -1,37 +1,36 @@
 import type { TSchema } from "typebox";
 
 export interface CapabilityMethodContract {
-  input: TSchema;
-  output: TSchema;
+  input?: TSchema;
+  output?: TSchema;
   /** Starts a transaction, or joins the caller's existing transaction. */
   transactional?: boolean;
 }
-export type CapabilityContract = Readonly<Record<string, CapabilityMethodContract>>;
-export interface MasterDataContract {
-  id: TSchema;
-  data: TSchema;
-  key?: string;
-  extends?: { root: string; key: string };
-  /** Opt in to unfiltered collection retrieval. */
-  list?: true;
+export interface CapabilityContract {
+  definition?: string;
+  functions: Readonly<Record<string, CapabilityMethodContract>>;
 }
-export interface MasterDataComposition {
-  root: string;
-  extensions: readonly string[];
+export interface SemanticDataContract {
+  definition?: string;
+  identifier?: string;
+  identifierDataDefinition?: TSchema;
+  dataDefinition?: TSchema & { type: "object"; properties: Record<string, TSchema>; required?: readonly string[] };
+  extends?: string;
+  extensions?: readonly string[];
+  queries?: Readonly<Record<string, { inputDataDefinition: TSchema }>>;
 }
+export interface SemanticDataProvider {
+  get: (identifier: any) => Promise<any>;
+  queries?: Readonly<Record<string, (input: any) => Promise<any[]>>>;
+}
+export type CapabilityProvider = Readonly<Record<string, (...args: any[]) => Promise<any>>>;
 export interface PackageContracts {
-  defines?: {
-    capabilities?: Readonly<Record<string, CapabilityContract>>;
-    masterData?: Readonly<Record<string, MasterDataContract>>;
-    compositions?: Readonly<Record<string, MasterDataComposition>>;
+  semanticCapabilityDefinition?: {
+    defines?: Readonly<Record<string, CapabilityContract>>;
+    implements?: Readonly<Record<string, CapabilityProvider>>;
   };
-  implements?: {
-    capabilities?: Readonly<Record<string, {
-      load: () => Promise<Readonly<Record<string, (input: any) => Promise<any>>>>;
-    }>>;
-    masterData?: Readonly<Record<string, {
-      get: (id: any) => Promise<any>;
-      list?: () => Promise<any[]>;
-    }>>;
+  semanticDataDefinition?: {
+    defines?: Readonly<Record<string, SemanticDataContract>>;
+    implements?: Readonly<Record<string, SemanticDataProvider>>;
   };
 }

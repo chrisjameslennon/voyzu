@@ -20,7 +20,7 @@ export {
   type DatabaseUrlValidationResult,
   type DbExecutor,
 } from "./db";
-export { capabilities, masterData } from "./contracts";
+export { capabilities, semanticData } from "./contracts";
 export {
   businessRuleError,
   conflictError,

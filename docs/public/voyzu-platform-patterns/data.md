@@ -40,17 +40,17 @@ Use semantic contracts for cross-package operations that cannot use an allowed d
 
 Master data provides a named, read-only contract for retrieving shared records across package boundaries without importing the implementing package. Contract definitions live in the defining package's top-level `contracts/master-data/` directory and are registered through `voyzu.package.ts`.
 
-A root contract defines the base record. Other packages can define extensions and named compositions without modifying or copying that root definition. For example, the platform defines `platform.country`, ERP Core defines the finance extension and the `erp.country` composition, and Finance implements the tax information in that extension. The platform remains independent of Finance.
+A root contract defines the base record. Other packages can define extensions and named compositions without modifying or copying that root definition. For example, the platform defines `country`, ERP Core defines the finance extension and the `country.withFinance` composition, and Finance implements the tax information in that extension. The platform remains independent of Finance.
 
 ```ts
-import { masterData } from "@voyzu/capability/contracts";
+import { semanticData } from "@voyzu/capability/contracts";
 
-const country = await masterData.get("platform.country", "NZ");
-const countryWithFinance = await masterData.get("erp.country", "NZ");
-// { country, finance } or null when the root record is missing
+const country = await semanticData.get("country", "NZ");
+const countryWithFinance = await semanticData.get("country.withFinance", "NZ");
+// Complete merged country and Finance data, or null if any contribution is missing
 ```
 
-Master-data contracts preserve the underlying identifier and data shapes. Collection retrieval is available when the contract declares listing support. An explicitly required extension without an implementor raises an error; it is not silently ignored. Master data has no write API: use capabilities for cross-package business operations that modify data.
+Master-data contracts preserve the underlying identifier and data shapes. Collection retrieval uses named queries with full-record outputs. Ordinary retrieval errors without an implementor; explicit optional retrieval returns null. Master data has no write API: use capabilities for cross-package business operations that modify data.
 
 See [Semantic contracts](../voyzu-platform-guide/contracts.md) for root definitions, extensions, named compositions, provider registration, and runtime validation.
 

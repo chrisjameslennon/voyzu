@@ -6,7 +6,7 @@ import { InstalledPackageList } from "../../client";
 import { getHomePageRoute, listInstalledPackages } from "../lib/installed-package.service";
 
 export async function InstalledPackagesListPage() {
-  const canManage = (await capabilities.use("platform.identity").current({})).permissions.includes("users.manage");
+  const canManage = (await capabilities.use("platform.identity").getCurrentIdentity({})).permissions.includes("users.manage");
   return (
     <InstalledPackageList
       pageTitle="Installed Packages"

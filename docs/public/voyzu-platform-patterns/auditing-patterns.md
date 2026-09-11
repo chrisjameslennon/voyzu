@@ -146,9 +146,9 @@ The Audit package owns the Settings audit log and its retrieval. Calling package
 
 ## Identity and access boundaries
 
-Stamp creation calls the platform-defined `platform.identity.current` capability.
-Actor enrichment calls `platform.identity.lookup` with deduplicated user IDs (creation
-and update actors are fetched together). Auth implements both methods. Missing
+Stamp creation calls the platform-defined `platform.identity.getCurrentIdentity` capability.
+Actor enrichment calls the `userSummary.byIds` Semantic Data Contract query with deduplicated user IDs (creation
+and update actors are fetched together). Auth implements both contracts. Missing
 identity providers fail explicitly; audit helpers do not silently stamp an unknown
 actor after a lookup failure. Database transactions continue through the shared
 executor. Audit DTOs remain in `@voyzu/types/modules/core`.

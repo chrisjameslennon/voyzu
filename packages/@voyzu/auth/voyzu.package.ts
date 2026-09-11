@@ -6,16 +6,22 @@ import { usersModule } from "./modules/users/module";
 
 export const voyzuAuthPackage = {
   contracts: {
-    implements: {
-      masterData: {
-        "platform.user": {
-          get: (code: string) => import("./modules/users/server/lib/user.service").then((module) => module.getUser(code)),
-          list: () => import("./modules/users/server/lib/user.service").then((module) => module.listUsers()),
+    semanticDataDefinition: {
+      implements: {
+        user: {
+          get: (code: string) => import("./modules/users/server/lib/user.service").then(m => m.getUser(code)),
+          queries: { all: (_input: Record<string, never>) => import("./modules/users/server/lib/user.service").then(m => m.listUsers()) },
+        },
+        userSummary: {
+          get: (id: number) => import("./modules/users/server/lib/identity-provider").then(async m => (await m.lookup({ ids: [id] })).users[0] ?? null),
+          queries: { byIds: (input: { ids: number[] }) => import("./modules/users/server/lib/identity-provider").then(async m => (await m.lookup(input)).users) },
         },
       },
-      capabilities: {
+    },
+    semanticCapabilityDefinition: {
+      implements: {
         "platform.identity": {
-          load: () => import("./modules/users/server/lib/identity-provider").then(({ current, lookup }) => ({ current, lookup })),
+          getCurrentIdentity: (_input: Record<string, never>) => import("./modules/users/server/lib/identity-provider").then(m => m.current()),
         },
       },
     },

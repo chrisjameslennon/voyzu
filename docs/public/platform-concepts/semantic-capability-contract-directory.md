@@ -1,4 +1,4 @@
-# Semantic Capability Contract
+# Semantic Capability Contract Directory
 
 Voyzu's Semantic Capability Contracts and their methods.
 Data retrieval contracts are described separately as Semantic Data Contracts. Each row

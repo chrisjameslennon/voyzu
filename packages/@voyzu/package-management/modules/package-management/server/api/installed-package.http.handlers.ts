@@ -20,7 +20,7 @@ import {
 } from "../lib/installed-package.service";
 
 async function requireAdmin() {
-  return (await capabilities.use("platform.identity").current({})).permissions.includes("users.manage")
+  return (await capabilities.use("platform.identity").getCurrentIdentity({})).permissions.includes("users.manage")
     ? null
     : forbiddenError("You do not have access");
 }

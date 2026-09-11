@@ -185,8 +185,9 @@ const contracts = {
 
 The helper resolves the definition's contributors, not F's own `get` again.
 Composition merges the shared identifier once and rejects mismatched identifiers
-or duplicate data fields. If cascading extensions are supported, it also resolves
-ancestor contributions.
+or duplicate data fields. Only direct-root extensions are supported; nested extensions
+and compositions are rejected. If any required contribution returns null, the whole
+composition returns null. Missing implementations remain errors.
 
 ### Consumer example
 
@@ -202,6 +203,14 @@ const matches = await semanticData.query(
 //   { PlanetId: "Sol IV", mountains: ["Olympus Mons"] }
 // ]
 ```
+
+Ordinary retrieval errors when an implementation is missing. `getOptional(name, identifier)`
+returns null for either a missing implementation or a missing record.
+`queryOptional(name, query, input)` returns null for a missing implementation and
+an empty array for no matches. Unknown definitions or queries, invalid inputs,
+invalid outputs and provider failures remain errors for optional calls.
+For compositions, optional retrieval also returns null if a required contributor
+has no implementation.
 
 `includeContractNames` defaults to `false`. Set it to `true` to wrap contributions
 in their contract names; each retains the identifier:
@@ -243,5 +252,9 @@ const registry = {
   },
 };
 ```
+
+`semanticData.isImplemented(name)` reads registry availability without fetching data.
+It includes required composition contributors, allowing UI availability checks
+without inventing a query. It does not return a provider or change retrieval semantics.
 
 These examples omit registration plumbing and error handling.

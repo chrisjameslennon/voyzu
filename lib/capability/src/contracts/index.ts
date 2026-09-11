@@ -1,239 +1,257 @@
 import "server-only";
-import type { Static, TSchema } from "typebox";
+import { type Static, type TSchema } from "typebox";
 import Schema from "typebox/schema";
-import type { CapabilityContract, MasterDataContract, MasterDataComposition, PackageContracts } from "@voyzu/types/contracts";
+import { isDeepStrictEqual } from "node:util";
+import type { CapabilityContract, CapabilityProvider, SemanticDataContract, SemanticDataProvider, PackageContracts } from "@voyzu/types/contracts";
 import { withTransaction } from "../db/db";
 import { InputValidationError } from "../errors";
 
-/** Augmented by the composed instance, not by direct provider imports. */
+/** Augmented by composition; consumers never import provider packages. */
 export interface CapabilityContracts {}
-export interface MasterDataContracts {}
-export interface MasterDataCompositions {}
-type Root<K extends keyof MasterDataCompositions> = MasterDataCompositions[K] extends { root: infer R extends keyof MasterDataContracts } ? R : never;
-type NamedData<K extends keyof MasterDataCompositions> = {
-  [P in MasterDataContracts[Root<K>] extends { key: infer A extends string } ? A : "data"]: Data<Root<K>>;
-} & {
-  [E in MasterDataCompositions[K] extends { extensions: readonly (infer N extends keyof MasterDataContracts)[] } ? N : never as MasterDataContracts[E] extends { extends: { key: infer A extends string } } ? A : never]: Data<E> | null;
-};
-type DataName = keyof MasterDataContracts | keyof MasterDataCompositions;
-type GetId<K extends DataName> = K extends keyof MasterDataContracts ? Id<K> : K extends keyof MasterDataCompositions ? Id<Root<K>> : never;
-type GetData<K extends DataName> = K extends keyof MasterDataContracts ? Data<K> : K extends keyof MasterDataCompositions ? NamedData<K> : never;
-/** Type-only access to the composed master-data shape, including from client code. */
-export type MasterDataValue<K extends DataName> = GetData<K>;
-type ListName = { [K in keyof MasterDataContracts]: MasterDataContracts[K] extends { list: true } ? K : never }[keyof MasterDataContracts];
-type CapabilityMethods<C> = {
-  [M in keyof C]: C[M] extends { input: infer I extends TSchema; output: infer O extends TSchema }
-    ? (input: Static<I>) => Promise<Static<O>> : never;
-};
-type Data<K extends keyof MasterDataContracts> = MasterDataContracts[K] extends { data: infer S extends TSchema } ? Static<S> : never;
-type Id<K extends keyof MasterDataContracts> = MasterDataContracts[K] extends { id: infer S extends TSchema } ? Static<S> : never;
-type Extensions<K> = {
-  [E in keyof MasterDataContracts as MasterDataContracts[E] extends { extends: { root: K; key: infer A extends string } } ? A : never]?: Data<E>;
-};
-type Methods = Readonly<Record<string, (input: any) => Promise<any>>>;
-type Composed<K extends keyof MasterDataContracts> = {
-  [P in MasterDataContracts[K] extends { key: infer Key extends string } ? Key : "data"]: Data<K>;
-} & { extensions: Extensions<K> };
+export interface SemanticDataContracts {}
+type Name = keyof SemanticDataContracts & string;
+type Definition<K extends Name> = SemanticDataContracts[K];
+type Root<K extends Name> = Definition<K> extends { extends: infer R extends Name } ? R : K;
+type Identifier<K extends Name> = Definition<Root<K>> extends { identifierDataDefinition: infer S extends TSchema } ? Static<S> : never;
+type Own<K extends Name> = (Definition<Root<K>> extends { identifier: infer I extends string } ? { [P in I]: Identifier<K> } : {}) &
+  (Definition<K> extends { dataDefinition: infer S extends TSchema } ? Static<S> : {});
+type Parts<K extends Name> = Definition<K> extends { extensions: readonly (infer E extends Name)[] } ? Root<K> | E | (Definition<K> extends { dataDefinition: TSchema } ? K : never) : K;
+type Intersection<U> = (U extends unknown ? (x: U) => void : never) extends (x: infer I) => void ? I : never;
+export type SemanticDataValue<K extends Name> = Intersection<{ [P in Parts<K>]: Own<P> }[Parts<K>]>;
+type Wrapped<K extends Name> = { [P in Parts<K>]: Own<P> };
+type Result<K extends Name, W extends boolean> = W extends true ? Wrapped<K> : SemanticDataValue<K>;
+type QueryName<K extends Name> = Definition<K> extends { queries: infer Q } ? keyof Q & string : never;
+type QueryInput<K extends Name, Q extends QueryName<K>> = Definition<K> extends { queries: Record<Q, { inputDataDefinition: infer S extends TSchema }> } ? Static<S> : never;
+type Methods<C> = C extends { functions: infer F } ? {
+  [M in keyof F]: (...args: F[M] extends { input: infer I extends TSchema } ? [input: Static<I>] : []) =>
+    Promise<F[M] extends { output: infer O extends TSchema } ? Static<O> : void>;
+} : never;
 export type ContractPackage = { name: string; contracts?: PackageContracts };
-
 export class ContractError extends Error {}
+const unsafe = new Set(["__proto__", "prototype", "constructor"]);
 
 function validate(schema: TSchema, value: unknown, label: string, input = false) {
   const validator = Schema.Compile(schema);
   if (validator.Check(value)) return;
-  const message = `${label}: ${validator.Errors(value)[1].map((e) => `${e.instancePath} ${e.message}`).join("; ")}`;
+  const message = `${label}: ${validator.Errors(value)[1].map(e => `${e.instancePath} ${e.message}`).join("; ")}`;
   if (input) throw new InputValidationError(message);
-  // Invalid provider output must fail inside the transaction, including in production.
   throw new ContractError(message);
 }
 
-/** Pure registration/validation: never calls providers or touches the database. */
+/** Compose-time only: does not invoke providers or access a database. */
 export function resolveContractConfiguration(packages: readonly ContractPackage[]) {
   const capabilityDefinitions = new Map<string, CapabilityContract>();
-  const dataDefinitions = new Map<string, MasterDataContract>();
-  const compositions = new Map<string, MasterDataComposition>();
-  const capabilityProviders = new Map<string, NonNullable<NonNullable<PackageContracts["implements"]>["capabilities"]>[string]>();
-  const dataProviders = new Map<string, NonNullable<NonNullable<PackageContracts["implements"]>["masterData"]>[string]>();
-  const owners = new Map<string, string>();
-  function add<T>(map: Map<string, T>, kind: string, name: string, value: T, owner: string) {
-    const key = `${kind}:${name}`;
-    if (map.has(name)) throw new ContractError(`Duplicate ${kind} ${name}: ${owners.get(key)} and ${owner}`);
-    map.set(name, value); owners.set(key, owner);
+  const dataDefinitions = new Map<string, SemanticDataContract>();
+  const capabilityProviders = new Map<string, CapabilityProvider>();
+  const dataProviders = new Map<string, SemanticDataProvider>();
+  function add<T>(map: Map<string, T>, name: string, value: T) {
+    if (map.has(name)) throw new ContractError(`Duplicate contract registration: ${name}`);
+    if (!name || name.split(".").some(part => !part || unsafe.has(part))) throw new ContractError(`Invalid contract name: ${name}`);
+    map.set(name, value);
   }
-  for (const pkg of packages) {
-    for (const [name, definition] of Object.entries(pkg.contracts?.defines?.capabilities ?? {})) {
-      if (!Object.keys(definition).length) throw new ContractError(`Capability ${name} has no methods`);
-      for (const method of Object.values(definition)) {
-        if (!("type" in method.input) || method.input.type !== "object" || !("type" in method.output) || method.output.type !== "object") throw new ContractError(`${name} methods require object input and output schemas`);
-        Schema.Compile(method.input); Schema.Compile(method.output);
+  for (const { contracts: c } of packages) {
+    for (const [n,d] of Object.entries(c?.semanticCapabilityDefinition?.defines ?? {})) add(capabilityDefinitions,n,d);
+    for (const [n,d] of Object.entries(c?.semanticDataDefinition?.defines ?? {})) add(dataDefinitions,n,d);
+    for (const [n,p] of Object.entries(c?.semanticCapabilityDefinition?.implements ?? {})) add(capabilityProviders,n,p);
+    for (const [n,p] of Object.entries(c?.semanticDataDefinition?.implements ?? {})) add(dataProviders,n,p);
+  }
+  for (const [n,d] of capabilityDefinitions) {
+    if (!Object.keys(d.functions).length) throw new ContractError(`${n} requires functions`);
+    for (const [m,f] of Object.entries(d.functions)) {
+      if (unsafe.has(m)) throw new ContractError(`Invalid function ${n}.${m}`);
+      if (f.input) Schema.Compile(f.input);
+      if (f.output) Schema.Compile(f.output);
+    }
+  }
+  for (const [n,p] of capabilityProviders) {
+    const d = capabilityDefinitions.get(n);
+    if (!d) throw new ContractError(`Undefined capability ${n}`);
+    for (const m of Object.keys(d.functions)) if (typeof p[m] !== "function") throw new ContractError(`Missing provider method ${n}.${m}`);
+    for (const m of Object.keys(p)) if (!(m in d.functions)) throw new ContractError(`Undeclared provider method ${n}.${m}`);
+  }
+  for (const [n,d] of dataDefinitions) {
+    if (!d.dataDefinition && !d.extensions?.length) throw new ContractError(`${n} must define data or extensions`);
+    const root = d.extends ? dataDefinitions.get(d.extends) : d;
+    if (!root || (d.extends && root.extends)) throw new ContractError(`Invalid root or unsupported nesting for ${n}`);
+    if (d.extends && (d.identifier || d.identifierDataDefinition)) throw new ContractError(`${n} must inherit its identifier`);
+    if (!root.identifier || unsafe.has(root.identifier) || !root.identifierDataDefinition) throw new ContractError(`${n} requires a root identifier`);
+    Schema.Compile(root.identifierDataDefinition);
+    if (d.dataDefinition) {
+      if (d.dataDefinition.type !== "object") throw new ContractError(`${n} dataDefinition must be an object`);
+      Schema.Compile(d.dataDefinition);
+      const fields = Object.keys(d.dataDefinition.properties ?? {});
+      if (fields.some(f => unsafe.has(f) || f === root.identifier)) throw new ContractError(`${n} has an invalid data field or redeclares its identifier`);
+    }
+    for (const [q,s] of Object.entries(d.queries ?? {})) {
+      if (unsafe.has(q)) throw new ContractError(`Invalid query ${n}.${q}`);
+      Schema.Compile(s.inputDataDefinition);
+    }
+    if (d.extensions) {
+      if (!d.extends) throw new ContractError(`${n} composition requires extends`);
+      const fields = new Set<string>();
+      const parts = [d.extends, ...d.extensions, ...(d.dataDefinition ? [n] : [])];
+      if (new Set(parts).size !== parts.length) throw new ContractError(`Duplicate composition contribution ${n}`);
+      for (const part of parts) {
+        const contributor = dataDefinitions.get(part);
+        if (!contributor || (part !== d.extends && part !== n && (contributor.extends !== d.extends || contributor.extensions))) throw new ContractError(`Invalid contributor ${part} in ${n}`);
+        for (const field of Object.keys(contributor.dataDefinition?.properties ?? {})) {
+          if (fields.has(field)) throw new ContractError(`Duplicate composition field ${n}.${field}`);
+          fields.add(field);
+        }
       }
-      add(capabilityDefinitions, "capability definition", name, definition, pkg.name);
-    }
-    for (const [name, definition] of Object.entries(pkg.contracts?.defines?.masterData ?? {})) {
-      Schema.Compile(definition.id); Schema.Compile(definition.data);
-      if (definition.key && ["extensions", "__proto__", "prototype", "constructor"].includes(definition.key)) throw new ContractError(`Invalid root key ${definition.key}`);
-      add(dataDefinitions, "master-data definition", name, definition, pkg.name);
-    }
-    for (const [name, provider] of Object.entries(pkg.contracts?.implements?.capabilities ?? {})) {
-      if (typeof provider.load !== "function") throw new ContractError(`${name} requires a provider loader`);
-      add(capabilityProviders, "capability provider", name, provider, pkg.name);
-    }
-    for (const [name, definition] of Object.entries(pkg.contracts?.defines?.compositions ?? {})) {
-      add(compositions, "master-data composition", name, definition, pkg.name);
-    }
-    for (const [name, provider] of Object.entries(pkg.contracts?.implements?.masterData ?? {})) {
-      if (typeof provider.get !== "function") throw new ContractError(`${name} requires a master-data getter`);
-      add(dataProviders, "master-data provider", name, provider, pkg.name);
     }
   }
-  for (const name of capabilityProviders.keys()) if (!capabilityDefinitions.has(name)) throw new ContractError(`Undefined capability ${name}`);
-  for (const name of dataProviders.keys()) if (!dataDefinitions.has(name)) throw new ContractError(`Undefined master data ${name}`);
-  for (const [name, provider] of dataProviders) {
-    if (dataDefinitions.get(name)?.list && typeof provider.list !== "function") throw new ContractError(`${name} requires a master-data list provider`);
-    if (provider.list && !dataDefinitions.get(name)?.list) throw new ContractError(`${name} does not declare listing`);
+  for (const [n,p] of dataProviders) {
+    const d = dataDefinitions.get(n);
+    if (!d) throw new ContractError(`Undefined semantic data ${n}`);
+    if (typeof p.get !== "function") throw new ContractError(`${n} requires get`);
+    for (const q of Object.keys(d.queries ?? {})) if (typeof p.queries?.[q] !== "function") throw new ContractError(`${n} requires query ${q}`);
+    for (const q of Object.keys(p.queries ?? {})) if (!d.queries?.[q]) throw new ContractError(`Undeclared query ${n}.${q}`);
   }
-  const extensionKeys = new Set<string>();
-  for (const [name, definition] of dataDefinitions) {
-    if (!definition.extends) continue;
-    const { root, key } = definition.extends;
-    if (!dataDefinitions.has(root) || dataDefinitions.get(root)?.extends) throw new ContractError(`Invalid root ${root} for ${name}`);
-    if (!key || ["__proto__", "prototype", "constructor"].includes(key)) throw new ContractError(`Invalid extension key ${key}`);
-    if (extensionKeys.has(`${root}:${key}`)) throw new ContractError(`Duplicate extension key ${root}.${key}`);
-    extensionKeys.add(`${root}:${key}`);
-  }
-  for (const [name, composition] of compositions) {
-    if (dataDefinitions.has(name)) throw new ContractError(`Composition ${name} conflicts with master data`);
-    const root = dataDefinitions.get(composition.root);
-    if (!root || root.extends) throw new ContractError(`Invalid root ${composition.root} for ${name}`);
-    const keys = new Set([root.key ?? "data"]);
-    for (const extension of composition.extensions) {
-      const definition = dataDefinitions.get(extension);
-      if (definition?.extends?.root !== composition.root) throw new ContractError(`${extension} does not extend ${composition.root}`);
-      if (keys.has(definition.extends.key)) throw new ContractError(`Duplicate composition key ${name}.${definition.extends.key}`);
-      keys.add(definition.extends.key);
-    }
-  }
-  return { capabilityDefinitions, dataDefinitions, capabilityProviders, dataProviders, compositions };
+  return { capabilityDefinitions, dataDefinitions, capabilityProviders, dataProviders };
 }
 
-/** Load compose-validated configuration; request/response validation still runs on every call. */
 function createContractRuntime(configuration: ReturnType<typeof resolveContractConfiguration>) {
-  const { capabilityDefinitions, dataDefinitions, capabilityProviders, dataProviders, compositions } = configuration;
-  const loaded = new Map<string, Promise<Methods>>();
-  function optional<K extends keyof CapabilityContracts & string>(name: K): CapabilityMethods<CapabilityContracts[K]> | undefined {
-    const definition = capabilityDefinitions.get(name);
-    if (!definition) throw new ContractError(`Undefined capability ${name}`);
+  const { capabilityDefinitions, dataDefinitions, capabilityProviders, dataProviders } = configuration;
+  function optional<K extends keyof CapabilityContracts & string>(name: K): Methods<CapabilityContracts[K]> | undefined {
+    const d = capabilityDefinitions.get(name);
+    if (!d) throw new ContractError(`Undefined capability ${name}`);
     const provider = capabilityProviders.get(name);
     if (!provider) return undefined;
-    const methods: Record<string, (input: unknown) => Promise<unknown>> = Object.create(null);
-    for (const [methodName, method] of Object.entries(definition)) {
-      methods[methodName] = async (input) => {
-        validate(method.input, input, `${name}.${methodName} input`, true);
+    const methods = Object.create(null);
+    for (const [m,f] of Object.entries(d.functions)) {
+      methods[m] = async (...args: unknown[]) => {
+        if (f.input) validate(f.input,args[0],`${name}.${m} input`,true);
+        else if (args.length) throw new InputValidationError(`${name}.${m} takes no arguments`);
         const invoke = async () => {
-          let promise = loaded.get(name);
-          if (!promise) {
-            promise = provider.load(); loaded.set(name, promise);
-            promise.catch(() => loaded.delete(name));
-          }
-          const implementation = await promise;
-          if (typeof implementation[methodName] !== "function") throw new ContractError(`Missing provider method ${name}.${methodName}`);
-          const result = await implementation[methodName](input);
-          validate(method.output, result, `${name}.${methodName} output`);
+          const result = await provider[m](...args);
+          if (f.output) validate(f.output,result,`${name}.${m} output`);
+          else if (result !== undefined) throw new ContractError(`${name}.${m} must not return a value`);
           return result;
         };
-        return method.transactional ? withTransaction(invoke) : invoke();
+        return f.transactional ? withTransaction(invoke) : invoke();
       };
     }
-    return methods as CapabilityMethods<CapabilityContracts[K]>;
+    return methods;
   }
   const capabilities = {
     optional,
     use<K extends keyof CapabilityContracts & string>(name: K) {
-      const provider = optional(name);
-      if (!provider) throw new ContractError(`No implementation for capability ${name}`);
-      return provider;
+      const p = optional(name);
+      if (!p) throw new ContractError(`No implementation for capability ${name}`);
+      return p;
     },
-    /** Keep transaction executors outside JSON contracts; nested calls join automatically. */
     transaction: withTransaction,
   };
-  async function getRaw(name: string, id: unknown): Promise<unknown> {
-    const definition = dataDefinitions.get(name);
-    if (!definition) throw new ContractError(`Undefined master data ${name}`);
-    const provider = dataProviders.get(name);
-    if (!provider) throw new ContractError(`No implementation for master data ${name}`);
-    validate(definition.id, id, `${name} id`, true);
-    const result = await provider.get(id);
-    if (result !== null) validate(definition.data, result, `${name} data`);
-    return result;
+  function definition(name: string) {
+    const d = dataDefinitions.get(name);
+    if (!d) throw new ContractError(`Undefined semantic data ${name}`);
+    return d;
   }
-  const masterData = {
-    async get<K extends DataName & string>(name: K, id: GetId<K>): Promise<GetData<K> | null> {
-      const composition = compositions.get(name);
-      if (!composition) return await getRaw(name, id) as GetData<K> | null;
-      // Missing implementations are configuration errors, even for an absent root record.
-      for (const part of [composition.root, ...composition.extensions]) {
-        if (!dataProviders.has(part)) throw new ContractError(`No implementation for master data ${part}`);
-      }
-      const root = await getRaw(composition.root, id);
-      if (root === null) return null;
-      const result: Record<string, unknown> = { [dataDefinitions.get(composition.root)!.key ?? "data"]: root };
-      for (const extension of composition.extensions) result[dataDefinitions.get(extension)!.extends!.key] = await getRaw(extension, id);
-      return result as GetData<K>;
+  function root(name: string) {
+    const d = definition(name);
+    return d.extends ? definition(d.extends) : d;
+  }
+  function parts(name: string): string[] {
+    const d = definition(name);
+    return d.extensions ? [d.extends!, ...d.extensions, ...(d.dataDefinition ? [name] : [])] : [name];
+  }
+  function available(name: string) {
+    definition(name);
+    return [name, ...parts(name)].every(n => dataProviders.has(n));
+  }
+  function requireProvider(name: string) {
+    if (!available(name)) throw new ContractError(`No implementation for semantic data ${name} or a required contribution`);
+  }
+  function recordSchema(name: string) {
+    const r = root(name);
+    const properties = Object.assign({}, ...parts(name).map(n => definition(n).dataDefinition?.properties ?? {}));
+    const required = [...new Set([r.identifier!, ...parts(name).flatMap(n => definition(n).dataDefinition?.required ?? [])])];
+    return { type: "object", properties: { ...properties, [r.identifier!]: r.identifierDataDefinition! }, required, additionalProperties: false } as TSchema;
+  }
+  function checkRecord(name: string, value: unknown, identifier?: unknown) {
+    validate(recordSchema(name),value,`${name} output`);
+    const record = value as Record<string, unknown>;
+    for (const part of parts(name)) {
+      const schema = definition(part).dataDefinition;
+      if (!schema) continue;
+      const data = Object.fromEntries(Object.keys(schema.properties).filter(key => Object.hasOwn(record,key)).map(key => [key,record[key]]));
+      validate(schema,data,`${part} data`);
+    }
+    if (identifier !== undefined && !isDeepStrictEqual((value as Record<string,unknown>)[root(name).identifier!],identifier)) throw new ContractError(`${name} returned a different identifier`);
+  }
+  function present(name: string, record: any, wrapped: boolean) {
+    if (record === null || !wrapped) return record;
+    const identifier = root(name).identifier!;
+    return Object.fromEntries(parts(name).map(n => [n, Object.fromEntries([identifier, ...Object.keys(definition(n).dataDefinition?.properties ?? {})].filter(f => Object.hasOwn(record,f)).map(f => [f,record[f]]))]));
+  }
+  async function get(name: string, id: unknown, optional: boolean, wrapped: boolean) {
+    const r = root(name);
+    validate(r.identifierDataDefinition!,id,`${name} identifier`,true);
+    if (optional && !available(name)) return null;
+    requireProvider(name);
+    const result = await dataProviders.get(name)!.get(id);
+    if (result !== null) checkRecord(name,result,id);
+    return present(name,result,wrapped);
+  }
+  async function query(name: string, q: string, input: unknown, optional: boolean, wrapped: boolean) {
+    const schema = definition(name).queries?.[q];
+    if (!schema) throw new ContractError(`Undefined query ${name}.${q}`);
+    validate(schema.inputDataDefinition,input,`${name}.${q} input`,true);
+    if (optional && !available(name)) return null;
+    requireProvider(name);
+    const results = await dataProviders.get(name)!.queries![q](input);
+    if (!Array.isArray(results)) throw new ContractError(`${name}.${q} must return an array`);
+    return results.map(result => { checkRecord(name,result); return present(name,result,wrapped); });
+  }
+  const semanticData = {
+    isImplemented<K extends Name>(name: K): boolean { return available(name); },
+    async get<K extends Name, W extends boolean = false>(name: K, id: Identifier<K>, options?: { includeContractNames?: W }): Promise<Result<K,W> | null> {
+      return get(name,id,false,options?.includeContractNames === true);
     },
-    async list<K extends ListName & string>(name: K): Promise<Data<K>[]> {
-      const definition = dataDefinitions.get(name);
-      if (!definition?.list) throw new ContractError(`${name} does not declare listing`);
-      const provider = dataProviders.get(name);
-      if (!provider?.list) throw new ContractError(`No list implementation for master data ${name}`);
-      const rows = await provider.list();
-      if (!Array.isArray(rows)) throw new ContractError(`${name} list must return an array`);
-      for (const row of rows) validate(definition.data, row, `${name} list data`);
-      return rows as Data<K>[];
+    async getOptional<K extends Name, W extends boolean = false>(name: K, id: Identifier<K>, options?: { includeContractNames?: W }): Promise<Result<K,W> | null> {
+      return get(name,id,true,options?.includeContractNames === true);
     },
-    async compose<K extends keyof MasterDataContracts & string>(name: K, id: Id<K>, requestedExtensions?: readonly (keyof MasterDataContracts & string)[]): Promise<Composed<K> | null> {
-      const definition = dataDefinitions.get(name);
-      if (!definition || definition.extends) throw new ContractError(`${name} is not a master-data root`);
-      const names = requestedExtensions ?? [...dataDefinitions].filter(([n, d]) => d.extends?.root === name && dataProviders.has(n)).map(([n]) => n);
-      // Validate explicit requests even when the root record does not exist.
-      for (const extension of names) {
-        if (dataDefinitions.get(extension)?.extends?.root !== name) throw new ContractError(`${extension} does not extend ${name}`);
-        if (!dataProviders.has(extension)) throw new ContractError(`No implementation for master data ${extension}`);
-      }
-      const root = await getRaw(name, id);
-      if (root === null) return null;
-      const extensions: Record<string, unknown> = {};
-      for (const extension of names) {
-        const data = await getRaw(extension, id);
-        if (data !== null) extensions[dataDefinitions.get(extension)!.extends!.key] = data;
-      }
-      return { [definition.key ?? "data"]: root, extensions } as Composed<K>;
+    async query<K extends Name, Q extends QueryName<K>, W extends boolean = false>(name: K, q: Q, input: QueryInput<K,Q>, options?: { includeContractNames?: W }): Promise<Result<K,W>[]> {
+      return (await query(name,q,input,false,options?.includeContractNames === true))!;
+    },
+    async queryOptional<K extends Name, Q extends QueryName<K>, W extends boolean = false>(name: K, q: Q, input: QueryInput<K,Q>, options?: { includeContractNames?: W }): Promise<Result<K,W>[] | null> {
+      return query(name,q,input,true,options?.includeContractNames === true);
+    },
+    async compose<K extends Name>(name: K, id: Identifier<K>): Promise<SemanticDataValue<K> | null> {
+      const d = definition(name);
+      if (!d.extensions) throw new ContractError(`${name} is not a composition`);
+      if (d.dataDefinition) throw new ContractError(`${name} must assemble its own contribution explicitly`);
+      validate(root(name).identifierDataDefinition!,id,`${name} identifier`,true);
+      requireProvider(name);
+      const records = await Promise.all(parts(name).map(n => get(n,id,false,false)));
+      if (records.some(r => r === null)) return null;
+      const result = Object.assign({},...records);
+      checkRecord(name,result,id);
+      return result;
     },
   };
-  return { capabilities, masterData };
+  return { capabilities, semanticData };
 }
-
-/** Validated programmatic registration, used by isolated integration tests. */
-export function createContracts(packages: readonly ContractPackage[]) {
-  return createContractRuntime(resolveContractConfiguration(packages));
-}
+export function createContracts(packages: readonly ContractPackage[]) { return createContractRuntime(resolveContractConfiguration(packages)); }
 type Runtime = ReturnType<typeof createContracts>;
 const shared = globalThis as typeof globalThis & { __voyzuContracts?: Runtime };
 export function registerContracts(packages: readonly ContractPackage[]) { shared.__voyzuContracts = createContracts(packages); }
-/** Only generated compose output should call this; structural checks belong to compose. */
-export function registerComposedContracts(configuration: ReturnType<typeof resolveContractConfiguration>) {
-  shared.__voyzuContracts = createContractRuntime(configuration);
-}
+export function registerComposedContracts(configuration: ReturnType<typeof resolveContractConfiguration>) { shared.__voyzuContracts = createContractRuntime(configuration); }
 function runtime(): Runtime {
   if (!shared.__voyzuContracts) throw new ContractError("Contracts have not been composed/registered for this instance");
   return shared.__voyzuContracts;
 }
 export const capabilities: Runtime["capabilities"] = {
-  use: (name) => runtime().capabilities.use(name),
-  optional: (name) => runtime().capabilities.optional(name),
+  use: name => runtime().capabilities.use(name),
+  optional: name => runtime().capabilities.optional(name),
   transaction: withTransaction,
 };
-export const masterData: Runtime["masterData"] = {
-  get: (name, id) => runtime().masterData.get(name, id),
-  list: (name) => runtime().masterData.list(name),
-  compose: (name, id, extensions) => runtime().masterData.compose(name, id, extensions),
+export const semanticData: Runtime["semanticData"] = {
+  isImplemented: name => runtime().semanticData.isImplemented(name),
+  get: (name,id,options) => runtime().semanticData.get(name,id,options),
+  getOptional: (name,id,options) => runtime().semanticData.getOptional(name,id,options),
+  query: (name,q,input,options) => runtime().semanticData.query(name,q,input,options),
+  queryOptional: (name,q,input,options) => runtime().semanticData.queryOptional(name,q,input,options),
+  compose: (name,id) => runtime().semanticData.compose(name,id),
 };

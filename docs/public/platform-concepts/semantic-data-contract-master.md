@@ -32,7 +32,7 @@ _Version: 0.1_
 
 ### Relationship of this specification to the Semantic Capability Contract Specification
 
-This document sits beside the [Semantic Capability Contract Specification](./data-capability-contracts.md). The Specifications are not formally coupled together, but do work well together; this Semantic Data Contract Specification providing an interoperability framwwork for the exchange of read-only data, and the Capability Contract Specification providing an interoperability framework for data modification, as well as other, non data functionality.
+This document sits beside the [Semantic Capability Contract Specification](./semantic-capability-contract-master.md). The Specifications are not formally coupled together, but do work well together; this Semantic Data Contract Specification providing an interoperability framwwork for the exchange of read-only data, and the Capability Contract Specification providing an interoperability framework for data modification, as well as other, non data functionality.
 
 ### Principles
 
@@ -321,4 +321,4 @@ A technical implementation specification is a separate document, generally speci
 
 - [Voyzu Semantic Data Contract Implementation](semantic-data-contract-implementation.md) — Voyzu implementation with TypeScript examples.
 - [YAML Semantic Data Contract Implementation](semantic-data-contract-yaml-implementation.md) — YAML definitions, provider registration and retrieval examples.
-- [Voyzu Semantic Data Contracts](semantic-data-contract.md) — Voyzu Semantic Data Contracts and their data definitions.
+- [Voyzu Semantic Data Contract Directory](semantic-data-contract-directory.md) — Voyzu Semantic Data Contracts and their data definitions.

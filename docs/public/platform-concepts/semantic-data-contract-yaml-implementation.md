@@ -229,6 +229,6 @@ The host rejects duplicate definitions or implementors, unknown references, inva
 
 On each call, the runtime validates identifiers, query inputs and complete outputs before returning data. A get result must match the requested identifier. Composition validates every contribution and rejects mismatched identifiers. Query methods are not inherited automatically by composed contracts.
 
-Unknown record identifiers return `null`; queries with no matches return `[]`. A missing definition, implementor or query is an error, not an empty result. If any required composition contribution returns `null`, the composed get returns `null`; provider failures remain errors, with no partial result.
+Unknown record identifiers return `null`; queries with no matches return `[]`. Ordinary retrieval errors for a missing implementor. `getOptional` returns `null` for a missing implementor or record; `queryOptional` returns `null` for a missing implementor and `[]` for no matches. Optional composed retrieval also returns `null` for a missing required contributor implementation. Unknown definitions or queries, validation failures and provider failures remain errors. If any required composition contribution returns `null`, the composed get returns `null`; provider failures remain errors, with no partial result.
 
 Authentication, authorization and transport are host responsibilities. Composition must preserve the caller's access context; this specification does not imply a transactionally consistent snapshot across services.

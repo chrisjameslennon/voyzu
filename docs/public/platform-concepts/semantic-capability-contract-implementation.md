@@ -121,7 +121,7 @@ Consumers reference the contract, not Service B.
 ## Service Discovery
 
 Voyzu generates a shared registry and consumer types during composition. It requires
-one complete implementor per registered capability and validates function inputs
+at most one complete implementor per capability and validates function inputs
 and outputs when called. Simplified registration:
 
 ```ts
