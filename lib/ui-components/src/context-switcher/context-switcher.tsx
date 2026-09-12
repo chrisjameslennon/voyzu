@@ -21,11 +21,12 @@ export interface ContextSwitcherProps {
   collapsed?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  indicatorTone?: "success" | "info";
   emptyMessage?: string;
   headerAction?: ReactNode;
 }
 
-export function ContextSwitcher({ label, options, selectedId, onSelect, collapsed = false, disabled = false, placeholder = `Select ${label}`, emptyMessage = "No options available", headerAction }: ContextSwitcherProps) {
+export function ContextSwitcher({ label, options, selectedId, onSelect, collapsed = false, disabled = false, indicatorTone = "success", placeholder = `Select ${label}`, emptyMessage = "No options available", headerAction }: ContextSwitcherProps) {
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -76,12 +77,12 @@ export function ContextSwitcher({ label, options, selectedId, onSelect, collapse
         className={`${localStyles.trigger} ${collapsed ? localStyles.triggerCollapsed : ""}`}
         onClick={() => setOpen(!open)} onKeyDown={(event) => { if (event.key === "ArrowDown" && !open) { event.preventDefault(); setOpen(true); } }}>
         <span className={localStyles.triggerLeft}>
-          <span aria-hidden="true" className={`${localStyles.dot} ${selected?.inactive ? localStyles.dotArchived : ""}`} />
+          <span aria-hidden="true" className={`${localStyles.dot} ${indicatorTone === "info" ? localStyles.dotInfo : ""} ${selected?.inactive ? localStyles.dotArchived : ""}`} />
           {!collapsed && <span className={localStyles.name}>{selected?.name ?? placeholder}</span>}
         </span>
         {!collapsed && <span aria-hidden="true" className={`material-symbols-outlined ${localStyles.chevron} ${open ? localStyles.chevronOpen : ""}`}>expand_more</span>}
       </button>
-      {open && <div id={panelId} ref={panelRef} role="dialog" aria-label={placeholder} aria-busy={pending}
+      {open && !disabled && <div id={panelId} ref={panelRef} role="dialog" aria-label={placeholder} aria-busy={pending}
         className={`${localStyles.panel} ${collapsed ? localStyles.panelCollapsed : ""}`}>
         {headerAction && <div className={localStyles.headerAction}>{headerAction}</div>}
         <div className={localStyles.panelLabel}>{placeholder}</div>

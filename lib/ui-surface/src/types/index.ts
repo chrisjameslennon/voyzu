@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-export type { AuditPanelProps, OrganizationSwitcherProps, ClientComponentContracts, VoyzuClientComponentDefinition } from "./client-components";
+export type { ClientComponentContracts, VoyzuClientComponentDefinition } from "./client-components";
 
 import type { VoyzuBreadcrumbItem } from "../breadcrumbs";
 import type { VoyzuSurfaceSlots } from "../../surface-slots";

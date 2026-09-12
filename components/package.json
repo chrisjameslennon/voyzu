@@ -1,0 +1,15 @@
+{
+  "name": "@voyzu/components",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./audit-panel": "./audit-panel/index.ts"
+  },
+  "peerDependencies": {
+    "@voyzu/ui-components": "*",
+    "@voyzu/ui-style": "*",
+    "@voyzu/ui-surface": "*",
+    "react": "^19"
+  }
+}

@@ -118,3 +118,4 @@
 .option:focus-visible, .trigger:focus-visible { outline: 2px solid var(--voyzu-color-primary-focus-ring); outline-offset: 2px; }
 .panel { max-width: calc(100vw - 2rem); max-height: min(36rem, 70dvh); overflow-y: auto; }
 .avatar { background: var(--voyzu-color-info-bg); color: var(--voyzu-color-info-text); }
+.dotInfo { background: var(--voyzu-color-info); }

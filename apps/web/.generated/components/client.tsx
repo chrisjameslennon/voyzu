@@ -2,8 +2,7 @@
 "use client";
 import type { ComponentType, ReactNode } from "react";
 import { ClientComponentProvider } from "@voyzu/ui-surface/client";
-import { clientComponents as clientComponents0 } from "@voyzu/audit/common/client-components";
-const registrations: readonly { id: string; loadComponent: () => Promise<ComponentType<any>> }[] = [...Object.values(clientComponents0)];
+const registrations: readonly { id: string; loadComponent: () => Promise<ComponentType<any>> }[] = [];
 export function ComposedClientComponents({ children }: { children: ReactNode }) {
   return <ClientComponentProvider registrations={registrations}>{children}</ClientComponentProvider>;
 }

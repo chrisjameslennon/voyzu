@@ -2,7 +2,7 @@
 
 import { Button, Badge } from "@voyzu/ui-components";
 import { useCurrentAccess } from "@voyzu/ui-surface/client";
-import type { AuditPanelProps } from "@voyzu/ui-surface/types";
+import type { AuditPanelProps } from "./types";
 
 import styles from "@voyzu/ui-style/css-modules/detail.module.css";
 

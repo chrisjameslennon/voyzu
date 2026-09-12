@@ -27,7 +27,6 @@
     "./audit/api.routes": "./modules/audit/api.routes.ts",
     "./audit/pages.routes": "./modules/audit/pages.routes.ts",
     "./common": "./modules/common/module.ts",
-    "./common/client-components": "./modules/common/client-components.ts",
     "./types": "./types/index.ts",
     "./client": "./modules/common/client/index.ts",
     "./audit/client": "./modules/audit/client/index.ts",

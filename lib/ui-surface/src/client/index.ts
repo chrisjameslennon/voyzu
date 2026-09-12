@@ -1,7 +1,6 @@
 "use client";
 export { AccessProvider, useCurrentAccess } from "./access";
 export { ClientComponentProvider, ClientComponentSlot, clientComponent } from "./components";
-export type { AuditPanelProps } from "../types/client-components";
 
 export { DetailBackButton, type DetailBackButtonProps } from "./DetailBackButton";
 export {

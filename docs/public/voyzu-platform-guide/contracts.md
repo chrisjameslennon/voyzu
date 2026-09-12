@@ -8,8 +8,8 @@ Packages register `contracts.semanticDataDefinition` and
 `defines` and/or `implements`. Definitions live in the owner's top-level
 `contracts/` folder; neither package exports nor filenames register providers.
 
-See the [data implementation specification](../platform-concepts/semantic-data-contract-implementation.md)
-and [capability implementation specification](../platform-concepts/semantic-capability-contract-implementation.md)
+See the [data implementation specification](../platform-contracts/semantic-data-contract-implementation.md)
+and [capability implementation specification](../platform-contracts/semantic-capability-contract-implementation.md)
 for the complete syntax.
 
 ## Capabilities

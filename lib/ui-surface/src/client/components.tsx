@@ -27,7 +27,7 @@ export function ClientComponentSlot<K extends keyof ClientComponentContracts>({
     if (optional) return null;
     throw new Error(`No implementation for client component ${name}; run voyzu:compose`);
   }
-  return <Suspense fallback={fallback}><Component {...componentProps} /></Suspense>;
+  return <Suspense fallback={fallback}><Component {...(componentProps as object)} /></Suspense>;
 }
 
 function use<K extends keyof ClientComponentContracts>(name: K): ComponentType<ClientComponentContracts[K]> {

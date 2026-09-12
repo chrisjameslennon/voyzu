@@ -109,7 +109,7 @@ Audit links may filter by entity type, entity ID, entity code, or mutation ID. U
 
 ## Display audit information
 
-The Audit package provides `audit.panel` through client-component composition. This single component displays the entity ID and supplied creation/update information. It does not fetch audit history. It uses the platform access context to decide whether to show the audit-log link; the Audit routes still enforce authorization independently.
+The platform provides `AuditPanel` from `components/audit-panel` through a direct React import. This single component displays the entity ID and supplied creation/update information. It does not fetch audit history. It uses the platform access context to decide whether to show the audit-log link; the Audit routes still enforce authorization independently.
 
 The calling package supplies the audit metadata and both `auditHref` and `onNavigate`. The button appears only when both are supplied and the current user has `audit.view`. Without permission or an access provider, the metadata still displays without a link.
 
@@ -117,8 +117,7 @@ The calling package supplies the audit metadata and both `auditHref` and `onNavi
 "use client";
 
 import { useRouter } from "next/navigation";
-import { clientComponent } from "@voyzu/ui-surface/client";
-const AuditPanel = clientComponent.use("audit.panel");
+import { AuditPanel } from "@voyzu/components/audit-panel";
 
 export function StockItemAuditPanel({ stockItem }: StockItemAuditPanelProps) {
   const router = useRouter();

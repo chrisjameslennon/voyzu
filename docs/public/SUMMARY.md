@@ -9,15 +9,15 @@
   * [Self Hosting](installation-and-operation/deployment/self-hosting.md)
 * [Stack](installation-and-operation/stack.md)
 
-## Platform Concepts
+## Platform Contracts
 
-* [Master Semantic Data Contract](platform-concepts/semantic-data-contract-master.md)
-* [Semantic data contract implementation](platform-concepts/semantic-data-contract-implementation.md)
-* [YAML Semantic Data Contract Implementation](platform-concepts/semantic-data-contract-yaml-implementation.md)
-* [Semantic data contract directory](platform-concepts/semantic-data-contract-directory.md)
-* [Semantic capability contract directory](platform-concepts/semantic-capability-contract-directory.md)
-* [Master Semantic Capability Contract](platform-concepts/semantic-capability-contract-master.md)
-* [Semantic capability contract implementation](platform-concepts/semantic-capability-contract-implementation.md)
+* [Master Semantic Data Contract](platform-contracts/semantic-data-contract-master.md)
+* [Semantic data contract implementation](platform-contracts/semantic-data-contract-implementation.md)
+* [YAML Semantic Data Contract Implementation](platform-contracts/semantic-data-contract-yaml-implementation.md)
+* [Semantic data contract directory](platform-contracts/semantic-data-contract-directory.md)
+* [Semantic capability contract directory](platform-contracts/semantic-capability-contract-directory.md)
+* [Master Semantic Capability Contract](platform-contracts/semantic-capability-contract-master.md)
+* [Semantic capability contract implementation](platform-contracts/semantic-capability-contract-implementation.md)
 
 ## Voyzu Platform Guide
 
