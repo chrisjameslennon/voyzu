@@ -27,32 +27,31 @@ For example:
 | Dependency | Permitted? |
 | --- | --- |
 | A business package → platform tables | Yes: all business packages depend on the platform |
-| Finance or Inventory → ERP Core tables | Yes: both depend on ERP Core |
+| Finance or Inventory → Platform Organization tables | Yes: Organization is preinstalled in Platform |
 | Finance → Inventory tables, or Inventory → Finance tables | No: they are peers |
-| ERP Core → Finance or Inventory tables | No: these are downstream packages |
 | Platform → business-package tables | No: these are downstream packages |
 
 Table ownership is determined by installation, not by a table-name prefix. A generic audit trigger that reads the triggering row through `OLD`/`NEW` and writes Audit-owned tables is an upstream use of platform auditing; it must not query business-package tables by name.
 
-Use semantic contracts for cross-package operations that cannot use an allowed database dependency. Do not replace a forbidden query with a direct import of the other package's repository or service.
+Use the internal API for cross-package operations that cannot use an allowed database dependency. Do not replace a forbidden query with a direct import of the other package's repository or service.
 
-## Master data
+## Shared data through the internal API
 
-Master data provides a named, read-only contract for retrieving shared records across package boundaries without importing the implementing package. Contract definitions live in the defining package's top-level `contracts/master-data/` directory and are registered through `voyzu.package.ts`.
+The internal API replaces the former master-data/semantic-data and capability APIs. Contracts reference DTOs and declare methods; packages register definitions, implementations and Platform composition through `contracts.internalApi` in `voyzu.package.ts`.
 
-A root contract defines the base record. Other packages can define extensions and named compositions without modifying or copying that root definition. For example, the platform defines `country`, ERP Core defines the finance extension and the `country.withFinance` composition, and Finance implements the tax information in that extension. The platform remains independent of Finance.
+Platform implements `@core/country`; Finance implements `@erp/country-finance`. Platform composes `@erp/country-with-finance` through internal API calls without importing Finance.
 
 ```ts
-import { semanticData } from "@voyzu/capability/contracts";
+import { internalApi } from "@voyzu/capability/internal-api";
 
-const country = await semanticData.get("country", "NZ");
-const countryWithFinance = await semanticData.get("country.withFinance", "NZ");
-// Complete merged country and Finance data, or null if any contribution is missing
+const country = await internalApi.call("@core/country", "get", { code: "NZ" });
+const countryWithFinance = await internalApi.call("@erp/country-with-finance", "get", { code: "NZ" });
+// Country fields plus a finance property; null if either record is missing.
 ```
 
-Master-data contracts preserve the underlying identifier and data shapes. Collection retrieval uses named queries with full-record outputs. Ordinary retrieval errors without an implementor; explicit optional retrieval returns null. Master data has no write API: use capabilities for cross-package business operations that modify data.
+Both retrieval and modification use declared methods. `call` throws when a provider is missing; `callOptional` returns null instead. A composed object is null when a required record is absent, but a missing implementation remains an error. Transaction settings belong to implementations, not definitions.
 
-See [Semantic contracts](../voyzu-platform-guide/contracts.md) for root definitions, extensions, named compositions, provider registration, and runtime validation.
+See [Internal API](../platform-contracts/internal-api.md) for DTOs, methods, composition, transactions and runtime validation.
 
 ## Data transfer objects (DTOs)
 
@@ -156,7 +155,7 @@ Dynamic identifiers, such as a permitted sort column, must be selected from an e
 
 ## See also
 
-* [Semantic contracts](../voyzu-platform-guide/contracts.md)
+* [Internal API](../platform-contracts/internal-api.md)
 * [Validation layers](validation-layers.md)
 * [Auditing patterns](auditing-patterns.md)
 * [API patterns](api-patterns.md)

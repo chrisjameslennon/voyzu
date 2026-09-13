@@ -67,6 +67,13 @@ export class InstalledPackageRepo {
     return this.db.query("SELECT pg_advisory_xact_lock(hashtext('voyzu.installed-packages'))");
   }
 
+  migrateOrganizationPackage() {
+    // One-time ownership migration; retain visibility and navigation preferences.
+    return this.db.query(`UPDATE installed_packages SET code = '@voyzu/organization'
+      WHERE code = '@voyzu/erp-core'
+      AND NOT EXISTS (SELECT 1 FROM installed_packages WHERE code = '@voyzu/organization')`);
+  }
+
   upsertDiscovered(code: string, description: string, navOrder: number) {
     return this.db.query(`INSERT INTO installed_packages (code, description, nav_order)
          VALUES ($1, $2, $3)

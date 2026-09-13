@@ -11,6 +11,7 @@
 
 ## Platform Contracts
 
+* [Internal API](platform-contracts/internal-api.md)
 * [Master Semantic Data Contract](platform-contracts/semantic-data-contract-master.md)
 * [Semantic data contract implementation](platform-contracts/semantic-data-contract-implementation.md)
 * [YAML Semantic Data Contract Implementation](platform-contracts/semantic-data-contract-yaml-implementation.md)

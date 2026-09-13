@@ -1,5 +1,7 @@
 # Voyzu Semantic Data Contract Implementation
 
+> Historical specification. Voyzu now uses the [Internal API](internal-api.md); the semantic data runtime has been removed.
+
 This specifies Voyzu's implementation of [Master Semantic Data Contract](semantic-data-contract-master.md).
 Services share a runtime, enabling direct asynchronous calls,
 shared execution context and generated TypeScript types. Disconnected services

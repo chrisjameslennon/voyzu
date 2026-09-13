@@ -3,7 +3,7 @@ import "server-only";
 import { notFound } from "next/navigation";
 import { getSingletonHighlighter } from "shiki";
 
-import { capabilities } from "@voyzu/capability/contracts";
+import { internalApi } from "@voyzu/capability/internal-api";
 
 import { InstalledPackageDetail } from "../../client";
 import { getInstalledPackage } from "../lib/installed-package.service";
@@ -11,7 +11,7 @@ import { readInstalledPackageFiles } from "../lib/package-inventory";
 
 export async function InstalledPackageDetailPage({ id }: { id?: string }) {
   if (!id) notFound();
-  const canManage = (await capabilities.use("platform.identity").getCurrentIdentity({})).permissions.includes("users.manage");
+  const canManage = (await internalApi.call("@core/auth", "getCurrentIdentity", {})).permissions.includes("users.manage");
   const installedPackage = canManage
     ? await getInstalledPackage(Number(id))
     : null;

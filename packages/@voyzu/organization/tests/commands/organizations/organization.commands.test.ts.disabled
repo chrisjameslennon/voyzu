@@ -1,0 +1,66 @@
+// TODO(contracts-tests): legacy command test retained, disabled while commands are removed.
+import assert from "node:assert/strict";
+import { after, describe, it } from "node:test";
+
+import { getPool } from "@voyzu/capability/db";
+import {
+  activateOrganization,
+  batchCreateOrganizations,
+  batchDeleteOrganizations,
+  batchGetOrganizations,
+  batchPatchOrganizations,
+  batchUpdateOrganizations,
+  createOrganization,
+  deactivateOrganizations,
+  deleteOrganization,
+  filterOrganizations,
+  getOrganization,
+  listOrganizations,
+  patchOrganization,
+  searchOrganizations,
+  updateOrganization,
+} from "../../../modules/organizations/commands";
+
+const codes = ["TEST-ERP-A", "TEST-ERP-B", "TEST-ERP-C"];
+
+after(async () => {
+  await getPool().query(`DELETE FROM organization WHERE code = ANY($1::text[])`, [codes]);
+});
+
+describe("ERP Core organization commands", () => {
+  it("supports the complete organizational organization lifecycle", async () => {
+    const created = await createOrganization({ code: codes[0], name: "ERP A", countryCode: "NZ", baseCurrencyCode: "NZD" });
+    assert.equal(created.code, codes[0]);
+    assert.equal((await getOrganization(codes[0]))?.name, "ERP A");
+
+    const updated = await updateOrganization(codes[0], { code: codes[0], name: "ERP A Updated", countryCode: "AU", baseCurrencyCode: "AUD" });
+    assert.equal(updated.countryCode, "AU");
+    assert.equal((await patchOrganization(codes[0], { name: "ERP A Patched" })).name, "ERP A Patched");
+    assert.ok((await listOrganizations()).some((organization) => organization.code === codes[0]));
+    assert.equal((await filterOrganizations([{ field: "code", operator: "=", value: codes[0] }])).length, 1);
+    assert.equal((await searchOrganizations("ERP A Patched")).length, 1);
+
+    await batchCreateOrganizations([
+      { code: codes[1], name: "ERP B", countryCode: "NZ", baseCurrencyCode: "NZD" },
+      { code: codes[2], name: "ERP C", countryCode: "NZ", baseCurrencyCode: "NZD" },
+    ]);
+    assert.equal((await batchGetOrganizations([codes[1], codes[2]])).length, 2);
+    await batchUpdateOrganizations([
+      { code: codes[1], name: "ERP B Updated", countryCode: "AU", baseCurrencyCode: "AUD" },
+      { code: codes[2], name: "ERP C Updated", countryCode: "AU", baseCurrencyCode: "AUD" },
+    ]);
+    const patched = await batchPatchOrganizations([
+      { code: codes[1], name: "ERP B Patched" },
+      { code: codes[2], name: "ERP C Patched" },
+    ]);
+    assert.deepEqual(patched.map((organization) => organization.name), ["ERP B Patched", "ERP C Patched"]);
+
+    const inactive = await deactivateOrganizations([codes[1], codes[2]]);
+    assert.ok(inactive.every((organization) => organization.status === "INACTIVE"));
+    assert.equal((await activateOrganization(codes[1])).status, "ACTIVE");
+
+    await batchDeleteOrganizations([codes[1], codes[2]]);
+    await deleteOrganization(codes[0]);
+    assert.equal(await getOrganization(codes[0]), null);
+  });
+});

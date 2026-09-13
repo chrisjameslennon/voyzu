@@ -1,6 +1,6 @@
 # Internal API
 
-Server-side, same-runtime calls to package-owned and shared resources (`@core`, `@erp`). This API exists alongside semantic contracts.
+Server-side, same-runtime calls to package-owned and shared resources (`@core`, `@erp`). This API replaces the former semantic data and capability APIs.
 
 ## Usage
 
@@ -10,20 +10,23 @@ The internal API can be thought of as the internal, runtime equivalent of the co
 
 ## Defining an internal API contract
 
-An internal API contract is a TypeScript definition with two top level nodes:
+An internal API contract is a TypeScript definition with these top level nodes:
 
-- `dataDefinition`. Describing the data object attributes
-- `methods`. Describing each method's input and output schemas, not its executable code.
+- `dataDefinition` (optional). Describing the data object attributes.
+- `methods` (required). Describing each method's input and output schemas, not its executable code.
+
+Operation-only contracts omit `dataDefinition`; each method still requires request and response DTOs. For example, `@erp/inventory-finance` exposes `processInventoryMovement` without defining a resource-level data object.
 
 The convention is that each definition lives in its own file, which has a `definition.ts` extension
+
+Contract definitions reference DTOs; they do not declare data shapes inline. Reuse an existing DTO where its shape and validation match, otherwise create one in the owning package or module's `types` folder. This applies to record data and method requests and responses.
 
 **Example**
 
 ```typescript
 
-// planet.definition.ts
+// types/planet.dto.ts
 import Type, { type Static } from "typebox";
-import type { InternalApiDefinition } from "@voyzu/types/internal-api";
 
 export const PlanetSchema = Type.Object({
   PlanetId: Type.String(),
@@ -32,18 +35,28 @@ export const PlanetSchema = Type.Object({
 
 export interface Planet extends Static<typeof PlanetSchema> {}
 
+export const PlanetGetRequestDto = Type.Object({ PlanetId: Type.String() }, { additionalProperties: false });
+export const PlanetGetResponseDto = Type.Union([PlanetSchema, Type.Null()]);
+export const PlanetRenameRequestDto = Type.Object({
+  PlanetId: Type.String(), name: Type.String(),
+}, { additionalProperties: false });
+```
+
+```ts
+// planet.definition.ts
+import type { InternalApiDefinition } from "@voyzu/types/internal-api";
+import { PlanetSchema, PlanetGetRequestDto, PlanetGetResponseDto, PlanetRenameRequestDto } from "./types/planet.dto";
+export type { Planet } from "./types/planet.dto";
+
 export const PlanetDefinition = {
   dataDefinition: PlanetSchema,
   methods: {
     get: {
-      input: Type.Object({ PlanetId: Type.String() }, { additionalProperties: false }),
-      output: Type.Union([PlanetSchema, Type.Null()]),
+      input: PlanetGetRequestDto,
+      output: PlanetGetResponseDto,
     },
     rename: {
-      input: Type.Object({
-        PlanetId: Type.String(),
-        name: Type.String(),
-      }, { additionalProperties: false }),
+      input: PlanetRenameRequestDto,
       output: PlanetSchema,
     },
   },
@@ -65,8 +78,8 @@ const definition = {
   dataDefinition: PlanetSchema,
   methods: {
     get: {
-      input: Type.Object({ PlanetId: Type.String() }, { additionalProperties: false }),
-      output: Type.Union([PlanetSchema, Type.Null()]),
+      input: PlanetGetRequestDto,
+      output: PlanetGetResponseDto,
     },
     rename: PlanetDefinition.methods.rename,
   },
@@ -84,22 +97,35 @@ Contracts can reuse existing data schemas and method definitions. Inheritance ad
 For example, a geographical planet retains the planet identity and name, adds mountains, and includes an atmosphere object:
 
 ```ts
+// types/geographic-planet.dto.ts
+import Type from "typebox";
+import { PlanetSchema } from "./planet.dto";
+
 const AtmosphereSchema = Type.Object({
   gases: Type.Array(Type.String()),
 }, { additionalProperties: false });
 
-const GeographicPlanetSchema = Type.Object({
+export const GeographicPlanetSchema = Type.Object({
   ...PlanetSchema.properties,
   mountains: Type.Array(Type.String()),
   atmosphere: AtmosphereSchema,
 }, { additionalProperties: false });
+
+export const GeographicPlanetGetResponseDto = Type.Union([GeographicPlanetSchema, Type.Null()]);
+```
+
+```ts
+// geographic-planet.definition.ts
+import type { InternalApiDefinition } from "@voyzu/types/internal-api";
+import { PlanetDefinition } from "./planet.definition";
+import { GeographicPlanetSchema, GeographicPlanetGetResponseDto } from "./types/geographic-planet.dto";
 
 export const GeographicPlanetDefinition = {
   dataDefinition: GeographicPlanetSchema,
   methods: {
     get: {
       ...PlanetDefinition.methods.get,
-      output: Type.Union([GeographicPlanetSchema, Type.Null()]),
+      output: GeographicPlanetGetResponseDto,
     },
   },
 } as const satisfies InternalApiDefinition;
@@ -156,7 +182,7 @@ export async function rename({ PlanetId, name }: {
 export const planetMethods = { get, rename };
 ```
 
-The implementing package registers a lazy loader returning `planetMethods` under the contract's fully qualified resource name. All declared methods must be supplied; the dispatcher validates inputs and outputs. `planetMethods` is not checked with `satisfies PlanetContract`, because that type describes schemas, not functions.
+The implementing package registers a lazy loader returning `{ methods: planetMethods }` under the contract's fully qualified resource name. All declared methods must be supplied; the dispatcher validates inputs and outputs. `planetMethods` is not checked with `satisfies PlanetContract`, because that type describes schemas, not functions.
 
 The convention is that implementations live in their relevant module, and have a `implementation.ts` extension.
 
@@ -205,27 +231,28 @@ All three methods require an initialized registry. Availability does not mean th
 
 ## Transactions and Authorization
 
-A method may set `transactional: true`. It then uses the platform transaction context, joining an existing transaction or starting one. Output validation runs before commit. Authorization remains the handler's responsibility; registration does not grant permission to perform an operation.
-
-For a database-backed implementation, mark the method in its definition:
+Transactions belong to the implementation, not the contract definition. Definitions contain only data and method schemas; a `transactional` flag in a method definition is rejected. A lazy provider lists its transactional methods alongside its method functions:
 
 ```ts
-import Type from "typebox";
-import { CustomerPriceListItemSchema } from "./customer-price-list-item.definition";
+import type { InternalApiImplementation } from "@voyzu/types/internal-api";
 
-export const PriceListItemDefinition = {
-  dataDefinition: CustomerPriceListItemSchema,
-  methods: {
-    update: {
-      input: Type.Object({ id: Type.Number(), price: Type.Number() }, { additionalProperties: false }),
-      output: CustomerPriceListItemSchema,
-      transactional: true,
-    },
-  },
+export const implementations = {
+  "@voyzu/commercial/customer-price-list-items": () =>
+    import("./server/lib/customer-price-list-item.implementation")
+      .then(module => ({
+        methods: module.customerPriceListItemMethods,
+        transactionalMethods: ["update"],
+      } satisfies InternalApiImplementation)),
 };
 ```
 
-Once registered, the caller uses the normal syntax:
+`transactionalMethods` is optional and defaults to no methods. Every listed name must be declared in the contract. The same metadata is supported by `implements` and `composes` providers.
+
+For a listed method, the dispatcher validates input, loads the provider, then executes the handler and validates its output within one database transaction. If a transaction is already active, it is reused rather than starting another. Nested calls share that transaction; only the call that started it commits or rolls back. Separate concurrent calls have separate transaction contexts. No transaction IDs or independently committing nested transactions are exposed.
+
+Methods not listed do not start a transaction, but their database work joins an existing transaction through the Platform database accessor. Implementations must use that accessor and must not open independent transactions within a transactional call. Loaders supply functions and metadata; business work belongs in the handler.
+
+The caller uses the normal syntax:
 
 ```ts
 await internalApi.call(
@@ -233,13 +260,11 @@ await internalApi.call(
 );
 ```
 
-Database work using the platform transaction context commits on success and rolls back on failure, including invalid output. `callOptional` uses the same transaction behaviour when a provider exists. Transactions do not roll back in-memory mock data or external side effects.
-
-
+Database work commits on success and rolls back on propagated failure, including invalid output. `callOptional` behaves the same when a provider exists. Transactions do not roll back in-memory data or external side effects. Authorization remains the handler's responsibility.
 
 ## Exporting contracts at module and package level
 
-A module exports `defines` and `implements`, assembled in its peer `internalApi.ts`; `module.ts` only composes these exports. Definitions contain a TypeBox `dataDefinition` and named `methods`, each with `input` and `output` schemas. Data interfaces contain properties only; separate method interfaces describe the operations. Files use `.definition.ts` and `.implementation.ts` respectively.
+A module exports `defines` and `implements`, assembled in its peer `internalApi.ts`; `module.ts` only composes these exports. Definitions contain an optional TypeBox `dataDefinition` and named `methods`, each with `input` and `output` schemas. Data interfaces contain properties only; separate method interfaces describe the operations. Files use `.definition.ts` and `.implementation.ts` respectively.
 
 `voyzu.package.ts` aggregates these under `contracts.internalApi`. Commercial's module exports remain unchanged:
 
@@ -253,7 +278,7 @@ contracts: {
 }
 ```
 
-Each implementation is a lazy loader returning the object's methods. Commercial defines and implements its price lists. Platform defines `@erp/CustomerAccount`; Commercial implements it without redefining it. Platform alone defines the shared `@core` and `@erp` namespaces. Every `@core` contract requires a Platform implementation; Platform cannot implement non-core contracts. Each resource has at most one provider.
+Each implementation is a lazy loader returning `{ methods, transactionalMethods? }`. The methods remain ordinary functions; transaction settings are implementation metadata. Commercial defines and implements its price lists. Platform defines `@erp/CustomerAccount`; Commercial implements it without redefining it. Platform alone defines the shared `@core` and `@erp` namespaces. Every `@core` contract requires a Platform implementation; Platform cannot implement non-core contracts. Each resource has at most one provider.
 
 Platform registers its `@erp/customer` combiner under `contracts.internalApi.composes`, separate from `implements`. Composition and implementation registrations cannot overlap for the same resource. Both are loaded lazily.
 
@@ -276,14 +301,18 @@ contracts: {
     },
     implements: {
       "@core/party": () => import("./modules/parties/server/lib/party.implementation")
-        .then(module => module.partyMethods),
+        .then(module => ({ methods: module.partyMethods })),
     },
     composes: {
       "@erp/customer": (api: InternalApiInvoker) =>
         import("./modules/customers/server/lib/customer.implementation")
-          .then(module => module.createCustomerMethods({
+          .then(module => ({ methods: module.createCustomerMethods({
+            get: input => api.call("@core/party", "get", input) as Promise<Party | null>,
+            findByCode: input => api.call("@core/party", "findByCode", input) as Promise<Party | null>,
+            update: input => api.call("@core/party", "update", input) as Promise<void>,
+          }, {
             get: input => api.call("@erp/CustomerAccount", "get", input) as Promise<CustomerAccount | null>,
-          })),
+          }) })),
     },
   },
 }
@@ -300,3 +329,5 @@ Loaders receive an internal API invoker for dependencies. Platform's Customer lo
 The web server loads the generated registry during initialization. Shared definitions are included even without installed extension providers; calling an unimplemented resource throws an error. Core implementations are required at composition time. Registration replaces the previous registry on reload.
 
 The targeted composer is `lib/runtime-tools/compose/compose-internal-api.ts`. It accepts the runtime root, workspace root and package descriptors (JSON, or `@file`). The descriptors use `{ name, directory }` and should cover all packages in that workspace, since this rebuilds the complete internal API registry without composing other surfaces.
+
+During staged implementation, pass `--accept-missing-implementations` to the targeted composer or `npm run voyzu:compose -- --no-install --accept-missing-implementations`. This permits missing core providers and logs the unimplemented resources; all other validation remains enabled. It does not create placeholder handlers: `has` returns false, `call` throws, and `callOptional` returns null for an unimplemented resource. Without the flag, core implementations remain required.

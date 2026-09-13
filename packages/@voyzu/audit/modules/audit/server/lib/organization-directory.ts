@@ -1,4 +1,4 @@
-import { semanticData } from "@voyzu/capability/contracts";
+import { internalApi } from "@voyzu/capability/internal-api";
 export async function listAuditOrganizations() {
-  return await semanticData.queryOptional("organizationDirectory", "all", {}) ?? [];
+  return (await internalApi.call("@core/organization", "getDirectory", {})).map(({ organization_id, ...record }) => ({ id: organization_id, ...record }));
 }

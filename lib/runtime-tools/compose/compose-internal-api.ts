@@ -6,7 +6,7 @@ import type { PackageContracts } from "@voyzu/types/contracts";
 
 type Descriptor = { name: string; directory: string };
 
-export async function composeInternalApi(runtimeRoot: string, workspaceRoot: string, descriptors: Descriptor[]) {
+export async function composeInternalApi(runtimeRoot: string, workspaceRoot: string, descriptors: Descriptor[], options: { acceptMissingImplementations?: boolean } = {}) {
   const directory = runtimeRoot === workspaceRoot
     ? join(runtimeRoot, ".generated", "internal-api")
     : join(workspaceRoot, "internal-api");
@@ -15,9 +15,10 @@ export async function composeInternalApi(runtimeRoot: string, workspaceRoot: str
     return value.startsWith(".") ? value : `./${value}`;
   };
   // Core definitions are always present, even when no installed package implements an extension.
-  const coreDescriptor = { name: "@voyzu/business-objects", directory: join(runtimeRoot, "packages/@voyzu/business-objects") };
-  const candidates = descriptors.some(descriptor => descriptor.name === coreDescriptor.name)
-    ? descriptors : [coreDescriptor, ...descriptors];
+  const coreDescriptors = ["business-objects", "shared-contracts"].map(name => ({
+    name: `@voyzu/${name}`, directory: join(runtimeRoot, `packages/@voyzu/${name}`),
+  }));
+  const candidates = [...coreDescriptors.filter(core => !descriptors.some(pkg => pkg.name === core.name)), ...descriptors];
   const packages = await Promise.all(candidates.map(async descriptor => {
     const file = join(descriptor.directory, "voyzu.package.ts");
     const { default: definition } = await import(pathToFileURL(file).href);
@@ -25,7 +26,11 @@ export async function composeInternalApi(runtimeRoot: string, workspaceRoot: str
     const isPlatform = !isAbsolute(location) && location !== ".." && !location.startsWith(`..\\`) && !location.startsWith("../");
     return { ...descriptor, file, isPlatform, contracts: definition.contracts as PackageContracts | undefined };
   }));
-  const configuration = resolveInternalApiContracts(packages);
+  const configuration = resolveInternalApiContracts(packages, options);
+  if (options.acceptMissingImplementations) {
+    const missing = [...configuration.definitions.keys()].filter(resource => !configuration.providers.has(resource));
+    if (missing.length) console.warn(`[voyzu] Accepted missing implementations: ${missing.join(", ")}. Calls remain unavailable.`);
+  }
   const imports: string[] = [];
   const types: string[] = [];
   const entries: string[] = [];
@@ -65,11 +70,13 @@ export { internalApi } from "@voyzu/capability/internal-api";
 
 // Targeted composition: same descriptor list as the contracts composer; @file is also accepted.
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const [runtime, workspace, descriptors] = process.argv.slice(2);
+  const args = process.argv.slice(2);
+  const acceptMissingImplementations = args.includes("--accept-missing-implementations");
+  const [runtime, workspace, descriptors, ...extra] = args.filter(arg => arg !== "--accept-missing-implementations");
   const main = async () => {
-    if (!runtime || !workspace || !descriptors) throw new Error("Usage: compose-internal-api.ts <runtime> <workspace> <descriptors-json|@file>");
+    if (!runtime || !workspace || !descriptors || extra.length) throw new Error("Usage: compose-internal-api.ts <runtime> <workspace> <descriptors-json|@file> [--accept-missing-implementations]");
     const json = descriptors.startsWith("@") ? await readFile(descriptors.slice(1), "utf8") : descriptors;
-    await composeInternalApi(resolve(runtime), resolve(workspace), JSON.parse(json));
+    await composeInternalApi(resolve(runtime), resolve(workspace), JSON.parse(json), { acceptMissingImplementations });
   };
   main().catch(error => { console.error(error); process.exitCode = 1; });
 }

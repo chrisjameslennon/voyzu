@@ -1,0 +1,24 @@
+{
+  "name": "@voyzu/shared-contracts",
+  "version": "0.1.0",
+  "description": "Preinstalled shared contract definitions and composition wiring.",
+  "repository": "https://github.com/chrisjameslennon/voyzu.git",
+  "private": true,
+  "type": "module",
+  "voyzu": {
+    "voyzu-package": true,
+    "allowInstall": true,
+    "dependencies": [],
+    "pageRootPaths": [],
+    "apiRootPaths": [],
+    "preinstalled": true
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    "./voyzu-package": "./voyzu.package.ts"
+  },
+  "peerDependencies": {
+    "@voyzu/types": "^0.1.0",
+    "typebox": "^1.3.7"
+  }
+}

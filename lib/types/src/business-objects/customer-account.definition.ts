@@ -1,1 +1,1 @@
-export { CustomerAccountSchema, CustomerAccountDefinition, type CustomerAccount, type CustomerAccountMethods, type CustomerAccountContract } from "../../../../business-objects/customer-account.definition";
+export { CustomerAccountSchema, CustomerAccountDefinition, type CustomerAccount, type CustomerAccountMethods, type CustomerAccountContract } from "../../../../packages/@voyzu/shared-contracts/contracts/customer-account.definition";

@@ -34,6 +34,9 @@ export async function reconcileInstalledPackages(): Promise<InstalledPackageResp
   const inventory = await discoverInstalledPackages();
   return withTransaction(async (db) => {
     await new InstalledPackageRepo(db).lockInventory();
+    if (inventory.some(pkg => pkg.code === "@voyzu/organization")) {
+      await new InstalledPackageRepo(db).migrateOrganizationPackage();
+    }
     const existing = await new InstalledPackageRepo(db).list();
     const existingByCode = new Map(existing.map((row) => [row.code, row]));
     let nextOrder = existing.reduce((maximum, row) => Math.max(maximum, row.nav_order), -1) + 1;

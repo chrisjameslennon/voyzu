@@ -17,7 +17,9 @@
     "packages/@voyzu/welcome",
     "packages/@voyzu/package-management",
     "packages/@voyzu/system-info",
-    "packages/@voyzu/ui-reference"
+    "packages/@voyzu/ui-reference",
+    "packages/@voyzu/organization",
+    "packages/@voyzu/shared-contracts"
   ],
   "scripts": {
     "build": "node lib/runtime-tools/run-npm.mjs run build -w @voyzu/web",

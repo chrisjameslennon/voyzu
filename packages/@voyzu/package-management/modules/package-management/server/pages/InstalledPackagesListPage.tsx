@@ -1,12 +1,12 @@
 import "server-only";
 
-import { capabilities } from "@voyzu/capability/contracts";
+import { internalApi } from "@voyzu/capability/internal-api";
 
 import { InstalledPackageList } from "../../client";
 import { getHomePageRoute, listInstalledPackages } from "../lib/installed-package.service";
 
 export async function InstalledPackagesListPage() {
-  const canManage = (await capabilities.use("platform.identity").getCurrentIdentity({})).permissions.includes("users.manage");
+  const canManage = (await internalApi.call("@core/auth", "getCurrentIdentity", {})).permissions.includes("users.manage");
   return (
     <InstalledPackageList
       pageTitle="Installed Packages"

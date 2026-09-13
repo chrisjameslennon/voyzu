@@ -1,11 +1,10 @@
 import type { TSchema } from "typebox";
 
 export interface InternalApiDefinition {
-  dataDefinition: TSchema;
+  dataDefinition?: TSchema;
   methods: Readonly<Record<string, {
     input: TSchema;
     output: TSchema;
-    transactional?: boolean;
   }>>;
 }
 
@@ -16,7 +15,11 @@ export interface InternalApiInvoker {
   has(resource: string, method?: string): boolean;
 }
 
-export type InternalApiImplementation = Readonly<Record<string, (input: any) => Promise<any>>>;
+export interface InternalApiImplementation {
+  methods: Readonly<Record<string, (input: any) => Promise<any>>>;
+  /** Methods whose execution and output validation share one database transaction. */
+  transactionalMethods?: readonly string[];
+}
 export type InternalApiImplementationLoader = (api: InternalApiInvoker) => Promise<InternalApiImplementation>;
 
 /** Composed runtime entry, not a package declaration. */
@@ -29,7 +32,9 @@ export interface InternalApiResource {
   methods: Readonly<Record<string, {
     input: TSchema;
     output: TSchema;
-    transactional?: boolean;
-    loadHandler: (api: InternalApiInvoker) => Promise<(input: any) => Promise<any>>;
+    loadHandler: (api: InternalApiInvoker) => Promise<{
+      handler: (input: any) => Promise<any>;
+      transactional: boolean;
+    }>;
   }>>;
 }

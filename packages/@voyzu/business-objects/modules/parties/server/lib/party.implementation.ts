@@ -1,4 +1,4 @@
-import type { Party, PartyMethods } from "../../../../../../../business-objects/party.definition";
+import type { Party, PartyMethods } from "../../../../contracts/party.definition";
 import initialParties from "../../mock-data/parties.json" with { type: "json" };
 
 // Updates affect memory only; the JSON fixtures remain unchanged.

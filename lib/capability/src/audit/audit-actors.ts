@@ -1,12 +1,12 @@
 import "server-only";
 import type { AuditUserDto } from "@voyzu/types/modules/core";
-import { semanticData } from "../contracts";
+import { internalApi } from "../internal-api";
 
 export async function getAuditActor(userId: string | null | undefined): Promise<AuditUserDto | null> {
   if (!userId) return null;
   const parsed = Number(userId);
   if (!Number.isInteger(parsed) || parsed < 1) return null;
-  const users = await semanticData.query("userSummary", "byIds", { ids: [parsed] });
+  const users = await internalApi.call("@core/user", "getSummaries", { ids: [parsed] });
   return users[0] ?? null;
 }
 
@@ -18,7 +18,7 @@ export async function getAuditActors(row: {
   updatedUser: AuditUserDto | null;
 }> {
   const ids = [...new Set([row.creation_user_id, row.updated_user_id].map(Number).filter((id) => Number.isInteger(id) && id > 0))];
-  const users = ids.length ? await semanticData.query("userSummary", "byIds", { ids }) : [];
+  const users = ids.length ? await internalApi.call("@core/user", "getSummaries", { ids }) : [];
   return {
     creationUser: users.find((user) => user.id === Number(row.creation_user_id)) ?? null,
     updatedUser: users.find((user) => user.id === Number(row.updated_user_id)) ?? null,

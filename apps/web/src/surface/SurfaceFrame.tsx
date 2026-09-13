@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { capabilities } from "@voyzu/capability/contracts";
+import { internalApi } from "@voyzu/capability/internal-api";
 import { AccessProvider } from "@voyzu/ui-surface/client";
 
 import {
@@ -28,7 +28,7 @@ export async function SurfaceFrame({
   children,
 }: SurfaceFrameProps) {
   // Refreshed with the page render/navigation, not cached in a persistent root layout.
-  const identity = await capabilities.optional("platform.identity")?.getCurrentIdentity({}) ?? null;
+  const identity = await internalApi.callOptional("@core/auth", "getCurrentIdentity", {});
   return (
     <AccessProvider identity={identity}>
     <div className={styles.frame}>

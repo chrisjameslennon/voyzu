@@ -13,6 +13,7 @@ type PackageModule = {
 
 type PackageDefinition = {
   modules: readonly PackageModule[];
+  contracts?: { internalApi?: object };
   install?: {
     sql?: readonly string[];
     seedSql?: readonly string[];
@@ -67,9 +68,10 @@ function validateDefinition(value: unknown): PackageDefinition {
   if (
     definition.modules.length === 0
     && !(definition.install?.sql?.length || definition.install?.seedSql?.length)
+    && !definition.contracts?.internalApi
   ) {
     throw new Error(
-      "voyzu.package.ts must define at least one module or database installation file.",
+      "voyzu.package.ts must define a module, internal API contracts, or database installation files.",
     );
   }
   return definition as PackageDefinition;
@@ -233,8 +235,8 @@ if (action === "install") {
 } else if (action === "run" && scriptName) {
   const workspace = process.env.VOYZU_WORKSPACE_ROOT;
   const contracts = workspace && resolve(workspace) !== resolve(instanceRoot)
-    ? resolve(workspace, "contracts/index.ts")
-    : resolve(instanceRoot, ".generated/contracts/index.ts");
+    ? resolve(workspace, "internal-api/index.ts")
+    : resolve(instanceRoot, ".generated/internal-api/index.ts");
   if (existsSync(contracts)) await import(pathToFileURL(contracts).href);
   await runScript(packageName, definition, scriptName, parameters);
 } else {

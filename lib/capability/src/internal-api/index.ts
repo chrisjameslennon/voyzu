@@ -23,7 +23,7 @@ export interface InternalApiPackage {
 }
 
 /** Resolves ownership without loading any implementation code. */
-export function resolveInternalApiContracts(packages: readonly InternalApiPackage[]) {
+export function resolveInternalApiContracts(packages: readonly InternalApiPackage[], options: { acceptMissingImplementations?: boolean } = {}) {
   const definitions = new Map<string, { packageName: string; definition: InternalApiDefinition }>();
   const providers = new Map<string, { packageName: string; load: InternalApiImplementationLoader; section: "implements" | "composes" }>();
   for (const pkg of packages) {
@@ -35,13 +35,13 @@ export function resolveInternalApiContracts(packages: readonly InternalApiPackag
         throw new InternalApiError(`Invalid resource ${resource} for ${pkg.name}`);
       }
       if (definitions.has(resource)) throw new InternalApiError(`Duplicate definition ${resource}`);
-      if (!definition.dataDefinition || !definition.methods || !Object.keys(definition.methods).length) {
-        throw new InternalApiError(`${resource} requires dataDefinition and methods`);
+      if (!definition.methods || !Object.keys(definition.methods).length) {
+        throw new InternalApiError(`${resource} requires methods`);
       }
-      Schema.Compile(definition.dataDefinition);
+      if (definition.dataDefinition !== undefined) Schema.Compile(definition.dataDefinition);
       for (const [name, method] of Object.entries(definition.methods)) {
         if (!name || unsafeNames.has(name) || !method.input || !method.output) throw new InternalApiError(`Invalid method ${resource}.${name}`);
-        if (method.transactional !== undefined && typeof method.transactional !== "boolean") throw new InternalApiError(`Invalid transactional setting ${resource}.${name}`);
+        if (Object.hasOwn(method, "transactional")) throw new InternalApiError(`Transaction settings belong to the implementation: ${resource}.${name}`);
         Schema.Compile(method.input);
         Schema.Compile(method.output);
       }
@@ -64,7 +64,7 @@ export function resolveInternalApiContracts(packages: readonly InternalApiPackag
     if (!definitions.has(resource)) throw new InternalApiError(`Undefined resource ${resource}`);
   }
   for (const resource of definitions.keys()) {
-    if (resource.startsWith("@core/") && !providers.has(resource)) throw new InternalApiError(`Core resource requires a Platform implementation: ${resource}`);
+    if (resource.startsWith("@core/") && !providers.has(resource) && !options.acceptMissingImplementations) throw new InternalApiError(`Core resource requires a Platform implementation: ${resource}`);
   }
   return { definitions, providers };
 }
@@ -76,11 +76,18 @@ export function createLazyInternalApiResource(resource: string, definition: Inte
     if (!load) throw new InternalApiError(`No implementation for ${resource}`);
     if (!pending) {
       pending = Promise.resolve().then(() => load(api)).then(implementation => {
+        if (!implementation?.methods || typeof implementation.methods !== "object") {
+          throw new InternalApiError(`Missing implementation methods for ${resource}`);
+        }
         for (const method of Object.keys(definition.methods)) {
-          if (!Object.hasOwn(implementation, method) || typeof implementation[method] !== "function") {
+          if (!Object.hasOwn(implementation.methods, method) || typeof implementation.methods[method] !== "function") {
             throw new InternalApiError(`Missing implementation ${resource}.${method}`);
           }
         }
+        if (implementation.transactionalMethods !== undefined && (
+          !Array.isArray(implementation.transactionalMethods)
+          || implementation.transactionalMethods.some(method => typeof method !== "string" || !Object.hasOwn(definition.methods, method))
+        )) throw new InternalApiError(`Invalid transactionalMethods for ${resource}`);
         return implementation;
       }).catch(error => { pending = undefined; throw error; });
     }
@@ -90,10 +97,14 @@ export function createLazyInternalApiResource(resource: string, definition: Inte
     resource,
     implemented: typeof load === "function",
     methods: Object.fromEntries(Object.entries(definition.methods).map(([name, method]) => [name, {
-      ...method,
+      input: method.input,
+      output: method.output,
       loadHandler: async (api: InternalApiInvoker) => {
         const implementation = await loadImplementation(api);
-        return (input: unknown) => implementation[name](input);
+        return {
+          handler: (input: unknown) => implementation.methods[name](input),
+          transactional: implementation.transactionalMethods?.includes(name) ?? false,
+        };
       },
     }])),
   };
@@ -131,14 +142,14 @@ export function createInternalApi(resources: readonly InternalApiResource[]) {
       if (!definition.implemented) throw new InternalApiError(`No implementation for ${resource}`);
       const operation = definition.methods[method];
       validate(operation.input, input, `${resource}.${method} input`, true);
+      const { handler, transactional } = await operation.loadHandler(api as InternalApiInvoker);
       const execute = async () => {
-        const handler = await operation.loadHandler(api as InternalApiInvoker);
         const result = await handler(input);
         // Validate before committing a transaction so an invalid response rolls back.
         validate(operation.output, result, `${resource}.${method} output`, false);
         return result as Output<R, M>;
       };
-      if (operation.transactional) {
+      if (transactional) {
         const { withTransaction } = await import("../db/db");
         return withTransaction(() => execute());
       }

@@ -20,7 +20,7 @@ export {
   type DatabaseUrlValidationResult,
   type DbExecutor,
 } from "./db";
-export { capabilities, semanticData } from "./contracts";
+export { internalApi } from "./internal-api";
 export {
   businessRuleError,
   conflictError,

@@ -3,21 +3,19 @@ import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
 import { install } from "./install/manifest";
 import { countriesModule } from "./modules/countries/module";
 import { currenciesModule } from "./modules/currencies/module";
+import { CountryDefinition } from "./contracts/country.definition";
+import { CurrencyDefinition } from "./contracts/currency.definition";
 
 export const voyzuLocalizationPackage = {
   contracts: {
-    semanticDataDefinition: {
-      implements: {
-        "currency": {
-          get: (code: string) => import("./modules/currencies/server/lib/currency.service").then((module) => module.getCurrency(code)),
-          queries: { all: (_input: Record<string, never>) => import("./modules/currencies/server/lib/currency.service").then((module) => module.listCurrencies()) },
-        },
-        "country": {
-          get: (code: string) => import("./modules/countries/server/lib/country.service").then((module) => module.getCountry(code)),
-          queries: { all: (_input: Record<string, never>) => import("./modules/countries/server/lib/country.service").then((module) => module.listCountries()) },
-        },
+    internalApi: {
+      implements: { ...countriesModule.implements, ...currenciesModule.implements },
+      defines: {
+        "@core/country": CountryDefinition,
+        "@core/currency": CurrencyDefinition,
       },
     },
+    
   },
   modules: [countriesModule, currenciesModule],
   install,

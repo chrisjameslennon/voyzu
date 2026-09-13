@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./business-objects/*": { "types": "./src/business-objects/*.definition.ts", "import": "./src/business-objects/*.definition.ts" },
     "./business-objects/customer-account": { "types": "./src/business-objects/customer-account.definition.ts", "import": "./src/business-objects/customer-account.definition.ts" },
     "./internal-api": { "types": "./src/internal-api.ts", "import": "./src/internal-api.ts" },
     "./business-objects/customer": { "types": "./src/business-objects/customer.definition.ts", "import": "./src/business-objects/customer.definition.ts" },

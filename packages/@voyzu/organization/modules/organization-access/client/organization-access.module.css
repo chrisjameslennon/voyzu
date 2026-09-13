@@ -1,0 +1,31 @@
+.modalHeaderContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.625rem;
+}
+
+.modalTitle {
+  margin: 0;
+}
+
+.userIdentity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.organizationList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.organizationOption {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.adminMessage {
+  margin: 0;
+}
