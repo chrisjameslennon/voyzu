@@ -121,7 +121,7 @@ export default [
 
 "use client";
 
-import { FinanceCompanySwitcher } from "@voyzu/finance/finance-companies/client";
+import { FinanceCompanySwitcher } from "@voyzu/finance/organization-finance/client";
 
 export default function FinanceLeftNavHeader({
   presentation,

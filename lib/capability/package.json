@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./cross-package-api": { "types": "./src/cross-package-api/index.ts", "import": "./src/cross-package-api/index.ts" },
     "./audit": { "types": "./src/audit/index.ts", "import": "./src/audit/index.ts" },
     ".": {
       "types": "./src/index.ts",

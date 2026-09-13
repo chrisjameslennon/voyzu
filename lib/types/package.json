@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./cross-package-api": { "types": "./src/cross-package-api.ts", "import": "./src/cross-package-api.ts" },
+    "./business-objects/customer": { "types": "./src/business-objects/customer.ts", "import": "./src/business-objects/customer.ts" },
+    "./business-objects/party": { "types": "./src/business-objects/party.ts", "import": "./src/business-objects/party.ts" },
     "./identity": { "types": "./src/identity.ts", "import": "./src/identity.ts" },
     "./contracts": { "types": "./src/contracts.ts", "import": "./src/contracts.ts" },
     ".": {
