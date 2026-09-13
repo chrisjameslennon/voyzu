@@ -10,6 +10,8 @@ export interface VoyzuModuleComponentDefinition {
 }
 
 export interface VoyzuPackageModuleDefinition {
+  defines?: PackageContracts["defines"];
+  implements?: PackageContracts["implements"];
   internalApiContributions?: readonly InternalApiContribution[];
   internalApi?: readonly InternalApiResource[];
   pageRoutes: Readonly<Record<string, unknown>>;

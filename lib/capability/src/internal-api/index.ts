@@ -1,7 +1,7 @@
 import "server-only";
 import type { Static, TSchema } from "typebox";
 import Schema from "typebox/schema";
-import type { InternalApiResource } from "@voyzu/types/internal-api";
+import type { InternalApiDefinition, InternalApiImplementationLoader, InternalApiInvoker, InternalApiResource } from "@voyzu/types/internal-api";
 import { InputValidationError } from "../errors";
 
 /** Augmented by composition: callers never import provider packages. */
@@ -14,6 +14,79 @@ type Output<R extends Resource, M extends Method<R>> = Methods<R>[M] extends { o
 
 export class InternalApiError extends Error {}
 const unsafeNames = new Set(["__proto__", "prototype", "constructor"]);
+
+export interface InternalApiPackage {
+  name: string;
+  contracts?: {
+    defines?: Readonly<Record<string, InternalApiDefinition>>;
+    implements?: Readonly<Record<string, InternalApiImplementationLoader>>;
+  };
+}
+
+/** Resolves ownership without loading any implementation code. */
+export function resolveInternalApiContracts(packages: readonly InternalApiPackage[]) {
+  const definitions = new Map<string, { packageName: string; definition: InternalApiDefinition }>();
+  const providers = new Map<string, { packageName: string; load: InternalApiImplementationLoader }>();
+  for (const pkg of packages) {
+    for (const [resource, definition] of Object.entries(pkg.contracts?.defines ?? {})) {
+      const prefix = resource.startsWith("@core/") && pkg.name === "@voyzu/business-objects" ? "@core/" : `${pkg.name}/`;
+      if (!resource.startsWith(prefix) || !resource.slice(prefix.length)
+        || resource.split("/").some(part => !part || part === "." || part === ".." || unsafeNames.has(part))) {
+        throw new InternalApiError(`Invalid resource ${resource} for ${pkg.name}`);
+      }
+      if (definitions.has(resource)) throw new InternalApiError(`Duplicate definition ${resource}`);
+      if (!definition.dataDefinition || !definition.methods || !Object.keys(definition.methods).length) {
+        throw new InternalApiError(`${resource} requires dataDefinition and methods`);
+      }
+      Schema.Compile(definition.dataDefinition);
+      for (const [name, method] of Object.entries(definition.methods)) {
+        if (!name || unsafeNames.has(name) || !method.input || !method.output) throw new InternalApiError(`Invalid method ${resource}.${name}`);
+        if (method.transactional !== undefined && typeof method.transactional !== "boolean") throw new InternalApiError(`Invalid transactional setting ${resource}.${name}`);
+        Schema.Compile(method.input);
+        Schema.Compile(method.output);
+      }
+      definitions.set(resource, { packageName: pkg.name, definition });
+    }
+    for (const [resource, load] of Object.entries(pkg.contracts?.implements ?? {})) {
+      if (typeof load !== "function") throw new InternalApiError(`Invalid implementation ${resource}`);
+      if (providers.has(resource)) throw new InternalApiError(`Duplicate implementation ${resource}`);
+      providers.set(resource, { packageName: pkg.name, load });
+    }
+  }
+  for (const resource of providers.keys()) {
+    if (!definitions.has(resource)) throw new InternalApiError(`Undefined resource ${resource}`);
+  }
+  return { definitions, providers };
+}
+
+/** One lazy provider per resource; importing the registry does not load providers. */
+export function createLazyInternalApiResource(resource: string, definition: InternalApiDefinition, load?: InternalApiImplementationLoader): InternalApiResource {
+  let pending: ReturnType<InternalApiImplementationLoader> | undefined;
+  const loadImplementation = (api: InternalApiInvoker) => {
+    if (!load) throw new InternalApiError(`No implementation for ${resource}`);
+    if (!pending) {
+      pending = Promise.resolve().then(() => load(api)).then(implementation => {
+        for (const method of Object.keys(definition.methods)) {
+          if (!Object.hasOwn(implementation, method) || typeof implementation[method] !== "function") {
+            throw new InternalApiError(`Missing implementation ${resource}.${method}`);
+          }
+        }
+        return implementation;
+      }).catch(error => { pending = undefined; throw error; });
+    }
+    return pending;
+  };
+  return {
+    resource,
+    methods: Object.fromEntries(Object.entries(definition.methods).map(([name, method]) => [name, {
+      ...method,
+      loadHandler: async (api: InternalApiInvoker) => {
+        const implementation = await loadImplementation(api);
+        return (input: unknown) => implementation[name](input);
+      },
+    }])),
+  };
+}
 
 /** Compose-time validation; does not load or invoke handlers. */
 export function validateInternalApi(packages: readonly {
@@ -60,7 +133,7 @@ export function createInternalApi(resources: readonly InternalApiResource[]) {
       throw new InternalApiError(`Invalid ${label}`);
     }
   }
-  return {
+  const api = {
     async call<R extends Resource, M extends Method<R>>(resource: R, method: M, input: Input<R, M>): Promise<Output<R, M>> {
       const definition = registry.get(resource);
       if (!definition) throw new InternalApiError(`Unknown resource ${resource}`);
@@ -68,7 +141,7 @@ export function createInternalApi(resources: readonly InternalApiResource[]) {
       const operation = definition.methods[method];
       validate(operation.input, input, `${resource}.${method} input`, true);
       const execute = async () => {
-        const handler = await operation.loadHandler();
+        const handler = await operation.loadHandler(api as InternalApiInvoker);
         const result = await handler(input);
         // Validate before committing a transaction so an invalid response rolls back.
         validate(operation.output, result, `${resource}.${method} output`, false);
@@ -81,6 +154,7 @@ export function createInternalApi(resources: readonly InternalApiResource[]) {
       return execute();
     },
   };
+  return api;
 }
 
 const shared = globalThis as typeof globalThis & { __voyzuInternalApi?: ReturnType<typeof createInternalApi> };

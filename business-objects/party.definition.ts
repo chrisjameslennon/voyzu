@@ -19,3 +19,24 @@ export interface PartyMethods {
     changes: Partial<Pick<Party, "code" | "name">>;
   }): Promise<void>;
 }
+
+export const PartyDefinition = {
+  dataDefinition: PartySchema,
+  methods: {
+    get: {
+      input: Type.Object({ id: Type.Number() }, { additionalProperties: false }),
+      output: Type.Union([PartySchema, Type.Null()]),
+    },
+    findByCode: {
+      input: Type.Object({ code: Type.String() }, { additionalProperties: false }),
+      output: Type.Union([PartySchema, Type.Null()]),
+    },
+    update: {
+      input: Type.Object({
+        id: Type.Number(),
+        changes: Type.Object({ code: Type.Optional(Type.String()), name: Type.Optional(Type.String()) }, { additionalProperties: false }),
+      }, { additionalProperties: false }),
+      output: Type.Undefined(),
+    },
+  },
+} as const;

@@ -1,5 +1,6 @@
-import type { Party } from "./party.definition";
-import type { CustomerAccount } from "./customer-account.definition";
+import Type from "typebox";
+import { PartyDefinition, PartySchema, type Party } from "./party.definition";
+import { CustomerAccountSchema, type CustomerAccount } from "./customer-account.definition";
 
 /**
  * The canonical composed Customer business object.
@@ -20,3 +21,17 @@ export interface CustomerMethods {
     changes: Partial<Pick<Party, "code" | "name">>;
   }): Promise<void>;
 }
+
+export const CustomerSchema = Type.Object({
+  ...PartySchema.properties,
+  account: CustomerAccountSchema,
+}, { additionalProperties: false });
+
+export const CustomerDefinition = {
+  dataDefinition: CustomerSchema,
+  methods: {
+    get: { ...PartyDefinition.methods.get, output: Type.Union([CustomerSchema, Type.Null()]) },
+    findByCode: { ...PartyDefinition.methods.findByCode, output: Type.Union([CustomerSchema, Type.Null()]) },
+    update: PartyDefinition.methods.update,
+  },
+} as const;

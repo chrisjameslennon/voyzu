@@ -3,8 +3,8 @@ import type { CustomerAccountMethods } from "../../../../../../../business-objec
 import { partyMethods } from "../../../parties/server/lib/party.implementation";
 
 // The caller supplies the account provider; Platform never imports Commercial.
-// Runtime discovery/registration is not implemented by this factory.
-export function createCustomerMethods(accounts: Pick<CustomerAccountMethods, "get">): CustomerMethods {
+// The package loader supplies an account dependency backed by the internal API.
+export function createCustomerMethods(accounts: Pick<CustomerAccountMethods, "get">) {
   async function get({ id }: { id: number }): Promise<Customer | null> {
     const party = await partyMethods.get({ id });
     if (!party) return null;

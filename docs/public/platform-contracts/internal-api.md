@@ -1,12 +1,25 @@
 # Internal API
 
-Server-side, same-runtime calls to package-owned resources. This API exists alongside semantic contracts.
+Server-side, same-runtime calls to package-owned and platform-owned (`@core`) resources. This API exists alongside semantic contracts.
 
 ## Definition
 
-A module exports a `internalApi` array from `internal-api.ts`. Each resource has a fully qualified name, such as `@voyzu/commercial/customer-price-list-items`, and named methods. Each method declares TypeBox `input` and `output` schemas and a `loadHandler` function. `defineInternalApiMethod` checks the handler against those schemas at compile time.
+A module exports `defines` and `implements`. Definitions contain a TypeBox `dataDefinition` and named `methods`, each with `input` and `output` schemas. Data interfaces contain properties only; separate method interfaces describe the operations. Files use `.definition.ts` and `.implementation.ts` respectively.
 
-The module exposes the array, and `voyzu.package.ts` flattens the module arrays into its own `internalApi` array. Resources must belong to the declaring package's namespace.
+`voyzu.package.ts` aggregates these under `contracts`:
+
+```ts
+contracts: {
+  defines: { ...customersModule.defines },
+  implements: { ...customersModule.implements },
+}
+```
+
+Each implementation is a lazy loader returning the object's methods. Commercial defines and implements its price lists. Platform's Business Objects package defines `@core/customer/account`; Commercial implements it without redefining it. Only Platform's Business Objects package may define `@core` resources. Each resource has at most one implementation.
+
+Loaders receive an internal API invoker for dependencies. Platform's Customer loader uses it to obtain Commercial's account data, without importing Commercial. A missing Party or account record returns `null` for the Customer; a missing account implementation throws an error.
+
+The earlier `internalApi` array remains supported for compatibility.
 
 ## Calls
 
@@ -27,9 +40,9 @@ Input and output are validated at runtime. Unknown resources and methods throw e
 
 ## Composition and Loading
 
-`voyzu:compose` validates registration and generates `.run/internal-api/index.ts` plus the web application's generated bridge. The index contains schema metadata, type-only imports for caller inference, and lazy provider loaders. No provider is invoked during composition or registration. The package definition and its handler are imported on the first call that needs them.
+`voyzu:compose` validates registration and generates `.run/internal-api/index.ts` plus the web application's generated bridge. The index contains schema metadata, type-only imports for caller inference, and lazy provider loaders. No provider is invoked during composition or registration. Implementations are loaded on first use and cached for that registry. Undefined contracts, duplicate definitions and duplicate implementations fail composition. Missing methods fail when the provider loads.
 
-The web server loads the generated registry during initialization. An empty resource array is valid. Registration replaces the previous registry on reload.
+The web server loads the generated registry during initialization. Core definitions are included even without installed extension providers; calling an unimplemented resource throws an error. Registration replaces the previous registry on reload.
 
 The targeted composer is `lib/runtime-tools/compose/compose-internal-api.ts`. It accepts the runtime root, workspace root and package descriptors (JSON, or `@file`). The descriptors use `{ name, directory }` and should cover all packages in that workspace, since this rebuilds the complete internal API registry without composing other surfaces.
 

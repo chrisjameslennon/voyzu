@@ -1,5 +1,22 @@
 import type { Static, TSchema } from "typebox";
 
+export interface InternalApiDefinition {
+  dataDefinition: TSchema;
+  methods: Readonly<Record<string, {
+    input: TSchema;
+    output: TSchema;
+    transactional?: boolean;
+  }>>;
+}
+
+/** Used by providers for calls whose results are validated by the dispatcher. */
+export interface InternalApiInvoker {
+  call(resource: string, method: string, input: unknown): Promise<unknown>;
+}
+
+export type InternalApiImplementation = Readonly<Record<string, (input: any) => Promise<any>>>;
+export type InternalApiImplementationLoader = (api: InternalApiInvoker) => Promise<InternalApiImplementation>;
+
 /**
  * Declaration of a package's data contribution to a platform-owned resource.
  * This is metadata for distributed implementation, not a separate calling API.
@@ -27,7 +44,7 @@ export interface InternalApiResource {
     input: TSchema;
     output: TSchema;
     transactional?: boolean;
-    loadHandler: () => Promise<(input: any) => Promise<any>>;
+    loadHandler: (api: InternalApiInvoker) => Promise<(input: any) => Promise<any>>;
   }>>;
 }
 

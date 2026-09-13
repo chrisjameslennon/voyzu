@@ -11,6 +11,7 @@
     "strict": true,
     "skipLibCheck": true,
     "paths": {
+      "@voyzu/types/business-objects/*": ["./lib/types/src/business-objects/*.definition.ts"],
       "@voyzu/modules": [
         "./lib/modules/index.ts"
       ],

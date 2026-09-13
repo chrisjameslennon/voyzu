@@ -18,3 +18,24 @@ export interface CustomerAccountMethods {
   }): Promise<void>;
   adjustCreditLimit(parameters: { id: number; amount: number }): Promise<void>;
 }
+
+export const CustomerAccountDefinition = {
+  dataDefinition: CustomerAccountSchema,
+  methods: {
+    get: {
+      input: Type.Object({ id: Type.Number() }, { additionalProperties: false }),
+      output: Type.Union([CustomerAccountSchema, Type.Null()]),
+    },
+    update: {
+      input: Type.Object({
+        id: Type.Number(),
+        changes: Type.Object({ purchaseOrderRequired: Type.Optional(Type.Boolean()) }, { additionalProperties: false }),
+      }, { additionalProperties: false }),
+      output: Type.Undefined(),
+    },
+    adjustCreditLimit: {
+      input: Type.Object({ id: Type.Number(), amount: Type.Number() }, { additionalProperties: false }),
+      output: Type.Undefined(),
+    },
+  },
+} as const;
