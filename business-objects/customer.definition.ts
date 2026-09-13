@@ -11,3 +11,12 @@ import type { CustomerAccount } from "./customer-account.definition";
 export interface Customer extends Party {
   account: CustomerAccount;
 }
+
+export interface CustomerMethods {
+  get(parameters: { id: number }): Promise<Customer | null>;
+  findByCode(parameters: { code: string }): Promise<Customer | null>;
+  update(parameters: {
+    id: number;
+    changes: Partial<Pick<Party, "code" | "name">>;
+  }): Promise<void>;
+}

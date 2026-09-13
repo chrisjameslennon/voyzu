@@ -10,3 +10,12 @@ export const PartySchema = Type.Object(
 );
 
 export interface Party extends Static<typeof PartySchema> {}
+
+export interface PartyMethods {
+  get(parameters: { id: number }): Promise<Party | null>;
+  findByCode(parameters: { code: string }): Promise<Party | null>;
+  update(parameters: {
+    id: number;
+    changes: Partial<Pick<Party, "code" | "name">>;
+  }): Promise<void>;
+}

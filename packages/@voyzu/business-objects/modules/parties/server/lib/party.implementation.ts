@@ -1,0 +1,28 @@
+import type { Party, PartyMethods } from "../../../../../../../business-objects/party.definition";
+import initialParties from "../../mock-data/parties.json" with { type: "json" };
+
+// Updates affect memory only; the JSON fixtures remain unchanged.
+let parties: Party[] = structuredClone(initialParties);
+
+export function resetPartyData(): void {
+  parties = structuredClone(initialParties);
+}
+
+export async function get({ id }: { id: number }): Promise<Party | null> {
+  const party = parties.find(party => party.id === id);
+  return party ? { ...party } : null;
+}
+
+export async function findByCode({ code }: { code: string }): Promise<Party | null> {
+  const party = parties.find(party => party.code === code);
+  return party ? { ...party } : null;
+}
+
+export async function update({ id, changes }: Parameters<PartyMethods["update"]>[0]): Promise<void> {
+  const party = parties.find(party => party.id === id);
+  if (!party) throw new Error("Party not found");
+  if (changes.code !== undefined) party.code = changes.code;
+  if (changes.name !== undefined) party.name = changes.name;
+}
+
+export const partyMethods = { get, findByCode, update } satisfies PartyMethods;
