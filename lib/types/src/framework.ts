@@ -1,6 +1,6 @@
 import type { ApiRouteDefinition } from "./api";
 import type { PackageContracts } from "./contracts";
-import type { CrossPackageApiResource } from "./cross-package-api";
+import type { InternalApiResource } from "./internal-api";
 
 export type VoyzuModuleComponent = (props: any) => any;
 
@@ -10,7 +10,7 @@ export interface VoyzuModuleComponentDefinition {
 }
 
 export interface VoyzuPackageModuleDefinition {
-  crossPackageApi?: readonly CrossPackageApiResource[];
+  internalApi?: readonly InternalApiResource[];
   pageRoutes: Readonly<Record<string, unknown>>;
   apiDefinitions: Readonly<Record<string, ApiRouteDefinition>>;
   components?: Readonly<Record<string, VoyzuModuleComponentDefinition>>;
@@ -93,7 +93,7 @@ export interface VoyzuPackageDefinition<
 > {
   modules: readonly TModule[];
   contracts?: PackageContracts;
-  crossPackageApi?: readonly CrossPackageApiResource[];
+  internalApi?: readonly InternalApiResource[];
   install?: VoyzuPackageInstallDefinition;
   uninstall?: VoyzuPackageUninstallDefinition;
   scripts?: VoyzuPackageScripts;

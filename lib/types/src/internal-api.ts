@@ -1,6 +1,6 @@
 import type { Static, TSchema } from "typebox";
 
-export interface CrossPackageApiMethod<I extends TSchema = TSchema, O extends TSchema = TSchema> {
+export interface InternalApiMethod<I extends TSchema = TSchema, O extends TSchema = TSchema> {
   input: I;
   output: O;
   /** Starts a transaction, or joins the caller's transaction. */
@@ -8,10 +8,10 @@ export interface CrossPackageApiMethod<I extends TSchema = TSchema, O extends TS
   loadHandler: () => Promise<(input: Static<I>) => Promise<Static<O>>>;
 }
 
-export interface CrossPackageApiResource {
+export interface InternalApiResource {
   /** Fully qualified package resource, e.g. @voyzu/commercial/customer-price-list-items. */
   resource: string;
-  // Registry storage erases handler types; defineCrossPackageApiMethod preserves
+  // Registry storage erases handler types; defineInternalApiMethod preserves
   // them at declaration sites and runtime validation guards invocation.
   methods: Readonly<Record<string, {
     input: TSchema;
@@ -22,8 +22,8 @@ export interface CrossPackageApiResource {
 }
 
 /** Preserves schema inference and checks the lazy handler's input and return types. */
-export function defineCrossPackageApiMethod<I extends TSchema, O extends TSchema>(
-  method: CrossPackageApiMethod<I, O>,
-): CrossPackageApiMethod<I, O> {
+export function defineInternalApiMethod<I extends TSchema, O extends TSchema>(
+  method: InternalApiMethod<I, O>,
+): InternalApiMethod<I, O> {
   return method;
 }

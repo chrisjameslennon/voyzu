@@ -1,12 +1,16 @@
 import Type, { type Static } from "typebox";
 import { PartySchema, type Party } from "./party";
 
-export const CustomerSchema = Type.Object({
-  ...PartySchema.properties,
+export const CustomerAccountSchema = Type.Object({
+  partyId: Type.Number(),
   creditLimit: Type.Number(),
 }, { additionalProperties: false });
 
-export interface Customer extends Party, Static<typeof CustomerSchema> {
-  get(id: number): Promise<Customer | null>;
-  findByCode(code: string): Promise<Customer | null>;
+export interface CustomerAccount extends Static<typeof CustomerAccountSchema> {
+  adjustCreditLimit(amount: number): Promise<void>;
+}
+
+export interface Customer {
+  party: Party;
+  account: CustomerAccount;
 }

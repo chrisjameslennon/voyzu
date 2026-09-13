@@ -5,7 +5,7 @@ export async function register(): Promise<void> {
     if (development) console.log("[voyzu] loading contract configuration ...");
     try {
       await import("./.generated/contracts/installed");
-      await import("./.generated/cross-package-api/installed");
+      await import("./.generated/internal-api/installed");
       if (development) {
         console.log(`[voyzu] contract configuration loaded in ${Math.round(performance.now() - started)} ms`);
       }
