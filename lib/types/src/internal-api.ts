@@ -1,5 +1,15 @@
 import type { Static, TSchema } from "typebox";
 
+/**
+ * Declaration of a package's data contribution to a platform-owned resource.
+ * This is metadata for distributed implementation, not a separate calling API.
+ * Provider loading and composition of these contributions are not implemented yet.
+ */
+export interface InternalApiContribution {
+  resource: `@core/${string}`;
+  dataDefinition: TSchema;
+}
+
 export interface InternalApiMethod<I extends TSchema = TSchema, O extends TSchema = TSchema> {
   input: I;
   output: O;

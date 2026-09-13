@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./business-objects/customer-account": { "types": "./src/business-objects/customer-account.definition.ts", "import": "./src/business-objects/customer-account.definition.ts" },
     "./internal-api": { "types": "./src/internal-api.ts", "import": "./src/internal-api.ts" },
-    "./business-objects/customer": { "types": "./src/business-objects/customer.ts", "import": "./src/business-objects/customer.ts" },
-    "./business-objects/party": { "types": "./src/business-objects/party.ts", "import": "./src/business-objects/party.ts" },
+    "./business-objects/customer": { "types": "./src/business-objects/customer.definition.ts", "import": "./src/business-objects/customer.definition.ts" },
+    "./business-objects/party": { "types": "./src/business-objects/party.definition.ts", "import": "./src/business-objects/party.definition.ts" },
     "./identity": { "types": "./src/identity.ts", "import": "./src/identity.ts" },
     "./contracts": { "types": "./src/contracts.ts", "import": "./src/contracts.ts" },
     ".": {
