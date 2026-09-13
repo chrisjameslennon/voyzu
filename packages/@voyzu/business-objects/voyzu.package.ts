@@ -6,17 +6,21 @@ import { CustomerAccountDefinition, type CustomerAccount } from "../../../busine
 
 export const businessObjectsPackage = {
   contracts: {
-    defines: {
-      "@core/party": PartyDefinition,
-      "@core/customer": CustomerDefinition,
-      "@core/customer/account": CustomerAccountDefinition,
-    },
-    implements: {
-      "@core/party": () => import("./modules/parties/server/lib/party.implementation").then(module => module.partyMethods),
-      "@core/customer": (api: InternalApiInvoker) => import("./modules/customers/server/lib/customer.implementation")
-        .then(module => module.createCustomerMethods({
-          get: input => api.call("@core/customer/account", "get", input) as Promise<CustomerAccount | null>,
-        })),
+    internalApi: {
+      defines: {
+        "@core/party": PartyDefinition,
+        "@erp/customer": CustomerDefinition,
+        "@erp/CustomerAccount": CustomerAccountDefinition,
+      },
+      implements: {
+        "@core/party": () => import("./modules/parties/server/lib/party.implementation").then(module => module.partyMethods),
+      },
+      composes: {
+        "@erp/customer": (api: InternalApiInvoker) => import("./modules/customers/server/lib/customer.implementation")
+          .then(module => module.createCustomerMethods({
+            get: input => api.call("@erp/CustomerAccount", "get", input) as Promise<CustomerAccount | null>,
+          })),
+      },
     },
   },
   modules: [],

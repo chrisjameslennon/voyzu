@@ -1,1 +1,1 @@
-export type { Customer, CustomerMethods } from "../../../../business-objects/customer.definition";
+export { CustomerSchema, CustomerDefinition, type Customer, type CustomerMethods, type CustomerContract } from "../../../../business-objects/customer.definition";

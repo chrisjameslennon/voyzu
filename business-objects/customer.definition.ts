@@ -14,10 +14,10 @@ export interface Customer extends Party {
 }
 
 export interface CustomerMethods {
-  get(parameters: { id: number }): Promise<Customer | null>;
+  get(parameters: { party_id: number }): Promise<Customer | null>;
   findByCode(parameters: { code: string }): Promise<Customer | null>;
   update(parameters: {
-    id: number;
+    party_id: number;
     changes: Partial<Pick<Party, "code" | "name">>;
   }): Promise<void>;
 }
@@ -35,3 +35,6 @@ export const CustomerDefinition = {
     update: PartyDefinition.methods.update,
   },
 } as const;
+
+/** The complete schema definition, including data and method contracts. */
+export type CustomerContract = typeof CustomerDefinition;

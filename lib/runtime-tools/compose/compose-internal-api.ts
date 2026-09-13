@@ -1,9 +1,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { resolveInternalApiContracts, validateInternalApi } from "@voyzu/capability/internal-api";
+import { resolveInternalApiContracts } from "@voyzu/capability/internal-api";
 import type { PackageContracts } from "@voyzu/types/contracts";
-import type { InternalApiResource } from "@voyzu/types/internal-api";
 
 type Descriptor = { name: string; directory: string };
 
@@ -22,9 +21,10 @@ export async function composeInternalApi(runtimeRoot: string, workspaceRoot: str
   const packages = await Promise.all(candidates.map(async descriptor => {
     const file = join(descriptor.directory, "voyzu.package.ts");
     const { default: definition } = await import(pathToFileURL(file).href);
-    return { ...descriptor, file, contracts: definition.contracts as PackageContracts | undefined, internalApi: definition.internalApi as readonly InternalApiResource[] | undefined };
+    const location = relative(resolve(runtimeRoot, "packages"), resolve(descriptor.directory));
+    const isPlatform = !isAbsolute(location) && location !== ".." && !location.startsWith(`..\\`) && !location.startsWith("../");
+    return { ...descriptor, file, isPlatform, contracts: definition.contracts as PackageContracts | undefined };
   }));
-  validateInternalApi(packages);
   const configuration = resolveInternalApiContracts(packages);
   const imports: string[] = [];
   const types: string[] = [];
@@ -33,29 +33,13 @@ export async function composeInternalApi(runtimeRoot: string, workspaceRoot: str
     const owner = packages.find(pkg => pkg.name === packageName)!;
     const alias = `definition${imports.length}`;
     imports.push(`import type ${alias} from ${JSON.stringify(specifier(directory, owner.file))};`);
-    types.push(`    ${JSON.stringify(resource)}: typeof ${alias}.contracts.defines[${JSON.stringify(resource)}];`);
+    types.push(`    ${JSON.stringify(resource)}: typeof ${alias}.contracts.internalApi.defines[${JSON.stringify(resource)}];`);
     const provider = configuration.providers.get(resource);
     const providerPackage = provider && packages.find(pkg => pkg.name === provider.packageName)!;
     const loader = providerPackage
-      ? `api => import(${JSON.stringify(specifier(directory, providerPackage.file))}).then(m => (m.default.contracts.implements[${JSON.stringify(resource)}] as InternalApiImplementationLoader)(api))`
+      ? `api => import(${JSON.stringify(specifier(directory, providerPackage.file))}).then(m => (m.default.contracts.internalApi.${provider!.section}[${JSON.stringify(resource)}] as InternalApiImplementationLoader)(api))`
       : "undefined";
     entries.push(`  createLazyInternalApiResource(${JSON.stringify(resource)}, ${JSON.stringify(definition)}, ${loader})`);
-  }
-  for (const [packageIndex, pkg] of packages.entries()) {
-    if (!pkg.internalApi?.length) continue;
-    const modulePath = JSON.stringify(specifier(directory, pkg.file));
-    const alias = `package${packageIndex}`;
-    imports.push(`import type ${alias} from ${modulePath};`);
-    for (const [index, resource] of pkg.internalApi.entries()) {
-      if (configuration.definitions.has(resource.resource)) throw new Error(`Duplicate resource ${resource.resource}`);
-      types.push(`    ${JSON.stringify(resource.resource)}: (typeof ${alias}.internalApi)[${index}];`);
-      const methods = Object.entries(resource.methods).map(([name, method]) => {
-        const key = JSON.stringify(name);
-        const metadata = JSON.stringify({ input: method.input, output: method.output, transactional: method.transactional });
-        return `${key}: { ...${metadata}, loadHandler: () => import(${modulePath}).then(m => m.default.internalApi[${index}].methods[${key}].loadHandler()) }`;
-      });
-      entries.push(`  { resource: ${JSON.stringify(resource.resource)}, methods: { ${methods.join(",\n")} } }`);
-    }
   }
   await mkdir(directory, { recursive: true });
   await writeFile(join(directory, "package.json"), JSON.stringify({ private: true, type: "module" }, null, 2) + "\n");

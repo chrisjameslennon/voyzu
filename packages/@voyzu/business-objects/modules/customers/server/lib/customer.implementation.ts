@@ -5,16 +5,17 @@ import { partyMethods } from "../../../parties/server/lib/party.implementation";
 // The caller supplies the account provider; Platform never imports Commercial.
 // The package loader supplies an account dependency backed by the internal API.
 export function createCustomerMethods(accounts: Pick<CustomerAccountMethods, "get">) {
-  async function get({ id }: { id: number }): Promise<Customer | null> {
-    const party = await partyMethods.get({ id });
+  async function get({ party_id }: { party_id: number }): Promise<Customer | null> {
+    const party = await partyMethods.get({ party_id });
     if (!party) return null;
-    const account = await accounts.get({ id });
+    const account = await accounts.get({ party_id });
+    if (account && account.party_id !== party_id) throw new Error("Customer account party_id does not match Party");
     return account ? { ...party, account } : null;
   }
 
   async function findByCode({ code }: { code: string }): Promise<Customer | null> {
     const party = await partyMethods.findByCode({ code });
-    return party ? get({ id: party.id }) : null;
+    return party ? get({ party_id: party.party_id }) : null;
   }
 
   const update = partyMethods.update;

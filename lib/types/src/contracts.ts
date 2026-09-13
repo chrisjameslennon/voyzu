@@ -26,8 +26,12 @@ export interface SemanticDataProvider {
 }
 export type CapabilityProvider = Readonly<Record<string, (...args: any[]) => Promise<any>>>;
 export interface PackageContracts {
-  defines?: Readonly<Record<string, InternalApiDefinition>>;
-  implements?: Readonly<Record<string, InternalApiImplementationLoader>>;
+  internalApi?: {
+    defines?: Readonly<Record<string, InternalApiDefinition>>;
+    implements?: Readonly<Record<string, InternalApiImplementationLoader>>;
+    /** Platform combines independently implemented contributions. */
+    composes?: Readonly<Record<string, InternalApiImplementationLoader>>;
+  };
   semanticCapabilityDefinition?: {
     defines?: Readonly<Record<string, CapabilityContract>>;
     implements?: Readonly<Record<string, CapabilityProvider>>;
