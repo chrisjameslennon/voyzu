@@ -42,13 +42,13 @@ export interface VoyzuPackageNavigationGroup {
 
 /**
  * One independently selectable application domain supplied by a package.
- * routeIds explicitly assigns every package page that belongs to the domain,
- * including detail, report, and unframed pages absent from left navigation.
+ * rootPath selects all pages declared under that root, including pages absent
+ * from left navigation.
  */
 export interface VoyzuPackageNavigationDomain {
   label: string;
   routeId: string;
-  routeIds: readonly string[];
+  rootPath: string;
   leftNav: readonly VoyzuPackageNavigationGroup[];
   topNavigationVisible?: boolean;
 }

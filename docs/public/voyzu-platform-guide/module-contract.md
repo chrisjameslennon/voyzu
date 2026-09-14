@@ -1,6 +1,6 @@
 # Module contract
 
-HTTP API registration uses `contracts.httpApiRouting` (roots and routes keyed by stable ID) and `contracts.httpApiDocumentation` (sections, groups and operation descriptions). Every route needs exactly one documentation entry. Section titles become package-qualified OpenAPI tags; route IDs become operation IDs. See the [HTTP API contract](../platform-contracts/http-api-contract.md) for the complete example. Module exports alone do not register HTTP routes.
+HTTP API registration uses `contracts.httpApiRouting` (roots and routes keyed by stable ID, including operation descriptions) and `contracts.httpApiDocumentation` (sections, groups and ordered route references). Every route needs exactly one documentation entry. Section titles become package-qualified OpenAPI tags; route IDs become operation IDs. See the [HTTP API contract](../platform-contracts/http-api-contract.md) for the complete example. Module exports alone do not register HTTP routes.
 
 A module is a cohesive application capability owned by one Voyzu package. It keeps its page and HTTP API contracts separate from its implementation and keeps business services private to the package. Cross-package communication uses semantic capability and master-data contracts registered by `voyzu.package.ts`.
 
@@ -57,7 +57,7 @@ application composer reads page and HTTP API contracts from `voyzu.package.ts`. 
 
 ### `pages.routes.ts`
 
-`pages.routes.ts` organizes browser page declarations inside a module. Register its route map in `contracts.pageRouting.routes` in `voyzu.package.ts`; composition reads that contract to build the page registry.
+`pages.routes.ts` organizes browser page declarations inside a module. Register its route map in `contracts.pageRouting.roots["/your-root"].routes` in `voyzu.package.ts`; composition reads that contract to build the page registry.
 
 ```ts
 export const pageRoutes = {

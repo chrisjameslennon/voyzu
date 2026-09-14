@@ -10,6 +10,7 @@ import { CurrencyUpdateRequestDto } from "../../types/modules/currencies/currenc
 
 export const httpApiRoutes = {
   "localization.currencies.list": {
+    description: "List Currencies.",
     method: "GET",
     path: "/localization/currencies",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleList),
@@ -25,6 +26,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.create": {
+    description: "Create Currencies. Status defaults to ACTIVE and cannot be supplied in the request body.",
     method: "POST",
     path: "/localization/currencies",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleCreate),
@@ -44,6 +46,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.filter": {
+    description: "Filter Currencies.",
     method: "POST",
     path: "/localization/currencies/filter",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleFilter),
@@ -60,6 +63,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.search": {
+    description: "Search Currencies.",
     method: "GET",
     path: "/localization/currencies/search",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleSearch),
@@ -77,6 +81,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.get": {
+    description: "Get Currencies.",
     method: "GET",
     path: "/localization/currencies/[code]",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleGet),
@@ -101,6 +106,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.update": {
+    description: "Update Currencies.",
     method: "PUT",
     path: "/localization/currencies/[code]",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleUpdate),
@@ -127,6 +133,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.patch": {
+    description: "Patch Currencies.",
     method: "PATCH",
     path: "/localization/currencies/[code]",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handlePatch),
@@ -153,6 +160,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.delete": {
+    description: "Delete Currencies.",
     method: "DELETE",
     path: "/localization/currencies/[code]",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleDelete),
@@ -175,6 +183,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.batchCreate": {
+    description: "Creates multiple currencies. Status defaults to ACTIVE and cannot be supplied in the request body.",
     method: "POST",
     path: "/localization/currencies/batch/create",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleBatchCreate),
@@ -190,6 +199,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.batchGet": {
+    description: "Gets multiple currencies by code.",
     method: "POST",
     path: "/localization/currencies/batch/get",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleBatchGet),
@@ -204,6 +214,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.batchUpdate": {
+    description: "Updates multiple currencies. Status and code cannot be changed by this request; code identifies each row.",
     method: "PUT",
     path: "/localization/currencies/batch/update",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleBatchUpdate),
@@ -219,6 +230,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.batchPatch": {
+    description: "Patches multiple currencies. Status and code cannot be changed by this request; code identifies each row.",
     method: "PATCH",
     path: "/localization/currencies/batch/patch",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleBatchPatch),
@@ -234,6 +246,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.batchDelete": {
+    description: "Deletes multiple currencies. Currencies with postings cannot be deleted.",
     method: "POST",
     path: "/localization/currencies/batch/delete",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleBatchDelete),
@@ -250,6 +263,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.activate": {
+    description: "Sets a currency to ACTIVE.",
     method: "POST",
     path: "/localization/currencies/[code]/activate",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleActivate),
@@ -271,6 +285,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.deactivate": {
+    description: "Sets a currency to INACTIVE.",
     method: "POST",
     path: "/localization/currencies/[code]/deactivate",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleDeactivate),
@@ -292,6 +307,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.batchActivate": {
+    description: "Sets multiple currencies to ACTIVE.",
     method: "POST",
     path: "/localization/currencies/batch/activate",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleBatchActivate),
@@ -307,6 +323,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.currencies.batchDeactivate": {
+    description: "Sets multiple currencies to INACTIVE.",
     method: "POST",
     path: "/localization/currencies/batch/deactivate",
     loadHandler: () => import("./server/http-api/currency.http.handlers").then((module) => module.handleBatchDeactivate),

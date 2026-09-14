@@ -16,7 +16,7 @@ npm run voyzu:compose -- --no-install
 
 Package inventory reconciliation and HTTP API reference generation still run.
 
-For HTTP API or documentation contract changes, use `npm run voyzu:compose -- --surfaces-only`.
+For HTTP API or documentation contract changes, use `npm run voyzu:compose -- --routing-only`.
 This validates HTTP contracts and page references, then refreshes HTTP API,
 page/navigation registries and reference documentation. It leaves internal API
 composition, dependency installation, database inventory and the Next.js cache alone.

@@ -1,6 +1,6 @@
+import { httpApiRoutes as routes0 } from "./modules/audit/http-api.routes";
 import { mergePageRoutes } from "@voyzu/types/page-routing";
 import { pageRoutes as auditPageRoutes } from "./modules/audit/pages.routes";
-import { httpApiRouting, httpApiDocumentation } from "./http-api.contracts";
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
 
 import { install } from "./install/manifest";
@@ -11,13 +11,39 @@ import { AuditDefinition } from "./contracts/audit.definition";
 export const voyzuAuditPackage = {
   contracts: {
     pageRouting: {
-      roots: ["/settings/audit"],
-      routes: mergePageRoutes(
-        auditPageRoutes,
-      ),
+      roots: {
+        "/settings/audit": {
+          routes: mergePageRoutes(
+            auditPageRoutes,
+          ),
+        },
+      },
     },
-    httpApiRouting,
-    httpApiDocumentation,
+    httpApiRouting: {
+      roots: ["/audit"],
+      routes: { ...routes0 },
+    },
+    httpApiDocumentation: {
+      "sections": {
+        "audit.platform": {
+          "title": "Platform",
+          "navigationHeadingId": "voyzu.platform",
+          "description": "Core Voyzu platform operations.",
+          "groups": {
+            "audit.operations": {
+              "title": "@voyzu/audit",
+              "description": "Platform operations provided by @voyzu/audit.",
+              "routes": [
+                "audit.audit.list",
+                "audit.audit.count",
+                "audit.audit.export",
+                "audit.audit.get"
+              ]
+            }
+          }
+        }
+      }
+    },
     internalApi: {
       implements: { ...auditModule.implements },
       defines: { "@core/audit": AuditDefinition },

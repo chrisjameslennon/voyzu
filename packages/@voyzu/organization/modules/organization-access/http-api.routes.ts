@@ -15,6 +15,7 @@ const loadHandlers = () => import("./server/http-api/organization-access.http.ha
 
 export const httpApiRoutes = {
   "organization.organization-access.list": {
+    description: "Lists standard users, organizations and current organization assignments.",
     method: "GET",
     path: "/organization/organization-access",
     loadHandler: () => loadHandlers().then((module) => module.handleList),
@@ -28,6 +29,7 @@ export const httpApiRoutes = {
     },
   },
   "organization.organization-access.replace": {
+    description: "Replaces all organization assignments for a standard user.",
     method: "PUT",
     path: "/organization/organization-access/[code]",
     loadHandler: () => loadHandlers().then((module) => module.handleReplace),

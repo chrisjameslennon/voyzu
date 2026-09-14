@@ -164,7 +164,7 @@ function responseDocs(route: HttpApiRouteDefinition): OperationDoc["responses"] 
     }];
   }));
 }
-function toOperationDoc(route: HttpApiRouteDefinition, id: string, description: string, tag: string): OperationDoc {
+function toOperationDoc(route: HttpApiRouteDefinition, id: string, tag: string): OperationDoc {
   const requestBodySchema = route.request?.body ? normalizeSchema(route.request.body) : undefined;
   const requestBodyExample = requestBodySchema ? sampleSchema(requestBodySchema) : undefined;
   const requestPathParams = pathParameters(route);
@@ -174,7 +174,7 @@ function toOperationDoc(route: HttpApiRouteDefinition, id: string, description: 
     method: route.method.toLowerCase() as OperationDoc["method"],
     path: routePathToDocPath(route.path),
     summary: route.summary,
-    description,
+    description: route.description,
     tags: [tag],
     ...(requestPathParams ? {
       requestPathParams
@@ -245,10 +245,10 @@ export function generateOperationDocs(options: GenerateOperationDocsOptions): st
         const groupFolder = httpApiDocSegment(groupId);
         const outputDirectory = path.join(outputRoot, packageFolder, groupFolder);
         const url = httpApiGroupUrl(packageName, groupId);
-        const operations = Object.entries(group.routes).map(([id, doc]) => {
+        const operations = group.routes.map(id => {
           const route = resolved.routes.get(id)!;
           const file = httpApiDocSegment(id) + ".operation-doc.json";
-          emit(path.join(outputDirectory, file), toOperationDoc(route, id, doc.description, tag));
+          emit(path.join(outputDirectory, file), toOperationDoc(route, id, tag));
           return {
             id,
             file,

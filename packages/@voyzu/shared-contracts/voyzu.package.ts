@@ -1,4 +1,4 @@
-import { httpApiRouting, httpApiDocumentation } from "./http-api.contracts";
+
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
 import type { InternalApiInvoker } from "@voyzu/types/internal-api";
 import type { Party } from "@voyzu/types/business-objects/party";
@@ -20,8 +20,13 @@ import { CountryWithFinanceDefinition } from "./contracts/country-with-finance.d
 
 export const sharedContractsPackage = {
   contracts: {
-    httpApiRouting,
-    httpApiDocumentation,
+    httpApiRouting: {
+      roots: [],
+      routes: {  },
+    },
+    httpApiDocumentation: {
+      "sections": {}
+    },
     internalApi: {
       defines: {
         "@erp/customer": CustomerDefinition,

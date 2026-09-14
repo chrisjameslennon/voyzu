@@ -54,6 +54,7 @@ const userCodePath = Type.String({
 
 export const httpApiRoutes = {
   "auth.users.getOrganizationAccess": {
+    description: "Gets the user's organization assignments and available organizations.",
     method: "GET",
     path: "/users/[code]/organization-access",
     loadHandler: () => import("./server/http-api/user-organization-access.http.handlers").then((module) => module.handleGet),
@@ -68,6 +69,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.replaceOrganizationAccess": {
+    description: "Replaces all organization assignments for a standard user through the Organization internal API.",
     method: "PUT",
     path: "/users/[code]/organization-access",
     loadHandler: () => import("./server/http-api/user-organization-access.http.handlers").then((module) => module.handleReplace),
@@ -86,6 +88,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.list": {
+    description: "List Users.",
     method: "GET",
     path: "/users",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleList),
@@ -105,6 +108,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.create": {
+    description: "Create Users.",
     method: "POST",
     path: "/users",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleCreate),
@@ -136,6 +140,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.filter": {
+    description: "Filter Users.",
     method: "POST",
     path: "/user-queries",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleFilter),
@@ -155,6 +160,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.search": {
+    description: "Search Users.",
     method: "GET",
     path: "/user-search-results",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleSearch),
@@ -181,6 +187,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.batchGet": {
+    description: "Batch Get Users.",
     method: "POST",
     path: "/user-selections",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleBatchGet),
@@ -200,6 +207,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.batchCreate": {
+    description: "Batch Create Users.",
     method: "POST",
     path: "/user-batches",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleBatchCreate),
@@ -219,6 +227,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.batchUpdate": {
+    description: "Batch Update Users.",
     method: "PUT",
     path: "/user-batches",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleBatchUpdate),
@@ -238,6 +247,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.batchPatch": {
+    description: "Batch Patch Users.",
     method: "PATCH",
     path: "/user-batches",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleBatchPatch),
@@ -257,6 +267,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.profile": {
+    description: "Profile Users.",
     method: "GET",
     path: "/users/me",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleCurrentProfile),
@@ -276,6 +287,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.updateProfile": {
+    description: "Update Profile Users.",
     method: "PUT",
     path: "/users/me",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleUpdateCurrentProfile),
@@ -303,6 +315,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.profilePassword": {
+    description: "Profile Password Users.",
     method: "PUT",
     path: "/users/me/password",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleChangeCurrentPassword),
@@ -327,6 +340,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.get": {
+    description: "Get Users.",
     method: "GET",
     path: "/users/[code]",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleGet),
@@ -358,6 +372,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.update": {
+    description: "Update Users.",
     method: "PUT",
     path: "/users/[code]",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleUpdate),
@@ -395,6 +410,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.patch": {
+    description: "Patch Users.",
     method: "PATCH",
     path: "/users/[code]",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handlePatch),
@@ -420,6 +436,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.delete": {
+    description: "Delete Users.",
     method: "DELETE",
     path: "/users/[code]",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleDelete),
@@ -448,6 +465,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.activate": {
+    description: "Activate Users.",
     method: "PUT",
     path: "/users/[code]/activation",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleActivate),
@@ -471,6 +489,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.deactivate": {
+    description: "Deactivate Users.",
     method: "DELETE",
     path: "/users/[code]/activation",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleDeactivate),
@@ -494,6 +513,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.changePassword": {
+    description: "Change Password Users.",
     method: "PUT",
     path: "/users/[code]/password",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleChangePassword),
@@ -528,6 +548,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.batchActivate": {
+    description: "Batch Activate Users.",
     method: "PUT",
     path: "/user-batches/activation",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleBatchActivate),
@@ -555,6 +576,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.batchDeactivate": {
+    description: "Batch Deactivate Users.",
     method: "DELETE",
     path: "/user-batches/activation",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleBatchDeactivate),
@@ -582,6 +604,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.users.batchDelete": {
+    description: "Batch Delete Users.",
     method: "DELETE",
     path: "/user-batches",
     loadHandler: () => import("./server/http-api/user.http.handlers").then((module) => module.handleBatchDelete),

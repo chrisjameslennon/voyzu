@@ -93,43 +93,47 @@ export function comparePageRoutes(left: { path: string }, right: { path: string 
 
 export function validatePageRouting(packageName: string, routing: PageRouting | undefined): void {
   if (routing === undefined) return;
-  if (!routing || !Array.isArray(routing.roots) || !routing.routes || typeof routing.routes !== "object" || Array.isArray(routing.routes)) {
-    throw new Error(`${packageName}: pageRouting requires roots and a routes object.`);
+  if (!routing || !routing.roots || typeof routing.roots !== "object" || Array.isArray(routing.roots) || "routes" in routing) {
+    throw new Error(`${packageName}: pageRouting requires a roots object containing route maps.`);
   }
-  for (const root of routing.roots) {
-    if (typeof root !== "string" || !/^\/(?:[^/?#\[\]\\]+\/)*[^/?#\[\]\\]+$/.test(root) || root.split("/").some(segment => segment === "." || segment === "..")) throw new Error(`${packageName}: invalid page root ${root}.`);
-  }
+  const ids = new Set<string>();
   const patterns = new Set<string>();
-  for (const [id, route] of Object.entries(routing.routes)) {
-    if (!id.trim() || !route || typeof route !== "object" || "id" in route) throw new Error(`${packageName}: route IDs belong in object keys.`);
-    if (typeof route.path !== "string" || !route.path.startsWith("/") || /[?#\\]/.test(route.path) || route.path.endsWith("/")) throw new Error(`${id}: invalid page path.`);
-    if (!routing.roots.some(root => route.path === root || route.path.startsWith(`${root}/`))) throw new Error(`${id}: path ${route.path} is outside package roots.`);
-    const names: string[] = [];
-    for (const segment of route.path.split("/").slice(1)) {
-      if (!segment || segment === "." || segment === "..") throw new Error(`${id}: invalid path segment.`);
-      if (/[\[\]]/.test(segment)) {
-        const match = /^\[([A-Za-z_][A-Za-z0-9_]*)\]$/.exec(segment);
-        if (!match || names.includes(match[1])) throw new Error(`${id}: use distinct single-segment path placeholders.`);
-        names.push(match[1]);
+  for (const [root, definition] of Object.entries(routing.roots)) {
+    if (typeof root !== "string" || !/^\/(?:[^/?#\[\]\\]+\/)*[^/?#\[\]\\]+$/.test(root) || root.split("/").some(segment => segment === "." || segment === "..")) throw new Error(`${packageName}: invalid page root ${root}.`);
+    if (!definition || !definition.routes || typeof definition.routes !== "object" || Array.isArray(definition.routes)) throw new Error(`${packageName}: root ${root} requires a routes object.`);
+    for (const [id, route] of Object.entries(definition.routes)) {
+      if (!id.trim() || !route || typeof route !== "object" || "id" in route) throw new Error(`${packageName}: route IDs belong in object keys.`);
+      if (ids.has(id)) throw new Error(`${packageName}: duplicate page route ID ${id}.`);
+      ids.add(id);
+      if (typeof route.path !== "string" || !route.path.startsWith("/") || /[?#\\]/.test(route.path) || route.path.endsWith("/")) throw new Error(`${id}: invalid page path.`);
+      if (route.path !== root && !route.path.startsWith(`${root}/`)) throw new Error(`${id}: path ${route.path} is outside its declared root ${root}.`);
+      const names: string[] = [];
+      for (const segment of route.path.split("/").slice(1)) {
+        if (!segment || segment === "." || segment === "..") throw new Error(`${id}: invalid path segment.`);
+        if (/[\[\]]/.test(segment)) {
+          const match = /^\[([A-Za-z_][A-Za-z0-9_]*)\]$/.exec(segment);
+          if (!match || names.includes(match[1])) throw new Error(`${id}: use distinct single-segment path placeholders.`);
+          names.push(match[1]);
+        }
       }
+      if (names.length !== Object.keys(route.pathParams ?? {}).length || names.some(name => !Object.hasOwn(route.pathParams ?? {}, name))) throw new Error(`${id}: pathParams must match path placeholders exactly.`);
+      if (typeof route.pageTitle !== "string" || !route.pageTitle.trim() || typeof route.loadPage !== "function") throw new Error(`${id}: pageTitle and lazy loadPage are required.`);
+      if (route.helpPath !== undefined && route.helpPathResolver !== undefined) throw new Error(`${id}: use helpPath or helpPathResolver, not both.`);
+      if (route.helpPathResolver !== undefined && typeof route.helpPathResolver !== "function") throw new Error(`${id}: invalid helpPathResolver.`);
+      if (route.helpPath !== undefined && typeof route.helpPath !== "string") throw new Error(`${id}: invalid helpPath.`);
+      if (route.unframed !== undefined && typeof route.unframed !== "boolean") throw new Error(`${id}: invalid unframed flag.`);
+      if (route.httpApiDocumentationGroupId !== undefined && (typeof route.httpApiDocumentationGroupId !== "string" || !route.httpApiDocumentationGroupId.trim())) throw new Error(`${id}: invalid HTTP API documentation group ID.`);
+      if (route.breadcrumbBase !== undefined && (!Array.isArray(route.breadcrumbBase) || route.breadcrumbBase.some(item => !item || typeof item.label !== "string" || (item.href !== undefined && typeof item.href !== "string")))) throw new Error(`${id}: invalid breadcrumbs.`);
+      if (route.auth !== undefined) {
+        const auth = route.auth;
+        if (!auth || typeof auth !== "object" || (auth.required !== undefined && typeof auth.required !== "boolean") || (auth.minRole !== undefined && !["STANDARD", "ADMIN"].includes(auth.minRole)) || (auth.authorize !== undefined && typeof auth.authorize !== "function")) throw new Error(`${id}: invalid authorization declaration.`);
+      }
+      validateParameters(id, route.pathParams, false);
+      validateParameters(id, route.queryParams, true);
+      const pattern = pagePattern(route.path);
+      if (patterns.has(pattern)) throw new Error(`${id}: duplicate page path pattern ${pattern}.`);
+      patterns.add(pattern);
     }
-    if (names.length !== Object.keys(route.pathParams ?? {}).length || names.some(name => !Object.hasOwn(route.pathParams ?? {}, name))) throw new Error(`${id}: pathParams must match path placeholders exactly.`);
-    if (typeof route.pageTitle !== "string" || !route.pageTitle.trim() || typeof route.loadPage !== "function") throw new Error(`${id}: pageTitle and lazy loadPage are required.`);
-    if (route.helpPath !== undefined && route.helpPathResolver !== undefined) throw new Error(`${id}: use helpPath or helpPathResolver, not both.`);
-    if (route.helpPathResolver !== undefined && typeof route.helpPathResolver !== "function") throw new Error(`${id}: invalid helpPathResolver.`);
-    if (route.helpPath !== undefined && typeof route.helpPath !== "string") throw new Error(`${id}: invalid helpPath.`);
-    if (route.unframed !== undefined && typeof route.unframed !== "boolean") throw new Error(`${id}: invalid unframed flag.`);
-    if (route.httpApiDocumentationGroupId !== undefined && (typeof route.httpApiDocumentationGroupId !== "string" || !route.httpApiDocumentationGroupId.trim())) throw new Error(`${id}: invalid HTTP API documentation group ID.`);
-    if (route.breadcrumbBase !== undefined && (!Array.isArray(route.breadcrumbBase) || route.breadcrumbBase.some(item => !item || typeof item.label !== "string" || (item.href !== undefined && typeof item.href !== "string")))) throw new Error(`${id}: invalid breadcrumbs.`);
-    if (route.auth !== undefined) {
-      const auth = route.auth;
-      if (!auth || typeof auth !== "object" || (auth.required !== undefined && typeof auth.required !== "boolean") || (auth.minRole !== undefined && !["STANDARD", "ADMIN"].includes(auth.minRole)) || (auth.authorize !== undefined && typeof auth.authorize !== "function")) throw new Error(`${id}: invalid authorization declaration.`);
-    }
-    validateParameters(id, route.pathParams, false);
-    validateParameters(id, route.queryParams, true);
-    const pattern = pagePattern(route.path);
-    if (patterns.has(pattern)) throw new Error(`${id}: duplicate page path pattern ${pattern}.`);
-    patterns.add(pattern);
   }
 }
 

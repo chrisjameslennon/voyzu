@@ -1,6 +1,6 @@
 # HTTP API patterns
 
-HTTP API registration uses `contracts.httpApiRouting` (roots and routes keyed by stable ID) and `contracts.httpApiDocumentation` (sections, groups and operation descriptions). Every route needs exactly one documentation entry. Section titles become package-qualified OpenAPI tags; route IDs become operation IDs. See the [HTTP API contract](../platform-contracts/http-api-contract.md) for the complete example. Module exports alone do not register HTTP routes.
+HTTP API registration uses `contracts.httpApiRouting` (roots and routes keyed by stable ID, including operation descriptions) and `contracts.httpApiDocumentation` (sections, groups and ordered route references). Every route needs exactly one documentation entry. Section titles become package-qualified OpenAPI tags; route IDs become operation IDs. See the [HTTP API contract](../platform-contracts/http-api-contract.md) for the complete example. Module exports alone do not register HTTP routes.
 
 Voyzu composes package HTTP API definitions into a registry consumed by the platform wildcard HTTP API handler:
 
@@ -90,7 +90,7 @@ packages.
 
 ## Document every HTTP API operation
 
-Routing definitions supply the short summary, method, path, DTO schemas and response statuses. Package documentation supplies sections, groups and operation descriptions. See the complete [HTTP API contract example](../platform-contracts/http-api-contract.md).
+Routing definitions supply the short summary, method, path, DTO schemas and response statuses. Package documentation supplies sections, groups and ordered route references. See the complete [HTTP API contract example](../platform-contracts/http-api-contract.md).
 
 Each operation must belong to one group within a section. Groups may reference another installed package's route by its stable ID. Declaration order controls navigation and page order. OpenAPI uses the route ID as its operation ID and the documentation package plus section title as its tag.
 
@@ -206,7 +206,7 @@ objects so that internal schema changes do not silently change the public HTTP A
 
 ## Compose HTTP API changes
 
-Run `npm run voyzu:compose -- --surfaces-only` after adding or changing an HTTP API definition, documentation group or DTO.
+Run `npm run voyzu:compose -- --routing-only` after adding or changing an HTTP API definition, documentation group or DTO.
 Composition regenerates `http-api-routes/pre-installed.ts` and `http-api-routes/installed.ts`. Both package groups use the same route
 type, lazy-loader validation, root ownership checks, and registry shape. The
 documentation build consumes both indexes, generates package-grouped HTTP API

@@ -79,6 +79,7 @@ const auditListRequest = {
 
 export const httpApiRoutes = {
   "audit.audit.list": {
+    description: "Lists audit events across installed packages using the supplied filters.",
     method: "GET",
     path: "/audit",
     loadHandler: () => import("./server/http-api/audit-event.http.handlers").then((module) => module.handleList),
@@ -99,6 +100,7 @@ export const httpApiRoutes = {
     },
   },
   "audit.audit.count": {
+    description: "Counts audit events across installed packages using the supplied filters.",
     method: "GET",
     path: "/audit/count",
     loadHandler: () => import("./server/http-api/audit-event.http.handlers").then((module) => module.handleCount),
@@ -119,6 +121,7 @@ export const httpApiRoutes = {
     },
   },
   "audit.audit.export": {
+    description: "Exports audit events across installed packages using the supplied filters.",
     method: "GET",
     path: "/audit/export",
     loadHandler: () => import("./server/http-api/audit-event.http.handlers").then((module) => module.handleExportAll),
@@ -139,6 +142,7 @@ export const httpApiRoutes = {
     },
   },
   "audit.audit.get": {
+    description: "Gets one audit event by identifier.",
     method: "GET",
     path: "/audit/[id]",
     loadHandler: () => import("./server/http-api/audit-event.http.handlers").then((module) => module.handleGetById),

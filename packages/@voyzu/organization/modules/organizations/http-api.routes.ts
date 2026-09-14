@@ -14,6 +14,7 @@ const loadHandlers = () => import("./server/http-api/organization.http.handlers"
 
 export const httpApiRoutes = {
   "organization.organizations.updateFinance": {
+    description: "Updates Finance settings through the shared internal API. Finance must be installed and the organization active.",
     method: "PUT", path: "/organization/organizations/[code]/finance",
     loadHandler: () => import("./server/http-api/organization-finance.http.handlers").then(module => module.handleUpdateFinance),
     request: { path: { code: { description: "Organization code.", schema: Type.String() } }, contentType: "application/json", body: OrganizationFinanceChangesDto },
@@ -27,6 +28,7 @@ export const httpApiRoutes = {
     },
   },
   "organization.organizations.list": {
+    description: "Returns all organizations in the system.",
     method: "GET",
     path: "/organization/organizations",
     loadHandler: () => loadHandlers().then((module) => module.handleList),
@@ -39,6 +41,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.create": {
+    description: "Creates a new organization record. Status defaults to ACTIVE and cannot be supplied in the request body.",
     method: "POST",
     path: "/organization/organizations",
     loadHandler: () => loadHandlers().then((module) => module.handleCreate),
@@ -54,6 +57,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.filter": {
+    description: "Returns organizations matching the supplied filter criteria.",
     method: "POST",
     path: "/organization/organizations/filter",
     loadHandler: () => loadHandlers().then((module) => module.handleFilter),
@@ -67,6 +71,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.search": {
+    description: "Full-text search across organizations using the query string parameter.",
     method: "GET",
     path: "/organization/organizations/search",
     loadHandler: () => loadHandlers().then((module) => module.handleSearch),
@@ -81,6 +86,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.batchCreate": {
+    description: "Creates multiple organization records in a single request. Executed as a single database transaction; if any item fails, all changes are rolled back.",
     method: "POST",
     path: "/organization/organizations/batch/create",
     loadHandler: () => loadHandlers().then((module) => module.handleBatchCreate),
@@ -96,6 +102,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.batchGet": {
+    description: "Retrieves multiple organizations by a list of business codes.",
     method: "POST",
     path: "/organization/organizations/batch/get",
     loadHandler: () => loadHandlers().then((module) => module.handleBatchGet),
@@ -110,6 +117,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.batchUpdate": {
+    description: "Fully replaces multiple organization records in a single request. Executed as a single database transaction; if any item fails, all changes are rolled back.",
     method: "PUT",
     path: "/organization/organizations/batch/update",
     loadHandler: () => loadHandlers().then((module) => module.handleBatchUpdate),
@@ -126,6 +134,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.batchPatch": {
+    description: "Partially updates multiple organization records in a single request. Executed as a single database transaction; if any item fails, all changes are rolled back.",
     method: "PATCH",
     path: "/organization/organizations/batch/patch",
     loadHandler: () => loadHandlers().then((module) => module.handleBatchPatch),
@@ -142,6 +151,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.batchDelete": {
+    description: "Permanently deletes multiple organizations and all organization-owned financial records by their business codes.",
     method: "POST",
     path: "/organization/organizations/batch/delete",
     loadHandler: () => loadHandlers().then((module) => module.handleBatchDelete),
@@ -157,6 +167,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.batchActivate": {
+    description: "Sets multiple organizations to ACTIVE.",
     method: "POST",
     path: "/organization/organizations/batch/activate",
     loadHandler: () => loadHandlers().then((module) => module.handleBatchActivate),
@@ -172,6 +183,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.batchDeactivate": {
+    description: "Sets multiple organizations to INACTIVE.",
     method: "POST",
     path: "/organization/organizations/batch/deactivate",
     loadHandler: () => loadHandlers().then((module) => module.handleBatchDeactivate),
@@ -187,6 +199,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.activate": {
+    description: "Sets an organization to ACTIVE.",
     method: "POST",
     path: "/organization/organizations/[code]/activate",
     loadHandler: () => loadHandlers().then((module) => module.handleActivate),
@@ -208,6 +221,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.deactivate": {
+    description: "Sets an organization to INACTIVE.",
     method: "POST",
     path: "/organization/organizations/[code]/deactivate",
     loadHandler: () => loadHandlers().then((module) => module.handleDeactivate),
@@ -229,6 +243,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.get": {
+    description: "Retrieves a single organization by its business code.",
     method: "GET",
     path: "/organization/organizations/[code]",
     loadHandler: () => loadHandlers().then((module) => module.handleGet),
@@ -250,6 +265,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.update": {
+    description: "Fully replaces an organization record with the supplied data.",
     method: "PUT",
     path: "/organization/organizations/[code]",
     loadHandler: () => loadHandlers().then((module) => module.handleUpdate),
@@ -273,6 +289,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.patch": {
+    description: "Partially updates an organization record. Only the fields provided are changed.",
     method: "PATCH",
     path: "/organization/organizations/[code]",
     loadHandler: () => loadHandlers().then((module) => module.handlePatch),
@@ -296,6 +313,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organizations.delete": {
+    description: "Permanently deletes an organization and all organization-owned financial records by its business code.",
     method: "DELETE",
     path: "/organization/organizations/[code]",
     loadHandler: () => loadHandlers().then((module) => module.handleDelete),

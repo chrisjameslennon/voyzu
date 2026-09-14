@@ -4,20 +4,27 @@ The Voyzu platform has the concept of a UI Surface. This conceptualises the web 
 
 The UI Surface also interacts with the [Page routing contract](./page-routing-contract.md), for example navigation items also declare page identifiers, and populate the breadcrumbs slot.
 
-A high level diagram of the UI surface slots below:
+A high level diagram of the UI surface with slots marked in purple:
 
-![alt text](image-1.png)
+![alt text](image-2.png)
 
-## Declaring Slot content
+### Slots
 
-Packages declare slot content by 
+- topnav.menu
+
+- leftnav.header
+
+- leftnav.menu
 
 
 
+## Declaring and supplying Slot content
 
-## Top Nav menu and left nav header and left nav
+Packages declare content to fill UI Surface slots in their root voyzu.package.ts file, using the contracts `uiPlatformSurface` nosw
 
-BUT.  should live in /ui-surface not /navigation.
+By convention slot content resides in a package's top level `ui-surface` folder
+
+## Examples
 
 
 ```ts
@@ -28,11 +35,9 @@ import financeLeftNav from "./navigation/finance.left-nav";
 export default {
   contracts: {
     platformSurface: {
-      contributes: {
         "platform.surface.topNav": [
           {
-            content: {
-              id: "finance",
+            finance: {
               label: "Finance",
               icon: "account_balance",
               routeId: "finance.journals.list",
@@ -53,7 +58,6 @@ export default {
             },
           },
         ],
-      },
     },
   },
 };
@@ -137,6 +141,7 @@ export default function FinanceLeftNavHeader({
 }
 ```
 
-Also.  implementer drop down.  
 
-and maybe identity drop down. for future.  and should really name them semantically 
+TEMP: TODO
+
+change top level 'navigation' folder to 'ui-surface'

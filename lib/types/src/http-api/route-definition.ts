@@ -33,6 +33,7 @@ export interface HttpApiRouteDefinition {
   method: HttpApiMethod;
   path: string;
   summary: string;
+  description: string;
   request?: HttpApiRequestDefinition;
   responses: Record<string, HttpApiResponseDefinition>;
   loadHandler: () => Promise<(...args: any[]) => any>;
@@ -52,7 +53,7 @@ export interface HttpApiDocumentation {
     groups: Readonly<Record<string, {
       title: string;
       description: string;
-      routes: Readonly<Record<string, { description: string }>>;
+      routes: readonly string[];
     }>>;
   }>>;
 }

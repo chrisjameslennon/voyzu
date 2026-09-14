@@ -1,6 +1,6 @@
 # Package contract
 
-HTTP API registration uses `contracts.httpApiRouting` (roots and routes keyed by stable ID) and `contracts.httpApiDocumentation` (sections, groups and operation descriptions). Every route needs exactly one documentation entry. Section titles become package-qualified OpenAPI tags; route IDs become operation IDs. See the [HTTP API contract](../platform-contracts/http-api-contract.md) for the complete example. Module exports alone do not register HTTP routes.
+HTTP API registration uses `contracts.httpApiRouting` (roots and routes keyed by stable ID, including operation descriptions) and `contracts.httpApiDocumentation` (sections, groups and ordered route references). Every route needs exactly one documentation entry. Section titles become package-qualified OpenAPI tags; route IDs become operation IDs. See the [HTTP API contract](../platform-contracts/http-api-contract.md) for the complete example. Module exports alone do not register HTTP routes.
 
 A Voyzu package is a self-contained unit of functionality made up of one or more modules. Its scoped package name determines its source location:
 
@@ -109,7 +109,7 @@ import { sampleData } from "./scripts/sample-data";
 import { uninstall } from "./uninstall/manifest";
 
 const packageDefinition = {
-  contracts: { pageRouting: { roots: ["/warehousing"], routes: pageRoutes } },
+  contracts: { pageRouting: { roots: { "/warehousing": { routes: pageRoutes } } } },
   modules: [stockModule],
   install,
   uninstall,

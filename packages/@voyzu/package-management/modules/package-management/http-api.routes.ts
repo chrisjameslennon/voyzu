@@ -43,6 +43,7 @@ const commonResponses = {
 
 export const httpApiRoutes = {
   "package-management.package-management.list": {
+    description: "Lists the packages currently recorded as installed in this Voyzu instance.",
     method: "GET",
     path: "/installed-packages",
     loadHandler: () => import("./server/http-api/installed-package.http.handlers").then((module) => module.handleList),
@@ -58,6 +59,7 @@ export const httpApiRoutes = {
     },
   },
   "package-management.package-management.get": {
+    description: "Gets one installed package record.",
     method: "GET",
     path: "/installed-packages/[id]",
     loadHandler: () => import("./server/http-api/installed-package.http.handlers").then((module) => module.handleGet),
@@ -75,6 +77,7 @@ export const httpApiRoutes = {
     },
   },
   "package-management.package-management.update": {
+    description: "Controls top-navigation visibility and direct access to an installed package's page routes. HTTP API routes are unaffected.",
     method: "PUT",
     path: "/installed-packages/[id]",
     loadHandler: () => import("./server/http-api/installed-package.http.handlers").then((module) => module.handleUpdate),
@@ -99,6 +102,7 @@ export const httpApiRoutes = {
     },
   },
   "package-management.package-management.move": {
+    description: "Moves a package up or down in top-navigation order.",
     method: "PUT",
     path: "/installed-packages/[id]/navigation-order",
     loadHandler: () => import("./server/http-api/installed-package.http.handlers").then((module) => module.handleMove),
@@ -123,6 +127,7 @@ export const httpApiRoutes = {
     },
   },
   "package-management.package-management.refresh": {
+    description: "Reconciles package-management records with packages installed on the filesystem.",
     method: "POST",
     path: "/installed-package-reconciliation",
     loadHandler: () => import("./server/http-api/installed-package.http.handlers").then((module) => module.handleRefresh),
@@ -138,6 +143,7 @@ export const httpApiRoutes = {
     },
   },
   "package-management.package-management.getHomePage": {
+    description: "Gets the application start-page route.",
     method: "GET",
     path: "/package-settings/home-page",
     loadHandler: () => import("./server/http-api/installed-package.http.handlers").then((module) => module.handleGetHomePage),
@@ -153,6 +159,7 @@ export const httpApiRoutes = {
     },
   },
   "package-management.package-management.updateHomePage": {
+    description: "Validates and updates the application start-page route.",
     method: "PUT",
     path: "/package-settings/home-page",
     loadHandler: () => import("./server/http-api/installed-package.http.handlers").then((module) => module.handleUpdateHomePage),

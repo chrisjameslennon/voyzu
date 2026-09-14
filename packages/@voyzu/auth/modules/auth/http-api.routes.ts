@@ -31,6 +31,7 @@ const commonResponses = {
 
 export const httpApiRoutes = {
   "auth.auth.login": {
+    description: "Authenticates a UI user and creates an authenticated session cookie.",
     method: "POST",
     path: "/auth/session",
     loadHandler: () => import("./server/auth.http.handlers").then((module) => module.handleLogin),
@@ -59,6 +60,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.auth.logout": {
+    description: "Clears the authenticated UI session cookie.",
     method: "DELETE",
     path: "/auth/session",
     loadHandler: () => import("./server/auth.http.handlers").then((module) => module.handleLogout),
@@ -79,6 +81,7 @@ export const httpApiRoutes = {
     },
   },
   "auth.auth.me": {
+    description: "Returns the current UI authentication session state.",
     method: "GET",
     path: "/auth/session",
     loadHandler: () => import("./server/auth.http.handlers").then((module) => module.handleMe),

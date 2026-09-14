@@ -18,7 +18,6 @@ export function resolveHttpApiContracts(registrations: readonly HttpApiRegistrat
     sectionId: string;
     groupId: string;
     tag: string;
-    description: string;
   }>();
   const fail = (message: string): never => {
     throw new Error(`HTTP API contract: ${message}`);
@@ -80,7 +79,8 @@ export function resolveHttpApiContracts(registrations: readonly HttpApiRegistrat
       if (methods.has(key)) fail(`duplicate method/path ${key}`);
       methods.add(key);
       nonempty(route.summary, `${id} summary`);
-      if ("tags" in route || "description" in route || "requestCookies" in route) fail(`${id} contains retired route metadata`);
+      nonempty(route.description, `${id} description`);
+      if ("tags" in route || "requestCookies" in route) fail(`${id} contains retired route metadata`);
       if (typeof route.loadHandler !== "function") fail(`${id} requires a lazy loadHandler`);
       const params = [...route.path.matchAll(/\[([^\]]+)\]/g)].map(match => match[1]);
       const declared = route.request?.path ?? {};
@@ -147,20 +147,19 @@ export function resolveHttpApiContracts(registrations: readonly HttpApiRegistrat
         if (groups.has(groupId)) fail(`duplicate documentation group ${groupId}`);
         nonempty(group.title, `${groupId} title`);
         nonempty(group.description, `${groupId} description`);
-        record(group.routes, `${groupId} routes`);
+        if (!Array.isArray(group.routes)) fail(`${groupId} routes must be an array of route IDs`);
         groups.set(groupId, {
           url: httpApiGroupUrl(packageName, groupId),
           packageName
         });
-        for (const [id, doc] of Object.entries(group.routes)) {
-          nonempty(doc.description, `${groupId}/${id} description`);
+        for (const id of group.routes) {
+          nonempty(id, `${groupId} route ID`);
           if (membership.has(id)) fail(`${id} appears in multiple documentation groups`);
           membership.set(id, {
             packageName,
             sectionId,
             groupId,
-            tag: `${packageName}: ${section.title}`,
-            description: doc.description
+            tag: `${packageName}: ${section.title}`
           });
         }
       }

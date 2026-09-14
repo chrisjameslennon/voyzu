@@ -7,6 +7,7 @@ const loadHandlers = () => import("./server/organization-selection.http.handlers
 
 export const httpApiRoutes = {
   "organization.organization-switcher.getSelection": {
+    description: "Get Selection Organization Switcher.",
     method: "GET",
     path: "/organization-selection",
     loadHandler: () => loadHandlers().then((module) => module.handleGetOrganizationSelection),
@@ -17,6 +18,7 @@ export const httpApiRoutes = {
     responses: { "200": { description: "Current organization selection and selectable organizations.", body: OrganizationSelectionResponseDto }, "500": { description: "An unexpected server error occurred.", body: InternalServerErrorResponseDto } }
   },
   "organization.organization-switcher.setSelection": {
+    description: "Set Selection Organization Switcher.",
     method: "PUT",
     path: "/organization-selection",
     loadHandler: () => loadHandlers().then((module) => module.handleSetOrganizationSelection),
@@ -36,6 +38,7 @@ export const httpApiRoutes = {
     }
   },
   "organization.organization-switcher.accessArchivedSelection": {
+    description: "Select an accessible archived organization without adding it to the active organization switcher.",
     method: "POST",
     path: "/organization-selection/archived",
     loadHandler: () => loadHandlers().then((module) => module.handleAccessArchivedOrganization),

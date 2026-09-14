@@ -29,6 +29,7 @@ const commonResponses = {
 const capabilityModule = {
   httpApiRoutes: {
     "voyzu.capability.pdf": {
+      description: "Renders a printable application route as a PDF download.",
       method: "GET",
       path: "/capability/pdf",
       loadHandler: () => import("./voyzu.pdf.handlers").then(
@@ -66,6 +67,7 @@ const capabilityModule = {
       },
     },
     "voyzu.capability.pdfView": {
+      description: "Renders a printable application route as an inline PDF.",
       method: "GET",
       path: "/capability/pdf-view",
       loadHandler: () => import("./voyzu.pdf.handlers").then(
@@ -103,6 +105,7 @@ const capabilityModule = {
       },
     },
     "voyzu.capability.export": {
+      description: "Exports supplied tabular rows to a downloadable file.",
       method: "POST",
       path: "/capability/export",
       loadHandler: () => import("@voyzu/capability/export").then(
@@ -140,17 +143,11 @@ export const capabilityHttpApiRegistration = { packageName: "@voyzu/http-api", r
         "voyzu.capability": {
           "title": "@voyzu/http-api",
           "description": "Generate PDF documents and export tabular data.",
-          "routes": {
-            "voyzu.capability.pdf": {
-              "description": "Renders a printable application route as a PDF download."
-            },
-            "voyzu.capability.pdfView": {
-              "description": "Renders a printable application route as an inline PDF."
-            },
-            "voyzu.capability.export": {
-              "description": "Exports supplied tabular rows to a downloadable file."
-            }
-          }
+          "routes": [
+            "voyzu.capability.pdf",
+            "voyzu.capability.pdfView",
+            "voyzu.capability.export"
+          ]
         }
       }
     }

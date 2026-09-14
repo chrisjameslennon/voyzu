@@ -38,7 +38,7 @@ type NavigationDefinition = {
   readonly domains?: readonly {
     readonly label: string;
     readonly routeId: string;
-    readonly routeIds: readonly string[];
+    readonly rootPath: string;
     readonly topNavigationVisible?: boolean;
     readonly leftNav: readonly ReadonlyNavigationGroup[];
   }[];

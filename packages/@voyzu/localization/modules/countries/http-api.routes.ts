@@ -14,6 +14,7 @@ const commonResponses = {
 
 export const httpApiRoutes = {
   "localization.countries.list": {
+    description: "Lists countries.",
     method: "GET",
     path: "/localization/countries",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleList),
@@ -26,6 +27,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.create": {
+    description: "Creates a country. Status defaults to ACTIVE and cannot be supplied in the request body.",
     method: "POST",
     path: "/localization/countries",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleCreate),
@@ -41,6 +43,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.filter": {
+    description: "Filters countries using the shared filter request body.",
     method: "POST",
     path: "/localization/countries/filter",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleFilter),
@@ -54,6 +57,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.search": {
+    description: "Searches countries.",
     method: "GET",
     path: "/localization/countries/search",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleSearch),
@@ -68,6 +72,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.batchCreate": {
+    description: "Creates multiple countries. Status defaults to ACTIVE and cannot be supplied in the request body.",
     method: "POST",
     path: "/localization/countries/batch/create",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleBatchCreate),
@@ -83,6 +88,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.batchGet": {
+    description: "Gets multiple countries by code.",
     method: "POST",
     path: "/localization/countries/batch/get",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleBatchGet),
@@ -97,6 +103,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.batchUpdate": {
+    description: "Updates multiple countries. Status cannot be changed by this request; code identifies each row.",
     method: "PUT",
     path: "/localization/countries/batch/update",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleBatchUpdate),
@@ -112,6 +119,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.batchPatch": {
+    description: "Patches multiple countries. Status cannot be changed by this request; code identifies each row.",
     method: "PATCH",
     path: "/localization/countries/batch/patch",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleBatchPatch),
@@ -127,6 +135,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.batchDelete": {
+    description: "Deletes multiple countries. Countries with postings cannot be deleted.",
     method: "POST",
     path: "/localization/countries/batch/delete",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleBatchDelete),
@@ -143,6 +152,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.batchActivate": {
+    description: "Sets multiple countries to ACTIVE.",
     method: "POST",
     path: "/localization/countries/batch/activate",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleBatchActivate),
@@ -158,6 +168,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.batchDeactivate": {
+    description: "Sets multiple countries to INACTIVE.",
     method: "POST",
     path: "/localization/countries/batch/deactivate",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleBatchDeactivate),
@@ -173,6 +184,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.get": {
+    description: "Gets a country.",
     method: "GET",
     path: "/localization/countries/[code]",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleGet),
@@ -187,6 +199,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.update": {
+    description: "Updates a country. Status and code cannot be changed by this request.",
     method: "PUT",
     path: "/localization/countries/[code]",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleUpdate),
@@ -202,6 +215,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.patch": {
+    description: "Patches a country. Status and code cannot be changed by this request.",
     method: "PATCH",
     path: "/localization/countries/[code]",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handlePatch),
@@ -217,6 +231,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.delete": {
+    description: "Deletes a country. Countries with postings cannot be deleted.",
     method: "DELETE",
     path: "/localization/countries/[code]",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleDelete),
@@ -232,6 +247,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.activate": {
+    description: "Sets a country to ACTIVE.",
     method: "POST",
     path: "/localization/countries/[code]/activate",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleActivate),
@@ -246,6 +262,7 @@ export const httpApiRoutes = {
     }
   },
   "localization.countries.deactivate": {
+    description: "Sets a country to INACTIVE.",
     method: "POST",
     path: "/localization/countries/[code]/deactivate",
     loadHandler: () => import("./server/http-api/country.http.handlers").then((module) => module.handleDeactivate),

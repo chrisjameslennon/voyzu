@@ -37,7 +37,7 @@ export async function composeHttpApi(runtimeRoot: string, descriptors: Descripto
   for (const descriptor of descriptors) {
     const { default: definition } = await import(pathToFileURL(join(descriptor.directory, "voyzu.package.ts")).href);
     const contracts = definition.contracts as PackageContracts | undefined;
-    for (const [id, page] of Object.entries(contracts?.pageRouting?.routes ?? {})) {
+    for (const root of Object.values(contracts?.pageRouting?.roots ?? {})) for (const [id, page] of Object.entries(root.routes)) {
       if (page.httpApiDocumentationGroupId && !resolved.groups.has(page.httpApiDocumentationGroupId)) {
         throw new Error(`Page ${id} references unknown HTTP API documentation group ${page.httpApiDocumentationGroupId}`);
       }

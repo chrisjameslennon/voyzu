@@ -68,11 +68,16 @@ export interface PageRouteDefinition {
 }
 export interface RegisteredPageRoute extends PageRouteDefinition {
   id: string;
+  rootPath: string;
   packageName?: string;
   helpBaseUrl?: string;
   httpApiDocsUrl?: string;
 }
-export interface PageRouting { roots: readonly string[]; routes: Readonly<Record<string, PageRouteDefinition>> }
+export interface PageRouting {
+  roots: Readonly<Record<string, {
+    routes: Readonly<Record<string, PageRouteDefinition>>;
+  }>>;
+}
 export interface PageContext<P extends PageParameters = PageParameters, Q extends PageParameters = PageParameters> {
   path: string;
   pathParams: ParsedPageParameters<P> | RawPageParameters;

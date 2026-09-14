@@ -25,9 +25,11 @@ export default {
           path: "/finance/journals/[code]",
 
           // Short operation title used in generated documentation and OpenAPI.
-          // The longer description lives in httpApiDocumentation.
           // OpenAPI tags are derived from the documentation section.
           summary: "Update Journal Entry",
+          // Used in the documentation page and OpenAPI operation description.
+          description:
+            "Updates a draft journal entry and refreshes the authenticated session cookie. Posted journals cannot be changed. Optionally notifies interested users about the update.",
 
           request: {
             // Named URL parameters correspond to placeholders in the path.
@@ -133,16 +135,10 @@ export default {
               // Groups provide the second navigation level within a package.
               title: "Journal Entries",
               description: "Retrieve and manage financial journal entries.",
-              // Keys reference stable HTTP API route IDs and determine display order.
+              // List stable HTTP API route IDs in display order.
               // References may include routes owned by other installed packages.
-              routes: {
-                "finance.journals.update": {
-                  // Used in the documentation page and OpenAPI operation description.
-                  // Summary, parameters and responses come from httpApiRouting.
-                  description:
-                    "Updates a draft journal entry and refreshes the authenticated session cookie. Posted journals cannot be changed. Optionally notifies interested users about the update.",
-                },
-              },
+              // Operation details come from the route definitions.
+              routes: ["finance.journals.update"],
             },
           },
         },
@@ -174,7 +170,7 @@ Path parameter declarations must match the path placeholders and cannot be optio
 
 Installed-package navigation follows package → section → group → operation. Platform packages share one Platform navigation section, with one group and operations page per package, labelled with its package name. A section can declare `navigationHeadingId` (a lowercase namespaced identifier) to place its groups directly under a shared navigation heading. Sections with the same heading ID merge in declaration order and must have identical titles; that title supplies the heading label. Without this metadata, the package heading and section hierarchy apply. Platform contracts declare `navigationHeadingId: "voyzu.platform"` and `title: "Platform"`; the generator has no platform-specific grouping or label. Each group has a page with operation anchors. Section, group and operation declaration order controls display order. Operation filenames and anchors use stable route IDs rather than summaries or HTTP paths.
 
-Every route must have exactly one documentation entry in a group within a section. Cross-package references are supported; composition rejects missing coverage, unresolved references and multiple memberships. Summaries, parameter descriptions and response descriptions remain in the routing contract. Longer operation descriptions live in documentation entries.
+Every route must appear exactly once in a documentation group's ordered `routes` list. Cross-package references are supported; composition rejects missing coverage, unresolved references and repeated references, including duplicates within one group. The routing contract owns each operation's required `summary` and `description`, along with parameter and response descriptions. The documentation contract supplies section and group titles, introductory descriptions and route ordering. Declare these contracts directly in `voyzu.package.ts`; source modules may supply the route definitions.
 
 Section titles must be unique within a package. OpenAPI tags use `<documentation package name>: <section title>`, for example `@voyzu/finance: General Ledger`. This allows the same section title in different packages. Section descriptions supply top-level OpenAPI tag descriptions. Groups provide the second navigation level in Voyzu. Each route ID becomes its OpenAPI `operationId`.
 
@@ -182,4 +178,4 @@ Page routes may declare `httpApiDocumentationGroupId`. Composition validates the
 
 ## Refreshing generated output
 
-Use `npm run voyzu:compose -- --surfaces-only` to refresh HTTP API contracts, page/navigation registries and documentation. This preserves internal API composition, runtime configuration and installed-package selection. Generated HTTP registrations and reference files live under `apps/web/.generated/http-api-routes` and `apps/web/.generated/http-api-reference`.
+Use `npm run voyzu:compose -- --routing-only` to refresh HTTP API contracts, page/navigation registries and documentation. This preserves internal API composition, runtime configuration and installed-package selection. Generated HTTP registrations and reference files live under `apps/web/.generated/http-api-routes` and `apps/web/.generated/http-api-reference`.
