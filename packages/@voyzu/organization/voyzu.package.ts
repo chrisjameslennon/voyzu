@@ -81,12 +81,18 @@ export const organizationPackage = {
       }
     },
     internalApi: {
-      implements: { ...organizationsModule.implements, ...organizationAccessModule.implements, ...organizationSwitcherModule.implements, ...documentLinksModule.implements },
+      implements: {
+        ...organizationsModule.implements, ...organizationAccessModule.implements,
+        ...organizationSwitcherModule.implements, ...documentLinksModule.implements,
+        "@core/party": () => import("./modules/parties/server/party.implementation")
+          .then(module => ({ methods: module.partyMethods, transactionalMethods: ["create", "update"] })),
+      },
       },
 
   },
   install: {
     sql: [
+      "./install/db/objects/table.party.create.sql",
       "./install/db/objects/table.organization.create.sql",
       "./install/db/objects/table.organization-user-access.create.sql",
       "./install/db/objects/table.document-link.create.sql",

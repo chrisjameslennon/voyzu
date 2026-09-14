@@ -3,7 +3,7 @@ export { InventoryFinanceSchema } from "../types/inventory-finance.internal-api.
 import type { Static } from "typebox";
 import type { InternalApiDefinition } from "../../../../lib/types/src/internal-api";
 
-// Shared definition; Finance supplies the implementation.
+// Shared definition; Ledger supplies the inventory integration implementation.
 
 /** @erp/inventory-finance. Definition registered by the owning package. */
 

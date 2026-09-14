@@ -55,7 +55,7 @@ function organizationAuditReturnHref(value: string | undefined): string | undefi
 }
 
 function companyAuditReturnHref(value: string | undefined): string | undefined {
-  if (!value || (value !== "/finance" && !value.startsWith("/finance/"))) return undefined;
+  if (!value || !["/finance", "/ledger"].some(root => value === root || value.startsWith(`${root}/`))) return undefined;
   if (value.includes("?") || value.includes("#") || value.includes("\\") || value.includes("//")) return undefined;
   if (value.split("/").some((segment) => segment === "." || segment === "..")) return undefined;
   return value;
@@ -69,13 +69,13 @@ function auditReturnHref(value: string | undefined): string | undefined {
 }
 
 export function detailBackHref({ from, fromCode, fallbackHref }: DetailBackContext) {
-  if (from === "journal" && fromCode) return `/finance/journals/${encodeURIComponent(fromCode)}`;
-  if (from === "arLedgerEntry" && fromCode) return `/finance/subledgers/ar/ledger-entries/${encodeURIComponent(fromCode)}`;
-  if (from === "apLedgerEntry" && fromCode) return `/finance/subledgers/ap/ledger-entries/${encodeURIComponent(fromCode)}`;
-  if (from === "arLedgerEntryEnquiry" && fromCode) return `/finance/subledgers/ar/ledger-entry-enquiry/${encodeURIComponent(fromCode)}`;
-  if (from === "apLedgerEntryEnquiry" && fromCode) return `/finance/subledgers/ap/ledger-entry-enquiry/${encodeURIComponent(fromCode)}`;
-  if (from === "taxLedgerEntry" && fromCode) return `/finance/subledgers/tax/ledger-entries/${encodeURIComponent(fromCode)}`;
-  if (from === "inventoryLedgerEntry" && fromCode) return `/finance/inventory/ledger/${encodeURIComponent(fromCode)}`;
+  if (from === "journal" && fromCode) return `/ledger/journals/${encodeURIComponent(fromCode)}`;
+  if (from === "arLedgerEntry" && fromCode) return `/ledger/subledgers/ar/ledger-entries/${encodeURIComponent(fromCode)}`;
+  if (from === "apLedgerEntry" && fromCode) return `/ledger/subledgers/ap/ledger-entries/${encodeURIComponent(fromCode)}`;
+  if (from === "arLedgerEntryEnquiry" && fromCode) return `/ledger/subledgers/ar/ledger-entry-enquiry/${encodeURIComponent(fromCode)}`;
+  if (from === "apLedgerEntryEnquiry" && fromCode) return `/ledger/subledgers/ap/ledger-entry-enquiry/${encodeURIComponent(fromCode)}`;
+  if (from === "taxLedgerEntry" && fromCode) return `/ledger/subledgers/tax/ledger-entries/${encodeURIComponent(fromCode)}`;
+  if (from === "inventoryLedgerEntry" && fromCode) return `/ledger/inventory/ledger/${encodeURIComponent(fromCode)}`;
   if (from === "arInvoices") return "/finance/subledgers/ar/invoices";
   if (from === "apBills") return "/finance/subledgers/ap/bills";
   if (from === "arStatements") return "/finance/subledgers/ar/statements";

@@ -19,3 +19,9 @@ export const PartyUpdateRequestDto = Type.Object({
       }, { additionalProperties: false });
 
 export const PartyUpdateResponseDto = Type.Undefined();
+
+export const PartyCreateRequestDto = Type.Object({
+  code: Type.String({ minLength: 1 }),
+  name: Type.String({ minLength: 1 }),
+}, { additionalProperties: false });
+export const PartyCreateResponseDto = PartySchema;

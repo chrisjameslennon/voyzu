@@ -4,17 +4,50 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./ui-surface": { "types": "./src/ui-surface.ts", "import": "./src/ui-surface.ts" },
-    "./page-routing": { "types": "./src/page-routing.ts", "import": "./src/page-routing.ts" },
-    "./dtos/*": { "types": "./src/dtos/*.dto.ts", "import": "./src/dtos/*.dto.ts" },
-    "./dtos/constraints": { "types": "./src/dtos/constraints.ts", "import": "./src/dtos/constraints.ts" },
-    "./business-objects/*": { "types": "./src/business-objects/*.definition.ts", "import": "./src/business-objects/*.definition.ts" },
-    "./business-objects/customer-account": { "types": "./src/business-objects/customer-account.definition.ts", "import": "./src/business-objects/customer-account.definition.ts" },
-    "./internal-api": { "types": "./src/internal-api.ts", "import": "./src/internal-api.ts" },
-    "./business-objects/customer": { "types": "./src/business-objects/customer.definition.ts", "import": "./src/business-objects/customer.definition.ts" },
-    "./business-objects/party": { "types": "./src/business-objects/party.definition.ts", "import": "./src/business-objects/party.definition.ts" },
-    "./identity": { "types": "./src/identity.ts", "import": "./src/identity.ts" },
-    "./contracts": { "types": "./src/contracts.ts", "import": "./src/contracts.ts" },
+    "./ui-surface": {
+      "types": "./src/ui-surface.ts",
+      "import": "./src/ui-surface.ts"
+    },
+    "./page-routing": {
+      "types": "./src/page-routing.ts",
+      "import": "./src/page-routing.ts"
+    },
+    "./dtos/*": {
+      "types": "./src/dtos/*.dto.ts",
+      "import": "./src/dtos/*.dto.ts"
+    },
+    "./dtos/constraints": {
+      "types": "./src/dtos/constraints.ts",
+      "import": "./src/dtos/constraints.ts"
+    },
+    "./business-objects/*": {
+      "types": "./src/business-objects/*.definition.ts",
+      "import": "./src/business-objects/*.definition.ts"
+    },
+    "./business-objects/customer-account": {
+      "types": "./src/business-objects/customer-account.definition.ts",
+      "import": "./src/business-objects/customer-account.definition.ts"
+    },
+    "./internal-api": {
+      "types": "./src/internal-api.ts",
+      "import": "./src/internal-api.ts"
+    },
+    "./business-objects/customer": {
+      "types": "./src/business-objects/customer.definition.ts",
+      "import": "./src/business-objects/customer.definition.ts"
+    },
+    "./business-objects/party": {
+      "types": "./src/business-objects/party.definition.ts",
+      "import": "./src/business-objects/party.definition.ts"
+    },
+    "./identity": {
+      "types": "./src/identity.ts",
+      "import": "./src/identity.ts"
+    },
+    "./contracts": {
+      "types": "./src/contracts.ts",
+      "import": "./src/contracts.ts"
+    },
     ".": {
       "types": "./src/index.ts",
       "import": "./src/index.ts"
@@ -42,7 +75,8 @@
     "./params": {
       "types": "./src/params/index.ts",
       "import": "./src/params/index.ts"
-    }
+    },
+    "./dtos/accounting/*": "./src/dtos/accounting/*.ts"
   },
   "peerDependencies": {
     "typebox": "^1.3.7"

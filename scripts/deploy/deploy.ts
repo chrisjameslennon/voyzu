@@ -6,6 +6,7 @@ const PLATFORM_REPOSITORY_URL = "https://github.com/chrisjameslennon/voyzu.git";
 const CREATE_VOYZU_PACKAGE = "github:chrisjameslennon/create-voyzu";
 const FINANCE_REPOSITORY_URL = "https://github.com/chrisjameslennon/voyzu-packages.git";
 const FINANCE_PACKAGE_NAME = "@voyzu/finance";
+const LEDGER_PACKAGE_NAME = "@voyzu/ledger";
 
 interface DeploymentOptions {
   host: string;
@@ -21,7 +22,7 @@ interface DeploymentOptions {
 }
 
 function usage() {
-  console.log(`Deploy a production Voyzu installation and Finance package to a self-hosted Linux server.
+  console.log(`Deploy a production Voyzu installation with Finance and Ledger to a self-hosted Linux server.
 
 Usage:
   npm run deploy -- --host <hostname> [options]
@@ -195,6 +196,7 @@ function remoteScript(options: DeploymentOptions, envPayload: string) {
     `CREATE_VOYZU_PACKAGE=${shellQuote(CREATE_VOYZU_PACKAGE)}`,
     `FINANCE_REPOSITORY_URL=${shellQuote(FINANCE_REPOSITORY_URL)}`,
     `FINANCE_PACKAGE_NAME=${shellQuote(FINANCE_PACKAGE_NAME)}`,
+    `LEDGER_PACKAGE_NAME=${shellQuote(LEDGER_PACKAGE_NAME)}`,
     `DEPLOY_DIR=${shellQuote(options.deployDir)}`,
     `SERVICE_NAME=${shellQuote(options.serviceName)}`,
     `SERVICE_USER=${shellQuote(options.user)}`,
@@ -277,6 +279,8 @@ fi
 
 log "Installing or updating $FINANCE_PACKAGE_NAME"
 npm run voyzu:install "$FINANCE_REPOSITORY_URL" "$FINANCE_PACKAGE_NAME"
+log "Installing or updating $LEDGER_PACKAGE_NAME"
+npm run voyzu:install "$FINANCE_REPOSITORY_URL" "$LEDGER_PACKAGE_NAME"
 
 log "Building the composed Voyzu application"
 npm run voyzu:build
@@ -362,6 +366,7 @@ async function main() {
     console.log("Voyzu self-host deployment");
     console.log(`  repository:  ${PLATFORM_REPOSITORY_URL}`);
     console.log(`  finance:     ${FINANCE_PACKAGE_NAME} from ${FINANCE_REPOSITORY_URL}`);
+    console.log(`  ledger:      ${LEDGER_PACKAGE_NAME} from ${FINANCE_REPOSITORY_URL}`);
     console.log(`  target:      ${options.user}@${options.host}`);
     console.log(`  deploy dir:  ${options.deployDir}`);
     console.log(`  service:     ${options.serviceName}`);

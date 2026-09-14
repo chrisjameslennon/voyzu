@@ -235,7 +235,9 @@ All three methods require an initialized registry. Availability does not mean th
 
 ## Transactions and Authorization
 
-`@erp/organization-finance` is defined by Platform Shared Contracts and implemented by Finance. Organization renders its Finance tab directly, reads it with `callOptional(..., "get", ...)`, and forwards settings changes through `update`. Its financial entity is created with Organization in the same transaction whenever Finance is installed. Finance derives active/inactive status from Organization; deleting Organization removes its Finance records through foreign-key cascades. There is no separate Finance-enabled state or user provisioning action. `createFinancialEntity` is the lifecycle operation, and Finance installation seeds financial entities for existing organizations. A missing financial entity for an existing organization is an invariant violation, not a disabled state.
+`@erp/organization-finance` is defined by Platform Shared Contracts and implemented by Ledger. Organization renders its Ledger tab directly, reads it with `callOptional(..., "get", ...)`, and forwards settings changes through `update`. Its financial entity is created with Organization in the same transaction whenever Ledger is installed. Ledger derives active/inactive status from Organization; deleting Organization removes its accounting records through foreign-key cascades. There is no separate enabled state or user provisioning action. `createFinancialEntity` is the lifecycle operation, and Ledger installation seeds financial entities for existing organizations. A missing financial entity for an existing organization is an invariant violation, not a disabled state.
+
+The [Finance and Ledger contract](./finance-ledger-contract.md) describes Party-linked counterparties, document retrieval, accounting posting and optional package availability across those packages.
 
 Transactions belong to the implementation, not the contract definition. Definitions contain only data and method schemas; a `transactional` flag in a method definition is rejected. A lazy provider lists its transactional methods alongside its method functions:
 

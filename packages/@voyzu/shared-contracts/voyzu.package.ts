@@ -1,3 +1,7 @@
+import { LedgerPostingDefinition } from "./contracts/ledger-posting.definition";
+import { FinanceDocumentsDefinition } from "./contracts/finance-documents.definition";
+import { FinanceCounterpartiesDefinition } from "./contracts/finance-counterparties.definition";
+import { LedgerDocumentsDefinition } from "./contracts/ledger-documents.definition";
 
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
 import type { InternalApiInvoker } from "@voyzu/types/internal-api";
@@ -29,6 +33,11 @@ export const sharedContractsPackage = {
     },
     internalApi: {
       defines: {
+        "@erp/ledger-posting": LedgerPostingDefinition,
+        "@erp/finance-documents": FinanceDocumentsDefinition,
+        "@erp/ar-counterparties": FinanceCounterpartiesDefinition,
+        "@erp/ap-counterparties": FinanceCounterpartiesDefinition,
+        "@erp/ledger-documents": LedgerDocumentsDefinition,
         "@erp/customer": CustomerDefinition,
         "@erp/CustomerAccount": CustomerAccountDefinition,
         "@core/organization": OrganizationDefinition,

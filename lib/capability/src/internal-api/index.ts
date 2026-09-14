@@ -89,7 +89,11 @@ export function createLazyInternalApiResource(resource: string, definition: Inte
           || implementation.transactionalMethods.some(method => typeof method !== "string" || !Object.hasOwn(definition.methods, method))
         )) throw new InternalApiError(`Invalid transactionalMethods for ${resource}`);
         return implementation;
-      }).catch(error => { pending = undefined; throw error; });
+      }).catch(error => { pending = undefined; throw error; }).finally(() => {
+        // Share in-flight loads, but let development reload provider modules
+        // instead of retaining their old handlers for the life of the server.
+        if (process.env.NODE_ENV === "development") pending = undefined;
+      });
     }
     return pending;
   };
@@ -122,7 +126,11 @@ export function createInternalApi(resources: readonly InternalApiResource[]) {
     if (!validator) { validator = Schema.Compile(schema); validators.set(schema, validator); }
     if (!validator.Check(value)) {
       if (input) throw new InputValidationError(`Invalid ${label}`);
-      throw new InternalApiError(`Invalid ${label}`);
+      const [, errors] = validator.Errors(value);
+      const details = errors.slice(0, 5)
+        .map(error => `${error.instancePath || "/"}: ${error.message}`)
+        .join("; ");
+      throw new InternalApiError(`Invalid ${label}: ${details}`);
     }
   }
   const api = {

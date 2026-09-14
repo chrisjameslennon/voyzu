@@ -40,7 +40,7 @@ export async function OrganizationDetailPage({ context }: PageProps) {
   const extensionTabs = finance
     ? [{
         key: "finance",
-        label: "Finance",
+        label: "Ledger",
         content: <OrganizationFinanceTab organization={organization} finance={finance} />,
       }]
     : [];

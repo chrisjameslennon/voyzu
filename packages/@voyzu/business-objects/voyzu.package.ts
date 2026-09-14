@@ -7,9 +7,6 @@ export const businessObjectsPackage = {
       defines: {
         "@core/party": PartyDefinition,
       },
-      implements: {
-        "@core/party": () => import("./modules/parties/server/lib/party.implementation").then(module => ({ methods: module.partyMethods })),
-      },
     },
   },
 } as const satisfies VoyzuPackageDefinition;

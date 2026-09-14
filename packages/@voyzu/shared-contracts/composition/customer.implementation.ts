@@ -4,7 +4,7 @@ import type { PartyMethods } from "@voyzu/types/business-objects/party";
 
 // The caller supplies the account provider; Platform never imports Commercial.
 // The package loader supplies an account dependency backed by the internal API.
-export function createCustomerMethods(partyMethods: PartyMethods, accounts: Pick<CustomerAccountMethods, "get">) {
+export function createCustomerMethods(partyMethods: Pick<PartyMethods, "get" | "update">, accounts: Pick<CustomerAccountMethods, "get">) {
   async function get({ party_id }: { party_id: number }): Promise<Customer | null> {
     const party = await partyMethods.get({ party_id });
     if (!party) return null;

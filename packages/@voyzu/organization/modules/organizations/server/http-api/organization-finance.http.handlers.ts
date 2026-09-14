@@ -12,7 +12,7 @@ export async function handleUpdateFinance(request: NextRequest, { params }: { pa
     const { code } = await params;
     const organization = await getOrganization(code);
     if (!organization) return notFoundError(`Organization ${code} not found`);
-    if (!internalApi.has("@erp/organization-finance")) return notFoundError("Finance is not installed");
+    if (!internalApi.has("@erp/organization-finance")) return notFoundError("Ledger is not installed");
     const changes = await parseBody<OrganizationFinanceChanges>(request);
     return ok(await internalApi.call("@erp/organization-finance", "update", { organization_id: organization.id, changes }));
   } catch (error) {

@@ -43,6 +43,8 @@ export default {
         },
       },
       // Supply the menu for pages declared under this package-owned root.
+      // The sidebar appears when a root has menu items or a header.
+      // Omit both leftnav slots to keep the top navigation without a sidebar.
       "leftnav.menu": {
         "/finance": { content: financeLeftNav },
       },

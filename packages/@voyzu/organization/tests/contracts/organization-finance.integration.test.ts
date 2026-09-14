@@ -10,20 +10,22 @@ import { OrganizationRepo } from "../../modules/organizations/server/db/organiza
 import organization from "../../voyzu.package";
 import shared from "../../../shared-contracts/voyzu.package";
 import auth from "../../../auth/voyzu.package";
+import businessObjects from "../../../business-objects/voyzu.package";
 
 // Requires the composed development runtime, initialized DB and Finance settings for NZ.
 // Every write is rolled back, including automatic Finance provisioning.
 test("organization and Finance internal API calls share a transaction", async () => {
   const runtime = process.env.VOYZU_WORKSPACE_ROOT;
   if (!runtime) throw new Error("Run through npm run test:contracts");
-  const { default: finance } = await import(pathToFileURL(resolve(runtime, "packages/@voyzu/finance/voyzu.package.ts")).href);
+  const { default: finance } = await import(pathToFileURL(resolve(runtime, "packages/@voyzu/ledger/voyzu.package.ts")).href);
   const platform = [
+    { name: "@voyzu/business-objects", isPlatform: true, contracts: businessObjects.contracts },
     { name: "@voyzu/shared-contracts", isPlatform: true, contracts: shared.contracts },
     { name: "@voyzu/organization", isPlatform: true, contracts: organization.contracts },
     { name: "@voyzu/auth", isPlatform: true, contracts: auth.contracts },
   ];
   function register(withFinance: boolean) {
-    const config = resolveInternalApiContracts([...platform, ...(withFinance ? [{ name: "@voyzu/finance", contracts: finance.contracts }] : [])]);
+    const config = resolveInternalApiContracts([...platform, ...(withFinance ? [{ name: "@voyzu/ledger", contracts: finance.contracts }] : [])]);
     registerInternalApi([...config.definitions].map(([name, { definition }]) => createLazyInternalApiResource(name, definition, config.providers.get(name)?.load)));
   }
   const code = `CT${randomUUID().replaceAll("-", "").slice(0, 12)}`.toUpperCase();
