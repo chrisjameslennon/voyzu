@@ -8,3 +8,9 @@ INSERT INTO voyzu_settings (code, value)
 VALUES ('HOME_PAGE_ROUTE', '/welcome')
 ON CONFLICT (code) DO UPDATE
 SET value = EXCLUDED.value;
+
+-- Invalidate browser navigation state whenever the platform is initialized.
+INSERT INTO voyzu_settings (code, value)
+VALUES ('BROWSER_STATE_VERSION', gen_random_uuid()::text)
+ON CONFLICT (code) DO UPDATE
+SET value = EXCLUDED.value;

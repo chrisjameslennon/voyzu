@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import type { Viewport } from "next";
+import { getDb } from "@voyzu/capability/db";
+import { BrowserStateReset } from "./BrowserStateReset";
 
 import "@voyzu/ui-style/css/reset.css";
 import "@voyzu/ui-layout/css/breakpoints.css";
@@ -11,11 +13,14 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: ReactNode;
 }) {
+  const { rows } = await getDb().query(
+    "SELECT value FROM voyzu_settings WHERE code = 'BROWSER_STATE_VERSION'",
+  );
   return (
     <html lang="en">
       <head>
@@ -37,7 +42,7 @@ export default function RootLayout({
           MozOsxFontSmoothing: "grayscale",
         }}
       >
-        {children}
+        <BrowserStateReset version={typeof rows[0]?.value === "string" ? rows[0].value : null}>{children}</BrowserStateReset>
       </body>
     </html>
   );
