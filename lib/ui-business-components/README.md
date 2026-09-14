@@ -2,6 +2,8 @@
 
 Platform React components that integrate with Voyzu business functionality. Generic controls live in `@voyzu/ui-components`; this library combines those controls with business API behavior.
 
+`AuditPanel` and `AuditPanelProps` are exported from this library. The caller supplies audit metadata, an audit URL and a navigation callback. The panel displays the metadata and uses the platform access context to control the audit-history link; it does not fetch audit history.
+
 ```tsx
 import { OrganizationSwitcher } from "@voyzu/ui-business-components";
 

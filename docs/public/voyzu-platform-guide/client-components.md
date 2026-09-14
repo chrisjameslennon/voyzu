@@ -1,28 +1,28 @@
 # Shared React components
 
-Shared platform components live in `components/`, alongside `lib/`. Packages consume them by direct import; no component registration or discovery is required.
+Shared business components live in `lib/ui-business-components/` and export through `@voyzu/ui-business-components`. Packages consume them by direct import; no component registration or discovery is required. Generic controls live in `@voyzu/ui-components`.
 
 ## Audit panel
 
-`components/audit-panel` supplies the shared audit/system-information panel:
+`AuditPanel` supplies the shared audit/system-information panel:
 
 ```tsx
-import { AuditPanel, type AuditPanelProps } from "@voyzu/components/audit-panel";
+import { AuditPanel, type AuditPanelProps } from "@voyzu/ui-business-components";
 ```
 
 The caller supplies metadata, an audit link and a navigation callback. The panel uses platform styling and the current access context. It does not retrieve audit history; Audit routes retain their own authorization checks.
 
 ## Organization switcher
 
-ERP Core exposes its organization switcher through the deliberate public entry point `exports/components`:
+The same platform library exports the organization switcher:
 
 ```tsx
-import { OrganizationSwitcher } from "@voyzu/erp-core/exports/components";
+import { OrganizationSwitcher } from "@voyzu/ui-business-components";
 ```
 
-This is an explicit upstream dependency on ERP Core, not an import of its package manifest or private modules. Consumers declare the dependency in their package manifest.
+Consumers declare the platform library dependency in their package manifest.
 
-The switcher uses the platform `ContextSwitcher` control and styling. It accepts `isCollapsed`, `allCompanies`, an optional `selectionUrl` and an `onSelected(organizationId)` callback. ERP owns the default selection endpoint and DTO handling; Finance supplies its filtered selection endpoint.
+The switcher uses the platform `ContextSwitcher` control and styling. It accepts `isCollapsed`, `allCompanies`, an optional `selectionUrl` and an `onSelected(organizationId)` callback. Organization owns the default selection endpoint; Finance supplies its filtered selection endpoint.
 
 ## Existing registry infrastructure
 

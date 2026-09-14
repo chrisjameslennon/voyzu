@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { AuditPanel, type AuditPanelProps } from "@voyzu/components/audit-panel";
+import { AuditPanel, type AuditPanelProps } from "@voyzu/ui-business-components";
 import { detailLinkWithBackContext } from "@voyzu/ui-surface/client";
 
 interface LocalizationAuditPanelProps extends Omit<AuditPanelProps, "onNavigate"> {

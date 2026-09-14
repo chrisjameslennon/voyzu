@@ -117,7 +117,7 @@ The calling package supplies the audit metadata and both `auditHref` and `onNavi
 "use client";
 
 import { useRouter } from "next/navigation";
-import { AuditPanel } from "@voyzu/components/audit-panel";
+import { AuditPanel } from "@voyzu/ui-business-components";
 
 export function StockItemAuditPanel({ stockItem }: StockItemAuditPanelProps) {
   const router = useRouter();

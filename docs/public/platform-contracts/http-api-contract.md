@@ -1,4 +1,4 @@
-# API Routing Contract
+# HTTP API Contract
 
 ## API and Documentation Routing
 
@@ -11,7 +11,7 @@ import Type from "typebox";
 
 export default {
   contracts: {
-    apiRouting: {
+    httpApiRouting: {
       // Every API route in this package must fall within a declared root.
       roots: ["/finance"],
 
@@ -178,7 +178,7 @@ export default {
       },
     },
 
-    apiDocumentation: {
+    httpApiDocumentation: {
       // Optional documentation organisation, independent of source modules.
       // Routes without a group appear in default package API documentation.
       groups: {

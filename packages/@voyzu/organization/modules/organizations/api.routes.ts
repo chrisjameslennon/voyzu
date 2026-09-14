@@ -1,4 +1,6 @@
 import Type from "typebox";
+import { OrganizationFinanceChangesDto, OrganizationFinanceSchema } from "@voyzu/types/business-objects/organization-finance";
+import { UnauthorizedErrorResponseDto, BusinessRuleErrorResponseDto } from "@voyzu/types/errors";
 import { ConflictErrorResponseDto, EntityNotFoundErrorResponseDto, FilterRequestDto, InputValidationErrorResponseDto, InternalServerErrorResponseDto } from "@voyzu/types";
 import { OrganizationResponseDto } from "../../types/modules/organizations/organization.response.dto";
 import { OrganizationPatchRequestDto } from "../../types/modules/organizations/organization.patch.request.dto";
@@ -11,6 +13,19 @@ import { OrganizationCreateRequestDto } from "../../types/modules/organizations/
 const loadHandlers = () => import("./server/api/organization.http.handlers");
 
 export const apiDefinitions = {
+  updateFinance: {
+    method: "PUT", path: "/organization/organizations/[code]/finance",
+    loadHandler: () => import("./server/api/organization-finance.http.handlers").then(module => module.handleUpdateFinance),
+    request: { path: { code: { description: "Organization code.", schema: Type.String() } }, contentType: "application/json", body: OrganizationFinanceChangesDto },
+    summary: "Update organization Finance settings", description: "Updates Finance settings through the shared internal API. Finance must be installed and the organization active.", tags: ["Organizations"],
+    responses: {
+      "200": { description: "Updated Finance settings.", body: OrganizationFinanceSchema },
+      "400": { description: "Invalid settings or archived organization.", body: Type.Union([InputValidationErrorResponseDto, BusinessRuleErrorResponseDto]) },
+      "401": { description: "An active user is required.", body: UnauthorizedErrorResponseDto },
+      "404": { description: "Organization or Finance provider not found.", body: EntityNotFoundErrorResponseDto },
+      "500": { description: "Unexpected error.", body: InternalServerErrorResponseDto },
+    },
+  },
   list: {
     method: "GET",
     path: "/organization/organizations",

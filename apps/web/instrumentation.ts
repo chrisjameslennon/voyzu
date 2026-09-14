@@ -4,7 +4,12 @@ export async function register(): Promise<void> {
     const started = performance.now();
     if (development) console.log("[voyzu] loading contract configuration ...");
     try {
-      await import("./.generated/internal-api/installed");
+      const [preinstalled, installed, { registerInternalApi }] = await Promise.all([
+        import("./.generated/internal-api/pre-installed"),
+        import("./.generated/internal-api/installed"),
+        import("@voyzu/capability/internal-api"),
+      ]);
+      registerInternalApi([...preinstalled.internalApiResources, ...installed.internalApiResources]);
       if (development) {
         console.log(`[voyzu] contract configuration loaded in ${Math.round(performance.now() - started)} ms`);
       }

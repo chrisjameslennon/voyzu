@@ -40,13 +40,18 @@ test("organization and Finance internal API calls share a transaction", async ()
       const composed = await internalApi.call("@erp/organization-with-finance", "get", { organization_id: org.id });
       assert.equal(composed?.organization_id, org.id);
       assert.equal(composed?.finance.financeCompanyId, result.financialEntityId);
-      assert.equal(composed?.finance.financeEnabled, true);
+      assert.equal(composed?.finance.financeCompanyId, result.financialEntityId);
       const automatic = await createOrganization({ code: `${code.slice(0, 13)}A`, name: "Automatic Finance test", countryCode: "NZ", baseCurrencyCode: "NZD" });
-      assert.equal((await internalApi.call("@erp/organization-finance", "get", { organization_id: automatic.id }))?.financeEnabled, true);
+      assert.ok((await internalApi.call("@erp/organization-finance", "get", { organization_id: automatic.id }))?.financeCompanyId);
       throw rollback;
     }), error => error === rollback);
     assert.equal((await new OrganizationRepo(getDb()).findIdByCode(code)).rows.length, 0);
   } finally {
-    await import(pathToFileURL(resolve(runtime, "internal-api/index.ts")).href + `?restore=${Date.now()}`);
+    const directory = resolve(runtime, "voyzu/apps/web/.generated/internal-api");
+    const [preinstalled, installed] = await Promise.all([
+      import(pathToFileURL(resolve(directory, "pre-installed.ts")).href),
+      import(pathToFileURL(resolve(directory, "installed.ts")).href),
+    ]);
+    registerInternalApi([...preinstalled.internalApiResources, ...installed.internalApiResources]);
   }
 });

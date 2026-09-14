@@ -51,7 +51,7 @@ const countryWithFinance = await internalApi.call("@erp/country-with-finance", "
 
 Both retrieval and modification use declared methods. `call` throws when a provider is missing; `callOptional` returns null instead. A composed object is null when a required record is absent, but a missing implementation remains an error. Transaction settings belong to implementations, not definitions.
 
-See [Internal API](../platform-contracts/internal-api.md) for DTOs, methods, composition, transactions and runtime validation.
+See [Internal API](../platform-contracts/internal-api-contract.md) for DTOs, methods, composition, transactions and runtime validation.
 
 ## Data transfer objects (DTOs)
 
@@ -155,7 +155,7 @@ Dynamic identifiers, such as a permitted sort column, must be selected from an e
 
 ## See also
 
-* [Internal API](../platform-contracts/internal-api.md)
+* [Internal API](../platform-contracts/internal-api-contract.md)
 * [Validation layers](validation-layers.md)
 * [Auditing patterns](auditing-patterns.md)
 * [API patterns](api-patterns.md)

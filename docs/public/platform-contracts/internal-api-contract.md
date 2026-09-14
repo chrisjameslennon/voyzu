@@ -1,4 +1,4 @@
-# Internal API
+# Internal API Contract
 
 Server-side, same-runtime calls to package-owned and shared resources (`@core`, `@erp`). This API replaces the former semantic data and capability APIs.
 
@@ -235,6 +235,8 @@ All three methods require an initialized registry. Availability does not mean th
 
 ## Transactions and Authorization
 
+`@erp/organization-finance` is defined by Platform Shared Contracts and implemented by Finance. Organization renders its Finance tab directly, reads it with `callOptional(..., "get", ...)`, and forwards settings changes through `update`. Its financial entity is created with Organization in the same transaction whenever Finance is installed. Finance derives active/inactive status from Organization; deleting Organization removes its Finance records through foreign-key cascades. There is no separate Finance-enabled state or user provisioning action. `createFinancialEntity` is the lifecycle operation, and Finance installation seeds financial entities for existing organizations. A missing financial entity for an existing organization is an invariant violation, not a disabled state.
+
 Transactions belong to the implementation, not the contract definition. Definitions contain only data and method schemas; a `transactional` flag in a method definition is rejected. A lazy provider lists its transactional methods alongside its method functions:
 
 ```ts
@@ -327,7 +329,7 @@ Loaders receive an internal API invoker for dependencies. Platform's Customer lo
 
 ## How it works: Platform composition engine
 
-`voyzu:compose` validates registration and generates `.run/internal-api/index.ts` plus the web application's generated bridge. The index contains schema metadata, type-only imports for caller inference, and lazy provider loaders targeting either `implements` or `composes`. No provider is invoked during composition or registration. Providers are loaded on first use and cached for that registry. Invalid namespace ownership, undefined contracts, duplicate definitions and duplicate providers fail composition. Missing methods fail when the provider loads.
+`voyzu:compose` validates registration and generates `apps/web/.generated/internal-api/pre-installed.ts` and `installed.ts` within the platform root. Registrations are grouped by the provider package: platform providers go in `pre-installed.ts`, extension providers in `installed.ts`; definitions without a provider stay with their defining package. Validation covers both groups together. Both files export resource arrays without registering them as an import side effect. Web startup and package scripts combine the arrays and register the complete registry atomically. The generated files contain schema metadata, type-only imports for caller inference, and lazy provider loaders targeting either `implements` or `composes`. No provider is invoked during composition or registration. Providers are loaded on first use and cached for that registry. Invalid namespace ownership, undefined contracts, duplicate definitions and duplicate providers fail composition. Missing methods fail when the provider loads.
 
 The web server loads the generated registry during initialization. Shared definitions are included even without installed extension providers; calling an unimplemented resource throws an error. Core implementations are required at composition time. Registration replaces the previous registry on reload.
 

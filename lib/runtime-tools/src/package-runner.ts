@@ -233,11 +233,17 @@ if (action === "install") {
 } else if (action === "uninstall") {
   await uninstall(instanceRoot, packageDirectory, packageName, definition);
 } else if (action === "run" && scriptName) {
-  const workspace = process.env.VOYZU_WORKSPACE_ROOT;
-  const contracts = workspace && resolve(workspace) !== resolve(instanceRoot)
-    ? resolve(workspace, "internal-api/index.ts")
-    : resolve(instanceRoot, ".generated/internal-api/index.ts");
-  if (existsSync(contracts)) await import(pathToFileURL(contracts).href);
+  const contracts = resolve(instanceRoot, "apps/web/.generated/internal-api");
+  const preinstalledFile = resolve(contracts, "pre-installed.ts");
+  const installedFile = resolve(contracts, "installed.ts");
+  if (existsSync(preinstalledFile) && existsSync(installedFile)) {
+    const [preinstalled, installed, { registerInternalApi }] = await Promise.all([
+      import(pathToFileURL(preinstalledFile).href),
+      import(pathToFileURL(installedFile).href),
+      import("@voyzu/capability/internal-api"),
+    ]);
+    registerInternalApi([...preinstalled.internalApiResources, ...installed.internalApiResources]);
+  }
   await runScript(packageName, definition, scriptName, parameters);
 } else {
   usage();

@@ -4,7 +4,8 @@ import { OrganizationRepo } from "../db/organization.repo";
 
 import { notFound } from "next/navigation";
 import { resolveExternalUrl } from "@voyzu/ui-surface";
-import { ComponentSlot, component } from "@voyzu/ui-surface/server";
+import { internalApi } from "@voyzu/capability/internal-api";
+import { OrganizationFinanceTab } from "../../client/OrganizationFinanceTab";
 
 import { getDb } from "@voyzu/capability/db";
 import { listCurrencyDirectory } from "../db/localization-directory.repo";
@@ -39,11 +40,12 @@ export async function OrganizationDetailPage({ code, surface }: OrganizationDeta
 
   if (!organization) notFound();
 
-  const extensionTabs = component.has("organizations.detail.finance")
+  const finance = await internalApi.callOptional("@erp/organization-finance", "get", { organization_id: organization.id });
+  const extensionTabs = finance
     ? [{
         key: "finance",
         label: "Finance",
-        content: <ComponentSlot id="organizations.detail.finance" organizationCode={organization.code} />,
+        content: <OrganizationFinanceTab organization={organization} finance={finance} />,
       }]
     : [];
 

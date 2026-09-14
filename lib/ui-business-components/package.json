@@ -12,6 +12,8 @@
   "peerDependencies": {
     "@voyzu/types": "*",
     "@voyzu/ui-components": "*",
-    "react": "^19"
+    "react": "^19",
+    "@voyzu/ui-style": "*",
+    "@voyzu/ui-surface": "*"
   }
 }

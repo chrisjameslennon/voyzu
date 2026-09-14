@@ -1,6 +1,6 @@
 # Semantic contracts
 
-> Historical implementation guide. Use the [Internal API](../platform-contracts/internal-api.md) for current definitions, providers, composition and transactions. The semantic data and capability APIs have been removed.
+> Historical implementation guide. Use the [Internal API](../platform-contracts/internal-api-contract.md) for current definitions, providers, composition and transactions. The semantic data and capability APIs have been removed.
 
 Within a package, use ordinary service imports. Across packages, use platform-resolved
 contracts rather than importing a provider or its schemas.

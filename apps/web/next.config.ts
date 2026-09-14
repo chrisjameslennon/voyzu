@@ -89,13 +89,9 @@ export default function nextConfig(phase: string): NextConfig {
       "navigation/pre-installed-headers.tsx", "navigation/installed-headers.tsx",
       "components/pre-installed.ts", "components/installed.ts",
       "components/client.tsx",
-      "internal-api/installed.ts",
+      "internal-api/pre-installed.ts", "internal-api/installed.ts",
     ];
     const missing = required.filter((file) => !existsSync(join(generatedRoot, file)));
-    const contractEntry = runtimeRoot
-      ? join(runtimeRoot, "internal-api", "index.ts")
-      : join(platformRoot, ".generated", "internal-api", "index.ts");
-    if (!existsSync(contractEntry)) missing.push(contractEntry);
     if (missing.length) throw new Error(`Voyzu runtime has not been composed. Run npm run voyzu:compose -- --no-install first. Missing generated entry points: ${missing.join(", ")}`);
   }
   if (instanceRoot) {
