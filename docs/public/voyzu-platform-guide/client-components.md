@@ -24,6 +24,4 @@ Consumers declare the platform library dependency in their package manifest.
 
 The switcher uses the platform `ContextSwitcher` control and styling. It accepts `isCollapsed`, `allCompanies`, an optional `selectionUrl` and an `onSelected(organizationId)` callback. Organization owns the default selection endpoint; Finance supplies its filtered selection endpoint.
 
-## Existing registry infrastructure
-
-The client-component registry remains available but has no current registrations. These two components no longer use it. The separate server `ComponentSlot` API is unchanged.
+Shared components use direct library imports. Pages that display another package's business data render their own UI and use shared internal API contracts for server-side reads and writes.

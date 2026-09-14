@@ -7,8 +7,6 @@ import type {
 } from "@voyzu/ui-surface/types";
 
 import apiReferenceGeneratedLeftNav from "../../.generated/api-reference/navigation.json";
-import "../../.generated/components/pre-installed";
-import "../../.generated/components/installed";
 import {
   createPreInstalledPackageDomains,
   preInstalledNavigation,

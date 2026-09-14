@@ -1,20 +1,11 @@
 import type { ApiRouteDefinition } from "./api";
 import type { PackageContracts } from "./contracts";
 
-export type VoyzuModuleComponent = (props: any) => any;
-
-export interface VoyzuModuleComponentDefinition {
-  id: string;
-  loadComponent: () => Promise<VoyzuModuleComponent>;
-}
-
 export interface VoyzuPackageModuleDefinition {
   defines?: NonNullable<PackageContracts["internalApi"]>["defines"];
   implements?: NonNullable<PackageContracts["internalApi"]>["implements"];
   pageRoutes: Readonly<Record<string, unknown>>;
   apiDefinitions: Readonly<Record<string, ApiRouteDefinition>>;
-  components?: Readonly<Record<string, VoyzuModuleComponentDefinition>>;
-  clientComponents?: Readonly<Record<string, VoyzuModuleComponentDefinition>>;
 }
 
 /**
