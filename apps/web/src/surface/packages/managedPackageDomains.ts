@@ -3,6 +3,17 @@ import "server-only";
 import { listInstalledPackages } from "@voyzu/package-management/server";
 import type { VoyzuComposedSurfaceDomain } from "@voyzu/ui-surface/types";
 
+export async function orderPackageContributions<T extends { packageName: string }>(contributions: T[]): Promise<T[]> {
+  try {
+    const installedPackages = await listInstalledPackages();
+    const order = new Map(installedPackages.map(item => [item.code, item.navOrder ?? Number.MAX_SAFE_INTEGER]));
+    return [...contributions].sort((a, b) => (order.get(a.packageName) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.packageName) ?? Number.MAX_SAFE_INTEGER));
+  } catch (error) {
+    if ((error as { code?: string }).code !== "42P01") throw error;
+    return contributions;
+  }
+}
+
 export async function managedPackageDomains(
   domains: VoyzuComposedSurfaceDomain[],
 ): Promise<VoyzuComposedSurfaceDomain[]> {

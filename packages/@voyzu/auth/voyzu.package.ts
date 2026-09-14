@@ -1,3 +1,4 @@
+import settingsMenu from "./ui-surface/settings.left-nav";
 import { httpApiRoutes as routes0 } from "./modules/auth/http-api.routes";
 import { httpApiRoutes as routes1 } from "./modules/users/http-api.routes";
 import { pageRoutes as authPageRoutes } from "./modules/auth/pages.routes";
@@ -12,6 +13,11 @@ import { UserDefinition } from "./contracts/user.definition";
 
 export const voyzuAuthPackage = {
   contracts: {
+    uiSurface: {
+      "leftnav.menu": {
+        "/settings": { content: settingsMenu },
+      },
+    },
     pageRouting: {
       roots: {
         "/login": {

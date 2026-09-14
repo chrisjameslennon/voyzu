@@ -1,3 +1,4 @@
+import settingsMenu from "./ui-surface/settings.left-nav";
 import { httpApiRoutes as routes0 } from "./modules/package-management/http-api.routes";
 import { mergePageRoutes } from "@voyzu/types/page-routing";
 import { pageRoutes as packageManagementPageRoutes } from "./modules/package-management/pages.routes";
@@ -9,6 +10,11 @@ import { reconcileInstalledPackages } from "./modules/package-management/server/
 
 export const voyzuPackageManagementPackage = {
   contracts: {
+    uiSurface: {
+      "leftnav.menu": {
+        "/settings": { content: settingsMenu },
+      },
+    },
     pageRouting: {
       roots: {
         "/settings/packages": {

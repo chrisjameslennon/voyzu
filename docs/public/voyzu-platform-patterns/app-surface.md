@@ -1,6 +1,6 @@
 # UI application surface patterns
 
-Voyzu renders package pages inside a shared application surface. A package declares its routes and may contribute one or more UI domains with their own navigation. The Voyzu composer turns those package declarations into the runtime application.
+Voyzu renders package pages inside a shared application surface. A package declares its routes and may contribute one or more navigation areas with their own navigation. The Voyzu composer turns those package declarations into the runtime application.
 
 The application surface supplies the desktop and mobile application frame, navigation, current-user actions, help action, breadcrumbs and main content area. Package developers supply the pages and describe how users reach them.
 
@@ -68,161 +68,70 @@ export default {
 
 The package exports `./voyzu-package`. Module route exports alone do not register pages. Each page receives one `context` prop containing `path`, `pathParams`, `queryParams` and `routeDefinition`. See the [page routing contract](../platform-contracts/page-routing-contract.md) for parsing, validation and route resolution.
 
-## Understand UI domains
+## Declare navigation contributions
 
-A UI domain is an independently selectable area in Voyzu's application navigation. A package may provide:
-
-* no UI domains when it supplies only APIs, scripts, database objects or server services;
-* one UI domain for a focused user interface; or
-* multiple UI domains when the package supplies distinct application areas.
-
-Each domain declares:
-
-* the label shown in application navigation;
-* a default route opened when the user selects the domain;
-* every page route that belongs to the domain; and
-* the left-navigation groups used within that domain.
-
-The route list must include detail, report and other domain pages even when they are not shown in the left navigation. Voyzu uses it to identify the active domain and render the correct navigation.
-
-## Declare one or more UI domains
-
-Build a navigation object in `navigation/index.ts`. The `routeId` is the default
-route and must also be present in `routeIds`.
+Packages declare `contracts.uiSurface` in `voyzu.package.ts`. The three contribution slots are `topnav.menu`, `leftnav.menu` and `leftnav.header`. Top-menu destinations select page-routing roots; left-menu and header contributions target roots explicitly. Each package controls its own navigation, with `/settings` as the shared menu exception. See the [UI surface contract](../platform-contracts/ui-surface-contract.md).
 
 ```ts
-// packages/@acme/operations/navigation/index.ts
-import type { VoyzuPackageNavigationDomain } from "@voyzu/types/framework";
+// voyzu.package.ts — other contracts omitted.
+import leftNav from "./ui-surface/left-nav";
 
-const domains = [
-  {
-    label: "Warehousing",
-    routeId: "acme.stock.page.list",
-    routeIds: [
-      "acme.stock.page.list",
-      "acme.stock.page.detail",
-    ],
-    leftNav: [
-      {
-        label: "Inventory",
-        items: [
-          {
-            label: "Stock",
-            icon: "package",
-            routeId: "acme.stock.page.list",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Purchasing",
-    routeId: "acme.purchasing.page.orders",
-    routeIds: [
-      "acme.purchasing.page.orders",
-      "acme.purchasing.page.orderDetail",
-    ],
-    leftNav: [
-      {
-        items: [
-          {
-            label: "Purchase orders",
-            icon: "shopping_cart",
-            routeId: "acme.purchasing.page.orders",
-          },
-        ],
-      },
-    ],
-  },
-] as const satisfies readonly VoyzuPackageNavigationDomain[];
-
-export const navigation = { domains } as const;
-export default navigation;
-```
-
-Expose it from `package.json`:
-
-```json
-{
-  "exports": {
-    "./voyzu-package": "./voyzu.package.ts",
-    "./navigation": "./navigation/index.ts"
-  }
-}
-```
-
-Domain labels should be short and distinct because they appear in both desktop and mobile navigation. Domains from the same package are composed in declaration order.
-
-## Use the single-domain shorthand
-
-A package with exactly one UI domain may return `topNav` and optional `leftNav`
-properties from the same `./navigation` export. The top-navigation route becomes
-the default route, and all page routes in the package belong to that domain.
-
-```ts
-// packages/@acme/warehousing/navigation/top-nav.ts
 export default {
-  label: "Warehousing",
-  routeId: "acme.stock.page.list",
-} as const;
+  contracts: {
+    uiSurface: {
+      "topnav.menu": {
+        "operations": { label: "operations", routeId: "acme.operations.page.list" },
+      },
+      "leftnav.menu": {
+        "/operations": { content: leftNav },
+      },
+    },
+  },
+};
 ```
 
 ```ts
-// packages/@acme/warehousing/navigation/index.ts
-import leftNav from "./left-nav";
-import topNav from "./top-nav";
-
-export const navigation = { topNav, leftNav } as const;
-export default navigation;
+// ui-surface/left-nav.ts
+export default [{
+  items: {
+    "operations.list": { label: "List", routeId: "acme.operations.page.list" },
+  },
+}] as const;
 ```
-
-Left navigation is an array of groups. A group may have a heading, and an item identifies a composed route by `routeId`. Items may contain nested children. A domain may omit left navigation completely.
-
-Route IDs avoid repeating URLs in navigation. The composer validates the domain and top-navigation route IDs. Left-navigation links must likewise use IDs declared by the package.
 
 ## Desktop navigation
 
-On desktop, Voyzu displays one top-navigation item for every visible UI domain. Selecting an item opens that domain's default route. Voyzu compares the current route with each domain's declared routes to highlight the active domain and display its left navigation.
+On desktop, Voyzu displays one top-navigation item for every visible navigation area. Selecting an item opens that navigation area's default route. Voyzu compares the current route with each root's declared routes to highlight the active navigation area and display its left navigation.
 
-Package Management controls package-level navigation order. If one package supplies several domains, those domains remain together in their declared order at the package's position.
+Package Management controls package-level navigation order. If one package supplies several navigation areas, those navigation areas remain together in their declared order at the package's position.
 
 The package supplies navigation declarations only. It must not import or reproduce Voyzu's top navigation, mobile drawer or application frame.
 
 ## Mobile navigation
 
-On mobile, the application bar omits the Voyzu logo. It displays a hamburger action followed by the current UI domain name. The same behavior is supplied to platform packages and independently installed third-party packages.
+On mobile, the application bar omits the Voyzu logo. It displays a hamburger action followed by the current navigation area name. The same behavior is supplied to platform packages and independently installed third-party packages.
 
 Opening the drawer shows:
 
-1. the visible UI domains, in the same package-controlled order as the desktop top navigation; and
-2. the active domain's left-navigation groups and items below the domain list.
+1. the visible navigation areas, in the same package-controlled order as the desktop top navigation; and
+2. the active navigation area's left-navigation groups and items below the navigation area list.
 
-Selecting a domain opens its default route. Selecting a left-navigation item navigates within the active domain. A package with no left navigation still receives the global hamburger menu and domain list.
+Selecting a navigation area opens its default route. Selecting a left-navigation item navigates within the active navigation area. A package with no left navigation still receives the global hamburger menu and navigation area list.
 
-Packages do not implement a separate mobile menu. The composer and shared application surface derive desktop and mobile navigation from the same domain declarations.
+Packages do not implement a separate mobile menu. The composer and shared application surface derive desktop and mobile navigation from the same slot contributions.
 
 ## Package UI visibility
 
 Package Management provides two independent controls:
 
-* **Show top navigation** controls the package's UI-domain items in the desktop top navigation and mobile drawer.
+* **Show top navigation** controls the package's navigation items in the desktop top navigation and mobile drawer.
 * **Show page routes** controls whether package pages can be opened, including through direct URLs.
 
 These controls do not affect HTTP API routes, uninstall the package, run uninstall scripts or delete data. Package code does not need special visibility checks; Voyzu applies both controls at the shared application surface.
 
 ## Compose after installation
 
-The install and link-package workflows compose packages automatically. Composition:
-
-1. discovers pre-installed and installed packages in the runtime workspace;
-2. reads each package's metadata, page routing contract and navigation exports;
-3. imports exported page-route and HTTP API-route manifests and validates their lazy
-   loaders and owned roots;
-4. imports the optional common `./navigation` export;
-5. writes navigation, page-route, HTTP API-route, operation, and HTTP API Reference output beneath
-   `apps/web/.generated` for the platform wildcard handlers to consume;
-   and
-6. updates the runtime workspace and Next.js transpilation metadata.
+The install and link-package workflows compose packages automatically. Composition reads `pageRouting`, `httpApiRouting`, `httpApiDocumentation` and `uiSurface` from package definitions. It validates roots and references, then writes page, API, navigation, header and documentation registries beneath `apps/web/.generated`. Full composition also updates workspace configuration; `--routing-only` refreshes routing, surface contributions and documentation.
 
 Pre-installed packages and independently installed packages pass through the
 same descriptor and surface validation and produce registries with the same

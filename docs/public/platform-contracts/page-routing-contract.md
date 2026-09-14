@@ -140,7 +140,7 @@ export default {
 
 A top-navigation item selects one root. Its destination route must belong to that root. All routes declared under the root share its navigation area, including detail pages that do not appear in a menu. For example, both `/finance/journals` and `/finance/journals/[code]` select Finance's top-navigation item, left menu and header. Separate lists of route IDs are not needed to assign pages to navigation areas. Unframed pages still omit the platform frame.
 
-Composition attaches the declared root as `context.routeDefinition.rootPath`. Root membership comes from the contract grouping, not from the presence of a menu entry. Navigation declarations use `rootPath` to select a root; a simple top-navigation declaration derives its root from its destination route.
+Composition attaches the declared root as `context.routeDefinition.rootPath`. Root membership comes from the contract grouping, not from the presence of a menu entry. Left-menu and header contributions are keyed by root path in `contracts.uiSurface`; a top-navigation item derives its root from its destination route.
 
 ## What the page receives
 

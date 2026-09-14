@@ -16,7 +16,7 @@ packages/@acme/warehousing/
 ├─ docs/
 ├─ install/
 ├─ modules/
-├─ navigation/
+├─ ui-surface/
 ├─ public-assets/
 ├─ scripts/
 ├─ tests/
@@ -62,7 +62,6 @@ The following is illustrative JSON with comments. Remove the comments in a real 
 
   "exports": {
     "./voyzu-package": "./voyzu.package.ts",
-    "./navigation": "./navigation/index.ts",
     "./modules/stock": "./modules/stock/module.ts",
     "./stock/pages.routes": "./modules/stock/pages.routes.ts",
     "./stock/http-api.routes": "./modules/stock/http-api.routes.ts",
@@ -80,24 +79,22 @@ The following is illustrative JSON with comments. Remove the comments in a real 
 
 Only paths declared in `exports` are public. Do not use filesystem dependencies or expose private implementation files.
 
-The composer discovers application surfaces from exports with these exact
-shapes:
+The composer reads application contracts through the package definition:
 
 | Export | Purpose | Loading rule |
 |---|---|---|
-| `./voyzu-package` | Page routing and HTTP API contracts | Page and handler loaders remain lazy. |
-| `./navigation` | Optional package navigation declaration | May import route manifests for their IDs, but not page, handler, or service implementations. |
-| `./navigation/left-nav-header` | Optional client left-navigation header | Composed into the separate header registry. |
+| `./voyzu-package` | Page routing, HTTP API and UI surface contracts | Page and handler loaders remain lazy. |
+| `./ui-surface/left-nav-header` | Optional client header module referenced by a loader | Loaded lazily by the generated header registry. |
 
-Page and HTTP routes are registered explicitly in package contracts. Navigation uses its own export. Composition reads `voyzu.package.ts` and preserves route IDs.
+Page and HTTP routes are registered explicitly in package contracts. Navigation belongs to `contracts.uiSurface`. Composition reads `voyzu.package.ts` and preserves route IDs.
 
-Page and HTTP API root paths reserve separate namespaces. A package may use the same root in both namespaces, but two packages cannot own overlapping roots within the same namespace. Use an empty array when the package owns no roots. The Voyzu platform itself is implicit and is not listed in `voyzu.dependencies`.
+Page and HTTP API root paths reserve separate namespaces. A package may use the same root in both namespaces, but two packages cannot own overlapping roots within the same namespace. Use an empty object for page roots and an empty array for HTTP API roots when none are owned. The Voyzu platform itself is implicit and is not listed in `voyzu.dependencies`.
 
 ### `voyzu.package.ts`
 
 `voyzu.package.ts` is the package lifecycle manifest. It composes the package's
 modules and optional install, uninstall, and script registrations. Install and
-script commands load this manifest deliberately. Semantic contract composition also reads its optional `contracts` section. Page and HTTP API discovery read the package contracts; navigation uses its own export.
+script commands load this manifest deliberately. Composition reads its optional `contracts` section for page routing, HTTP APIs, internal APIs and UI surface contributions.
 
 ```ts
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
@@ -217,53 +214,36 @@ export const pageRoutes = {
 
 Cross-package capabilities and master data are declared through the root manifest’s `contracts.defines` and `contracts.implements`. They are not discovered through `package.json` command exports. Same-package code imports its own services directly. See [Contracts](contracts.md).
 
-## `navigation/`
+## `ui-surface/`
 
-`navigation/` contributes top and left navigation. Navigation entries refer to registered route IDs rather than duplicating URL paths.
-
-```text
-navigation/
-├─ index.ts
-├─ left-nav.ts
-└─ top-nav.ts
-```
+Declare package contributions through `contracts.uiSurface`: `topnav.menu`, `leftnav.menu` and `leftnav.header`. Menu items and children are objects keyed by stable IDs. Each package owns its navigation; `/settings` is the shared menu exception. See the [UI surface contract](../platform-contracts/ui-surface-contract.md).
 
 ```ts
-// navigation/index.ts
-import leftNav from "./left-nav";
-import topNav from "./top-nav";
+// voyzu.package.ts — other contracts omitted.
+import leftNav from "./ui-surface/left-nav";
 
-export const navigation = { topNav, leftNav } as const;
-export default navigation;
-```
-
-```ts
-// navigation/top-nav.ts
 export default {
-  label: "Warehousing",
-  icon: "warehouse",
-  routeId: "stock.list",
-} as const;
-
-// navigation/left-nav.ts
-export default [
-  {
-    items: [
-      {
-        label: "Stock",
-        icon: "inventory",
-        routeId: "stock.list",
+  contracts: {
+    uiSurface: {
+      "topnav.menu": {
+        "warehousing": { label: "warehousing", routeId: "acme.warehousing.items.page.list" },
       },
-    ],
+      "leftnav.menu": {
+        "/warehousing": { content: leftNav },
+      },
+    },
   },
-] as const;
+};
 ```
 
-A package spanning multiple navigation domains returns `domains` from the same
-`./navigation` export instead. Each domain declares its label, entry route,
-owned route IDs, and left navigation. There are no separate composer fallbacks
-for legacy `./navigation/top-nav`, `./navigation/left-nav`, or
-`./navigation/domains` exports.
+```ts
+// ui-surface/left-nav.ts
+export default [{
+  items: {
+    "warehousing.list": { label: "List", routeId: "acme.warehousing.items.page.list" },
+  },
+}] as const;
+```
 
 ## `public-assets/`
 

@@ -98,7 +98,7 @@ Use an empty object when the module has no pages:
 export const pageRoutes = {} as const;
 ```
 
-Navigation belongs in the package's `navigation/` folder and refers to `pageRoutes` entries by route ID. A `helpPath` is relative to the package's `voyzu.settings.helpBaseUrl`. See [Application surfaces](../voyzu-platform-patterns/app-surface.md) and [Documentation and help](../voyzu-platform-patterns/documentation-and-help.md).
+Navigation belongs in the package's `ui-surface/` folder and is registered through `contracts.uiSurface` and refers to `pageRoutes` entries by route ID. A `helpPath` is relative to the package's `voyzu.settings.helpBaseUrl`. See [Application surfaces](../voyzu-platform-patterns/app-surface.md) and [Documentation and help](../voyzu-platform-patterns/documentation-and-help.md).
 
 ### `http-api.routes.ts`
 

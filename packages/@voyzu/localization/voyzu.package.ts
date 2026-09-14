@@ -1,3 +1,4 @@
+import settingsMenu from "./ui-surface/settings.left-nav";
 import { httpApiRoutes as routes0 } from "./modules/countries/http-api.routes";
 import { httpApiRoutes as routes1 } from "./modules/currencies/http-api.routes";
 import { mergePageRoutes } from "@voyzu/types/page-routing";
@@ -13,6 +14,11 @@ import { CurrencyDefinition } from "./contracts/currency.definition";
 
 export const voyzuLocalizationPackage = {
   contracts: {
+    uiSurface: {
+      "leftnav.menu": {
+        "/settings": { content: settingsMenu },
+      },
+    },
     pageRouting: {
       roots: {
         "/settings/localization": {

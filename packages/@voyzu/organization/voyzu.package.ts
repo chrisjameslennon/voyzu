@@ -1,3 +1,4 @@
+import leftMenu from "./ui-surface/left-nav";
 import { httpApiRoutes as routes0 } from "./modules/organization-access/http-api.routes";
 import { httpApiRoutes as routes1 } from "./modules/organization-switcher/http-api.routes";
 import { httpApiRoutes as routes2 } from "./modules/organizations/http-api.routes";
@@ -21,6 +22,17 @@ export const organizationModules = [
 
 export const organizationPackage = {
   contracts: {
+    uiSurface: {
+      "topnav.menu": {
+        "organization.organizations": {
+          "label": "Organizations",
+          "routeId": "voyzu.organizations.page.list"
+        }
+      },
+      "leftnav.menu": {
+        "/organization": { content: leftMenu },
+      },
+    },
     pageRouting: {
       roots: {
         "/organization": {

@@ -34,6 +34,7 @@ interface MobileNavDrawerProps {
   onSelectCompany?: (company: Company) => void;
   showCompanySelector?: boolean;
   logoSrc?: string;
+  headerSlot?: React.ReactNode;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -52,6 +53,7 @@ export function MobileNavDrawer({
   onSelectCompany,
   showCompanySelector,
   logoSrc,
+  headerSlot,
 }: MobileNavDrawerProps) {
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
@@ -75,7 +77,7 @@ export function MobileNavDrawer({
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.includes(item.path);
     const isActive = currentPath === item.path;
-    const itemKey = `${depth}:${item.label}:${item.path}`;
+    const itemKey = item.id ?? `${depth}:${item.label}:${item.path}`;
 
     if (isChild) {
       return (
@@ -162,6 +164,8 @@ export function MobileNavDrawer({
           </div>
 
           <div className={styles.divider} />
+
+          {headerSlot && <div className={styles.section}>{headerSlot}</div>}
 
           {/* Company selector */}
           {showCompanySelector && companies && companies.length > 0 && (

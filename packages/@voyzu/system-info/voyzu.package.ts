@@ -1,3 +1,4 @@
+import settingsMenu from "./ui-surface/settings.left-nav";
 
 import { mergePageRoutes } from "@voyzu/types/page-routing";
 import { pageRoutes as systemInfoPageRoutes } from "./modules/system-info/pages.routes";
@@ -7,6 +8,11 @@ import { systemInfoModule } from "./modules/system-info/module";
 
 export const systemInfoPackage = {
   contracts: {
+    uiSurface: {
+      "leftnav.menu": {
+        "/settings": { content: settingsMenu },
+      },
+    },
     pageRouting: {
       roots: {
         "/settings/system-information": {

@@ -88,6 +88,7 @@ export default function nextConfig(phase: string): NextConfig {
       "http-api-routes/documentation-groups.json", "http-api-routes/package-roots.json",
       "navigation/pre-installed.ts", "navigation/installed.ts",
       "navigation/pre-installed-headers.tsx", "navigation/installed-headers.tsx",
+      "navigation/package-metadata.json",
       "internal-api/pre-installed.ts", "internal-api/installed.ts",
     ];
     const missing = required.filter((file) => !existsSync(join(generatedRoot, file)));

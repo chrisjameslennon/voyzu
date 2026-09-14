@@ -93,13 +93,10 @@ async function packageDirectories(root: string): Promise<string[]> {
   return directories;
 }
 
-function hasExport(manifest: PackageManifest, name: string): boolean {
-  return Object.prototype.hasOwnProperty.call(manifest.exports ?? {}, name);
-}
-
 export async function discoverInstalledPackages(): Promise<DiscoveredPackage[]> {
   const platformRoot = await findPlatformRoot();
   const runtimeWorkspaceRoot = workspaceRoot(platformRoot);
+  const surfaceMetadata = JSON.parse(await readFile(join(platformRoot, "apps/web/.generated/navigation/package-metadata.json"), "utf8")) as Record<string, { hasTopNavigation: boolean }>;
   const pageRoots = JSON.parse(await readFile(join(platformRoot, "apps/web/.generated/page-routes/package-roots.json"), "utf8")) as Record<string, string[]>;
   const httpApiRoots = JSON.parse(await readFile(join(platformRoot, "apps/web/.generated/http-api-routes/package-roots.json"), "utf8")) as Record<string, string[]>;
   const roots = [
@@ -117,10 +114,7 @@ export async function discoverInstalledPackages(): Promise<DiscoveredPackage[]> 
         description: manifest.description?.trim() ?? "",
         repository: manifest.repository?.trim() ?? "",
         preinstalled: manifest.voyzu.preinstalled === true,
-        hasTopNavigation:
-          hasExport(manifest, "./navigation/top-nav")
-          || hasExport(manifest, "./navigation/domains")
-          || (manifest.voyzu.preinstalled !== true && hasExport(manifest, "./navigation")),
+        hasTopNavigation: surfaceMetadata[manifest.name]?.hasTopNavigation ?? false,
         pageRootPaths: pageRoots[manifest.name] ?? [],
         httpApiRootPaths: httpApiRoots[manifest.name] ?? [],
       });

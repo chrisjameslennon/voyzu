@@ -1,5 +1,7 @@
 "use client";
 
+import { activeNavigationArea, matchesPagePath } from "../common/nav";
+
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -23,17 +25,6 @@ interface PackageLeftNavProps {
   navigationDomains: VoyzuComposedSurfaceDomain[];
 }
 
-function routeMatches(pathname: string, routePath: string) {
-  const routeSegments = routePath.split("/");
-  const pathSegments = pathname.split("/");
-  if (routeSegments.length !== pathSegments.length) return false;
-
-  return routeSegments.every(
-    (segment, index) =>
-      (segment.startsWith("[") && segment.endsWith("]"))
-      || segment === pathSegments[index],
-  );
-}
 
 export function PackageLeftNav({ domains, navigationDomains }: PackageLeftNavProps) {
   const router = useRouter();
@@ -42,22 +33,20 @@ export function PackageLeftNav({ domains, navigationDomains }: PackageLeftNavPro
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const effectiveIsCollapsed = isTablet || isCollapsed;
-  const activeDomain = domains.find((domain) =>
-    domain.routePaths.some(({ path }) => routeMatches(pathname, path))
-  );
+  const activeDomain = activeNavigationArea(domains, pathname);
 
   const routePathById = new Map(
-    (activeDomain?.routePaths ?? []).map(({ id, path }) => [id, path]),
+    (activeDomain?.linkPaths ?? []).map(({ id, path }) => [id, path]),
   );
   const groups: NavGroup[] = (activeDomain?.leftNav ?? []).map((group) => ({
     label: group.label,
     items: group.items.map((item) => toNavItem(item, routePathById)),
   }));
   const hasPreInstalledHeader = activeDomain
-    ? hasPreInstalledPackageLeftNavHeader(activeDomain.packageName, pathname)
+    ? hasPreInstalledPackageLeftNavHeader(activeDomain.packageName, activeDomain.rootPath)
     : false;
   const hasInstalledHeader = activeDomain
-    ? hasInstalledPackageLeftNavHeader(activeDomain.packageName, pathname)
+    ? hasInstalledPackageLeftNavHeader(activeDomain.packageName, activeDomain.rootPath)
     : false;
   const handleNavigate = (path: string) => {
     if (!path.startsWith("#")) router.push(path);
@@ -84,14 +73,14 @@ export function PackageLeftNav({ domains, navigationDomains }: PackageLeftNavPro
           headerSlot={hasPreInstalledHeader ? (
             <PreInstalledPackageLeftNavHeader
               packageName={activeDomain!.packageName}
-              domainId={activeDomain!.id}
-              isCollapsed={effectiveIsCollapsed}
+              rootPath={activeDomain!.rootPath}
+              presentation={effectiveIsCollapsed ? "collapsed" : "expanded"}
             />
           ) : hasInstalledHeader ? (
             <InstalledPackageLeftNavHeader
               packageName={activeDomain!.packageName}
-              domainId={activeDomain!.id}
-              isCollapsed={effectiveIsCollapsed}
+              rootPath={activeDomain!.rootPath}
+              presentation={effectiveIsCollapsed ? "collapsed" : "expanded"}
             />
           ) : undefined}
         />
@@ -111,6 +100,10 @@ export function PackageLeftNav({ domains, navigationDomains }: PackageLeftNavPro
         }))}
         currentPath={pathname}
         onNavigate={handleNavigate}
+        headerSlot={isMobileDrawerOpen && activeDomain ? (
+          hasPreInstalledHeader ? <PreInstalledPackageLeftNavHeader packageName={activeDomain.packageName} rootPath={activeDomain.rootPath} presentation="mobile" />
+            : hasInstalledHeader ? <InstalledPackageLeftNavHeader packageName={activeDomain.packageName} rootPath={activeDomain.rootPath} presentation="mobile" /> : undefined
+        ) : undefined}
         showCompanySelector={false}
         logoSrc="/voyzu/voyzu_color_logo_transparent.png"
       />

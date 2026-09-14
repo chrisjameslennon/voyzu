@@ -9,11 +9,13 @@ import type {
 
 import { PackageLeftNav } from "./packages/PackageLeftNav";
 import { SettingsLeftNav } from "./left-navs/settings/SettingsLeftNav";
+import { matchesPagePath } from "./common/nav";
 import type { SurfaceRoutePath } from "./common/nav";
 
 interface SurfaceLeftNavClientProps {
   settingsRoutePaths: SurfaceRoutePath[];
   settingsLeftNav: VoyzuSurfaceNavGroup[];
+  settingsMenusByRoot: Record<string, VoyzuSurfaceNavGroup[]>;
   packageDomains: VoyzuComposedSurfaceDomain[];
   navigationDomains: VoyzuComposedSurfaceDomain[];
 }
@@ -21,12 +23,13 @@ interface SurfaceLeftNavClientProps {
 export function SurfaceLeftNavClient({
   settingsRoutePaths,
   settingsLeftNav,
+  settingsMenusByRoot,
   packageDomains,
   navigationDomains,
 }: SurfaceLeftNavClientProps) {
   const pathname = usePathname();
 
-  if (!pathname.startsWith("/settings")) {
+  if (pathname !== "/settings" && !pathname.startsWith("/settings/")) {
     return (
       <PackageLeftNav
         domains={packageDomains}
@@ -38,7 +41,7 @@ export function SurfaceLeftNavClient({
   return (
     <SettingsLeftNav
       routePaths={settingsRoutePaths}
-      leftNav={settingsLeftNav}
+      leftNav={settingsMenusByRoot[settingsRoutePaths.find(route => matchesPagePath(pathname, route.path))?.rootPath ?? ""] ?? settingsLeftNav}
       navigationDomains={navigationDomains}
     />
   );

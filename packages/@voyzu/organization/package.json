@@ -19,7 +19,6 @@
   "exports": {
     "./package.json": "./package.json",
     "./voyzu-package": "./voyzu.package.ts",
-    "./navigation": "./navigation/index.ts",
     "./organizations": "./modules/organizations/module.ts",
     "./organizations/pages.routes": "./modules/organizations/pages.routes.ts",
     "./organizations/http-api.routes": "./modules/organizations/http-api.routes.ts",

@@ -2,7 +2,7 @@
 
 The Voyzu platform has the concept of a UI Surface. This conceptualises the web browser display as a number of slots. Packages can interact with these slots by declaring that they provide content into a given slot in their `voyzu.package.ts` file.
 
-The UI Surface also interacts with the [Page routing contract](./page-routing-contract.md), for example navigation items also declare page identifiers, and populate the breadcrumbs slot.
+Navigation references page identifiers from the [Page routing contract](./page-routing-contract.md). Route definitions supply breadcrumbs; packages contribute only to the three navigation slots below.
 
 A high level diagram of the UI surface with slots marked in purple:
 
@@ -20,7 +20,7 @@ A high level diagram of the UI surface with slots marked in purple:
 
 ## Declaring and supplying Slot content
 
-Packages declare content to fill UI Surface slots in their root voyzu.package.ts file, using the contracts `uiPlatformSurface` nosw
+Packages declare content to fill UI Surface slots in their root voyzu.package.ts file, using `contracts.uiSurface`.
 
 By convention slot content resides in a package's top level `ui-surface` folder
 
@@ -30,38 +30,29 @@ By convention slot content resides in a package's top level `ui-surface` folder
 ```ts
 // voyzu.package.ts
 
-import financeLeftNav from "./navigation/finance.left-nav";
+import financeLeftNav from "./ui-surface/finance.left-nav";
 
 export default {
   contracts: {
-    platformSurface: {
-      // Add Finance as a destination in the platform's top menu.
-      "platform.surface.topNav": [
-        {
-          finance: {
-            label: "Finance",
-            icon: "account_balance",
-            // Link to a registered page using its stable route ID.
-            routeId: "finance.journals.list",
-          },
+    uiSurface: {
+      // Add a top-menu destination; its route determines the selected root.
+      "topnav.menu": {
+        finance: {
+          label: "Finance",
+          routeId: "finance.journals.list",
         },
-      ],
-
-      "platform.surface.leftNav": [
-        {
-          // References the top-navigation item's ID.
-          topNavItem: "finance",
-          // Supply the menu shown when Finance is selected.
-          content: financeLeftNav,
-
-          // Place package-specific controls above the left menu.
-          header: {
-            loadComponent: () =>
-              import("./navigation/left-nav-header")
-                .then(module => module.default),
-          },
+      },
+      // Supply the menu for pages declared under this package-owned root.
+      "leftnav.menu": {
+        "/finance": { content: financeLeftNav },
+      },
+      // Place a package component above the menu.
+      "leftnav.header": {
+        "/finance": {
+          loadComponent: () => import("./ui-surface/left-nav-header")
+            .then(module => module.default),
         },
-      ],
+      },
     },
   },
 };
@@ -147,18 +138,38 @@ export default function FinanceLeftNavHeader({
 
 Each top-navigation item maps to a page-routing root. All pages declared under that root select its top-navigation item, left menu and header—even pages absent from the menu. For example, `/finance/journals/JNL-001` selects Finance because its route belongs to `pageRouting.roots["/finance"]`. No separate list of route IDs is needed.
 
-## Changes needed (temporary)
+## Ownership and ordering
 
-Refactor the existing UI surface engine. Root-grouped page routing and route membership are already implemented.
+A package supplies its own left menu and header. Their keys must be roots declared in that package's page-routing contract. Packages cannot contribute to another package's navigation. Each root has at most one top-menu item and one header. Top-menu destinations and menu links reference pages owned by the contributing package.
 
-- [ ] Align the contract name and examples: the prose uses `uiPlatformSurface`, while the example uses `platformSurface`. Use the three declared slot names (`topnav.menu`, `leftnav.header`, `leftnav.menu`) consistently, with the header declared separately from the menu.
-- [ ] Define contribution ordering, how multiple packages contribute to the same menu, and how conflicting headers are handled. Specify how packages target the platform's Settings menu without adding their own top-navigation item.
-- [ ] Add the chosen UI surface contract to `PackageContracts`, with types for slot contributions, stable menu-item keys, recursive `items`/`children` objects, route references and lazy header loaders.
-- [ ] Make composition read contributions from `voyzu.package.ts`. Replace discovery through `./navigation` and `./navigation/left-nav-header` exports, and generate registries for the three slots without invoking component loaders during composition.
-- [ ] Validate slot names, contribution shapes, identifier uniqueness, route and top-navigation references, and root ownership. Resolve each top-navigation destination to its declared page root and apply the agreed ordering and conflict rules.
-- [ ] Adapt the existing top menu, left menu and header rendering to the composed contributions. Preserve menu-item keys and declaration order when converting object maps for the existing menu components, and carry through labels and icons.
-- [ ] Use the resolved route's root membership to select all three contributions, including on direct links to detail pages. Replace the remaining domain-based navigation declarations and package-level selection fallbacks; keep remembered-page navigation scoped to the selected root.
-- [ ] Load header components through their declared loaders and supply `presentation: "expanded" | "collapsed" | "mobile"`. Render the contributed header in both desktop navigation and the mobile drawer, replacing the separate header-root exports and existing header props.
-- [ ] Migrate pre-installed packages, installed packages and package templates. Move contribution files from `navigation/` to `ui-surface/`, update imports and package exports, and remove obsolete registration code without compatibility adapters.
-- [ ] Preserve package visibility and navigation ordering, route authorization, Settings navigation, generated HTTP API navigation, and unframed-page behaviour while changing the contribution mechanism.
-- [ ] Update the related guides and examples, include the new registries in `--routing-only` composition, sync the development runtime, refresh composition and run platform/runtime typechecks. Remove this temporary section when the refactor is complete.
+Menu items and nested children are objects keyed by stable identifiers; groups remain an array. An item declares exactly one of `routeId`, `path` or `children`. Use `routeId` for registered pages and `path` for placeholder destinations within a package-owned root. A placeholder does not require or register a page. Keys must be unique within a root's menu. Top-menu keys are unique across packages. Declaration order controls items and groups; Package Management controls package navigation order and visibility.
+
+## Settings menu
+
+The platform's Settings menu is the shared exception. Packages may contribute to `leftnav.menu["/settings"]` without declaring a top-menu item. This target applies to child roots such as `/settings/users`. A menu targeting the selected page's more specific, package-owned root takes precedence over the shared menu. Settings contributions with the same group label combine in package navigation order; an omitted label means "Settings".
+
+```ts
+// Inside contracts.uiSurface, for a package that owns the referenced page.
+"leftnav.menu": {
+  "/settings": {
+    content: [{
+      label: "Settings",
+      items: {
+        "auth.users": { label: "Users", routeId: "voyzu.users.page.list" },
+      },
+    }],
+  },
+},
+```
+
+## Header loading
+
+Header loaders directly import a module under `./ui-surface/` and select its default or named component export with `.then(module => module.default)` or `.then(module => module.Header)`. Export that module through the package's matching `./ui-surface/...` path in `package.json`. Loaders do not capture variables or perform other work; composition generates browser-safe lazy imports without invoking the loaders or importing page and server implementations into the browser.
+
+The platform supplies `presentation` as `"expanded"`, `"collapsed"` or `"mobile"`. The same component serves the desktop left navigation and mobile drawer. Unframed pages omit these slots.
+
+## Composition
+
+Composition reads `contracts.uiSurface` from each package's `voyzu.package.ts`, validates identifiers, route references, root ownership, contribution shapes and header loaders, and generates navigation and header registries. Slot files are imported by the package contract; exporting a file alone does not register a contribution.
+
+Use `npm run voyzu:compose -- --routing-only` to refresh these registries. The platform retains control of branding, user controls, help, breadcrumbs and the page frame. Package visibility and page authorization remain enforced by the existing surface engine.

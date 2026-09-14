@@ -1,3 +1,4 @@
+import settingsMenu from "./ui-surface/settings.left-nav";
 import { httpApiRoutes as routes0 } from "./modules/audit/http-api.routes";
 import { mergePageRoutes } from "@voyzu/types/page-routing";
 import { pageRoutes as auditPageRoutes } from "./modules/audit/pages.routes";
@@ -10,6 +11,11 @@ import { AuditDefinition } from "./contracts/audit.definition";
 
 export const voyzuAuditPackage = {
   contracts: {
+    uiSurface: {
+      "leftnav.menu": {
+        "/settings": { content: settingsMenu },
+      },
+    },
     pageRouting: {
       roots: {
         "/settings/audit": {

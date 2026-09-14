@@ -6,7 +6,6 @@ export type {
   VoyzuSurfaceMainComponent,
   VoyzuSurfaceMainProps,
   VoyzuSurfaceMainRegistration,
-  VoyzuSurfaceLeftNavHeaderProps,
   VoyzuSurfaceNavGroup,
   VoyzuSurfaceNavItem,
   VoyzuSurfaceRole,
@@ -16,7 +15,6 @@ export type {
   VoyzuSurfaceSlotProps,
   VoyzuSurfaceSlots,
   VoyzuSurfaceUserAccess,
-  VoyzuUiDomain,
 } from "./types";
 
 export { resolveExternalUrl } from "./urls";

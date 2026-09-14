@@ -1,5 +1,7 @@
 "use client";
 
+import { activeNavigationArea, matchesPagePath } from "../common/nav";
+
 import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -12,17 +14,6 @@ interface PackageTopNavProps {
   allDomains: VoyzuComposedSurfaceDomain[];
 }
 
-function routeMatches(pathname: string, routePath: string) {
-  const routeSegments = routePath.split("/");
-  const pathSegments = pathname.split("/");
-  if (routeSegments.length !== pathSegments.length) return false;
-
-  return routeSegments.every(
-    (segment, index) =>
-      (segment.startsWith("[") && segment.endsWith("]"))
-      || segment === pathSegments[index],
-  );
-}
 
 function currentPageStorageKey(domainId: string) {
   return `voyzu.currentPage.${domainId}`;
@@ -33,7 +24,7 @@ function rememberedPathFor(domain: VoyzuComposedSurfaceDomain): string | null {
   if (!rememberedPath) return null;
 
   const pathname = rememberedPath.split(/[?#]/, 1)[0] ?? "";
-  return domain.routePaths.some(({ path }) => routeMatches(pathname, path))
+  return domain.routePaths.some(({ path }) => matchesPagePath(pathname, path))
     ? rememberedPath
     : null;
 }
@@ -44,11 +35,8 @@ export function PackageTopNavClient({ domains, allDomains }: PackageTopNavProps)
   const search = searchParams.toString();
   const router = useRouter();
   const isMobile = useIsMobile();
-  const activeDomain = allDomains.find((domain) =>
-    domain.routePaths.some(({ path }) => routeMatches(pathname, path))
-  );
-  const activeTopNavigationDomain = domains.find((domain) => domain.id === activeDomain?.id)
-    ?? domains.find((domain) => domain.packageName === activeDomain?.packageName);
+  const activeDomain = activeNavigationArea(allDomains, pathname);
+  const activeTopNavigationDomain = domains.find((domain) => domain.rootPath === activeDomain?.rootPath);
 
   useEffect(() => {
     if (!activeDomain) return;

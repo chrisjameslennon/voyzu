@@ -21,38 +21,6 @@ export interface VoyzuPackageSettings {
   helpBaseUrl?: string;
 }
 
-export interface VoyzuPackageNavigationItem {
-  label: string;
-  icon?: string;
-  routeId?: string;
-  path?: string;
-  exactMatch?: boolean;
-  children?: readonly VoyzuPackageNavigationItem[];
-}
-
-export type VoyzuSettingsNavigationSlotId =
-  | "settings.main"
-  | "settings.integration";
-
-export interface VoyzuPackageNavigationGroup {
-  label?: string;
-  slotId?: VoyzuSettingsNavigationSlotId;
-  items: readonly VoyzuPackageNavigationItem[];
-}
-
-/**
- * One independently selectable application domain supplied by a package.
- * rootPath selects all pages declared under that root, including pages absent
- * from left navigation.
- */
-export interface VoyzuPackageNavigationDomain {
-  label: string;
-  routeId: string;
-  rootPath: string;
-  leftNav: readonly VoyzuPackageNavigationGroup[];
-  topNavigationVisible?: boolean;
-}
-
 export interface VoyzuPackageInstallDefinition {
   sql?: readonly string[];
   seedSql?: readonly string[];

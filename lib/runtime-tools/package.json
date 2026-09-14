@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "peerDependencies": {
+    "typescript": "7.0.2",
     "chokidar": "^5.0.0",
     "dotenv": "^17.4.2",
     "pg": "^8.22.0",

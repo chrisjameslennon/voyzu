@@ -6,6 +6,14 @@ import { welcomeModule } from "./modules/welcome/module";
 
 export const welcomePackage = {
   contracts: {
+    uiSurface: {
+      "topnav.menu": {
+        "welcome": {
+          "label": "Welcome",
+          "routeId": "voyzu.welcome.page.home"
+        }
+      },
+    },
     pageRouting: {
       roots: {
         "/welcome": {

@@ -10,7 +10,8 @@ import type {
   VoyzuSurfaceNavGroup,
 } from "@voyzu/ui-surface/types";
 
-import { toNavItem, type SurfaceRoutePath } from "../../common/nav";
+import { toNavItem, matchesPagePath, type SurfaceRoutePath } from "../../common/nav";
+import { PackageHeader } from "../../packages/PackageHeader";
 import { canAccessRole, useCurrentUserAccess } from "../../common/useCurrentUserAccess";
 import styles from "@voyzu/ui-surface/css-modules/surface.module.css";
 
@@ -32,6 +33,9 @@ export function SettingsLeftNav({
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const effectiveIsCollapsed = isTablet || isCollapsed;
+  const activeRoute = routePaths.find(route => matchesPagePath(pathname, route.path));
+  const header = (presentation: "expanded" | "collapsed" | "mobile") => activeRoute?.packageName && activeRoute.rootPath
+    ? <PackageHeader packageName={activeRoute.packageName} rootPath={activeRoute.rootPath} presentation={presentation} /> : undefined;
   const routePathById = new Map(routePaths.map((route) => [route.id, route.path]));
   const visibleLeftNav = isLoaded && canAccessRole(user, "ADMIN") ? leftNav : [];
   const groups: NavGroup[] = visibleLeftNav.map((group) => ({
@@ -61,6 +65,7 @@ export function SettingsLeftNav({
           isCollapsed={effectiveIsCollapsed}
           setIsCollapsed={setIsCollapsed}
           isCollapseLocked={isTablet}
+          headerSlot={header(effectiveIsCollapsed ? "collapsed" : "expanded")}
         />
       </div>
       <MobileNavDrawer
@@ -79,6 +84,7 @@ export function SettingsLeftNav({
         currentPath={pathname}
         onNavigate={handleNavigate}
         showCompanySelector={false}
+        headerSlot={isMobileDrawerOpen ? header("mobile") : undefined}
         logoSrc="/voyzu/voyzu_color_logo_transparent.png"
       />
     </>

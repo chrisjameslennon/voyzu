@@ -176,7 +176,7 @@ const LeftNav: React.FC<LeftNavProps> = ({
       ? { paddingLeft: `${0.75 + depth * 1.25}rem` }
       : undefined;
 
-    const itemKey = `${depth}:${item.label}:${item.path}`;
+    const itemKey = item.id ?? `${depth}:${item.label}:${item.path}`;
 
     return (
       <div key={itemKey} className={`${styles.navItemWrapper} group`}>
@@ -249,7 +249,7 @@ const LeftNav: React.FC<LeftNavProps> = ({
     const isChildActive = isNavItemActive(item, currentPath);
 
     return (
-      <React.Fragment key={item.path}>
+      <React.Fragment key={item.id ?? item.path}>
         <button
           onClick={e => {
             e.stopPropagation();

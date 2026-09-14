@@ -52,7 +52,7 @@ packages/@acme/customer-orders/
 │  └─ manifest.ts
 ├─ modules/
 │  └─ orders/
-├─ navigation/
+├─ ui-surface/
 ├─ public-assets/
 ├─ scripts/
 ├─ tests/
@@ -98,10 +98,6 @@ dependencies, and exposes its public entry points.
       "types": "./voyzu.package.ts",
       "import": "./voyzu.package.ts"
     },
-    "./navigation": {
-      "types": "./navigation/index.ts",
-      "import": "./navigation/index.ts"
-    },
     "./modules/orders": {
       "types": "./modules/orders/module.ts",
       "import": "./modules/orders/module.ts"
@@ -138,10 +134,9 @@ dependencies, and exposes its public entry points.
 }
 ```
 
-The composer discovers pages, APIs, commands, and navigation from these
-dedicated exports. It does not inspect `voyzu.package.ts` or `module.ts` as a
-fallback. Omit `./navigation` when the package has no navigation, and omit a
-module surface only when that module does not provide it.
+The composer reads routing, HTTP API documentation and UI surface contributions
+from `voyzu.package.ts`. Omit `contracts.uiSurface` when the package has no
+navigation contributions. Module exports alone do not register pages or menus.
 
 Declare host-provided libraries as `peerDependencies`. Put only
 package-specific runtime libraries in `dependencies`. The Voyzu platform is
@@ -439,51 +434,34 @@ are optional.
 
 ## Add navigation
 
-Navigation is optional. It references page route IDs instead of repeating URL
-paths:
+Declare the optional `contracts.uiSurface` alongside page routing. Navigation links use route IDs; left-menu contributions target package-owned roots. See the [UI surface contract](../platform-contracts/ui-surface-contract.md) for headers, Settings contributions and validation rules.
 
 ```ts
-// navigation/top-nav.ts
-import { pageRoutes } from "../modules/orders/pages.routes";
+// voyzu.package.ts — other contracts omitted.
+import leftNav from "./ui-surface/left-nav";
 
 export default {
-  label: "Customer Orders",
-  routeId: "acme.customer-orders.orders.page.list",
-} as const;
-```
-
-```ts
-// navigation/left-nav.ts
-import { pageRoutes } from "../modules/orders/pages.routes";
-
-export default [
-  {
-    items: [
-      {
-        label: "Orders",
-        icon: "receipt_long",
-        routeId: "acme.customer-orders.orders.page.list",
+  contracts: {
+    uiSurface: {
+      "topnav.menu": {
+        "customer-orders": { label: "customer-orders", routeId: "acme.customer-orders.orders.page.list" },
       },
-    ],
+      "leftnav.menu": {
+        "/customer-orders": { content: leftNav },
+      },
+    },
   },
-] as const;
+};
 ```
-
-Combine the declarations in the package navigation entry point:
 
 ```ts
-// navigation/index.ts
-import leftNav from "./left-nav";
-import topNav from "./top-nav";
-
-export const navigation = { topNav, leftNav } as const;
-export default navigation;
+// ui-surface/left-nav.ts
+export default [{
+  items: {
+    "customer-orders.list": { label: "List", routeId: "acme.customer-orders.orders.page.list" },
+  },
+}] as const;
 ```
-
-Expose only this entry point through `package.json` as `./navigation`.
-Navigation may import lightweight page-route manifests to reuse IDs, but it
-must not import `module.ts`, page components, handlers, services, or server
-barrels.
 
 ## Add tests
 

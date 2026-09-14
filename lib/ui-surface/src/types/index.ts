@@ -47,6 +47,7 @@ export interface VoyzuSurfaceAccessContext {
 export type VoyzuSurfaceAccessResult = "allow" | "unauthenticated" | "denied";
 
 export interface VoyzuSurfaceNavItem {
+  id?: string;
   label: string;
   icon?: string;
   routeId?: string;
@@ -74,29 +75,14 @@ export interface VoyzuSurfaceMainRegistration {
   Main: VoyzuSurfaceMainComponent;
 }
 
-export interface VoyzuSurfaceLeftNavHeaderProps {
-  isCollapsed: boolean;
-  domainId: string;
-}
-
-export interface VoyzuUiDomain {
-  id: string;
-  label: string;
-  topNavItem: {
-    label: string;
-    routeId: string;
-  };
-  pageRoutes: readonly RegisteredPageRoute[];
-  leftNav: readonly VoyzuSurfaceNavGroup[];
-  Main?: VoyzuSurfaceMainComponent;
-}
-
 export interface VoyzuComposedSurfaceDomain {
   id: string;
+  rootPath: string;
   packageName: string;
   label: string;
   defaultPath: string;
   routePaths: Array<{ id: string; path: string }>;
+  linkPaths: Array<{ id: string; path: string }>;
   leftNav: VoyzuSurfaceNavGroup[];
   topNavigationVisible?: boolean;
 }
