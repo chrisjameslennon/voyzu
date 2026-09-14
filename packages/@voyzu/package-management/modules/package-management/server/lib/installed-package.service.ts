@@ -1,4 +1,5 @@
 import { getDb, withTransaction, type DbExecutor } from "@voyzu/capability/db";
+import { internalApi } from "@voyzu/capability/internal-api";
 import { BusinessRuleError, NotFoundError } from "@voyzu/capability/errors";
 
 import type {
@@ -127,8 +128,8 @@ async function getHomePageRouteWith(db: DbExecutor): Promise<string> {
 }
 
 export async function updateHomePageRoute(route: string): Promise<string> {
-  return withTransaction(async (db) => {
-    await new InstalledPackageRepo(db).setSetting(HOME_PAGE_SETTING, route);
+  return withTransaction(async () => {
+    await internalApi.call("@core/settings", "set", { code: HOME_PAGE_SETTING, value: route });
     return route;
   });
 }

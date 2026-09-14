@@ -1,4 +1,5 @@
-import { internalApi } from "@voyzu/capability/internal-api";
+import { getDb } from "@voyzu/capability/db";
 export async function listAuditOrganizations() {
-  return (await internalApi.call("@core/organization", "getDirectory", {})).map(({ organization_id, ...record }) => ({ id: organization_id, ...record }));
+  const { rows } = await getDb().query("SELECT id, code, name FROM organization WHERE status != 'DELETED' ORDER BY code");
+  return rows.map(row => ({ id: Number(row.id), code: String(row.code), name: String(row.name) }));
 }

@@ -10,7 +10,7 @@ import { listOrganizations } from "@voyzu/organization/organizations/server";
 import { OrganizationAccessRepo } from "../db/organization-access.repo";
 
 async function requireAdmin(): Promise<void> {
-  if (!(await internalApi.call("@core/auth", "getCurrentIdentity", {})).permissions.includes("users.manage")) {
+  if (!(await internalApi.call("@core/auth", "get", {})).permissions.includes("users.manage")) {
     throw new BusinessRuleError("Only admin users can manage organization access");
   }
 }
@@ -18,7 +18,7 @@ async function requireAdmin(): Promise<void> {
 export async function listOrganizationAccess(): Promise<OrganizationAccessPage> {
   await requireAdmin();
   const [users, organizations, organizationIdsByUser] = await Promise.all([
-    internalApi.call("@core/user", "list", {}),
+    new OrganizationAccessRepo(getDb()).listUsers(),
     listOrganizations(),
     new OrganizationAccessRepo(getDb()).listOrganizationIdsByUser(),
   ]);

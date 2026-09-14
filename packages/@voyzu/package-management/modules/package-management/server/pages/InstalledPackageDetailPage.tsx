@@ -11,7 +11,7 @@ import { readInstalledPackageFiles } from "../lib/package-inventory";
 
 export async function InstalledPackageDetailPage({ id }: { id?: string }) {
   if (!id) notFound();
-  const canManage = (await internalApi.call("@core/auth", "getCurrentIdentity", {})).permissions.includes("users.manage");
+  const canManage = (await internalApi.call("@core/auth", "get", {})).permissions.includes("users.manage");
   const installedPackage = canManage
     ? await getInstalledPackage(Number(id))
     : null;

@@ -1,5 +1,5 @@
-import { CountrySchema, CountryGetRequestDto, CountryGetResponseDto, CountryListRequestDto, CountryListResponseDto } from "../types/country.internal-api.dto";
-export { CountrySchema } from "../types/country.internal-api.dto";
+import { CountrySchema, CountryGetRequestDto, CountryGetResponseDto } from "@voyzu/types/dtos/country";
+export { CountrySchema } from "@voyzu/types/dtos/country";
 import type { Static } from "typebox";
 import type { InternalApiDefinition } from "../../../../lib/types/src/internal-api";
 
@@ -14,15 +14,10 @@ export const CountryDefinition = {
       input: CountryGetRequestDto,
       output: CountryGetResponseDto,
     },
-    list: {
-      input: CountryListRequestDto,
-      output: CountryListResponseDto,
-    },
   },
 } as const satisfies InternalApiDefinition;
 
 export type CountryContract = typeof CountryDefinition;
 export interface CountryMethods {
   get(parameters: Static<typeof CountryDefinition.methods.get.input>): Promise<Static<typeof CountryDefinition.methods.get.output>>;
-  list(parameters: Static<typeof CountryDefinition.methods.list.input>): Promise<Static<typeof CountryDefinition.methods.list.output>>;
 }

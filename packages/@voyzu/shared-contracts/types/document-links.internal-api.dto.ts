@@ -6,9 +6,8 @@ export const LinkFields = Type.Object({ organization_id: Type.Integer({ minimum:
 
 export const DocumentLinkSchema = Type.Object({ id: Type.Integer({ minimum: 1 }), ...LinkFields.properties }, { additionalProperties: false });
 
-export const DocumentLinksListForDocumentRequestDto = Type.Object({ organization_id: Type.Integer({ minimum: 1 }), documentType: Type.String(), documentId: Type.Integer({ minimum: 1 }) }, { additionalProperties: false });
-
-export const DocumentLinksListForDocumentResponseDto = Type.Array(DocumentLinkSchema);
+export const DocumentLinkGetRequestDto = Type.Object({ organization_id: Type.Integer({ minimum: 1 }), id: Type.Integer({ minimum: 1 }) }, { additionalProperties: false });
+export const DocumentLinkGetResponseDto = Type.Union([DocumentLinkSchema, Type.Null()]);
 
 export const DocumentLinksDeleteRequestDto = Type.Object({ organization_id: Type.Integer({ minimum: 1 }), id: Type.Integer({ minimum: 1 }) }, { additionalProperties: false });
 

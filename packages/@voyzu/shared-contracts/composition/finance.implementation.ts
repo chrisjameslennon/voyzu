@@ -16,7 +16,7 @@ export function createOrganizationWithFinanceMethods(api: InternalApiInvoker) {
     async findByCode(input: { code: string }) {
       // Missing contributors are errors even when the base record is absent.
       if (!api.has("@erp/organization-finance")) throw new Error("No implementation for @erp/organization-finance");
-      const organization = await api.call("@core/organization", "findByCode", input) as Organization | null;
+      const organization = await api.call("@core/organization", "get", input) as Organization | null;
       if (!organization) return null;
       const finance = await api.call("@erp/organization-finance", "get", { organization_id: organization.organization_id }) as OrganizationFinance | null;
       return finance ? { ...organization, finance } : null;

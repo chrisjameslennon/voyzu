@@ -6,11 +6,9 @@ function toDto(row: Record<string, unknown>): DocumentLink {
     downstream: { documentType: String(row.downstream_document_type), documentId: Number(row.downstream_document_id), documentCode: String(row.downstream_document_code) } };
 }
 export class DocumentLinkRepo {
-  async list(input: Parameters<DocumentLinkMethods["listForDocument"]>[0]) {
-    const { rows } = await getDb().query(`SELECT * FROM document_link WHERE organization_id = $1 AND
-      ((upstream_document_type = $2 AND upstream_document_id = $3) OR (downstream_document_type = $2 AND downstream_document_id = $3)) ORDER BY id`,
-    [input.organization_id, input.documentType, input.documentId]);
-    return rows.map(toDto);
+  async get(input: Parameters<DocumentLinkMethods["get"]>[0]) {
+    const { rows } = await getDb().query("SELECT * FROM document_link WHERE organization_id = $1 AND id = $2", [input.organization_id, input.id]);
+    return rows[0] ? toDto(rows[0]) : null;
   }
   async create(input: Parameters<DocumentLinkMethods["create"]>[0]) {
     const { rows } = await getDb().query(`INSERT INTO document_link

@@ -28,7 +28,7 @@ export async function SurfaceFrame({
   children,
 }: SurfaceFrameProps) {
   // Refreshed with the page render/navigation, not cached in a persistent root layout.
-  const identity = await internalApi.callOptional("@core/auth", "getCurrentIdentity", {});
+  const identity = await internalApi.callOptional("@core/auth", "get", {});
   return (
     <AccessProvider identity={identity}>
     <div className={styles.frame}>

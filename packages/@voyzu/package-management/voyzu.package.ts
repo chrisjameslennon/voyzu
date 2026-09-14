@@ -5,6 +5,7 @@ import { packageManagementModule } from "./modules/package-management/module";
 import { reconcileInstalledPackages } from "./modules/package-management/server/lib/installed-package.service";
 
 export const voyzuPackageManagementPackage = {
+  contracts: { internalApi: { defines: packageManagementModule.defines, implements: packageManagementModule.implements } },
   modules: [packageManagementModule],
   install,
   scripts: {

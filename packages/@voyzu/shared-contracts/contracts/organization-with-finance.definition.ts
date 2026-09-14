@@ -1,8 +1,7 @@
-import { OrganizationWithFinanceSchema, OrganizationWithFinanceGetRequestDto, OrganizationWithFinanceGetResponseDto, OrganizationWithFinanceFindByCodeResponseDto } from "../types/organization-with-finance.internal-api.dto";
+import { OrganizationWithFinanceSchema, OrganizationWithFinanceFindByCodeRequestDto, OrganizationWithFinanceGetRequestDto, OrganizationWithFinanceGetResponseDto, OrganizationWithFinanceFindByCodeResponseDto } from "../types/organization-with-finance.internal-api.dto";
 export { OrganizationWithFinanceSchema } from "../types/organization-with-finance.internal-api.dto";
 import type { Static } from "typebox";
 import type { InternalApiDefinition } from "../../../../lib/types/src/internal-api";
-import { OrganizationDefinition } from "./organization.definition";
 
 /** @erp/organization-with-finance. Definition registered by the owning package. */
 
@@ -12,7 +11,7 @@ export const OrganizationWithFinanceDefinition = {
   dataDefinition: OrganizationWithFinanceSchema,
   methods: {
     get: { input: OrganizationWithFinanceGetRequestDto, output: OrganizationWithFinanceGetResponseDto },
-    findByCode: { input: OrganizationDefinition.methods.findByCode.input, output: OrganizationWithFinanceFindByCodeResponseDto },
+    findByCode: { input: OrganizationWithFinanceFindByCodeRequestDto, output: OrganizationWithFinanceFindByCodeResponseDto },
   },
 } as const satisfies InternalApiDefinition;
 

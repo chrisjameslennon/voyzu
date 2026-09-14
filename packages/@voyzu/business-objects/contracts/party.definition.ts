@@ -1,12 +1,11 @@
-import { PartySchema, PartyGetRequestDto, PartyGetResponseDto, PartyFindByCodeRequestDto, PartyFindByCodeResponseDto, PartyUpdateRequestDto, PartyUpdateResponseDto } from "../types/party.internal-api.dto";
-export { PartySchema } from "../types/party.internal-api.dto";
+import { PartySchema, PartyGetRequestDto, PartyGetResponseDto, PartyUpdateRequestDto, PartyUpdateResponseDto } from "@voyzu/types/dtos/party";
+export { PartySchema } from "@voyzu/types/dtos/party";
 import type { Static } from "typebox";
 
 export interface Party extends Static<typeof PartySchema> {}
 
 export interface PartyMethods {
-  get(parameters: { party_id: number }): Promise<Party | null>;
-  findByCode(parameters: { code: string }): Promise<Party | null>;
+  get(parameters: { party_id: number } | { code: string }): Promise<Party | null>;
   update(parameters: {
     party_id: number;
     changes: Partial<Pick<Party, "code" | "name">>;
@@ -19,10 +18,6 @@ export const PartyDefinition = {
     get: {
       input: PartyGetRequestDto,
       output: PartyGetResponseDto,
-    },
-    findByCode: {
-      input: PartyFindByCodeRequestDto,
-      output: PartyFindByCodeResponseDto,
     },
     update: {
       input: PartyUpdateRequestDto,

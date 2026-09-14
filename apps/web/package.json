@@ -20,6 +20,7 @@
     "@voyzu/capability": "*",
     "@voyzu/types": "*",
     "@voyzu/ui-components": "*",
+    "@voyzu/ui-business-components": "*",
     "@voyzu/ui-layout": "*",
     "@voyzu/ui-style": "*",
     "@voyzu/ui-surface": "*",

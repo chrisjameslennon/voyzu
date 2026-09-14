@@ -3,6 +3,11 @@ import type { DbExecutor } from "@voyzu/capability/db";
 export class OrganizationAccessRepo {
   constructor(private readonly db: DbExecutor) {}
 
+  async listUsers() {
+    const { rows } = await this.db.query('SELECT id, code, display_name, role, status FROM app_user ORDER BY code');
+    return rows.map(row => ({ id: Number(row.id), code: String(row.code), displayName: String(row.display_name), role: row.role as "ADMIN" | "STANDARD", status: row.status as "ACTIVE" | "INACTIVE" }));
+  }
+
   async listOrganizationIdsByUser(): Promise<Map<number, number[]>> {
     const { rows } = await this.db.query(
       `SELECT user_id, organization_id

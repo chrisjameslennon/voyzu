@@ -134,6 +134,7 @@ export default function nextConfig(phase: string): NextConfig {
       "@voyzu/ui-reference",
       "@voyzu/types",
       "@voyzu/ui-components",
+      "@voyzu/ui-business-components",
       "@voyzu/ui-layout",
       "@voyzu/ui-style",
       "@voyzu/ui-surface",

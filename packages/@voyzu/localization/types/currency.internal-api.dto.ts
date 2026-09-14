@@ -7,6 +7,3 @@ export const CurrencyGetRequestDto = Type.Object({ code: CurrencySchema.properti
 
 export const CurrencyGetResponseDto = Type.Union([CurrencySchema, Type.Null()]);
 
-export const CurrencyListRequestDto = Type.Object({  }, { additionalProperties: false });
-
-export const CurrencyListResponseDto = Type.Array(CurrencySchema);

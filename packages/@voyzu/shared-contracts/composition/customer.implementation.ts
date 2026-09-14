@@ -14,7 +14,7 @@ export function createCustomerMethods(partyMethods: PartyMethods, accounts: Pick
   }
 
   async function findByCode({ code }: { code: string }): Promise<Customer | null> {
-    const party = await partyMethods.findByCode({ code });
+    const party = await partyMethods.get({ code });
     return party ? get({ party_id: party.party_id }) : null;
   }
 

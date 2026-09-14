@@ -1,0 +1,17 @@
+{
+  "name": "@voyzu/ui-business-components",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "peerDependencies": {
+    "@voyzu/types": "*",
+    "@voyzu/ui-components": "*",
+    "react": "^19"
+  }
+}

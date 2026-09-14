@@ -3,9 +3,12 @@
 import { useEffect, useState } from "react";
 import type { OrganizationSwitcherProps } from "./types";
 import { ContextSwitcher } from "@voyzu/ui-components";
-import type { OrganizationSelectionUpdateRequestDto } from "../../modules/organization-switcher/types";
-import type { OrganizationSelectionResponseDto } from "@voyzu/organization/types/modules/organization-switcher";
-import type { OrganizationResponseDto } from "@voyzu/organization/types/modules/organizations";
+import type { OrganizationResponseDto } from "@voyzu/types/business-objects/organization";
+
+interface OrganizationSelectionResponse {
+  organizations: OrganizationResponseDto[];
+  selectedOrganization: OrganizationResponseDto | null;
+}
 
 export function OrganizationSwitcher({ isCollapsed, allCompanies = false, selectionUrl = "/api/organization-selection", onSelected }: OrganizationSwitcherProps) {
   const [organizations, setOrganizations] = useState<OrganizationResponseDto[]>([]);
@@ -19,7 +22,7 @@ export function OrganizationSwitcher({ isCollapsed, allCompanies = false, select
       try {
         const response = await fetch(selectionUrl);
         const selection = response.ok
-          ? await response.json() as OrganizationSelectionResponseDto
+          ? await response.json() as OrganizationSelectionResponse
           : { organizations: [], selectedOrganization: null, selectedOrganizationId: null };
 
         if (!cancelled) {
@@ -43,7 +46,7 @@ export function OrganizationSwitcher({ isCollapsed, allCompanies = false, select
     const response = await fetch(selectionUrl, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ organizationId: organization.id } satisfies OrganizationSelectionUpdateRequestDto),
+      body: JSON.stringify({ organizationId: organization.id }),
     });
     if (!response.ok) return false;
 

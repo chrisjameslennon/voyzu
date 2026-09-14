@@ -5,7 +5,7 @@ import { internalApi } from "@voyzu/capability/internal-api";
 import { listOrganizationIdsForUser } from "@voyzu/organization/organization-access/server";
 
 async function getCurrentIdentityUser(): Promise<CurrentIdentityUser | null> {
-  return (await internalApi.call("@core/auth", "getCurrentIdentity", {})).user;
+  return (await internalApi.call("@core/auth", "get", {})).user;
 }
 
 function hasUiAccess(user: CurrentIdentityUser | null): user is CurrentIdentityUser {

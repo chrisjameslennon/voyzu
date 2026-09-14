@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { CountrySchema } from "../../localization/types/country.internal-api.dto";
+import { CountrySchema } from "@voyzu/types/dtos/country";
 import { CountryFinanceSchema } from "./country-finance.internal-api.dto";
 
 export const CountryWithFinanceSchema = Type.Object({ ...CountrySchema.properties, finance: CountryFinanceSchema }, { additionalProperties: false });

@@ -11,6 +11,8 @@
     "strict": true,
     "skipLibCheck": true,
     "paths": {
+      "@voyzu/types/dtos/constraints": ["./lib/types/src/dtos/constraints.ts"],
+      "@voyzu/types/dtos/*": ["./lib/types/src/dtos/*.dto.ts"],
       "@voyzu/types/business-objects/*": ["./lib/types/src/business-objects/*.definition.ts"],
       "@voyzu/modules": [
         "./lib/modules/index.ts"
@@ -31,6 +33,9 @@
       "@voyzu/types/*": [
         "./lib/types/src/*",
         "./lib/types/*"
+      ],
+      "@voyzu/ui-business-components": [
+        "./lib/ui-business-components/src/index.ts"
       ],
       "@voyzu/ui-components": [
         "./lib/ui-components/src/index.ts"

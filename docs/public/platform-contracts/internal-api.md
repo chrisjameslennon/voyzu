@@ -144,6 +144,10 @@ This definition reuses `get`'s input but declares its larger output. It does not
 
 ## Shared Contract Definitions
 
+Every platform object has an internal API contract with `get` as its only read method. Write operations may be exposed alongside `get`. Lists, searches, counts and exports of platform-owned data use permitted direct table reads instead. This rule applies to `@core` platform objects, not peer-package or composed `@erp` contracts.
+
+Header records and their dependent line records belong to one object contract: `get` returns the header with its lines. For example, `audit_change` records are the lines of an `audit_event`; they do not need a separate contract.
+
 The Voyzu Platform defines shared Internal API contracts for package use. Definition and implementation are separate: Platform implements `@core/party`, Commercial implements `@erp/CustomerAccount`, and Platform composes `@erp/customer` from their contributions.
 
 Platform implemented Internal API Contracts have the `@core` namespace. Where a definition does not have a `@core` namespace, for example `@erp/customer`, this signifies that the contract is not implemented by platform
@@ -308,7 +312,6 @@ contracts: {
         import("./modules/customers/server/lib/customer.implementation")
           .then(module => ({ methods: module.createCustomerMethods({
             get: input => api.call("@core/party", "get", input) as Promise<Party | null>,
-            findByCode: input => api.call("@core/party", "findByCode", input) as Promise<Party | null>,
             update: input => api.call("@core/party", "update", input) as Promise<void>,
           }, {
             get: input => api.call("@erp/CustomerAccount", "get", input) as Promise<CustomerAccount | null>,

@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./dtos/*": { "types": "./src/dtos/*.dto.ts", "import": "./src/dtos/*.dto.ts" },
+    "./dtos/constraints": { "types": "./src/dtos/constraints.ts", "import": "./src/dtos/constraints.ts" },
     "./business-objects/*": { "types": "./src/business-objects/*.definition.ts", "import": "./src/business-objects/*.definition.ts" },
     "./business-objects/customer-account": { "types": "./src/business-objects/customer-account.definition.ts", "import": "./src/business-objects/customer-account.definition.ts" },
     "./internal-api": { "types": "./src/internal-api.ts", "import": "./src/internal-api.ts" },

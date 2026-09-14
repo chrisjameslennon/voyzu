@@ -9,13 +9,9 @@ export const PartySchema = Type.Object(
   { additionalProperties: false },
 );
 
-export const PartyGetRequestDto = Type.Object({ party_id: Type.Number() }, { additionalProperties: false });
+export const PartyGetRequestDto = Type.Union([Type.Object({ party_id: Type.Number() }, { additionalProperties: false }), Type.Object({ code: Type.String() }, { additionalProperties: false })]);
 
 export const PartyGetResponseDto = Type.Union([PartySchema, Type.Null()]);
-
-export const PartyFindByCodeRequestDto = Type.Object({ code: Type.String() }, { additionalProperties: false });
-
-export const PartyFindByCodeResponseDto = Type.Union([PartySchema, Type.Null()]);
 
 export const PartyUpdateRequestDto = Type.Object({
         party_id: Type.Number(),

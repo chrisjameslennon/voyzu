@@ -1,7 +1,7 @@
 import "server-only";
 
 import { listOrganizations } from "@voyzu/organization/organizations/server";
-import { internalApi } from "@voyzu/capability/internal-api";
+import { listCountryDirectory, listCurrencyDirectory } from "../../../organizations/server/db/localization-directory.repo";
 
 import { OrganizationListReport, type OrganizationListReportColumn } from "./OrganizationListReport";
 import { OrganizationListReportShell } from "../../client/OrganizationListReportShell";
@@ -113,7 +113,7 @@ export async function OrganizationsReportPage(props?: ReportPageProps) {
 }
 
 export async function CountriesReportPage(props?: ReportPageProps) {
-  const rows = await internalApi.call("@core/country", "list", {});
+  const rows = await listCountryDirectory();
   return report("Countries", "/organization/reports/lists/countries/printable", rowsOf(rows), [
     column("code", "Code"),
     column("name", "Name"),
@@ -123,7 +123,7 @@ export async function CountriesReportPage(props?: ReportPageProps) {
 }
 
 export async function CurrenciesReportPage(props?: ReportPageProps) {
-  const rows = await internalApi.call("@core/currency", "list", {});
+  const rows = await listCurrencyDirectory();
   return report("Currencies", "/organization/reports/lists/currencies/printable", rowsOf(rows), [
     column("code", "Code"),
     column("name", "Name"),

@@ -8,13 +8,8 @@ export function resetPartyData(): void {
   parties = structuredClone(initialParties);
 }
 
-export async function get({ party_id }: { party_id: number }): Promise<Party | null> {
-  const party = parties.find(party => party.party_id === party_id);
-  return party ? { ...party } : null;
-}
-
-export async function findByCode({ code }: { code: string }): Promise<Party | null> {
-  const party = parties.find(party => party.code === code);
+export async function get(input: Parameters<PartyMethods["get"]>[0]): Promise<Party | null> {
+  const party = parties.find(party => "party_id" in input ? party.party_id === input.party_id : party.code === input.code);
   return party ? { ...party } : null;
 }
 
@@ -25,4 +20,4 @@ export async function update({ party_id, changes }: Parameters<PartyMethods["upd
   if (changes.name !== undefined) party.name = changes.name;
 }
 
-export const partyMethods = { get, findByCode, update } satisfies PartyMethods;
+export const partyMethods = { get, update } satisfies PartyMethods;

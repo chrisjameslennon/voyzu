@@ -9,3 +9,5 @@ export const OrganizationWithFinanceGetRequestDto = Type.Object({ organization_i
 export const OrganizationWithFinanceGetResponseDto = Type.Union([OrganizationWithFinanceSchema, Type.Null()]);
 
 export const OrganizationWithFinanceFindByCodeResponseDto = Type.Union([OrganizationWithFinanceSchema, Type.Null()]);
+
+export const OrganizationWithFinanceFindByCodeRequestDto = Type.Object({ code: Type.String() }, { additionalProperties: false });

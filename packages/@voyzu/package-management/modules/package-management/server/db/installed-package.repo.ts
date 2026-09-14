@@ -92,9 +92,4 @@ export class InstalledPackageRepo {
     return this.db.query("SELECT value FROM voyzu_settings WHERE code = $1", [code]);
   }
 
-  setSetting(code: string, value: string) {
-    return this.db.query(`INSERT INTO voyzu_settings (code, value)
-       VALUES ($1, $2)
-       ON CONFLICT (code) DO UPDATE SET value = EXCLUDED.value`, [code, value]);
-  }
 }

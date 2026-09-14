@@ -1,4 +1,4 @@
-import { LinkFields, DocumentLinkSchema, DocumentLinksListForDocumentRequestDto, DocumentLinksListForDocumentResponseDto, DocumentLinksDeleteRequestDto, DocumentLinksDeleteResponseDto } from "../types/document-links.internal-api.dto";
+import { LinkFields, DocumentLinkSchema, DocumentLinkGetRequestDto, DocumentLinkGetResponseDto, DocumentLinksDeleteRequestDto, DocumentLinksDeleteResponseDto } from "../types/document-links.internal-api.dto";
 export { DocumentLinkSchema } from "../types/document-links.internal-api.dto";
 import type { Static } from "typebox";
 import type { InternalApiDefinition } from "../../../../lib/types/src/internal-api";
@@ -10,7 +10,7 @@ export interface DocumentLink extends Static<typeof DocumentLinkSchema> {}
 export const DocumentLinkDefinition = {
   dataDefinition: DocumentLinkSchema,
   methods: {
-    listForDocument: { input: DocumentLinksListForDocumentRequestDto, output: DocumentLinksListForDocumentResponseDto },
+    get: { input: DocumentLinkGetRequestDto, output: DocumentLinkGetResponseDto },
     create: { input: LinkFields, output: DocumentLinkSchema },
     delete: { input: DocumentLinksDeleteRequestDto, output: DocumentLinksDeleteResponseDto },
   },
@@ -18,7 +18,7 @@ export const DocumentLinkDefinition = {
 
 export type DocumentLinkContract = typeof DocumentLinkDefinition;
 export interface DocumentLinkMethods {
-  listForDocument(parameters: Static<typeof DocumentLinkDefinition.methods.listForDocument.input>): Promise<Static<typeof DocumentLinkDefinition.methods.listForDocument.output>>;
+  get(parameters: Static<typeof DocumentLinkDefinition.methods.get.input>): Promise<Static<typeof DocumentLinkDefinition.methods.get.output>>;
   create(parameters: Static<typeof DocumentLinkDefinition.methods.create.input>): Promise<Static<typeof DocumentLinkDefinition.methods.create.output>>;
   delete(parameters: Static<typeof DocumentLinkDefinition.methods.delete.input>): Promise<Static<typeof DocumentLinkDefinition.methods.delete.output>>;
 }

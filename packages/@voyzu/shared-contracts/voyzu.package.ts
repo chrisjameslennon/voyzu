@@ -42,7 +42,6 @@ export const sharedContractsPackage = {
         "@erp/customer": (api: InternalApiInvoker) => import("./composition/customer.implementation")
           .then(module => ({ methods: module.createCustomerMethods({
             get: input => api.call("@core/party", "get", input) as Promise<Party | null>,
-            findByCode: input => api.call("@core/party", "findByCode", input) as Promise<Party | null>,
             update: input => api.call("@core/party", "update", input) as Promise<void>,
           }, {
             get: input => api.call("@erp/CustomerAccount", "get", input) as Promise<CustomerAccount | null>,

@@ -16,7 +16,7 @@ import type { OrganizationAccessUpdateRequest } from "@voyzu/organization/types/
 import { listOrganizationAccess, replaceUserOrganizationAccess } from "../lib/organization-access.service";
 
 async function requireAdmin() {
-  return (await internalApi.call("@core/auth", "getCurrentIdentity", {})).permissions.includes("users.manage")
+  return (await internalApi.call("@core/auth", "get", {})).permissions.includes("users.manage")
     ? null : forbiddenError("You do not have access");
 }
 

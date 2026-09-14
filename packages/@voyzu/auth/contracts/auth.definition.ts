@@ -1,4 +1,4 @@
-import { AuthSchema, AuthGetCurrentIdentityRequestDto } from "../types/auth.internal-api.dto";
+import { AuthSchema, AuthGetRequestDto } from "../types/auth.internal-api.dto";
 export { AuthSchema } from "../types/auth.internal-api.dto";
 import type { Static } from "typebox";
 import type { InternalApiDefinition } from "../../../../lib/types/src/internal-api";
@@ -10,8 +10,8 @@ export interface Auth extends Static<typeof AuthSchema> {}
 export const AuthDefinition = {
   dataDefinition: AuthSchema,
   methods: {
-    getCurrentIdentity: {
-      input: AuthGetCurrentIdentityRequestDto,
+    get: {
+      input: AuthGetRequestDto,
       output: AuthSchema,
     },
   },
@@ -19,5 +19,5 @@ export const AuthDefinition = {
 
 export type AuthContract = typeof AuthDefinition;
 export interface AuthMethods {
-  getCurrentIdentity(parameters: Static<typeof AuthDefinition.methods.getCurrentIdentity.input>): Promise<Static<typeof AuthDefinition.methods.getCurrentIdentity.output>>;
+  get(parameters: Static<typeof AuthDefinition.methods.get.input>): Promise<Static<typeof AuthDefinition.methods.get.output>>;
 }
