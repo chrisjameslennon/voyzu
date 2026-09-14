@@ -13,6 +13,7 @@
     "packages/@voyzu/audit",
     "packages/@voyzu/foundation",
     "packages/@voyzu/localization",
+    "packages/@voyzu/party",
     "packages/@voyzu/welcome",
     "packages/@voyzu/package-management",
     "packages/@voyzu/system-info",

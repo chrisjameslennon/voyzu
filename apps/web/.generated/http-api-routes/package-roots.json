@@ -24,6 +24,9 @@
     "/installed-package-reconciliation",
     "/package-settings"
   ],
+  "@voyzu/party": [
+    "/parties"
+  ],
   "@voyzu/shared-contracts": [],
   "@voyzu/system-info": [],
   "@voyzu/ui-reference": [],

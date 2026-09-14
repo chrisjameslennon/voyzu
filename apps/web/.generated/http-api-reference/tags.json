@@ -20,6 +20,10 @@
     "description": "Core Voyzu platform operations."
   },
   {
+    "name": "@voyzu/party: Platform",
+    "description": "Core Voyzu platform operations."
+  },
+  {
     "name": "@voyzu/http-api: Platform",
     "description": "Core Voyzu platform operations."
   }

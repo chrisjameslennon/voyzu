@@ -11,6 +11,7 @@ import organization from "../../voyzu.package";
 import shared from "../../../shared-contracts/voyzu.package";
 import auth from "../../../auth/voyzu.package";
 import businessObjects from "../../../business-objects/voyzu.package";
+import party from "../../../party/voyzu.package";
 
 // Requires the composed development runtime, initialized DB and Finance settings for NZ.
 // Every write is rolled back, including automatic Finance provisioning.
@@ -20,6 +21,7 @@ test("organization and Finance internal API calls share a transaction", async ()
   const { default: finance } = await import(pathToFileURL(resolve(runtime, "packages/@voyzu/ledger/voyzu.package.ts")).href);
   const platform = [
     { name: "@voyzu/business-objects", isPlatform: true, contracts: businessObjects.contracts },
+    { name: "@voyzu/party", isPlatform: true, contracts: party.contracts },
     { name: "@voyzu/shared-contracts", isPlatform: true, contracts: shared.contracts },
     { name: "@voyzu/organization", isPlatform: true, contracts: organization.contracts },
     { name: "@voyzu/auth", isPlatform: true, contracts: auth.contracts },

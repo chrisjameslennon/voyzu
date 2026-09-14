@@ -1,0 +1,95 @@
+{
+  "groupId": "parties.operations",
+  "title": "@voyzu/party",
+  "description": "Party management.",
+  "sectionId": "parties.platform",
+  "sectionTitle": "Platform",
+  "sectionDescription": "Core Voyzu platform operations.",
+  "operations": [
+    {
+      "id": "parties.parties.list",
+      "file": "parties.parties.list.operation-doc.json",
+      "summary": "List"
+    },
+    {
+      "id": "parties.parties.create",
+      "file": "parties.parties.create.operation-doc.json",
+      "summary": "Create"
+    },
+    {
+      "id": "parties.parties.filter",
+      "file": "parties.parties.filter.operation-doc.json",
+      "summary": "Filter"
+    },
+    {
+      "id": "parties.parties.search",
+      "file": "parties.parties.search.operation-doc.json",
+      "summary": "Search"
+    },
+    {
+      "id": "parties.parties.get",
+      "file": "parties.parties.get.operation-doc.json",
+      "summary": "Get"
+    },
+    {
+      "id": "parties.parties.update",
+      "file": "parties.parties.update.operation-doc.json",
+      "summary": "Update"
+    },
+    {
+      "id": "parties.parties.patch",
+      "file": "parties.parties.patch.operation-doc.json",
+      "summary": "Patch"
+    },
+    {
+      "id": "parties.parties.delete",
+      "file": "parties.parties.delete.operation-doc.json",
+      "summary": "Delete"
+    },
+    {
+      "id": "parties.parties.batchCreate",
+      "file": "parties.parties.batchCreate.operation-doc.json",
+      "summary": "Batch Create"
+    },
+    {
+      "id": "parties.parties.batchGet",
+      "file": "parties.parties.batchGet.operation-doc.json",
+      "summary": "Batch Get"
+    },
+    {
+      "id": "parties.parties.batchUpdate",
+      "file": "parties.parties.batchUpdate.operation-doc.json",
+      "summary": "Batch Update"
+    },
+    {
+      "id": "parties.parties.batchPatch",
+      "file": "parties.parties.batchPatch.operation-doc.json",
+      "summary": "Batch Patch"
+    },
+    {
+      "id": "parties.parties.batchDelete",
+      "file": "parties.parties.batchDelete.operation-doc.json",
+      "summary": "Batch Delete"
+    },
+    {
+      "id": "parties.parties.activate",
+      "file": "parties.parties.activate.operation-doc.json",
+      "summary": "Activate"
+    },
+    {
+      "id": "parties.parties.deactivate",
+      "file": "parties.parties.deactivate.operation-doc.json",
+      "summary": "Deactivate"
+    },
+    {
+      "id": "parties.parties.batchActivate",
+      "file": "parties.parties.batchActivate.operation-doc.json",
+      "summary": "Batch Activate"
+    },
+    {
+      "id": "parties.parties.batchDeactivate",
+      "file": "parties.parties.batchDeactivate.operation-doc.json",
+      "summary": "Batch Deactivate"
+    }
+  ]
+}

@@ -8,10 +8,11 @@ import package3 from "../../../../packages/@voyzu/http-api-reference/voyzu.packa
 import package4 from "../../../../packages/@voyzu/localization/voyzu.package";
 import package5 from "../../../../packages/@voyzu/organization/voyzu.package";
 import package6 from "../../../../packages/@voyzu/package-management/voyzu.package";
-import package7 from "../../../../packages/@voyzu/shared-contracts/voyzu.package";
-import package8 from "../../../../packages/@voyzu/system-info/voyzu.package";
-import package9 from "../../../../packages/@voyzu/ui-reference/voyzu.package";
-import package10 from "../../../../packages/@voyzu/welcome/voyzu.package";
+import package7 from "../../../../packages/@voyzu/party/voyzu.package";
+import package8 from "../../../../packages/@voyzu/shared-contracts/voyzu.package";
+import package9 from "../../../../packages/@voyzu/system-info/voyzu.package";
+import package10 from "../../../../packages/@voyzu/ui-reference/voyzu.package";
+import package11 from "../../../../packages/@voyzu/welcome/voyzu.package";
 import { capabilityHttpApiRegistration } from "@voyzu/http-api/capability-module";
 export const preInstalledHttpApiRegistrations: HttpApiRegistration[] = [
   { packageName: "@voyzu/audit", routing: (package0.contracts as PackageContracts).httpApiRouting ?? { roots: [], routes: {} }, documentation: (package0.contracts as PackageContracts).httpApiDocumentation ?? { sections: {} } },
@@ -21,10 +22,11 @@ export const preInstalledHttpApiRegistrations: HttpApiRegistration[] = [
   { packageName: "@voyzu/localization", routing: (package4.contracts as PackageContracts).httpApiRouting ?? { roots: [], routes: {} }, documentation: (package4.contracts as PackageContracts).httpApiDocumentation ?? { sections: {} } },
   { packageName: "@voyzu/organization", routing: (package5.contracts as PackageContracts).httpApiRouting ?? { roots: [], routes: {} }, documentation: (package5.contracts as PackageContracts).httpApiDocumentation ?? { sections: {} } },
   { packageName: "@voyzu/package-management", routing: (package6.contracts as PackageContracts).httpApiRouting ?? { roots: [], routes: {} }, documentation: (package6.contracts as PackageContracts).httpApiDocumentation ?? { sections: {} } },
-  { packageName: "@voyzu/shared-contracts", routing: (package7.contracts as PackageContracts).httpApiRouting ?? { roots: [], routes: {} }, documentation: (package7.contracts as PackageContracts).httpApiDocumentation ?? { sections: {} } },
-  { packageName: "@voyzu/system-info", routing: (package8.contracts as PackageContracts).httpApiRouting ?? { roots: [], routes: {} }, documentation: (package8.contracts as PackageContracts).httpApiDocumentation ?? { sections: {} } },
-  { packageName: "@voyzu/ui-reference", routing: (package9.contracts as PackageContracts).httpApiRouting ?? { roots: [], routes: {} }, documentation: (package9.contracts as PackageContracts).httpApiDocumentation ?? { sections: {} } },
-  { packageName: "@voyzu/welcome", routing: (package10.contracts as PackageContracts).httpApiRouting ?? { roots: [], routes: {} }, documentation: (package10.contracts as PackageContracts).httpApiDocumentation ?? { sections: {} } },
+  { packageName: "@voyzu/party", routing: (package7.contracts as PackageContracts).httpApiRouting ?? { roots: [], routes: {} }, documentation: (package7.contracts as PackageContracts).httpApiDocumentation ?? { sections: {} } },
+  { packageName: "@voyzu/shared-contracts", routing: (package8.contracts as PackageContracts).httpApiRouting ?? { roots: [], routes: {} }, documentation: (package8.contracts as PackageContracts).httpApiDocumentation ?? { sections: {} } },
+  { packageName: "@voyzu/system-info", routing: (package9.contracts as PackageContracts).httpApiRouting ?? { roots: [], routes: {} }, documentation: (package9.contracts as PackageContracts).httpApiDocumentation ?? { sections: {} } },
+  { packageName: "@voyzu/ui-reference", routing: (package10.contracts as PackageContracts).httpApiRouting ?? { roots: [], routes: {} }, documentation: (package10.contracts as PackageContracts).httpApiDocumentation ?? { sections: {} } },
+  { packageName: "@voyzu/welcome", routing: (package11.contracts as PackageContracts).httpApiRouting ?? { roots: [], routes: {} }, documentation: (package11.contracts as PackageContracts).httpApiDocumentation ?? { sections: {} } },
   capabilityHttpApiRegistration
 ];
 export const preInstalledHttpApiRoutes: HttpApiRegisteredRoute[] = preInstalledHttpApiRegistrations.flatMap(({packageName,routing})=>Object.entries(routing.routes).map(([id,route])=>({...route,id,packageName})));

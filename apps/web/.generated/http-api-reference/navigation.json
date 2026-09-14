@@ -414,6 +414,81 @@
         ]
       },
       {
+        "label": "@voyzu/party",
+        "icon": "article",
+        "path": "/http-api-reference/@voyzu-party/parties.operations",
+        "children": [
+          {
+            "label": "List",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.list"
+          },
+          {
+            "label": "Create",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.create"
+          },
+          {
+            "label": "Filter",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.filter"
+          },
+          {
+            "label": "Search",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.search"
+          },
+          {
+            "label": "Get",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.get"
+          },
+          {
+            "label": "Update",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.update"
+          },
+          {
+            "label": "Patch",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.patch"
+          },
+          {
+            "label": "Delete",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.delete"
+          },
+          {
+            "label": "Batch Create",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.batchCreate"
+          },
+          {
+            "label": "Batch Get",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.batchGet"
+          },
+          {
+            "label": "Batch Update",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.batchUpdate"
+          },
+          {
+            "label": "Batch Patch",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.batchPatch"
+          },
+          {
+            "label": "Batch Delete",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.batchDelete"
+          },
+          {
+            "label": "Activate",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.activate"
+          },
+          {
+            "label": "Deactivate",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.deactivate"
+          },
+          {
+            "label": "Batch Activate",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.batchActivate"
+          },
+          {
+            "label": "Batch Deactivate",
+            "path": "/http-api-reference/@voyzu-party/parties.operations#parties.parties.batchDeactivate"
+          }
+        ]
+      },
+      {
         "label": "@voyzu/http-api",
         "icon": "article",
         "path": "/http-api-reference/@voyzu-http-api/voyzu.capability",

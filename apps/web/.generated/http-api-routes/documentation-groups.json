@@ -4,5 +4,6 @@
   "localization.operations": "/http-api-reference/@voyzu-localization/localization.operations",
   "organization.operations": "/http-api-reference/@voyzu-organization/organization.operations",
   "package-management.operations": "/http-api-reference/@voyzu-package-management/package-management.operations",
+  "parties.operations": "/http-api-reference/@voyzu-party/parties.operations",
   "voyzu.capability": "/http-api-reference/@voyzu-http-api/voyzu.capability"
 }
