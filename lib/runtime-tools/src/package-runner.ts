@@ -233,7 +233,7 @@ if (action === "install") {
 } else if (action === "uninstall") {
   await uninstall(instanceRoot, packageDirectory, packageName, definition);
 } else if (action === "run" && scriptName) {
-  const contracts = resolve(instanceRoot, "apps/web/.generated/internal-api");
+  const contracts = resolve(process.env.VOYZU_PLATFORM_ROOT ?? instanceRoot, "apps/web/.generated/internal-api");
   const preinstalledFile = resolve(contracts, "pre-installed.ts");
   const installedFile = resolve(contracts, "installed.ts");
   if (existsSync(preinstalledFile) && existsSync(installedFile)) {
