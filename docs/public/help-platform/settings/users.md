@@ -23,7 +23,7 @@ UI passwords require at least 8 characters. Identities with API access require a
 | Admin    | Platform administration and unrestricted access to installed applications. |
 | Standard | Normal application access. Business packages may apply additional scope. |
 
-When ERP Core is installed, company assignments are managed separately from platform identity under **Organization > Company Access**. Admin users have access to every company; standard users have access only to assigned companies.
+Open a user under **Settings > Users** and select the **Organization Access** tab to manage their organization assignments. Admin users have access to every organization; standard users have access only to the organizations selected and saved on this tab.
 
 ## Viewing users
 

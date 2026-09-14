@@ -17,7 +17,7 @@ Every signed-in UI user can use **User Profile** to change their display name, e
 
 ## Access boundaries
 
-Admin users can access all companies. Standard users can access only the companies assigned under **Organization > Company Access**. Use a separate identity for every person and integration, and deactivate an identity when access is no longer needed.
+Admin users can access all organizations. Standard users can access only the organizations assigned on their **Settings > Users > Organization Access** tab. Use a separate identity for every person and integration, and deactivate an identity when access is no longer needed.
 
 ## See also
 

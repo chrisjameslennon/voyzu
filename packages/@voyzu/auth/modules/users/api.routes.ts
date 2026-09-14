@@ -20,6 +20,8 @@ import {
   UnauthorizedErrorResponseDto,
 } from "@voyzu/types";
 import Type from "typebox";
+import { OrganizationAccessSchema } from "@voyzu/types/business-objects/organization-access";
+import { UserOrganizationAccessResponseDto, UserOrganizationAccessUpdateRequestDto } from "../../types/user-organization-access.dto";
 
 const commonResponses = {
   "400": {
@@ -51,6 +53,38 @@ const userCodePath = Type.String({
 });
 
 export const apiDefinitions = {
+  getOrganizationAccess: {
+    method: "GET",
+    path: "/users/[code]/organization-access",
+    loadHandler: () => import("./server/api/user-organization-access.http.handlers").then((module) => module.handleGet),
+    summary: "Get user organization access",
+    description: "Gets the user's organization assignments and available organizations.",
+    tags: ["Users"],
+    request: { path: { code: { description: "User code.", schema: userCodePath } } },
+    responses: {
+      ...commonResponses,
+      "200": { description: "Organization assignments and available organizations.", body: UserOrganizationAccessResponseDto },
+      "404": { description: "User not found.", body: EntityNotFoundErrorResponseDto },
+    },
+  },
+  replaceOrganizationAccess: {
+    method: "PUT",
+    path: "/users/[code]/organization-access",
+    loadHandler: () => import("./server/api/user-organization-access.http.handlers").then((module) => module.handleReplace),
+    summary: "Replace user organization access",
+    description: "Replaces all organization assignments for a standard user through the Organization internal API.",
+    tags: ["Users"],
+    request: {
+      path: { code: { description: "User code.", schema: userCodePath } },
+      contentType: "application/json",
+      body: UserOrganizationAccessUpdateRequestDto,
+    },
+    responses: {
+      ...commonResponses,
+      "200": { description: "Updated organization assignments.", body: OrganizationAccessSchema },
+      "404": { description: "User or organization not found.", body: EntityNotFoundErrorResponseDto },
+    },
+  },
   list: {
     method: "GET",
     path: "/users",

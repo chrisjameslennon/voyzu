@@ -40,7 +40,6 @@
     "./organization-access": "./modules/organization-access/module.ts",
     "./organization-access/pages.routes": "./modules/organization-access/pages.routes.ts",
     "./organization-access/api.routes": "./modules/organization-access/api.routes.ts",
-    "./organization-access/client": "./modules/organization-access/client/index.ts",
     "./organization-access/server": "./modules/organization-access/server/index.ts",
     "./organization-reports": "./modules/organization-reports/module.ts",
     "./organization-reports/pages.routes": "./modules/organization-reports/pages.routes.ts",

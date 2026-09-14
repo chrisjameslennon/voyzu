@@ -4,4 +4,3 @@ export {
   listOrganizationIdsForUser,
   replaceUserOrganizationAccess,
 } from "./lib/organization-access.service";
-export { OrganizationAccessPage } from "./pages/OrganizationAccessPage";

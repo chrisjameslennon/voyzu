@@ -1,12 +1,10 @@
 import type { VoyzuPackageNavigationGroup } from "@voyzu/types/framework";
 import { pageRoutes as organizationPageRoutes } from "../modules/organizations/pages.routes";
-import { pageRoutes as organizationAccessPageRoutes } from "../modules/organization-access/pages.routes";
 import { pageRoutes as organizationReportPageRoutes } from "../modules/organization-reports/pages.routes";
 
 export const organizationLeftNav = [{
   items: [
     { label: "Organizations", icon: "domain", routeId: organizationPageRoutes.list.id },
-    { label: "Organization access", icon: "manage_accounts", routeId: organizationAccessPageRoutes.list.id },
   ],
 }, {
   label: "Reports",

@@ -12,6 +12,8 @@ import { refreshCurrentUserAccess } from "./current-user-access";
 import { UserAccessDenied } from "./UserAccessDenied";
 import { UserPasswordModal, type UserPasswordValue } from "./UserPasswordModal";
 import { getUserStatusColor } from "./user-status-color";
+import { TabGroup } from "@voyzu/ui-components";
+import { UserOrganizationAccessTab } from "./UserOrganizationAccessTab";
 
 const ROLE_OPTIONS = [
   { value: "ADMIN", label: "Admin" },
@@ -203,6 +205,8 @@ export function UserDetail({ pageTitle, canManageUsers, user: initialUser }: Pro
       </aside>
 
       <main className={layoutStyles.mainSection}>
+        <TabGroup defaultKey="details" tabs={[
+          { key: "details", label: "Details", content: (
         <section className={detailStyles.card}>
           <div className={detailStyles.cardHeader}>
             <h2 className={`${typography.sectionHeading} ${detailStyles.cardHeaderTitle}`}>User Details</h2>
@@ -266,7 +270,11 @@ export function UserDetail({ pageTitle, canManageUsers, user: initialUser }: Pro
             </label>
           </div>
         </section>
-
+          ) },
+          { key: "organization-access", label: "Organization Access", content: (
+            <UserOrganizationAccessTab key={`${user.id}:${user.code}:${user.role}`} user={user} />
+          ) },
+        ]} />
       </main>
 
       <ConfirmDialog
