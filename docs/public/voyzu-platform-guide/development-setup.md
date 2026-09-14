@@ -34,10 +34,23 @@ The command creates the root `package.json` and `packages/` directory when they 
 
 The `--allow-git=all` option permits this command to download the installer from GitHub. npm 12 blocks Git-based packages by default. The permission applies to this invocation and does not change your persistent npm configuration.
 
-`--force` deletes and recreates the generated `.run` runtime when it already exists. It preserves the root `packages` source directory, `.package-sources`, `.env.local`, `.gitignore`, the root `package.json` and database data. Packages previously copied into `.run` must be linked or installed again afterward.
+`--force` deletes and recreates the generated `.run` runtime when it already exists. Stop the development server first. It preserves the root `packages` source directory, `.package-sources`, existing `.env.local` and `.gitignore` files, and database data. Packages previously copied into `.run` must be linked or installed again afterward.
 
-The disposable platform runtime is always downloaded from Voyzu's `main`
-branch. Development branch and tag overrides are not supported.
+The installer reads the platform repository and branch from the root `package.json`. For example, this configuration downloads branch `0.2`:
+
+```json
+"voyzu": {
+  "mode": "development",
+  "platform": {
+    "repository": "https://github.com/chrisjameslennon/voyzu.git",
+    "branch": "0.2"
+  }
+}
+```
+
+When no repository or branch is configured, the defaults are the official Voyzu repository and `main`. Set these values before creating or recreating `.run`; the installer downloads the selected branch from Git, including its committed changes, rather than copying a local platform checkout.
+
+Existing root `package.json` scripts, dependencies and other fields are retained. The installer sets `voyzu.mode` to `development`, fills missing platform repository and branch values, and rewrites the JSON with two-space indentation. An existing `voyzu` configuration must already use development mode. The root manifest is not replaced with the template.
 
 The resulting structure is:
 
@@ -55,7 +68,7 @@ your-development-directory/
 └─ package.json
 ```
 
-Existing `.env.local`, `.gitignore`, `package.json` and package source are preserved.
+Creating the runtime installs npm dependencies but does not initialize the database or install local packages. If `.run` has been deleted, recreate it before running `voyzu:initialize` or `voyzu:link-packages`, because those commands use scripts inside `.run`.
 
 ## 4. Create the PostgreSQL database
 
@@ -90,6 +103,8 @@ Initialize the pre-installed Voyzu packages and create the bootstrap administrat
 ```shell
 npm run voyzu:initialize
 ```
+
+For development, use `npm run voyzu:initialize -- --no-build` to install the pre-installed packages and refresh their inventory without building the application. Then run `npm run voyzu:link-packages` to install all local packages and compose the runtime. These commands do not run sample-data scripts.
 
 The local bootstrap credentials are:
 
