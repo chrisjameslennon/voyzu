@@ -40,7 +40,7 @@ export const httpApiRoutes = {
 } as const;
 ```
 
-Register these definitions in the package HTTP API contract. Module HTTP route exports are optional implementation conveniences, not composition discovery points. HTTP-only packages can use `modules: []`.
+Register these definitions in the package HTTP API contract. Module HTTP route exports are optional implementation conveniences, not composition discovery points. HTTP-only packages declare their HTTP contracts directly; no module-registration list is needed.
 
 At runtime the route is prefixed with `/api`, so the example above exposes
 `GET /api/warehousing/stock`, `POST /api/warehousing/stock`, and

@@ -93,7 +93,6 @@ export const voyzuLocalizationPackage = {
     },
 
   },
-  modules: [countriesModule, currenciesModule],
   install,
 } as const satisfies VoyzuPackageDefinition;
 

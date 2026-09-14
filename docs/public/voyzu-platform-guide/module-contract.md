@@ -40,20 +40,9 @@ export const stockModule = {
 export default stockModule;
 ```
 
-Voyzu does not discover modules by scanning the directory. The package must register the module in its root `voyzu.package.ts`:
+Modules are source-code organization, not package registrations. `voyzu.package.ts` imports route maps, definitions and implementation maps into its `contracts` object. A `module.ts` file may remain as a local aggregation convenience; composition does not discover or require it.
 
-```ts
-import { stockModule } from "./modules/stock/module";
-
-export default {
-  modules: [stockModule],
-};
-```
-
-Do not add a module-level `index.ts` barrel. Import the manifest or an explicit same-package server entry point directly.
-
-The module registration above belongs to the package lifecycle contract. The
-application composer reads page and HTTP API contracts from `voyzu.package.ts`. See [HTTP API contract](../platform-contracts/http-api-contract.md).
+Do not add a module-level `index.ts` barrel. Import the manifest or an explicit same-package entry point directly. See the [Page routing contract](../platform-contracts/page-routing-contract.md) and [HTTP API contract](../platform-contracts/http-api-contract.md).
 
 ### `pages.routes.ts`
 

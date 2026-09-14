@@ -52,7 +52,6 @@ export const voyzuPackageManagementPackage = {
         }
       }
     }, internalApi: { defines: packageManagementModule.defines, implements: packageManagementModule.implements } },
-  modules: [packageManagementModule],
   install,
   scripts: {
     refresh: async () => {

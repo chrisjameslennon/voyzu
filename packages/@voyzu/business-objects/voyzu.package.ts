@@ -12,7 +12,6 @@ export const businessObjectsPackage = {
       },
     },
   },
-  modules: [],
 } as const satisfies VoyzuPackageDefinition;
 
 export default businessObjectsPackage;

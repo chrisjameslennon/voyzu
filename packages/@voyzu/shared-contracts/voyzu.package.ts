@@ -57,7 +57,6 @@ export const sharedContractsPackage = {
       },
     },
   },
-  modules: [],
 } as const satisfies VoyzuPackageDefinition;
 
 export default sharedContractsPackage;

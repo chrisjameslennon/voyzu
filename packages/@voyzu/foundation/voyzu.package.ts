@@ -5,7 +5,6 @@ import { install } from "./install/manifest";
 import { defines, implementations } from "./internalApi";
 
 export const voyzuFoundationPackage = {
-  modules: [],
   contracts: {
     httpApiRouting: {
       roots: [],

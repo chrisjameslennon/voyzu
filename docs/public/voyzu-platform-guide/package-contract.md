@@ -9,7 +9,7 @@ A Voyzu package is a self-contained unit of functionality made up of one or more
 └─ packages/@acme/warehousing/
 ```
 
-A complete package can contain the following entries. Only `package.json`, `voyzu.package.ts`, and `modules/` are normally required; the remaining entries are added when the package needs them.
+A complete package can contain the following entries. Only `package.json` and `voyzu.package.ts` are required; the remaining entries are added when the package needs them.
 
 ```text
 packages/@acme/warehousing/
@@ -107,7 +107,6 @@ import { uninstall } from "./uninstall/manifest";
 
 const packageDefinition = {
   contracts: { pageRouting: { roots: { "/warehousing": { routes: pageRoutes } } } },
-  modules: [stockModule],
   install,
   uninstall,
   scripts: { sampleData },
@@ -116,7 +115,7 @@ const packageDefinition = {
 export default packageDefinition;
 ```
 
-A functional package normally declares at least one module. A package used solely for installation infrastructure may declare `modules: []`.
+A package declares at least one supported contract, installation or uninstall file, or script. There is no module-registration list.
 
 ### `README.md`
 

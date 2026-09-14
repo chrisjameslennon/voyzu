@@ -421,7 +421,6 @@ import { uninstall } from "./uninstall/manifest";
 
 export const customerOrdersPackage = {
   contracts: { pageRouting: { roots: { "/customer-orders": { routes: pageRoutes } } } },
-  modules: [ordersModule],
   install,
   uninstall,
 } as const satisfies VoyzuPackageDefinition;
@@ -429,8 +428,7 @@ export const customerOrdersPackage = {
 export default customerOrdersPackage;
 ```
 
-Every package registers at least one module. Installation, removal, and scripts
-are optional.
+Packages register contributions through `contracts`, `install`, `uninstall` and `scripts`. Module folders organize source code and do not need registration.
 
 ## Add navigation
 

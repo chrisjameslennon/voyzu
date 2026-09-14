@@ -6,7 +6,6 @@ import { pageRoutes as usersPageRoutes } from "./modules/users/pages.routes";
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
 
 import { install } from "./install/manifest";
-import { authModule } from "./modules/auth/module";
 import { usersModule } from "./modules/users/module";
 import { AuthDefinition } from "./contracts/auth.definition";
 import { UserDefinition } from "./contracts/user.definition";
@@ -84,7 +83,6 @@ export const voyzuAuthPackage = {
     },
 
   },
-  modules: [authModule, usersModule],
   install,
 } as const satisfies VoyzuPackageDefinition;
 

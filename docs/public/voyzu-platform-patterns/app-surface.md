@@ -56,11 +56,11 @@ import { mergePageRoutes } from "@voyzu/types/page-routing";
 import { pageRoutes as stockRoutes } from "./modules/stock/pages.routes";
 
 export default {
-  modules: [],
   contracts: {
     pageRouting: {
-      roots: ["/warehousing"],
-      routes: mergePageRoutes(stockRoutes),
+      roots: {
+        "/warehousing": { routes: mergePageRoutes(stockRoutes) },
+      },
     },
   },
 };

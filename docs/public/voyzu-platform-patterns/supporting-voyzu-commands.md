@@ -58,11 +58,9 @@ The package definition registers modules and lifecycle resources:
 
 ```ts
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
-import { iceCreamsModule } from "./modules/ice-creams/module";
 import { install as installSampleData } from "./scripts/sample-data/install";
 
 export const iceCreamsPackage = {
-  modules: [iceCreamsModule],
   install: {
     sql: ["./install/db/sql/ice-cream.sql"],
     seedSql: ["./install/db/seed/ice-cream-flavor.seed.sql"],
@@ -167,7 +165,6 @@ Expose callable TypeScript functions through the `scripts` object in
 import { install as installSampleData } from "./scripts/sample-data/install";
 
 export const iceCreamsPackage = {
-  modules: [iceCreamsModule],
   scripts: {
     sampleData: installSampleData,
   },

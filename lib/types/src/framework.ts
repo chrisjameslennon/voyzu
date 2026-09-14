@@ -43,10 +43,7 @@ export interface VoyzuPackageScripts {
  * Voyzu itself is an implicit dependency. Explicit peer and runtime package requirements
  * remain in package.json.
  */
-export interface VoyzuPackageDefinition<
-  TModule extends VoyzuPackageModuleDefinition = VoyzuPackageModuleDefinition,
-> {
-  modules: readonly TModule[];
+export interface VoyzuPackageDefinition {
   contracts?: PackageContracts;
   install?: VoyzuPackageInstallDefinition;
   uninstall?: VoyzuPackageUninstallDefinition;

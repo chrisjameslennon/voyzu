@@ -5,23 +5,7 @@ import { pathToFileURL } from "node:url";
 import { config } from "dotenv";
 import { Pool } from "pg";
 import { existsSync } from "node:fs";
-
-type PackageModule = {
-  pageRoutes: Record<string, unknown>;
-};
-
-type PackageDefinition = {
-  modules: readonly PackageModule[];
-  contracts?: { internalApi?: object; httpApiRouting?: object; httpApiDocumentation?: object };
-  install?: {
-    sql?: readonly string[];
-    seedSql?: readonly string[];
-  };
-  uninstall?: {
-    sql?: readonly string[];
-  };
-  scripts?: Record<string, () => void | Promise<void>>;
-};
+import type { VoyzuPackageDefinition as PackageDefinition } from "@voyzu/types/framework";
 
 function usage(): never {
   throw new Error(
@@ -30,20 +14,26 @@ function usage(): never {
 }
 
 function validateDefinition(value: unknown): PackageDefinition {
-  if (!value || typeof value !== "object") {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new Error("voyzu.package.ts must export a package definition.");
   }
   const definition = value as Partial<PackageDefinition>;
-  if (!Array.isArray(definition.modules)) {
-    throw new Error("voyzu.package.ts modules must be an array.");
+  for (const key of ["contracts", "install", "uninstall", "scripts"] as const) {
+    const entry = definition[key];
+    if (entry !== undefined && (!entry || typeof entry !== "object" || Array.isArray(entry))) {
+      throw new Error(`voyzu.package.ts ${key} must be an object.`);
+    }
   }
-  for (const [index, moduleDefinition] of definition.modules.entries()) {
-    if (!moduleDefinition || typeof moduleDefinition !== "object") {
-      throw new Error(`Module at index ${index} must be an object.`);
+  for (const [name, contract] of Object.entries(definition.contracts ?? {})) {
+    if (!["pageRouting", "uiSurface", "internalApi", "httpApiRouting", "httpApiDocumentation"].includes(name)) {
+      throw new Error(`voyzu.package.ts contains an unknown contract: ${name}.`);
     }
-    if (!moduleDefinition.pageRoutes || typeof moduleDefinition.pageRoutes !== "object") {
-      throw new Error(`Module at index ${index} must define pageRoutes.`);
+    if (!contract || typeof contract !== "object" || Array.isArray(contract)) {
+      throw new Error(`voyzu.package.ts contracts.${name} must be an object.`);
     }
+  }
+  for (const [name, script] of Object.entries(definition.scripts ?? {})) {
+    if (typeof script !== "function") throw new Error(`voyzu.package.ts scripts.${name} must be a function.`);
   }
   for (const [key, paths] of Object.entries(definition.install ?? {})) {
     if (!["sql", "seedSql"].includes(key) || !Array.isArray(paths)) {
@@ -62,14 +52,12 @@ function validateDefinition(value: unknown): PackageDefinition {
     }
   }
   if (
-    definition.modules.length === 0
-    && !(definition.install?.sql?.length || definition.install?.seedSql?.length)
-    && !definition.contracts?.internalApi
-    && !definition.contracts?.httpApiRouting
-    && !definition.contracts?.httpApiDocumentation
+    !Object.keys(definition.contracts ?? {}).length
+    && !(definition.install?.sql?.length || definition.install?.seedSql?.length || definition.uninstall?.sql?.length)
+    && !Object.keys(definition.scripts ?? {}).length
   ) {
     throw new Error(
-      "voyzu.package.ts must define a module, API contracts, or database installation files.",
+      "voyzu.package.ts must declare contracts, installation or uninstall files, or scripts.",
     );
   }
   return definition as PackageDefinition;
