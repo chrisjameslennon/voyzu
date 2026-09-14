@@ -9,11 +9,5 @@ CREATE TABLE IF NOT EXISTS installed_packages (
   CONSTRAINT installed_packages_nav_order_nonnegative CHECK (nav_order >= 0)
 );
 
-ALTER TABLE installed_packages
-  ADD COLUMN IF NOT EXISTS top_navigation_visible BOOLEAN NOT NULL DEFAULT TRUE,
-  ADD COLUMN IF NOT EXISTS page_routes_visible BOOLEAN NOT NULL DEFAULT TRUE;
-
-ALTER TABLE installed_packages DROP COLUMN IF EXISTS status;
-
 CREATE INDEX IF NOT EXISTS installed_packages_navigation_idx
   ON installed_packages (nav_order, code);
