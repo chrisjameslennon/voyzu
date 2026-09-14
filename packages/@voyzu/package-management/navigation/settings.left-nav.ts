@@ -1,5 +1,3 @@
-import { pageRoutes as packageManagementPageRoutes } from "../modules/package-management/pages.routes";
-
 export const packageManagementSettingsLeftNav = [
   {
     label: "Settings",
@@ -7,7 +5,7 @@ export const packageManagementSettingsLeftNav = [
       {
         label: "Installed Packages",
         icon: "deployed_code",
-        routeId: packageManagementPageRoutes.list.id,
+        routeId: "voyzu.package-management.page.list",
       },
     ],
   },

@@ -1,6 +1,6 @@
 import {
   getSurfaceSlot,
-  type VoyzuSurfaceRoute,
+  type RegisteredPageRoute,
   type VoyzuSurfaceSlots,
 } from "@voyzu/ui-surface/types";
 import { resolveExternalUrl } from "@voyzu/ui-surface";
@@ -13,7 +13,7 @@ import { SettingsButton } from "./top-nav/SettingsButton";
 
 interface SurfaceTopNavProps {
   slots: VoyzuSurfaceSlots;
-  activeRoute?: VoyzuSurfaceRoute;
+  activeRoute?: RegisteredPageRoute;
 }
 
 export async function SurfaceTopNav({ slots, activeRoute }: SurfaceTopNavProps) {

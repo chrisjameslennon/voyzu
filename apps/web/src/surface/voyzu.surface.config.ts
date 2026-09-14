@@ -3,7 +3,7 @@ import type {
   VoyzuSurfaceConfig,
   VoyzuSurfaceNavGroup,
   VoyzuSurfaceNavItem,
-  VoyzuSurfaceRoute,
+  RegisteredPageRoute,
 } from "@voyzu/ui-surface/types";
 
 import httpApiReferenceGeneratedLeftNav from "../../.generated/http-api-reference/navigation.json";
@@ -103,7 +103,7 @@ const settingsLeftNav: VoyzuSurfaceNavGroup[] = [
   },
 ].filter(({ items }) => items.length > 0);
 
-const pageRoutes: VoyzuSurfaceRoute[] = [
+const pageRoutes: RegisteredPageRoute[] = [
   ...preInstalledPageRoutes,
   ...installedPageRoutes,
 ];

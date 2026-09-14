@@ -147,7 +147,7 @@ function JournalDetailPage({ context }) {
 - `queryParams`: parsed, declared query values and applicable defaults.
 - `routeDefinition`: the entire package route definition, enriched with `id` from its key, `packageName`, `helpBaseUrl` and `httpApiDocsUrl`. Its `helpPath` contains the resolver's result when a resolver is supplied. All other fields, including `loadPage` and `auth`, remain available.
 
-Both parameter objects always exist, even when empty. Route metadata is not duplicated directly on `context`.
+Both parameter objects always exist, even when empty. Route metadata is not duplicated directly on `context`. Use `PageProps` and `PageContext` from `@voyzu/types/page-routing`; both accept path and query declaration types as generic arguments and include the production raw-value fallback. Keep the full context on the server: `routeDefinition` contains functions. Pass only the serializable values needed by client components.
 
 For `/finance/journals/JNL-001?tab=lines&showAudit=true`:
 
@@ -167,7 +167,7 @@ Without the query string, `queryParams.tab` defaults to `"details"` and `queryPa
 
 The platform parses path and query values, applies defaults and validates them before loading the page. Pages receive the results in `context.pathParams` and `context.queryParams`; the help resolver receives the same parameter objects.
 
-Use either inline `type` and constraints or an imported DTO through `schema`, not both. `default` and `description` are parameter metadata. The inline schema or DTO defines the value's type and constraints, and both forms follow the same conversion rules.
+Use either inline `type` and constraints or an imported DTO through `schema`, not both. `default` and `description` are parameter metadata. The inline schema or DTO defines the value's type and constraints, and both forms follow the same conversion rules. DTOs must declare a single primitive type (`string`, `number`, `integer` or `boolean`), or an array of primitives for queries. Scalar enums and constants are supported alongside an explicit type. Nested objects, unions, references and unsupported constraints are rejected during composition.
 
 - Strings remain strings. Booleans accept only `"true"` or `"false"`.
 - Numbers and integers parse URL strings as finite signed decimal values, such as `"2"`, `"-2"`, `"+2"` and `"12.50"`. Reject empty values, whitespace, exponent notation (`"1e3"`), non-decimal notation and partial numbers (`"12abc"`). Integer parameters also reject fractional values. Numeric DTOs use the same rules as inline `type: "number"` or `type: "integer"`. A literal plus sign in a query must be URL-encoded as `%2B`.
@@ -178,7 +178,7 @@ Use either inline `type` and constraints or an imported DTO through `schema`, no
 
 Invalid supplied parameter values throw an error in development. In production, they log an error and allow rendering to continue; validation does not render a separate input-error page. For queries, this applies only to supplied, declared parameters, not missing or extra parameters. Include the route ID, parameter name and failure reason in the error. Production logging does not guarantee that supplied values satisfy the declared types, and invalid values must not silently receive defaults. Visibility and authorization checks still apply.
 
-If any declared query value fails parsing or validation in production, pass the entire raw query object as `context.queryParams`, with undeclared keys still stripped. Apply no conversions or defaults to that fallback object, including parameters that were valid. Preserve supplied strings and arrays of strings for repeated keys; missing keys remain absent. The help resolver receives the same fallback object.
+If any declared query value fails parsing or validation in production, pass the entire raw query object as `context.queryParams`, with undeclared keys still stripped. Apply no conversions or defaults to that fallback object, including parameters that were valid. Preserve supplied strings and arrays of strings for repeated keys; missing keys remain absent. The help resolver receives the same fallback object. Invalid path parameters follow the same production policy: log the error and supply the raw path-parameter object without conversions. Path and query validation fall back independently.
 
 For example, with the route above, `?tab=unknown&showAudit=true&extra=1` logs an error and supplies `{ tab: "unknown", showAudit: "true" }` in production. `showAudit` remains a string and `extra` is stripped.
 
@@ -254,53 +254,6 @@ Before generating the registry, composition checks that:
 
 If a check fails, composition reports an error so the conflicting or invalid declaration can be corrected.
 
-## temp: changes needed
+Combine module route maps with `mergePageRoutes` from `@voyzu/types/page-routing`. It rejects duplicate keys before they can be overwritten. Module exports alone do not register routes; only `contracts.pageRouting` contributes pages.
 
-### Route id is the key, no longer inline
-
-- Add `contracts.pageRouting` with `roots` and a `routes` object keyed by route ID, following the HTTP API routing contract.
-- Migrate page route declarations from local keys such as `list` and `detail` with inline `id` properties to route-ID keys without an inline `id`. Preserve existing IDs so navigation references remain valid.
-- Update composition to read the contract instead of discovering page route modules through package exports, and move page roots from `package.json` into the contract.
-- Derive each runtime route's identity from its object key. Update route types and consumers that read inline declaration IDs, including navigation, page generation and HTTP API documentation validation.
-- Preserve validation of package-owned roots, duplicate IDs across packages, duplicate paths and references to routes. Provide a checked module-route merge for detecting duplicate keys before flattening: composition cannot recover entries already overwritten by object spreading.
-- Migrate platform and installed-package declarations, templates and documentation to the new shape.
-- Update installation/refresh validation in `lib/runtime-tools/commands/voyzu.mjs`, manifest types in `lib/types/src/framework.ts`, and package-management inventory and home-route resolution to read page roots from the contract. Keep any exposed inventory `pageRootPaths` field populated from that source rather than package.json.
-- Update module aggregators and navigation imports that use local keys such as `pageRoutes.list.id`; preserve domain membership, default routes and left-navigation references using the stable route keys.
-- Update full and `--surfaces-only` composition, pre-installed and installed registries, and generated Next.js pages together. Packages without a page routing contract contribute no page routes. Keep `loadPage` lazy during contract discovery and validation.
-
-### Pages receive differently named and shaped props
-
-- Standardize page invocation as `<PageComponent context={context} />`, with `{ path, pathParams, queryParams, routeDefinition }`. Replace top-level path props and the `surface` prop with this single context object.
-- Pass the entire composed route definition as `context.routeDefinition`, preserving its fields and functions. Derive `id` from the declaration key, attach package ownership and help/API documentation metadata, and resolve `helpPath` for the request without mutating the shared package definition.
-- Remove duplicated context metadata: read help settings, API documentation URLs and `unframed` from `context.routeDefinition`. Keep the actual URL path in `context.path` and the route pattern in `context.routeDefinition.path`.
-- Update shared route/page context types to infer parameter values from inline schemas and DTOs, including optional parameters and defaults. Always supply both parameter objects. Migrate page components, wrappers, generated page entry points, templates and documentation to the new context prop and terminology.
-- Update `helpPathResolver` to receive `{ path, pathParams, queryParams }` using the same parsed values as the page, and migrate existing resolvers.
-- Keep the full context at the server page boundary: `routeDefinition` includes functions and cannot be passed wholesale to a client component. Migrate wrappers to pass only the serializable values their client components need.
-- Use the same resolved route definition for page context and the platform frame so the Help icon and page metadata agree. Preserve browser titles, breadcrumbs, unframed rendering, package visibility and authorization order; the authorization callback remains `{ user, route, path }` as specified above.
-
-### Parse and validate path and query parameters
-
-- Add route-level `pathParams` and `queryParams` declarations. Support inline primitive schemas (`type: "string"`, `"boolean"`, `"number"`, `"integer"`) and imported DTO schemas via `schema`, plus query arrays with an `items` schema. Normalize both forms into a shared schema-validation pipeline.
-- Validate declarations during composition: path names must match placeholders exactly and be required scalars; reject conflicting inline/DTO definitions, unsupported schemas, invalid defaults and incompatible constraints. Query parameters may be absent; a valid default supplies an absent value. Do not enforce query presence through a required flag or DTO validation.
-- Replace the renderer's string-only normalization with parsing, default application and validation. Implement the conversion and repeated-parameter rules in "Page Query parsing"; strip undeclared query parameters from the object passed to the page and help resolver. Reject unsupported or ambiguous DTO conversion shapes during composition rather than guessing at runtime.
-- Keep visibility and authorization checks ahead of page loading. Invalid supplied values must throw in development and log an error in production while allowing rendering to continue. Missing or extra query parameters must neither throw nor log validation errors. Include the route ID, parameter name and failure reason; remove the proposed input-error page behaviour.
-- Migrate platform and installed-package route declarations, including every query value that pages consume. Update templates and documentation, and cover conversion failures, defaults, missing and extra query parameters, repeated parameters, DTO/inline equivalence and environment-specific validation behaviour in the refactor's validation.
-- Audit client-side `useSearchParams()` readers as well as server page props. Declare the parameters that belong to the page contract and update comparisons such as `showAudit === "true"` to consume parsed booleans where context is used. Browser URL readers still see the original URL; stripping applies to the context object.
-- Build `context.path` from the URL's original path values before typed conversion, so a numeric parameter does not rewrite the actual path (for example, `001` to `1`). Preserve repeated query values until validation and avoid decoding URL values twice.
-- On any query parsing or validation failure in production, pass the complete raw query object with undeclared keys stripped, without conversions or defaults. Preserve strings and repeated-value arrays and use the same fallback for the help resolver. Reflect this fallback in context types and cover mixed valid/invalid inputs.
-- Implement signed decimal parsing consistently for inline schemas and numeric DTOs; reject whitespace, exponent notation, non-decimal notation, partial numbers and non-finite results.
-
-### Route resolution
-
-- Reject equivalent dynamic patterns during composition by comparing paths independently of placeholder names.
-- Make static segments take precedence over parameter placeholders regardless of declaration order. Keep generated Next.js routes and the shared router consistent, including authorization and visibility behaviour after selecting a route.
-
-### Remaining decisions before implementation
-
-- Specify the production fallback for invalid path parameter values; the raw-object fallback above defines query behaviour only.
-- Specify supported DTO schema shapes beyond the primitive and array declarations shown. Inline and DTO declarations must have identical parsing semantics.
-
-### Refactor completion
-
-- Refresh the affected runtime composition after syncing platform changes and migrating package declarations; use `npm run voyzu:compose -- --surfaces-only` for the page/navigation and HTTP documentation registries. Preserve runtime configuration and installed-package selection.
-- Typecheck the affected platform and package projects after migration. Remove this temporary changes-needed section once the refactor is complete and the remaining decisions are reflected in the specification.
+Use `npm run voyzu:compose -- --surfaces-only` to refresh page/navigation registries and HTTP documentation without refreshing unrelated composition.

@@ -31,7 +31,7 @@ export type {
   VoyzuSurfaceNavGroup,
   VoyzuSurfaceNavItem,
   VoyzuSurfaceRole,
-  VoyzuSurfaceRoute,
+  RegisteredPageRoute,
   VoyzuSurfaceRouteAuth,
   VoyzuSurfaceSlotId,
   VoyzuSurfaceSlotProps,

@@ -1,3 +1,4 @@
+import { pageStringParameters, type PageProps } from "@voyzu/types/page-routing";
 import "server-only";
 
 import { notFound } from "next/navigation";
@@ -6,11 +7,8 @@ import { UserDetail } from "../../client";
 import { currentUserCanManageUsers } from "../lib/current-user.service";
 import { getUser } from "../lib/user.service";
 
-interface UserDetailPageProps {
-  code?: string;
-}
-
-export async function UserDetailPage({ code }: UserDetailPageProps) {
+export async function UserDetailPage({ context }: PageProps) {
+  const { code } = pageStringParameters(context.pathParams);
   if (!code) notFound();
 
   const canManageUsers = await currentUserCanManageUsers();
@@ -24,7 +22,7 @@ export async function UserDetailPage({ code }: UserDetailPageProps) {
     );
   }
 
-  const user = await getUser(decodeURIComponent(code));
+  const user = await getUser((code));
 
   if (!user) notFound();
 

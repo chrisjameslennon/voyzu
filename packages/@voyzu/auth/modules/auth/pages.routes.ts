@@ -1,7 +1,9 @@
 export const pageRoutes = {
-  login: {
+  "voyzu.auth.page.login": {
+    queryParams: {
+      next: { type: "string" },
+    },
     httpApiDocumentationGroupId: "auth.operations",
-    id: "voyzu.auth.page.login",
     path: "/login",
     loadPage: () =>
       import("./server/pages/LoginRoutePage")

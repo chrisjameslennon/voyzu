@@ -1,6 +1,5 @@
 export const pageRoutes = {
-  home: {
-    id: "voyzu.system-info.page.home",
+  "voyzu.system-info.page.home": {
     path: "/settings/system-information",
     loadPage: () =>
       import("./server/pages/SystemInfoPage")

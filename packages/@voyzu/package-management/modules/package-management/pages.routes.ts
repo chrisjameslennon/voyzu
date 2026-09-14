@@ -1,7 +1,6 @@
 export const pageRoutes = {
-  list: {
+  "voyzu.package-management.page.list": {
     httpApiDocumentationGroupId: "package-management.operations",
-    id: "voyzu.package-management.page.list",
     path: "/settings/packages",
     loadPage: () =>
       import("./server/pages/InstalledPackagesListPage")
@@ -11,9 +10,9 @@ export const pageRoutes = {
     breadcrumbBase: [{ label: "Settings", href: "/settings/users" }],
     auth: { required: true, minRole: "ADMIN" },
   },
-  detail: {
+  "voyzu.package-management.page.detail": {
+    pathParams: { id: { type: "string" } },
     httpApiDocumentationGroupId: "package-management.operations",
-    id: "voyzu.package-management.page.detail",
     path: "/settings/packages/[id]",
     loadPage: () =>
       import("./server/pages/InstalledPackageDetailPage")

@@ -1,5 +1,3 @@
-import { pageRoutes as systemInfoPageRoutes } from "../modules/system-info/pages.routes";
-
 export const systemInfoSettingsLeftNav = [
   {
     label: "Settings",
@@ -7,7 +5,7 @@ export const systemInfoSettingsLeftNav = [
       {
         label: "System Information",
         icon: "info",
-        routeId: systemInfoPageRoutes.home.id,
+        routeId: "voyzu.system-info.page.home",
       },
     ],
   },

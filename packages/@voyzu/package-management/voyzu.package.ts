@@ -1,3 +1,5 @@
+import { mergePageRoutes } from "@voyzu/types/page-routing";
+import { pageRoutes as packageManagementPageRoutes } from "./modules/package-management/pages.routes";
 import { httpApiRouting, httpApiDocumentation } from "./http-api.contracts";
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
 
@@ -7,6 +9,12 @@ import { reconcileInstalledPackages } from "./modules/package-management/server/
 
 export const voyzuPackageManagementPackage = {
   contracts: {
+    pageRouting: {
+      roots: ["/settings/packages"],
+      routes: mergePageRoutes(
+        packageManagementPageRoutes,
+      ),
+    },
     httpApiRouting,
     httpApiDocumentation, internalApi: { defines: packageManagementModule.defines, implements: packageManagementModule.implements } },
   modules: [packageManagementModule],

@@ -4,7 +4,7 @@ import type {
   VoyzuSurfaceNavGroup,
   VoyzuSurfaceNavItem,
   VoyzuSurfaceRole,
-  VoyzuSurfaceRoute,
+  RegisteredPageRoute,
   VoyzuSurfaceUserAccess,
 } from "@voyzu/ui-surface/types";
 
@@ -45,7 +45,7 @@ export async function authorizeSurfaceRoute({
 
 function filterNavItem(
   item: VoyzuSurfaceNavItem,
-  routeById: Map<string, VoyzuSurfaceRoute>,
+  routeById: Map<string, RegisteredPageRoute>,
   user: VoyzuSurfaceUserAccess | null,
 ): VoyzuSurfaceNavItem | null {
   const route = item.routeId ? routeById.get(item.routeId) : null;
@@ -65,7 +65,7 @@ function filterNavItem(
 
 export function filterSurfaceNav(
   groups: VoyzuSurfaceNavGroup[],
-  routes: VoyzuSurfaceRoute[],
+  routes: RegisteredPageRoute[],
   user: VoyzuSurfaceUserAccess | null,
 ): VoyzuSurfaceNavGroup[] {
   const routeById = new Map(routes.map((route) => [route.id, route]));

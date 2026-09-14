@@ -1,3 +1,4 @@
+import { pageStringParameters, type PageProps } from "@voyzu/types/page-routing";
 import "server-only";
 
 import { listOrganizations } from "@voyzu/organization/organizations/server";
@@ -7,12 +8,7 @@ import { OrganizationListReport, type OrganizationListReportColumn } from "./Org
 import { OrganizationListReportShell } from "../../client/OrganizationListReportShell";
 
 type AnyRecord = Record<string, unknown>;
-type ReportPageProps = {
-  surface?: {
-    searchParams?: Record<string, string>;
-    unframed?: boolean;
-  };
-};
+type ReportPageProps = PageProps;
 
 function text(value: unknown): string {
   if (value === null || value === undefined) return "";
@@ -66,7 +62,7 @@ async function report<T extends AnyRecord>(
   detailRow?: never,
   inactiveRowsOption?: { label: string; rowClassName: (row: T) => string | undefined },
 ) {
-  const searchParams = props?.surface?.searchParams ?? {};
+  const searchParams = pageStringParameters(props?.context.queryParams ?? {});
   const resolvedSectionVisibilityOptions = sectionVisibilityOptions?.map((option) => ({
     ...option,
     initialChecked: searchParams[sectionParamName(option.key)] === undefined
@@ -82,9 +78,9 @@ async function report<T extends AnyRecord>(
       sectionVisibilityOptions={resolvedSectionVisibilityOptions}
       inactiveRowsOption={inactiveRowsOption ? {
         label: inactiveRowsOption.label,
-        initialChecked: searchParams.showInactive === "true",
+        initialChecked: props?.context.queryParams.showInactive === true,
       } : undefined}
-      printable={props?.surface?.unframed === true}
+      printable={props?.context.routeDefinition.unframed === true}
     >
       <OrganizationListReport
         title={title}

@@ -1,3 +1,4 @@
+import { pageStringParameters, type PageProps } from "@voyzu/types/page-routing";
 import "server-only";
 
 import { previousDaysRange } from "@voyzu/audit/server";
@@ -6,11 +7,7 @@ import { detailBackHref, normalizeDetailBackSource } from "@voyzu/ui-surface";
 import { AuditEventList } from "../../client";
 import { listAuditOrganizations } from "../lib/organization-directory";
 
-interface OrganizationAuditEventsPageProps {
-  surface?: { searchParams?: Record<string, string> };
-}
-
-function normalizeAuditLinkParams(searchParams: Record<string, string>) {
+function normalizeAuditLinkParams(searchParams: Record<string, string | undefined>) {
   const rawEntityId = searchParams.entityId ?? "";
   const entityIdLooksLikeDatabaseId = rawEntityId === "" || /^\d+$/.test(rawEntityId);
 
@@ -22,10 +19,10 @@ function normalizeAuditLinkParams(searchParams: Record<string, string>) {
   };
 }
 
-export async function AuditEventsPage({ surface }: OrganizationAuditEventsPageProps = {}) {
+export async function AuditEventsPage({ context }: PageProps) {
   const organizations = await listAuditOrganizations();
   const { fromDate, toDate } = previousDaysRange(90);
-  const searchParams = surface?.searchParams ?? {};
+  const searchParams = pageStringParameters(context.queryParams);
   const initialFilters = normalizeAuditLinkParams(searchParams);
   const hasLinkedEntityFilter = Boolean(initialFilters.entityType || initialFilters.entityCode || initialFilters.entityId || initialFilters.mutationId);
   const backFrom = normalizeDetailBackSource(searchParams.from);

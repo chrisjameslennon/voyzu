@@ -1,5 +1,3 @@
-import { pageRoutes as usersPageRoutes } from "../modules/users/pages.routes";
-
 export const settingsLeftNav = [
   {
     label: "Settings",
@@ -7,7 +5,7 @@ export const settingsLeftNav = [
       {
         label: "Users",
         icon: "person",
-        routeId: usersPageRoutes.list.id,
+        routeId: "voyzu.users.page.list",
       },
     ],
   },

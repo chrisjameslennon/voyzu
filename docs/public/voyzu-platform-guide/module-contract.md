@@ -53,16 +53,15 @@ export default {
 Do not add a module-level `index.ts` barrel. Import the manifest or an explicit same-package server entry point directly.
 
 The module registration above belongs to the package lifecycle contract. The
-application composer discovers page exports and reads HTTP API contracts from `voyzu.package.ts`. See [HTTP API contract](../platform-contracts/http-api-contract.md).
+application composer reads page and HTTP API contracts from `voyzu.package.ts`. See [HTTP API contract](../platform-contracts/http-api-contract.md).
 
 ### `pages.routes.ts`
 
-`pages.routes.ts` is the authoritative collection of the module's browser pages. Voyzu adds it to the surface registry used by the platform wildcard page to match paths and compose authorization, metadata, help, and navigation references.
+`pages.routes.ts` organizes browser page declarations inside a module. Register its route map in `contracts.pageRouting.routes` in `voyzu.package.ts`; composition reads that contract to build the page registry.
 
 ```ts
 export const pageRoutes = {
-  list: {
-    id: "acme.warehousing.stock.page.list",
+  "acme.warehousing.stock.page.list": {
     path: "/warehousing/stock",
     pageTitle: "Stock",
     loadPage: () => import("./server/pages/StockListPage")
@@ -70,9 +69,9 @@ export const pageRoutes = {
     helpPath: "stock/overview",
     auth: { required: true, minRole: "STANDARD" },
   },
-  detail: {
-    id: "acme.warehousing.stock.page.detail",
+  "acme.warehousing.stock.page.detail": {
     path: "/warehousing/stock/[code]",
+    pathParams: { code: { type: "string" } },
     pageTitle: "Stock item",
     loadPage: () => import("./server/pages/StockDetailPage")
       .then((module) => module.StockDetailPage),
@@ -84,16 +83,14 @@ export const pageRoutes = {
 } as const;
 ```
 
-Every page route requires a stable, application-wide `id`, a path within a page
+Every page route requires a stable, application-wide ID as its object key, a path within a page
 root owned by the package, a title, and a lazy `loadPage` function. The route
 manifest must not statically import its page component or a server barrel. The
 page module and its server dependencies enter the runtime graph only after the
 route is selected. Dynamic segments use Next.js bracket syntax such as
-`[code]`, `[...path]`, and `[[...path]]`; Next.js extracts those parameters
-before Voyzu supplies them to the page.
+`[code]` for one path segment. Declare matching `pathParams`; catch-all placeholders are not supported. The page receives parsed parameters through its `context` prop.
 
-Expose the manifest as `./<module>/pages.routes`; composition imports this
-lightweight surface directly.
+Import the map into the package page routing contract. Module exports alone do not register routes. Use `mergePageRoutes` from `@voyzu/types/page-routing` to combine maps without silently overwriting duplicate IDs.
 
 Use an empty object when the module has no pages:
 

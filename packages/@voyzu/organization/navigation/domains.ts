@@ -5,13 +5,13 @@ import { pageRoutes as organizationReportPageRoutes } from "../modules/organizat
 import { organizationLeftNav } from "./organization.left-nav";
 
 const routeIds = [
-  ...Object.values(organizationPageRoutes),
-  ...Object.values(organizationReportPageRoutes),
-].map(({ id }) => id);
+  ...Object.keys(organizationPageRoutes),
+  ...Object.keys(organizationReportPageRoutes),
+];
 
 const domains = [{
   label: "Organizations",
-  routeId: organizationPageRoutes.list.id,
+  routeId: "voyzu.organizations.page.list",
   routeIds,
   leftNav: organizationLeftNav,
 }] as const satisfies readonly VoyzuPackageNavigationDomain[];

@@ -47,13 +47,12 @@ The help base belongs to the package rather than the Voyzu installation. This al
 
 The Voyzu platform UI surface provides a help icon on the top right. It will be visible when the viewed page is linked to an online help URL as follows.
 
-Set `helpPath` on each page route that has contextual documentation. The path is resolved against the owning package's `helpBaseUrl`.
+Register page routes through `contracts.pageRouting` in `voyzu.package.ts`. Set `helpPath` on each page route that has contextual documentation. The path is resolved against the owning package's `helpBaseUrl`.
 
 ```ts
 // packages/@acme/warehousing/modules/stock/pages.routes.ts
 export const pageRoutes = {
-  list: {
-    id: "acme.stock.page.list",
+  "acme.stock.page.list": {
     path: "/warehousing/stock",
     loadPage: () => import("./server/pages/StockListPage")
       .then((module) => module.StockListPage),

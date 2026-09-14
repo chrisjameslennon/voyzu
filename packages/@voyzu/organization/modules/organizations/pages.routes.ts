@@ -1,7 +1,7 @@
 export const pageRoutes = {
-  list: {
+  "voyzu.organizations.page.list": {
+
     httpApiDocumentationGroupId: "organization.operations",
-    id: "voyzu.organizations.page.list",
     pageTitle: "Organizations",
     helpPath: "modules-help/organization-financial-settings/organization",
     httpApiDocsUrl: "organizations",
@@ -14,9 +14,9 @@ export const pageRoutes = {
     ],
     auth: { required: true, minRole: "STANDARD" }
   },
-  detail: {
+  "voyzu.organizations.page.detail": {
+    pathParams: { code: { type: "string" } },
     httpApiDocumentationGroupId: "organization.operations",
-    id: "voyzu.organizations.page.detail",
     pageTitle: "Organization",
     helpPath: "modules-help/organization-financial-settings/organization",
     httpApiDocsUrl: "organizations",

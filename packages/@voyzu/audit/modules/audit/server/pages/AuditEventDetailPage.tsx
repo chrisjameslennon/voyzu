@@ -1,3 +1,4 @@
+import { pageStringParameters, type PageProps } from "@voyzu/types/page-routing";
 import "server-only";
 
 import { notFound } from "next/navigation";
@@ -5,11 +6,8 @@ import { getAuditEvent } from "@voyzu/audit/server";
 
 import { AuditEventDetail } from "../../client";
 
-interface OrganizationAuditEventDetailPageProps {
-  id?: string;
-}
-
-export async function AuditEventDetailPage({ id }: OrganizationAuditEventDetailPageProps) {
+export async function AuditEventDetailPage({ context }: PageProps) {
+  const { id } = pageStringParameters(context.pathParams);
   if (!id) notFound();
 
   const event = await getAuditEvent(Number(id));

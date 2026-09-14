@@ -1,10 +1,8 @@
 import type { VoyzuPackageNavigationGroup } from "@voyzu/types/framework";
-import { pageRoutes as organizationPageRoutes } from "../modules/organizations/pages.routes";
-import { pageRoutes as organizationReportPageRoutes } from "../modules/organization-reports/pages.routes";
 
 export const organizationLeftNav = [{
   items: [
-    { label: "Organizations", icon: "domain", routeId: organizationPageRoutes.list.id },
+    { label: "Organizations", icon: "domain", routeId: "voyzu.organizations.page.list" },
   ],
 }, {
   label: "Reports",
@@ -13,9 +11,9 @@ export const organizationLeftNav = [{
     icon: "format_list_bulleted",
     path: "#organization-reports-lists",
     children: [
-      { label: "Organizations", routeId: organizationReportPageRoutes.organizations.id },
-      { label: "Countries", routeId: organizationReportPageRoutes.countries.id },
-      { label: "Currencies", routeId: organizationReportPageRoutes.currencies.id },
+      { label: "Organizations", routeId: "voyzu.organizationReports.page.organizations" },
+      { label: "Countries", routeId: "voyzu.organizationReports.page.countries" },
+      { label: "Currencies", routeId: "voyzu.organizationReports.page.currencies" },
     ],
   }],
 }] as const satisfies readonly VoyzuPackageNavigationGroup[];

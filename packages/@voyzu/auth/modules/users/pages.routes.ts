@@ -1,7 +1,7 @@
 export const pageRoutes = {
-  list: {
+  "voyzu.users.page.list": {
+
     httpApiDocumentationGroupId: "auth.operations",
-    id: "voyzu.users.page.list",
     path: "/settings/users",
     loadPage: () =>
       import("./server/pages/UsersListPage")
@@ -11,9 +11,9 @@ export const pageRoutes = {
     breadcrumbBase: [{ label: "Settings", href: "/settings/users" }],
     auth: { required: true, minRole: "ADMIN" },
   },
-  profile: {
+  "voyzu.users.page.profile": {
+
     httpApiDocumentationGroupId: "auth.operations",
-    id: "voyzu.users.page.profile",
     path: "/settings/users/profile",
     loadPage: () =>
       import("./server/pages/UserProfilePage")
@@ -23,9 +23,9 @@ export const pageRoutes = {
     breadcrumbBase: [{ label: "Settings" }, { label: "Users" }],
     auth: { required: true, minRole: "STANDARD" },
   },
-  detail: {
+  "voyzu.users.page.detail": {
+    pathParams: { code: { type: "string" } },
     httpApiDocumentationGroupId: "auth.operations",
-    id: "voyzu.users.page.detail",
     path: "/settings/users/[code]",
     loadPage: () =>
       import("./server/pages/UserDetailPage")

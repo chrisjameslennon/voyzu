@@ -19,29 +19,8 @@ export {
   hasSurfaceSlot,
 } from "../../surface-slots";
 
-export interface VoyzuSurfaceHelpPathContext {
-  path: string;
-  params: Readonly<Record<string, string>>;
-  searchParams: Readonly<Record<string, string>>;
-}
-
-export interface VoyzuSurfaceRoute {
-  id: string;
-  packageName?: string;
-  path: string;
-  pageTitle: string;
-  loadPage: () => Promise<
-    (props: Record<string, unknown>) => ReactNode | Promise<ReactNode>
-  >;
-  breadcrumbBase?: readonly VoyzuBreadcrumbItem[];
-  helpBaseUrl?: string;
-  helpPath?: string;
-  helpPathResolver?: (context: VoyzuSurfaceHelpPathContext) => string | undefined;
-  httpApiDocsUrl?: string;
-  httpApiDocumentationGroupId?: string;
-  unframed?: boolean;
-  auth?: VoyzuSurfaceRouteAuth;
-}
+export type { RegisteredPageRoute } from "@voyzu/types/page-routing";
+import type { RegisteredPageRoute } from "@voyzu/types/page-routing";
 
 export type VoyzuSurfaceRole = "STANDARD" | "ADMIN";
 
@@ -61,7 +40,7 @@ export interface VoyzuSurfaceUserAccess {
 
 export interface VoyzuSurfaceAccessContext {
   path: string;
-  route: VoyzuSurfaceRoute;
+  route: RegisteredPageRoute;
   user: VoyzuSurfaceUserAccess | null;
 }
 
@@ -107,7 +86,7 @@ export interface VoyzuUiDomain {
     label: string;
     routeId: string;
   };
-  pageRoutes: readonly VoyzuSurfaceRoute[];
+  pageRoutes: readonly RegisteredPageRoute[];
   leftNav: readonly VoyzuSurfaceNavGroup[];
   Main?: VoyzuSurfaceMainComponent;
 }
@@ -124,7 +103,7 @@ export interface VoyzuComposedSurfaceDomain {
 
 export interface VoyzuSurfaceConfig {
   slots: VoyzuSurfaceSlots;
-  pageRoutes: VoyzuSurfaceRoute[];
+  pageRoutes: RegisteredPageRoute[];
   leftNav: VoyzuSurfaceNavGroup[];
   leftNavRouteIds?: readonly string[];
   mainRegistrations?: readonly VoyzuSurfaceMainRegistration[];

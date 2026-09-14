@@ -1,6 +1,6 @@
+import { pageStringParameters, type PageProps } from "@voyzu/types/page-routing";
 import "server-only";
 import { OrganizationRepo } from "../db/organization.repo";
-
 
 import { notFound } from "next/navigation";
 import { resolveExternalUrl } from "@voyzu/ui-surface";
@@ -13,11 +13,6 @@ import { listCurrencyDirectory } from "../db/localization-directory.repo";
 import { OrganizationDetail } from "../../client";
 import { getOrganization } from "../lib/organization.service";
 
-interface OrganizationDetailPageProps {
-  code?: string;
-  surface?: { helpBaseUrl?: string };
-}
-
 type SelectOption = { value: string; label: string; code?: string };
 
 async function listActiveCountries(): Promise<SelectOption[]> {
@@ -29,11 +24,12 @@ async function listActiveCountries(): Promise<SelectOption[]> {
   }));
 }
 
-export async function OrganizationDetailPage({ code, surface }: OrganizationDetailPageProps) {
+export async function OrganizationDetailPage({ context }: PageProps) {
+  const { code } = pageStringParameters(context.pathParams);
   if (!code) notFound();
 
   const [organization, countries, currencies] = await Promise.all([
-    getOrganization(decodeURIComponent(code)),
+    getOrganization((code)),
     listActiveCountries(),
     listCurrencyDirectory(),
   ]);
@@ -61,8 +57,8 @@ export async function OrganizationDetailPage({ code, surface }: OrganizationDeta
           label: currency.name,
           code: currency.code,
         }))}
-      organizationOrganizationsHelpUrl={surface?.helpBaseUrl
-        ? resolveExternalUrl(surface.helpBaseUrl, "concepts/organizations-and-organizations")
+      organizationOrganizationsHelpUrl={context.routeDefinition.helpBaseUrl
+        ? resolveExternalUrl(context.routeDefinition.helpBaseUrl, "concepts/organizations-and-organizations")
         : undefined}
     />
   );

@@ -1,9 +1,9 @@
-import type { VoyzuSurfaceRoute, VoyzuSurfaceUserAccess } from "@voyzu/ui-surface/types";
+import type { RegisteredPageRoute, VoyzuSurfaceUserAccess } from "@voyzu/ui-surface/types";
 
 import styles from "@voyzu/ui-surface/css-modules/surface.module.css";
 
 interface AccessDeniedProps {
-  route: VoyzuSurfaceRoute;
+  route: RegisteredPageRoute;
   user: VoyzuSurfaceUserAccess | null;
 }
 

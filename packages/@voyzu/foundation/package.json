@@ -9,7 +9,6 @@
     "voyzu-package": true,
     "allowInstall": true,
     "dependencies": [],
-    "pageRootPaths": [],
     "preinstalled": true
   },
   "exports": {

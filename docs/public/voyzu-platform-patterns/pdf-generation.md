@@ -47,16 +47,14 @@ Register both paths against the same page component. Mark the printable route as
 
 ```ts
 export const pageRoutes = {
-  report: {
-    id: "acme.financeReports.page.trialBalance",
+  "acme.financeReports.page.trialBalance": {
     path: "/finance/reports/trial-balance",
     pageTitle: "Trial Balance",
     loadPage: () => import("./server/pages/TrialBalanceReportPage")
       .then((module) => module.TrialBalanceReportPage),
     auth: { required: true, minRole: "STANDARD" },
   },
-  reportPrintable: {
-    id: "acme.financeReports.page.trialBalance.printable",
+  "acme.financeReports.page.trialBalance.printable": {
     path: "/finance/reports/trial-balance/printable",
     pageTitle: "Trial Balance",
     loadPage: () => import("./server/pages/TrialBalanceReportPage")
@@ -87,7 +85,7 @@ const pdfDownloadPath = `/api/capability/pdf?${pdfParams.toString()}`;
 <Button onClick={() => { window.location.href = pdfDownloadPath; }} />
 ```
 
-Add report filters and display options to both the printable URL and PDF capability URL. The server page reads them from `surface.searchParams`, ensuring that the preview, printable page and PDF contain the same report.
+Add report filters and display options to both the printable URL and PDF capability URL. The server page reads them from `context.queryParams`, ensuring that the preview, printable page and PDF contain the same report.
 
 Use `portrait` or `landscape` consistently in the PDF parameters and the template's print page rule:
 

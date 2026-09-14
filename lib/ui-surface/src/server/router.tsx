@@ -1,4 +1,5 @@
 import "server-only";
+import { comparePageRoutes, parsePageParameters } from "../page-routing";
 
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
@@ -11,7 +12,7 @@ import type {
   VoyzuSurfaceAccessResult,
   VoyzuSurfaceConfig,
   VoyzuSurfaceMainComponent,
-  VoyzuSurfaceRoute,
+  RegisteredPageRoute,
   VoyzuSurfaceUserAccess,
 } from "../types";
 
@@ -29,7 +30,7 @@ export interface VoyzuSurfaceRouteContext {
 
 export interface SurfaceFrameProps {
   slots: VoyzuSurfaceConfig["slots"];
-  activeRoute?: VoyzuSurfaceRoute;
+  activeRoute?: RegisteredPageRoute;
   showLeftNav: boolean;
   Main?: VoyzuSurfaceMainComponent;
   children: ReactNode;
@@ -40,9 +41,9 @@ export interface CreateVoyzuPageRendererOptions {
   Frame: (props: SurfaceFrameProps) => ReactNode;
   getCurrentUser?: () => Promise<VoyzuSurfaceUserAccess | null>;
   authorize?: (context: VoyzuSurfaceAccessContext) => VoyzuSurfaceAccessResult | Promise<VoyzuSurfaceAccessResult>;
-  isRouteEnabled?: (route: VoyzuSurfaceRoute) => boolean | Promise<boolean>;
+  isRouteEnabled?: (route: RegisteredPageRoute) => boolean | Promise<boolean>;
   loginPath?: string;
-  AccessDenied?: (props: { route: VoyzuSurfaceRoute; user: VoyzuSurfaceUserAccess | null }) => ReactNode;
+  AccessDenied?: (props: { route: RegisteredPageRoute; user: VoyzuSurfaceUserAccess | null }) => ReactNode;
 }
 
 export interface CreateVoyzuSurfaceRouterOptions extends CreateVoyzuPageRendererOptions {
@@ -51,14 +52,14 @@ export interface CreateVoyzuSurfaceRouterOptions extends CreateVoyzuPageRenderer
 
 async function resolvePath(params: VoyzuSurfaceRouteContext["params"]): Promise<string> {
   const { voyzuPath } = await params;
-  return "/" + (voyzuPath ?? []).join("/");
+  return "/" + (voyzuPath ?? []).map(encodeURIComponent).join("/");
 }
 
 function matchRoute(
   config: VoyzuSurfaceConfig,
   path: string,
-): { route: VoyzuSurfaceRoute; params: Record<string, string> } | null {
-  for (const route of config.pageRoutes) {
+): { route: RegisteredPageRoute; params: Record<string, string> } | null {
+  for (const route of [...config.pageRoutes].sort(comparePageRoutes)) {
     const routeParts = route.path.split("/").filter(Boolean);
     const pathParts = path.split("/").filter(Boolean);
     if (routeParts.length !== pathParts.length) continue;
@@ -69,7 +70,7 @@ function matchRoute(
       const routePart = routeParts[index];
       const pathPart = pathParts[index];
       if (routePart.startsWith("[") && routePart.endsWith("]")) {
-        params[routePart.slice(1, -1)] = pathPart;
+        params[routePart.slice(1, -1)] = decodeURIComponent(pathPart);
       } else if (routePart !== pathPart) {
         matches = false;
         break;
@@ -89,8 +90,8 @@ function normalizeParams(
   );
 }
 
-function routePath(route: VoyzuSurfaceRoute, params: Record<string, string>): string {
-  return route.path.replace(/\[([^/\]]+)\]/g, (_match, name: string) => params[name] ?? "");
+function routePath(route: RegisteredPageRoute, params: Record<string, string>): string {
+  return route.path.replace(/\[([^/\]]+)\]/g, (_match, name: string) => encodeURIComponent(params[name] ?? ""));
 }
 
 export function createVoyzuPageRenderer({
@@ -103,14 +104,14 @@ export function createVoyzuPageRenderer({
   AccessDenied,
 }: CreateVoyzuPageRendererOptions) {
   return {
-    generateMetadata(route: VoyzuSurfaceRoute): Metadata {
+    generateMetadata(route: RegisteredPageRoute): Metadata {
       return { title: route.pageTitle ?? "Voyzu" };
     },
 
-    async Page(route: VoyzuSurfaceRoute, { params, searchParams }: VoyzuSurfacePageContext) {
+    async Page(route: RegisteredPageRoute, { params, searchParams }: VoyzuSurfacePageContext) {
       const routeParams = normalizeParams(await params);
       const path = routePath(route, routeParams);
-      const query = normalizeParams((await searchParams) ?? {});
+      const rawQuery = (await searchParams) ?? {};
 
       if (isRouteEnabled && !(await isRouteEnabled(route))) notFound();
       const currentUser = route.auth?.required && getCurrentUser ? await getCurrentUser() : null;
@@ -124,20 +125,15 @@ export function createVoyzuPageRenderer({
         }
       }
 
+      const pathParams = parsePageParameters(route, "pathParams", routeParams);
+      const queryParams = parsePageParameters(route, "queryParams", rawQuery);
       const PageComponent = await route.loadPage();
       const activeRoute = route.helpPathResolver
-        ? { ...route, helpPath: route.helpPathResolver({ path, params: routeParams, searchParams: query }) }
+        ? { ...route, helpPath: route.helpPathResolver({ path, pathParams, queryParams }) }
         : route;
       const page = (
         <PageComponent
-          {...routeParams}
-          surface={{
-            path,
-            route: activeRoute,
-            searchParams: query,
-            unframed: activeRoute.unframed === true,
-            helpBaseUrl: activeRoute.helpBaseUrl,
-          }}
+          context={{ path, pathParams, queryParams, routeDefinition: activeRoute }}
         />
       );
 

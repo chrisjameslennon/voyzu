@@ -5,7 +5,7 @@ import { AccessProvider } from "@voyzu/ui-surface/client";
 import {
   getSurfaceSlot,
   type VoyzuSurfaceMainComponent,
-  type VoyzuSurfaceRoute,
+  type RegisteredPageRoute,
   type VoyzuSurfaceSlots,
 } from "@voyzu/ui-surface/types";
 
@@ -14,7 +14,7 @@ import { SurfaceTopNav } from "./SurfaceTopNav";
 
 interface SurfaceFrameProps {
   slots: VoyzuSurfaceSlots;
-  activeRoute?: VoyzuSurfaceRoute;
+  activeRoute?: RegisteredPageRoute;
   showLeftNav: boolean;
   Main?: VoyzuSurfaceMainComponent;
   children: ReactNode;

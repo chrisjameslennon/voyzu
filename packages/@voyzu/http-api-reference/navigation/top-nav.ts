@@ -1,8 +1,6 @@
-import { pageRoutes as httpApiReferencePageRoutes } from "../modules/http-api-reference/pages.routes";
-
 const topNav = {
   label: "HTTP API Reference",
-  routeId: httpApiReferencePageRoutes.gettingStarted.id,
+  routeId: "voyzu.http-api-reference.page.getting-started",
 } as const;
 
 export default topNav;

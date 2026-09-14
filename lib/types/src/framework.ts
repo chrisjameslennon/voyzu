@@ -13,7 +13,6 @@ export interface VoyzuPackageMetadata {
   "voyzu-package": true;
   allowInstall: boolean;
   dependencies: readonly string[];
-  pageRootPaths: readonly string[];
   preinstalled?: boolean;
   settings?: VoyzuPackageSettings;
 }

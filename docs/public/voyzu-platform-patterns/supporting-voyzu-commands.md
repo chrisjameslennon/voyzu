@@ -50,7 +50,6 @@ root paths it owns.
     "voyzu-package": true,
     "allowInstall": true,
     "dependencies": [],
-    "pageRootPaths": ["/ice-creams"],
   }
 }
 ```
@@ -197,7 +196,7 @@ not completed.
 
 ## Composition support
 
-`voyzu.package.ts` registers package lifecycle contributions and HTTP API contracts. Page composition reads `./<module>/pages.routes`; HTTP composition reads `contracts.httpApiRouting` and `contracts.httpApiDocumentation`. Navigation uses the optional `./navigation` export.
+`voyzu.package.ts` registers package lifecycle contributions and routing contracts. Page composition reads `contracts.pageRouting`; HTTP composition reads `contracts.httpApiRouting` and `contracts.httpApiDocumentation`. Navigation uses the optional `./navigation` export.
 
 Composition also consumes static assets, documentation settings, dependencies,
 owned route roots, and other package metadata. It validates pre-installed and

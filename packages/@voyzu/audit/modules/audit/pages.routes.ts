@@ -1,7 +1,14 @@
 export const pageRoutes = {
-  list: {
+  "voyzu.audit.page.list": {
+    queryParams: {
+      entityCode: { type: "string" },
+      entityId: { type: "string" },
+      entityType: { type: "string" },
+      from: { type: "string" },
+      fromCode: { type: "string" },
+      mutationId: { type: "string" },
+    },
     httpApiDocumentationGroupId: "audit.operations",
-    id: "voyzu.audit.page.list",
     path: "/settings/audit",
     loadPage: () =>
       import("./server/pages/AuditEventsPage")
@@ -9,9 +16,9 @@ export const pageRoutes = {
     pageTitle: "Audit Log",
     auth: { required: true, minRole: "ADMIN" },
   },
-  detail: {
+  "voyzu.audit.page.detail": {
+    pathParams: { id: { type: "string" } },
     httpApiDocumentationGroupId: "audit.operations",
-    id: "voyzu.audit.page.detail",
     path: "/settings/audit/[id]",
     loadPage: () =>
       import("./server/pages/AuditEventDetailPage")

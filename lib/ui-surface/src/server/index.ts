@@ -1,6 +1,5 @@
 import "server-only";
 
-
 export {
   createVoyzuPageRenderer,
   createVoyzuSurfaceRouter,
@@ -17,7 +16,7 @@ export type {
   VoyzuSurfaceAccessContext,
   VoyzuSurfaceAccessResult,
   VoyzuSurfaceConfig,
-  VoyzuSurfaceRoute,
+  RegisteredPageRoute,
   VoyzuSurfaceUserAccess,
 } from "../types";
 

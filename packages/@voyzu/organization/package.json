@@ -11,9 +11,6 @@
     "dependencies": [
       "@voyzu/localization"
     ],
-    "pageRootPaths": [
-      "/organization"
-    ],
     "settings": {
       "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
     },

@@ -10,7 +10,6 @@ interface PackageManifest {
     "voyzu-package"?: boolean;
     allowInstall?: boolean;
     dependencies?: string[];
-    pageRootPaths?: string[];
     preinstalled?: boolean;
   };
 }
@@ -101,6 +100,7 @@ function hasExport(manifest: PackageManifest, name: string): boolean {
 export async function discoverInstalledPackages(): Promise<DiscoveredPackage[]> {
   const platformRoot = await findPlatformRoot();
   const runtimeWorkspaceRoot = workspaceRoot(platformRoot);
+  const pageRoots = JSON.parse(await readFile(join(platformRoot, "apps/web/.generated/page-routes/package-roots.json"), "utf8")) as Record<string, string[]>;
   const httpApiRoots = JSON.parse(await readFile(join(platformRoot, "apps/web/.generated/http-api-routes/package-roots.json"), "utf8")) as Record<string, string[]>;
   const roots = [
     join(platformRoot, "packages"),
@@ -121,7 +121,7 @@ export async function discoverInstalledPackages(): Promise<DiscoveredPackage[]> 
           hasExport(manifest, "./navigation/top-nav")
           || hasExport(manifest, "./navigation/domains")
           || (manifest.voyzu.preinstalled !== true && hasExport(manifest, "./navigation")),
-        pageRootPaths: manifest.voyzu.pageRootPaths ?? [],
+        pageRootPaths: pageRoots[manifest.name] ?? [],
         httpApiRootPaths: httpApiRoots[manifest.name] ?? [],
       });
     }

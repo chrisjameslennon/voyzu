@@ -6,8 +6,8 @@ The application surface supplies the desktop and mobile application frame, navig
 
 ## Declare page routes in the package
 
-A UI-capable package exposes each module's page routes directly through a
-`./<module>/pages.routes` package export. A route is the source of truth for its
+A UI-capable package registers its page routes in `contracts.pageRouting` in
+`voyzu.package.ts`. A route is the source of truth for its
 URL, lazy page loader, title, authorization, breadcrumbs, and help link.
 Modules remain a way to organize code inside the package; the package is the
 unit that Voyzu composes and manages.
@@ -15,8 +15,7 @@ unit that Voyzu composes and manages.
 ```ts
 // packages/@acme/warehousing/modules/stock/pages.routes.ts
 export const pageRoutes = {
-  list: {
-    id: "acme.stock.page.list",
+  "acme.stock.page.list": {
     path: "/warehousing/stock",
     pageTitle: "Stock",
     loadPage: () => import("./server/pages/StockListPage")
@@ -25,9 +24,9 @@ export const pageRoutes = {
     helpPath: "packages/warehousing/stock",
     auth: { required: true, minRole: "STANDARD" },
   },
-  detail: {
-    id: "acme.stock.page.detail",
+  "acme.stock.page.detail": {
     path: "/warehousing/stock/[code]",
+    pathParams: { code: { type: "string" } },
     pageTitle: "Stock item",
     loadPage: () => import("./server/pages/StockDetailPage")
       .then((module) => module.StockDetailPage),
@@ -47,21 +46,27 @@ the selected server page only when the route is rendered.
 
 The supported route authorization roles are `STANDARD` and `ADMIN`. A public route must set `auth.required` to `false` deliberately; authenticated package pages should normally set it to `true`.
 
-## Export the route surface
+## Register the page routing contract
 
-Expose the lightweight route manifest directly:
+Import module route maps into the package contract. Use a checked merge when combining multiple maps:
 
-```jsonc
-{
-  "exports": {
-    "./stock/pages.routes": "./modules/stock/pages.routes.ts"
-  }
-}
+```ts
+// voyzu.package.ts
+import { mergePageRoutes } from "@voyzu/types/page-routing";
+import { pageRoutes as stockRoutes } from "./modules/stock/pages.routes";
+
+export default {
+  modules: [],
+  contracts: {
+    pageRouting: {
+      roots: ["/warehousing"],
+      routes: mergePageRoutes(stockRoutes),
+    },
+  },
+};
 ```
 
-The package still exposes `./voyzu-package` for lifecycle commands and may
-compose `stockModule` in that manifest. Page composition does not traverse that
-manifest or `module.ts`, and there is no fallback discovery path.
+The package exports `./voyzu-package`. Module route exports alone do not register pages. Each page receives one `context` prop containing `path`, `pathParams`, `queryParams` and `routeDefinition`. See the [page routing contract](../platform-contracts/page-routing-contract.md) for parsing, validation and route resolution.
 
 ## Understand UI domains
 
@@ -210,7 +215,7 @@ These controls do not affect HTTP API routes, uninstall the package, run uninsta
 The install and link-package workflows compose packages automatically. Composition:
 
 1. discovers pre-installed and installed packages in the runtime workspace;
-2. reads each package's metadata and dedicated surface exports;
+2. reads each package's metadata, page routing contract and navigation exports;
 3. imports exported page-route and HTTP API-route manifests and validates their lazy
    loaders and owned roots;
 4. imports the optional common `./navigation` export;
@@ -237,8 +242,7 @@ Set `unframed: true` only when a route must bypass the complete application fram
 ```ts
 // packages/@acme/analytics/modules/dashboard/pages.routes.ts
 export const pageRoutes = {
-  dashboard: {
-    id: "acme.dashboard.page.main",
+  "acme.dashboard.page.main": {
     path: "/analytics/dashboard",
     pageTitle: "Dashboard",
     loadPage: () => import("./server/pages/DashboardPage")

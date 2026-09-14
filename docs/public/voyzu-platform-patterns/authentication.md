@@ -83,8 +83,7 @@ Authentication and minimum role requirements belong on the page route registered
 ```ts
 // packages/@acme/inventory/modules/items/pages.routes.ts
 export const pageRoutes = {
-  list: {
-    id: "acme.inventory-items.page.list",
+  "acme.inventory-items.page.list": {
     path: "/inventory/items",
     pageTitle: "Inventory items",
     loadPage: () => import("./server/pages/InventoryItemsListPage")

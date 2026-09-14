@@ -1,3 +1,4 @@
+import { pageStringParameters, type PageProps } from "@voyzu/types/page-routing";
 import "server-only";
 
 import { notFound } from "next/navigation";
@@ -9,7 +10,8 @@ import { InstalledPackageDetail } from "../../client";
 import { getInstalledPackage } from "../lib/installed-package.service";
 import { readInstalledPackageFiles } from "../lib/package-inventory";
 
-export async function InstalledPackageDetailPage({ id }: { id?: string }) {
+export async function InstalledPackageDetailPage({ context }: PageProps) {
+  const { id } = pageStringParameters(context.pathParams);
   if (!id) notFound();
   const canManage = (await internalApi.call("@core/auth", "get", {})).permissions.includes("users.manage");
   const installedPackage = canManage

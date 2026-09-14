@@ -55,7 +55,6 @@ The following is illustrative JSON with comments. Remove the comments in a real 
     "voyzu-package": true,               // Marks this as a Voyzu package.
     "allowInstall": true,
     "dependencies": ["@acme/products"], // Other Voyzu packages, not npm packages.
-    "pageRootPaths": ["/warehousing"],  // Browser route namespaces owned here.
     "settings": {
       "helpBaseUrl": "https://docs.acme.example/warehousing/"
     }
@@ -86,12 +85,11 @@ shapes:
 
 | Export | Purpose | Loading rule |
 |---|---|---|
-| `./<module>/pages.routes` | Browser page declarations | Each route provides a lazy `loadPage` function. |
-| `./voyzu-package` | Package HTTP API routing and documentation contracts | Route handlers remain lazy. |
+| `./voyzu-package` | Page routing and HTTP API contracts | Page and handler loaders remain lazy. |
 | `./navigation` | Optional package navigation declaration | May import route manifests for their IDs, but not page, handler, or service implementations. |
 | `./navigation/left-nav-header` | Optional client left-navigation header | Composed into the separate header registry. |
 
-Page and navigation exports are their composition boundaries. HTTP routes and documentation are registered explicitly in the package contracts; composition reads `voyzu.package.ts` and preserves route IDs.
+Page and HTTP routes are registered explicitly in package contracts. Navigation uses its own export. Composition reads `voyzu.package.ts` and preserves route IDs.
 
 Page and HTTP API root paths reserve separate namespaces. A package may use the same root in both namespaces, but two packages cannot own overlapping roots within the same namespace. Use an empty array when the package owns no roots. The Voyzu platform itself is implicit and is not listed in `voyzu.dependencies`.
 
@@ -99,17 +97,19 @@ Page and HTTP API root paths reserve separate namespaces. A package may use the 
 
 `voyzu.package.ts` is the package lifecycle manifest. It composes the package's
 modules and optional install, uninstall, and script registrations. Install and
-script commands load this manifest deliberately. Semantic contract composition also reads its optional `contracts` section. Page and navigation discovery use their existing exports; HTTP API discovery reads the package contracts.
+script commands load this manifest deliberately. Semantic contract composition also reads its optional `contracts` section. Page and HTTP API discovery read the package contracts; navigation uses its own export.
 
 ```ts
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
 
 import { install } from "./install/manifest";
 import { stockModule } from "./modules/stock/module";
+import { pageRoutes } from "./modules/stock/pages.routes";
 import { sampleData } from "./scripts/sample-data";
 import { uninstall } from "./uninstall/manifest";
 
 const packageDefinition = {
+  contracts: { pageRouting: { roots: ["/warehousing"], routes: pageRoutes } },
   modules: [stockModule],
   install,
   uninstall,
@@ -198,15 +198,14 @@ export const stockModule = {
 
 The module manifest remains useful to the package lifecycle contract and to
 code that deliberately consumes the complete module definition. It is not a
-route registry. Voyzu imports page exports and package HTTP API contracts. Handler loaders remain lazy.
+route registry. Voyzu reads page routing and HTTP API contracts from `voyzu.package.ts`. Page and handler loaders remain lazy.
 
 `pages.routes.ts` contains metadata and lazy page loaders. It must not import
 page implementations eagerly:
 
 ```ts
 export const pageRoutes = {
-  list: {
-    id: "acme.warehousing.stock.page.list",
+  "acme.warehousing.stock.page.list": {
     path: "/warehousing/stock",
     pageTitle: "Stock",
     loadPage: () => import("./server/pages/StockListPage")

@@ -1,7 +1,7 @@
 export const pageRoutes = {
-  list: {
+  "voyzu.countries.page.list": {
+
     httpApiDocumentationGroupId: "localization.operations",
-    id: "voyzu.countries.page.list",
     pageTitle: "Countries",
     helpPath: "modules-help/organization-financial-settings/country",
     path: "/settings/localization/countries",
@@ -19,9 +19,9 @@ export const pageRoutes = {
     ],
     auth: { required: true, minRole: "STANDARD" }
   },
-  detail: {
+  "voyzu.countries.page.detail": {
+    pathParams: { code: { type: "string" } },
     httpApiDocumentationGroupId: "localization.operations",
-    id: "voyzu.countries.page.detail",
     pageTitle: "Country",
     helpPath: "modules-help/organization-financial-settings/country",
     path: "/settings/localization/countries/[code]",

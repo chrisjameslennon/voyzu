@@ -35,23 +35,11 @@ export async function composeHttpApi(runtimeRoot: string, descriptors: Descripto
   const registrations = [...definitions.map(item => item.registration), capabilityHttpApiRegistration];
   const resolved = resolveHttpApiContracts(registrations);
   for (const descriptor of descriptors) {
-    const manifest = JSON.parse(await readFile(join(descriptor.directory, "package.json"), "utf8"));
-    for (const [name, target] of Object.entries(manifest.exports ?? {})) {
-      if (!/^\.\/[^/]+\/pages\.routes$/.test(name)) continue;
-      const relativeFile = typeof target === "string" ? target : (target as {
-        import?: string;
-      }).import;
-      if (!relativeFile) continue;
-      const {
-        pageRoutes
-      } = await import(pathToFileURL(join(descriptor.directory, relativeFile)).href);
-      for (const page of Object.values(pageRoutes) as {
-        id: string;
-        httpApiDocumentationGroupId?: string;
-      }[]) {
-        if (page.httpApiDocumentationGroupId && !resolved.groups.has(page.httpApiDocumentationGroupId)) {
-          throw new Error(`Page ${page.id} references unknown HTTP API documentation group ${page.httpApiDocumentationGroupId}`);
-        }
+    const { default: definition } = await import(pathToFileURL(join(descriptor.directory, "voyzu.package.ts")).href);
+    const contracts = definition.contracts as PackageContracts | undefined;
+    for (const [id, page] of Object.entries(contracts?.pageRouting?.routes ?? {})) {
+      if (page.httpApiDocumentationGroupId && !resolved.groups.has(page.httpApiDocumentationGroupId)) {
+        throw new Error(`Page ${id} references unknown HTTP API documentation group ${page.httpApiDocumentationGroupId}`);
       }
     }
   }

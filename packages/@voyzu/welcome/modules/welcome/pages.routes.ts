@@ -1,6 +1,5 @@
 export const pageRoutes = {
-  home: {
-    id: "voyzu.welcome.page.home",
+  "voyzu.welcome.page.home": {
     path: "/welcome",
     loadPage: () =>
       import("./server/pages/WelcomePage")

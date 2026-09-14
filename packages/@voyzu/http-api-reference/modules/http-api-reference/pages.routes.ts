@@ -6,8 +6,7 @@ const auth = {
 const helpPath = "http-api-reference/http-api-reference";
 
 export const pageRoutes = {
-  gettingStarted: {
-    id: "voyzu.http-api-reference.page.getting-started",
+  "voyzu.http-api-reference.page.getting-started": {
     path: "/http-api-reference",
     pageTitle: "HTTP API Reference",
     loadPage: () =>
@@ -16,8 +15,7 @@ export const pageRoutes = {
     helpPath,
     auth,
   },
-  authentication: {
-    id: "voyzu.http-api-reference.page.authentication",
+  "voyzu.http-api-reference.page.authentication": {
     path: "/http-api-reference/authentication",
     pageTitle: "HTTP API Authentication",
     loadPage: () =>
@@ -26,8 +24,7 @@ export const pageRoutes = {
     helpPath,
     auth,
   },
-  auditResponse: {
-    id: "voyzu.http-api-reference.page.audit-response",
+  "voyzu.http-api-reference.page.audit-response": {
     path: "/http-api-reference/models/audit-response",
     pageTitle: "Audit Response",
     loadPage: () =>
@@ -36,8 +33,7 @@ export const pageRoutes = {
     helpPath,
     auth,
   },
-  openApi: {
-    id: "voyzu.http-api-reference.page.openapi",
+  "voyzu.http-api-reference.page.openapi": {
     path: "/http-api-reference/openapi",
     pageTitle: "OpenAPI Definition",
     loadPage: () =>
@@ -46,8 +42,8 @@ export const pageRoutes = {
     helpPath,
     auth,
   },
-  generated: {
-    id: "voyzu.http-api-reference.page.generated",
+  "voyzu.http-api-reference.page.generated": {
+    pathParams: { packageFolder: { type: "string" }, groupFolder: { type: "string" } },
     path: "/http-api-reference/[packageFolder]/[groupFolder]",
     pageTitle: "HTTP API Reference",
     loadPage: () =>

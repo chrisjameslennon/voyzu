@@ -89,7 +89,6 @@ dependencies, and exposes its public entry points.
     "voyzu-package": true,
     "allowInstall": true,
     "dependencies": [],
-    "pageRootPaths": ["/customer-orders"],
     "settings": {
       "helpBaseUrl": "https://docs.example.com/"
     }
@@ -265,17 +264,16 @@ export default ordersModule;
 ```
 
 This complete module manifest is registered by `voyzu.package.ts`, but the
-application composer imports page exports and package HTTP API contracts. Use `pageRoutes: {}` for a module without pages; modules do not register HTTP routes.
+application composer reads page routing and HTTP API contracts from the package. Use `pageRoutes: {}` for a module without pages; modules do not register HTTP routes.
 
 ### Register page routes
 
-`pages.routes.ts` is the authoritative page registry:
+Define the module route map in `pages.routes.ts`, then register it in the package contract:
 
 ```ts
 // modules/orders/pages.routes.ts
 export const pageRoutes = {
-  list: {
-    id: "acme.customer-orders.orders.page.list",
+  "acme.customer-orders.orders.page.list": {
     path: "/customer-orders",
     loadPage: () => import("./server/pages/OrdersListPage")
       .then((module) => module.OrdersListPage),
@@ -284,9 +282,9 @@ export const pageRoutes = {
     breadcrumbBase: [],
     auth: { required: true, minRole: "STANDARD" },
   },
-  detail: {
-    id: "acme.customer-orders.orders.page.detail",
+  "acme.customer-orders.orders.page.detail": {
     path: "/customer-orders/[code]",
+    pathParams: { code: { type: "string" } },
     loadPage: () => import("./server/pages/OrderDetailPage")
       .then((module) => module.OrderDetailPage),
     pageTitle: "Customer Order",
@@ -300,7 +298,7 @@ export const pageRoutes = {
 ```
 
 Route IDs must be stable and globally unique. Page paths must remain within a
-root declared by `voyzu.pageRootPaths`. Keep the route manifest lightweight:
+root declared by `contracts.pageRouting.roots`. Keep the route manifest lightweight:
 `loadPage` must dynamically import the specific page module rather than
 statically importing a page or server barrel.
 
@@ -423,9 +421,11 @@ import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
 
 import { install } from "./install/manifest";
 import { ordersModule } from "./modules/orders/module";
+import { pageRoutes } from "./modules/orders/pages.routes";
 import { uninstall } from "./uninstall/manifest";
 
 export const customerOrdersPackage = {
+  contracts: { pageRouting: { roots: ["/customer-orders"], routes: pageRoutes } },
   modules: [ordersModule],
   install,
   uninstall,
@@ -448,7 +448,7 @@ import { pageRoutes } from "../modules/orders/pages.routes";
 
 export default {
   label: "Customer Orders",
-  routeId: pageRoutes.list.id,
+  routeId: "acme.customer-orders.orders.page.list",
 } as const;
 ```
 
@@ -462,7 +462,7 @@ export default [
       {
         label: "Orders",
         icon: "receipt_long",
-        routeId: pageRoutes.list.id,
+        routeId: "acme.customer-orders.orders.page.list",
       },
     ],
   },

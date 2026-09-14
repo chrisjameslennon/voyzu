@@ -1,3 +1,6 @@
+import { mergePageRoutes } from "@voyzu/types/page-routing";
+import { pageRoutes as organizationReportsPageRoutes } from "./modules/organization-reports/pages.routes";
+import { pageRoutes as organizationsPageRoutes } from "./modules/organizations/pages.routes";
 import { httpApiRouting, httpApiDocumentation } from "./http-api.contracts";
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
 
@@ -16,6 +19,13 @@ export const organizationModules = [
 
 export const organizationPackage = {
   contracts: {
+    pageRouting: {
+      roots: ["/organization"],
+      routes: mergePageRoutes(
+        organizationReportsPageRoutes,
+        organizationsPageRoutes,
+      ),
+    },
     httpApiRouting,
     httpApiDocumentation,
     internalApi: {
