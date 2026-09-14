@@ -64,7 +64,7 @@ export function MobileNavDrawer({
 
   const handleNavItemClick = (item: NavItem) => {
     if (item.children && item.children.length > 0) {
-      toggleExpand(item.label);
+      toggleExpand(item.path);
     } else {
       onNavigate(item.path);
       onClose();
@@ -73,7 +73,7 @@ export function MobileNavDrawer({
 
   const renderNavItem = (item: NavItem, isChild = false, depth = 0) => {
     const hasChildren = item.children && item.children.length > 0;
-    const isExpanded = expandedItems.includes(item.label);
+    const isExpanded = expandedItems.includes(item.path);
     const isActive = currentPath === item.path;
     const itemKey = `${depth}:${item.label}:${item.path}`;
 
@@ -83,9 +83,14 @@ export function MobileNavDrawer({
           <button
             onClick={() => handleNavItemClick(item)}
             className={`${styles.navChild} ${isActive ? styles.navChildActive : ""}`}
+            aria-expanded={hasChildren ? isExpanded : undefined}
           >
             {item.label}
+            {hasChildren ? <span className={`material-symbols-outlined ${styles.navChevron} ${isExpanded ? styles.navChevronOpen : ""}`}>expand_more</span> : null}
           </button>
+          {hasChildren && isExpanded ? <div className={styles.navChildren}>
+            {item.children?.map(child => renderNavItem(child, true, depth + 1))}
+          </div> : null}
         </div>
       );
     }

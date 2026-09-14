@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 export const AuditEventCountResponseDto = StrictObject({
   count: Type.Integer({ minimum: 0, description: "Number of audit events matching the supplied filters." }),
 });

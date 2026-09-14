@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 import { BusinessCode14, CountryCode, CurrencyCode, NonBlankText } from "@voyzu/organization/types/constraints";
 
 export const OrganizationUpdateRequestDto = StrictObject({

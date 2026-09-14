@@ -159,8 +159,8 @@ export function InstalledPackageDetail({
               <p className={typography.bodyText}>{installedPackage.pageRootPaths.join(", ") || "None"}</p>
             </div>
             <div className={detail.fieldGroup}>
-              <span className={typography.fieldLabel}>API root paths</span>
-              <p className={typography.bodyText}>{installedPackage.apiRootPaths.join(", ") || "None"}</p>
+              <span className={typography.fieldLabel}>HTTP API root paths</span>
+              <p className={typography.bodyText}>{installedPackage.httpApiRootPaths.join(", ") || "None"}</p>
             </div>
             <label className={detail.fieldGroup}>
               <span className={typography.fieldLabel}>Show top navigation</span>

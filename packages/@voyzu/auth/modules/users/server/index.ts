@@ -20,7 +20,7 @@ export {
   handleSearch,
   handleUpdateCurrentProfile,
   handleUpdate,
-} from "./api/user.http.handlers";
+} from "./http-api/user.http.handlers";
 export {
   activateUser,
   activateUsers,

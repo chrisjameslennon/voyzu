@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "../api";
+import { StrictObject } from "../http-api";
 import { Filter } from "./filter";
 import { ListOptions } from "./list-options";
 

@@ -7,7 +7,7 @@ Outputs are the resolved asynchronous results.
 
 | Contract name | Method | Defining package | Implementing package | Input parameters | Output parameters |
 | --- | --- | --- | --- | --- | --- |
-| `platform.identity` | `getCurrentIdentity` | Voyzu platform | `@voyzu/auth` (platform) | `{}` | `{ user: IdentityUser or null, actorType: "APP" / "API" / "SYSTEM", permissions: string[] }` |
+| `platform.identity` | `getCurrentIdentity` | Voyzu platform | `@voyzu/auth` (platform) | `{}` | `{ user: IdentityUser or null, actorType: "APP" / "HTTP API" / "SYSTEM", permissions: string[] }` |
 | `erp.organization-context` | `getSavedOrganizationId` | `@voyzu/erp-core` | `@voyzu/erp-core` | `{}` | `{ organizationId: Id or null }` |
 | `erp.organization-context` | `getAvailableOrganizations` | `@voyzu/erp-core` | `@voyzu/erp-core` | `{}` | `{ organizations: Organization[] }` |
 | `erp.organization-context` | `getActiveOrganization` | `@voyzu/erp-core` | `@voyzu/erp-core` | `{}` | `{ selectedOrganization: Organization or null }` |
@@ -17,7 +17,7 @@ Outputs are the resolved asynchronous results.
 
 ## Nested parameters
 
-- **IdentityUser:** `id`, `code`, `displayName`, `role` (`ADMIN` / `STANDARD`), `status` (`ACTIVE` / `INACTIVE`) and `accessMode` (`UI` / `API` / `UI_AND_API`).
+- **IdentityUser:** `id`, `code`, `displayName`, `role` (`ADMIN` / `STANDARD`), `status` (`ACTIVE` / `INACTIVE`) and `accessMode` (`UI` / `HTTP API` / `UI_AND_API`).
 - **Organization:** `id`, `code`, `name`, `countryCode`, optional `country: { code, name }`, `baseCurrencyCode`, optional `baseCurrency: { code, name }`, `status` and `audit` metadata.
 - **InventoryMovement:** `inventoryFinancialActivityId: Id`, `inventoryTransactionLineId: Id`, `inventoryDocumentCode: string`, `inventoryDocumentType` (`RECEIPT` / `ISSUE` / `ADJUSTMENT`), `itemId: Id`, `itemCode: string`, `itemName: string`, `quantityChange: number`, `reasonCode: string` and `activityDate: string` (date-time). Document and item codes follow the business-code pattern; item name and reason must be nonblank.
 

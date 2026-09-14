@@ -36,7 +36,7 @@ deletion_user_id         text,
 deletion_mutation_id     uuid
 ```
 
-`actor_type` is `APP`, `API`, or `SYSTEM`.
+`actor_type` is `APP`, `HTTP API`, or `SYSTEM`.
 
 ## Attach the trigger
 
@@ -162,7 +162,7 @@ See [client-component composition](../voyzu-platform-guide/client-components.md)
 
 ## Query audit events
 
-Voyzu exposes one package-neutral audit API from `@voyzu/audit`:
+Voyzu exposes one package-neutral audit HTTP API from `@voyzu/audit`:
 
 ```
 GET /api/audit
@@ -171,9 +171,9 @@ GET /api/audit/export
 GET /api/audit/{id}
 ```
 
-List, count, and export accept `packageCode`, `organizationId`, `entityType`, `entityCode`, `entityId`, `mutationId`, `actorId`, date, and search filters. Omitting `packageCode` intentionally queries across packages; no separate cross-package permission is required for an authenticated API caller.
+List, count, and export accept `packageCode`, `organizationId`, `entityType`, `entityCode`, `entityId`, `mutationId`, `actorId`, date, and search filters. Omitting `packageCode` intentionally queries across packages; no separate cross-package permission is required for an authenticated HTTP API caller.
 
-Packages own their audit list and detail pages. They may use the neutral audit DTOs and API, but must not reuse another business package's audit UI.
+Packages own their audit list and detail pages. They may use the neutral audit DTOs and HTTP API, but must not reuse another business package's audit UI.
 
 ## Package dependency
 

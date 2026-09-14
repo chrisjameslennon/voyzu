@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 import { CurrencyCode, NonBlankText } from "@voyzu/localization/types/constraints";
 
 export const CountryUpdateRequestDto = StrictObject({

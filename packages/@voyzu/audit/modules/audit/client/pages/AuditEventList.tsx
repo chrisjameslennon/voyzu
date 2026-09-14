@@ -223,7 +223,7 @@ export function AuditEventList({
   const [dateTo, setDateTo] = useState(initialDateTo);
   const [dateFilterSuppressed, setDateFilterSuppressed] = useState(suppressInitialDateFilter);
 
-  // Debounced text filter values (drive the API fetch)
+  // Debounced text filter values (drive the HTTP API fetch)
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [debouncedEntityCode, setDebouncedEntityCode] = useState(initialEntityCode);
   const [debouncedEntityId, setDebouncedEntityId] = useState(initialEntityId);

@@ -1,0 +1,79 @@
+{
+  "operationId": "organization.organizations.delete",
+  "method": "delete",
+  "path": "/api/organization/organizations/{code}",
+  "summary": "Delete organization",
+  "description": "Permanently deletes an organization and all organization-owned financial records by its business code.",
+  "tags": [
+    "@voyzu/organization: Platform"
+  ],
+  "requestPathParams": {
+    "code": {
+      "description": "Organization business code.",
+      "required": true,
+      "schema": {
+        "type": "string"
+      },
+      "example": "string"
+    }
+  },
+  "responses": {
+    "204": {
+      "description": "Organization deleted successfully."
+    },
+    "404": {
+      "description": "Organization not found.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "ENTITY_NOT_FOUND"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "ENTITY_NOT_FOUND",
+        "message": "string"
+      }
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

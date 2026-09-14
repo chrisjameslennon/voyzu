@@ -1,0 +1,180 @@
+{
+  "groupId": "localization.operations",
+  "title": "@voyzu/localization",
+  "description": "Platform operations provided by @voyzu/localization.",
+  "sectionId": "localization.platform",
+  "sectionTitle": "Platform",
+  "sectionDescription": "Core Voyzu platform operations.",
+  "operations": [
+    {
+      "id": "localization.countries.list",
+      "file": "localization.countries.list.operation-doc.json",
+      "summary": "List"
+    },
+    {
+      "id": "localization.countries.create",
+      "file": "localization.countries.create.operation-doc.json",
+      "summary": "Create"
+    },
+    {
+      "id": "localization.countries.filter",
+      "file": "localization.countries.filter.operation-doc.json",
+      "summary": "Filter"
+    },
+    {
+      "id": "localization.countries.search",
+      "file": "localization.countries.search.operation-doc.json",
+      "summary": "Search"
+    },
+    {
+      "id": "localization.countries.batchCreate",
+      "file": "localization.countries.batchCreate.operation-doc.json",
+      "summary": "Batch Create"
+    },
+    {
+      "id": "localization.countries.batchGet",
+      "file": "localization.countries.batchGet.operation-doc.json",
+      "summary": "Batch Get"
+    },
+    {
+      "id": "localization.countries.batchUpdate",
+      "file": "localization.countries.batchUpdate.operation-doc.json",
+      "summary": "Batch Update"
+    },
+    {
+      "id": "localization.countries.batchPatch",
+      "file": "localization.countries.batchPatch.operation-doc.json",
+      "summary": "Batch Patch"
+    },
+    {
+      "id": "localization.countries.batchDelete",
+      "file": "localization.countries.batchDelete.operation-doc.json",
+      "summary": "Batch Delete"
+    },
+    {
+      "id": "localization.countries.batchActivate",
+      "file": "localization.countries.batchActivate.operation-doc.json",
+      "summary": "Batch Activate"
+    },
+    {
+      "id": "localization.countries.batchDeactivate",
+      "file": "localization.countries.batchDeactivate.operation-doc.json",
+      "summary": "Batch Deactivate"
+    },
+    {
+      "id": "localization.countries.get",
+      "file": "localization.countries.get.operation-doc.json",
+      "summary": "Get"
+    },
+    {
+      "id": "localization.countries.update",
+      "file": "localization.countries.update.operation-doc.json",
+      "summary": "Update"
+    },
+    {
+      "id": "localization.countries.patch",
+      "file": "localization.countries.patch.operation-doc.json",
+      "summary": "Patch"
+    },
+    {
+      "id": "localization.countries.delete",
+      "file": "localization.countries.delete.operation-doc.json",
+      "summary": "Delete"
+    },
+    {
+      "id": "localization.countries.activate",
+      "file": "localization.countries.activate.operation-doc.json",
+      "summary": "Activate"
+    },
+    {
+      "id": "localization.countries.deactivate",
+      "file": "localization.countries.deactivate.operation-doc.json",
+      "summary": "Deactivate"
+    },
+    {
+      "id": "localization.currencies.list",
+      "file": "localization.currencies.list.operation-doc.json",
+      "summary": "List"
+    },
+    {
+      "id": "localization.currencies.create",
+      "file": "localization.currencies.create.operation-doc.json",
+      "summary": "Create"
+    },
+    {
+      "id": "localization.currencies.filter",
+      "file": "localization.currencies.filter.operation-doc.json",
+      "summary": "Filter"
+    },
+    {
+      "id": "localization.currencies.search",
+      "file": "localization.currencies.search.operation-doc.json",
+      "summary": "Search"
+    },
+    {
+      "id": "localization.currencies.get",
+      "file": "localization.currencies.get.operation-doc.json",
+      "summary": "Get"
+    },
+    {
+      "id": "localization.currencies.update",
+      "file": "localization.currencies.update.operation-doc.json",
+      "summary": "Update"
+    },
+    {
+      "id": "localization.currencies.patch",
+      "file": "localization.currencies.patch.operation-doc.json",
+      "summary": "Patch"
+    },
+    {
+      "id": "localization.currencies.delete",
+      "file": "localization.currencies.delete.operation-doc.json",
+      "summary": "Delete"
+    },
+    {
+      "id": "localization.currencies.batchCreate",
+      "file": "localization.currencies.batchCreate.operation-doc.json",
+      "summary": "Batch Create"
+    },
+    {
+      "id": "localization.currencies.batchGet",
+      "file": "localization.currencies.batchGet.operation-doc.json",
+      "summary": "Batch Get"
+    },
+    {
+      "id": "localization.currencies.batchUpdate",
+      "file": "localization.currencies.batchUpdate.operation-doc.json",
+      "summary": "Batch Update"
+    },
+    {
+      "id": "localization.currencies.batchPatch",
+      "file": "localization.currencies.batchPatch.operation-doc.json",
+      "summary": "Batch Patch"
+    },
+    {
+      "id": "localization.currencies.batchDelete",
+      "file": "localization.currencies.batchDelete.operation-doc.json",
+      "summary": "Batch Delete"
+    },
+    {
+      "id": "localization.currencies.activate",
+      "file": "localization.currencies.activate.operation-doc.json",
+      "summary": "Activate"
+    },
+    {
+      "id": "localization.currencies.deactivate",
+      "file": "localization.currencies.deactivate.operation-doc.json",
+      "summary": "Deactivate"
+    },
+    {
+      "id": "localization.currencies.batchActivate",
+      "file": "localization.currencies.batchActivate.operation-doc.json",
+      "summary": "Batch Activate"
+    },
+    {
+      "id": "localization.currencies.batchDeactivate",
+      "file": "localization.currencies.batchDeactivate.operation-doc.json",
+      "summary": "Batch Deactivate"
+    }
+  ]
+}

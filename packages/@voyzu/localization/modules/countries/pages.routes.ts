@@ -1,5 +1,6 @@
 export const pageRoutes = {
   list: {
+    httpApiDocumentationGroupId: "localization.operations",
     id: "voyzu.countries.page.list",
     pageTitle: "Countries",
     helpPath: "modules-help/organization-financial-settings/country",
@@ -19,6 +20,7 @@ export const pageRoutes = {
     auth: { required: true, minRole: "STANDARD" }
   },
   detail: {
+    httpApiDocumentationGroupId: "localization.operations",
     id: "voyzu.countries.page.detail",
     pageTitle: "Country",
     helpPath: "modules-help/organization-financial-settings/country",

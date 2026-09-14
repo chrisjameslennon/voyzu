@@ -16,7 +16,7 @@ export {
   handlePatch,
   handleSearch,
   handleUpdate,
-} from "./api/country.http.handlers";
+} from "./http-api/country.http.handlers";
 export {
   activateCountries,
   activateCountry,

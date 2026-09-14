@@ -13,14 +13,6 @@
       "/login",
       "/settings/users"
     ],
-    "apiRootPaths": [
-      "/auth",
-      "/users",
-      "/user-queries",
-      "/user-search-results",
-      "/user-selections",
-      "/user-batches"
-    ],
     "preinstalled": true,
     "settings": {
       "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
@@ -32,15 +24,15 @@
     "./navigation": "./navigation/index.ts",
     "./navigation/settings": "./navigation/settings.left-nav.ts",
     "./auth": "./modules/auth/module.ts",
-    "./auth/api.routes": "./modules/auth/api.routes.ts",
+    "./auth/http-api.routes": "./modules/auth/http-api.routes.ts",
     "./auth/pages.routes": "./modules/auth/pages.routes.ts",
     "./auth/client": "./modules/auth/client/index.ts",
     "./auth/server": "./modules/auth/server/index.ts",
-    "./auth/server/api-basic-auth": "./modules/auth/server/api-basic-auth.ts",
+    "./auth/server/http-api-basic-auth": "./modules/auth/server/http-api-basic-auth.ts",
     "./auth/server/session": "./modules/auth/server/session.ts",
     "./types": "./types/index.ts",
     "./users": "./modules/users/module.ts",
-    "./users/api.routes": "./modules/users/api.routes.ts",
+    "./users/http-api.routes": "./modules/users/http-api.routes.ts",
     "./users/pages.routes": "./modules/users/pages.routes.ts",
     "./users/client": "./modules/users/client/index.ts",
     "./users/server": "./modules/users/server/index.ts"

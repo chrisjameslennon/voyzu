@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "../api";
+import { StrictObject } from "../http-api";
 
 export const CsvExportColumnDto = StrictObject({
   key: Type.String({ pattern: "\\S", description: "Non-blank source field key to read from each row." }),

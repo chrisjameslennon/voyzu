@@ -1,0 +1,140 @@
+{
+  "groupId": "auth.operations",
+  "title": "@voyzu/auth",
+  "description": "Platform operations provided by @voyzu/auth.",
+  "sectionId": "auth.platform",
+  "sectionTitle": "Platform",
+  "sectionDescription": "Core Voyzu platform operations.",
+  "operations": [
+    {
+      "id": "auth.auth.login",
+      "file": "auth.auth.login.operation-doc.json",
+      "summary": "Log in"
+    },
+    {
+      "id": "auth.auth.logout",
+      "file": "auth.auth.logout.operation-doc.json",
+      "summary": "Log out"
+    },
+    {
+      "id": "auth.auth.me",
+      "file": "auth.auth.me.operation-doc.json",
+      "summary": "Get current session"
+    },
+    {
+      "id": "auth.users.getOrganizationAccess",
+      "file": "auth.users.getOrganizationAccess.operation-doc.json",
+      "summary": "Get user organization access"
+    },
+    {
+      "id": "auth.users.replaceOrganizationAccess",
+      "file": "auth.users.replaceOrganizationAccess.operation-doc.json",
+      "summary": "Replace user organization access"
+    },
+    {
+      "id": "auth.users.list",
+      "file": "auth.users.list.operation-doc.json",
+      "summary": "List"
+    },
+    {
+      "id": "auth.users.create",
+      "file": "auth.users.create.operation-doc.json",
+      "summary": "Create"
+    },
+    {
+      "id": "auth.users.filter",
+      "file": "auth.users.filter.operation-doc.json",
+      "summary": "Filter"
+    },
+    {
+      "id": "auth.users.search",
+      "file": "auth.users.search.operation-doc.json",
+      "summary": "Search"
+    },
+    {
+      "id": "auth.users.batchGet",
+      "file": "auth.users.batchGet.operation-doc.json",
+      "summary": "Batch Get"
+    },
+    {
+      "id": "auth.users.batchCreate",
+      "file": "auth.users.batchCreate.operation-doc.json",
+      "summary": "Batch Create"
+    },
+    {
+      "id": "auth.users.batchUpdate",
+      "file": "auth.users.batchUpdate.operation-doc.json",
+      "summary": "Batch Update"
+    },
+    {
+      "id": "auth.users.batchPatch",
+      "file": "auth.users.batchPatch.operation-doc.json",
+      "summary": "Batch Patch"
+    },
+    {
+      "id": "auth.users.profile",
+      "file": "auth.users.profile.operation-doc.json",
+      "summary": "Profile"
+    },
+    {
+      "id": "auth.users.updateProfile",
+      "file": "auth.users.updateProfile.operation-doc.json",
+      "summary": "Update Profile"
+    },
+    {
+      "id": "auth.users.profilePassword",
+      "file": "auth.users.profilePassword.operation-doc.json",
+      "summary": "Profile Password"
+    },
+    {
+      "id": "auth.users.get",
+      "file": "auth.users.get.operation-doc.json",
+      "summary": "Get"
+    },
+    {
+      "id": "auth.users.update",
+      "file": "auth.users.update.operation-doc.json",
+      "summary": "Update"
+    },
+    {
+      "id": "auth.users.patch",
+      "file": "auth.users.patch.operation-doc.json",
+      "summary": "Patch"
+    },
+    {
+      "id": "auth.users.delete",
+      "file": "auth.users.delete.operation-doc.json",
+      "summary": "Delete"
+    },
+    {
+      "id": "auth.users.activate",
+      "file": "auth.users.activate.operation-doc.json",
+      "summary": "Activate"
+    },
+    {
+      "id": "auth.users.deactivate",
+      "file": "auth.users.deactivate.operation-doc.json",
+      "summary": "Deactivate"
+    },
+    {
+      "id": "auth.users.changePassword",
+      "file": "auth.users.changePassword.operation-doc.json",
+      "summary": "Change Password"
+    },
+    {
+      "id": "auth.users.batchActivate",
+      "file": "auth.users.batchActivate.operation-doc.json",
+      "summary": "Batch Activate"
+    },
+    {
+      "id": "auth.users.batchDeactivate",
+      "file": "auth.users.batchDeactivate.operation-doc.json",
+      "summary": "Batch Deactivate"
+    },
+    {
+      "id": "auth.users.batchDelete",
+      "file": "auth.users.batchDelete.operation-doc.json",
+      "summary": "Batch Delete"
+    }
+  ]
+}

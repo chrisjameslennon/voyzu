@@ -37,7 +37,8 @@ export interface VoyzuSurfaceRoute {
   helpBaseUrl?: string;
   helpPath?: string;
   helpPathResolver?: (context: VoyzuSurfaceHelpPathContext) => string | undefined;
-  apiDocsUrl?: string;
+  httpApiDocsUrl?: string;
+  httpApiDocumentationGroupId?: string;
   unframed?: boolean;
   auth?: VoyzuSurfaceRouteAuth;
 }

@@ -1,9 +1,10 @@
 export const pageRoutes = {
   list: {
+    httpApiDocumentationGroupId: "organization.operations",
     id: "voyzu.organizations.page.list",
     pageTitle: "Organizations",
     helpPath: "modules-help/organization-financial-settings/organization",
-    apiDocsUrl: "organizations",
+    httpApiDocsUrl: "organizations",
     path: "/organization/organizations",
     loadPage: () => import("./server/pages/OrganizationsListPage").then((module) => module.OrganizationsListPage),
     breadcrumbBase: [
@@ -14,10 +15,11 @@ export const pageRoutes = {
     auth: { required: true, minRole: "STANDARD" }
   },
   detail: {
+    httpApiDocumentationGroupId: "organization.operations",
     id: "voyzu.organizations.page.detail",
     pageTitle: "Organization",
     helpPath: "modules-help/organization-financial-settings/organization",
-    apiDocsUrl: "organizations",
+    httpApiDocsUrl: "organizations",
     path: "/organization/organizations/[code]",
     loadPage: () => import("./server/pages/OrganizationDetailPage").then((module) => module.OrganizationDetailPage),
     breadcrumbBase: [

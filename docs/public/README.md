@@ -13,7 +13,7 @@ The Voyzu platform provides capabilities for building high-quality packages, inc
 * Users and authentication.
 * Auditing database tables and APIs.
 * Web page rendering and routing.
-* REST API development and documentation
+* REST HTTP API development and documentation
 * Database access, including transaction support.
 * Generic React components that support a consistent user experience.
 * Consistent layout, styling, and public CSS variables.

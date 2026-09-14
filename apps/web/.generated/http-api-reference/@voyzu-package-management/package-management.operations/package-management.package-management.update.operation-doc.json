@@ -1,0 +1,250 @@
+{
+  "operationId": "package-management.package-management.update",
+  "method": "put",
+  "path": "/api/installed-packages/{id}",
+  "summary": "Update Package Visibility",
+  "description": "Controls top-navigation visibility and direct access to an installed package's page routes. HTTP API routes are unaffected.",
+  "tags": [
+    "@voyzu/package-management: Platform"
+  ],
+  "requestPathParams": {
+    "id": {
+      "description": "Numeric identifier of the installed package record.",
+      "required": true,
+      "schema": {
+        "type": "string",
+        "pattern": "^[1-9][0-9]*$"
+      },
+      "example": "string"
+    }
+  },
+  "requestBody": {
+    "required": true,
+    "contentType": "application/json",
+    "schema": {
+      "type": "object",
+      "required": [
+        "topNavigationVisible",
+        "pageRoutesVisible"
+      ],
+      "properties": {
+        "topNavigationVisible": {
+          "type": "boolean"
+        },
+        "pageRoutesVisible": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "example": {
+      "topNavigationVisible": true,
+      "pageRoutesVisible": true
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "The updated package.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "description",
+          "repository",
+          "topNavigationVisible",
+          "pageRoutesVisible",
+          "navOrder",
+          "preinstalled",
+          "hasTopNavigation",
+          "required",
+          "pageRootPaths",
+          "httpApiRootPaths"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "code": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "description": {
+            "type": "string"
+          },
+          "repository": {
+            "type": "string"
+          },
+          "topNavigationVisible": {
+            "type": "boolean"
+          },
+          "pageRoutesVisible": {
+            "type": "boolean"
+          },
+          "navOrder": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "preinstalled": {
+            "type": "boolean"
+          },
+          "hasTopNavigation": {
+            "type": "boolean"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "pageRootPaths": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^/(?!/)"
+            }
+          },
+          "httpApiRootPaths": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^/(?!/)"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "id": 1,
+        "code": "string",
+        "description": "string",
+        "repository": "string",
+        "topNavigationVisible": true,
+        "pageRoutesVisible": true,
+        "navOrder": 0,
+        "preinstalled": true,
+        "hasTopNavigation": true,
+        "required": true,
+        "pageRootPaths": [
+          "string"
+        ],
+        "httpApiRootPaths": [
+          "string"
+        ]
+      }
+    },
+    "400": {
+      "description": "Validation failed.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INPUT_VALIDATION_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INPUT_VALIDATION_ERROR",
+        "message": "string"
+      }
+    },
+    "401": {
+      "description": "Authentication failed.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "UNAUTHORIZED"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "UNAUTHORIZED",
+        "message": "string"
+      }
+    },
+    "403": {
+      "description": "Administrator access is required.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "FORBIDDEN"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "FORBIDDEN",
+        "message": "string"
+      }
+    },
+    "404": {
+      "description": "The installed package was not found."
+    },
+    "422": {
+      "description": "The requested visibility change is not permitted."
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

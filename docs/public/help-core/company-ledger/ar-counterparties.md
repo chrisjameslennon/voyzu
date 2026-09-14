@@ -14,7 +14,7 @@ Search and filter the list to find a customer, then open it to review its financ
 
 ## Reading the detail
 
-The detail brings together the customer code and name with its AR documents, balance, applications, or linked entries where available. Use the stable code when reconciling data from an API client.
+The detail brings together the customer code and name with its AR documents, balance, applications, or linked entries where available. Use the stable code when reconciling data from an HTTP API client.
 
 ## Source and scope
 

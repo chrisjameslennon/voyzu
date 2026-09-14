@@ -16,7 +16,7 @@ export {
   handlePatch,
   handleSearch,
   handleUpdate,
-} from "./api/organization.http.handlers";
+} from "./http-api/organization.http.handlers";
 export { OrganizationsListPage } from "./pages/OrganizationsListPage";
 export { OrganizationDetailPage } from "./pages/OrganizationDetailPage";
 export {

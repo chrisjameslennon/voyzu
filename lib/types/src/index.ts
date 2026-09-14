@@ -1,4 +1,4 @@
-export type { ApiMethod } from "./api";
+export type { HttpApiMethod } from "./http-api";
 export type {
   VoyzuPackageDefinition,
   VoyzuPackageInstallDefinition,

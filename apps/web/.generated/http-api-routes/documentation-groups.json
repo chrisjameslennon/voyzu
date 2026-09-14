@@ -1,0 +1,8 @@
+{
+  "audit.operations": "/http-api-reference/@voyzu-audit/audit.operations",
+  "auth.operations": "/http-api-reference/@voyzu-auth/auth.operations",
+  "localization.operations": "/http-api-reference/@voyzu-localization/localization.operations",
+  "organization.operations": "/http-api-reference/@voyzu-organization/organization.operations",
+  "package-management.operations": "/http-api-reference/@voyzu-package-management/package-management.operations",
+  "voyzu.capability": "/http-api-reference/@voyzu-http-api/voyzu.capability"
+}

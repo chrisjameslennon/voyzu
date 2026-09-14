@@ -1,3 +1,4 @@
+import { httpCookieDefinitions, setHttpCookie, clearHttpCookie } from "@voyzu/http-api/cookies";
 import { NextResponse, type NextRequest } from "next/server";
 import type { OrganizationSelectionUpdateRequestDto } from "@voyzu/organization/organization-switcher/types";
 
@@ -13,12 +14,7 @@ import {
 } from "./organization-selection.service";
 
 function applySelectedOrganizationCookie(response: NextResponse, organizationId: number) {
-  response.cookies.set(SELECTED_ORGANIZATION_COOKIE, String(organizationId), {
-    httpOnly: true,
-    maxAge: SELECTED_ORGANIZATION_COOKIE_MAX_AGE_SECONDS,
-    path: "/",
-    sameSite: "lax",
-  });
+  setHttpCookie(response.cookies, httpCookieDefinitions.selectedOrganization, String(organizationId));
 }
 
 export async function handleGetOrganizationSelection(request: NextRequest): Promise<NextResponse> {

@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "../api";
+import { StrictObject } from "../http-api";
 
 export const CodesRequestDto = StrictObject({
   codes: Type.Array(Type.String({ pattern: "\\S" }), {

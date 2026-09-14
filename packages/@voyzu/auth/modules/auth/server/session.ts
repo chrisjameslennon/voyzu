@@ -1,8 +1,9 @@
+import { httpCookieDefinitions } from "@voyzu/http-api/cookies";
 import { Buffer } from "node:buffer";
 
-export const AUTH_COOKIE_NAME = "voyzu_auth";
+export const AUTH_COOKIE_NAME = httpCookieDefinitions.authentication.name;
 
-const DEFAULT_MAX_AGE_SECONDS = 60 * 60 * 8;
+const DEFAULT_MAX_AGE_SECONDS = httpCookieDefinitions.authentication.maxAgeSeconds;
 
 interface AuthSessionPayload {
   userId: number;
@@ -27,13 +28,6 @@ export interface CreateAuthSessionInput {
   role: string;
 }
 
-export const authCookieOptions = {
-  httpOnly: true,
-  secure: true,
-  sameSite: "lax" as const,
-  path: "/",
-  maxAge: DEFAULT_MAX_AGE_SECONDS,
-};
 
 export function getAuthSecret(): Buffer {
   const encodedSecret = process.env.VOYZU_AUTH_SECRET;

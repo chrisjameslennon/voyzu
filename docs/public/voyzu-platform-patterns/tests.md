@@ -71,7 +71,7 @@ earlier item changed.
 
 Cover important business failures such as missing records, invalid state
 transitions, deletion of records in use, protected-field changes, and batch
-rollback. DTO shape validation belongs to the API perimeter and is tested with
+rollback. DTO shape validation belongs to the HTTP API perimeter and is tested with
 the router rather than repeated in command tests.
 
 Assert both the error and the absence of an invalid side effect:

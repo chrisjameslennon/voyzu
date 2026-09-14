@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 import { UserPatchRequestDto } from "./user.patch.request.dto";
 import { UserCode } from "./user.fields";
 

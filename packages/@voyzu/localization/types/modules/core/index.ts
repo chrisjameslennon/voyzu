@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 
 export const OperationReference = StrictObject({ type: Type.String(), code: Type.String() });
 export type OperationReference = Type.Static<typeof OperationReference>;

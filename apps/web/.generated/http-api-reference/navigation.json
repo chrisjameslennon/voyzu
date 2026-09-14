@@ -1,0 +1,437 @@
+[
+  {
+    "label": "Platform",
+    "items": [
+      {
+        "label": "@voyzu/audit",
+        "icon": "article",
+        "path": "/http-api-reference/@voyzu-audit/audit.operations",
+        "children": [
+          {
+            "label": "List audit events",
+            "path": "/http-api-reference/@voyzu-audit/audit.operations#audit.audit.list"
+          },
+          {
+            "label": "Count audit events",
+            "path": "/http-api-reference/@voyzu-audit/audit.operations#audit.audit.count"
+          },
+          {
+            "label": "Export audit events",
+            "path": "/http-api-reference/@voyzu-audit/audit.operations#audit.audit.export"
+          },
+          {
+            "label": "Get an audit event",
+            "path": "/http-api-reference/@voyzu-audit/audit.operations#audit.audit.get"
+          }
+        ]
+      },
+      {
+        "label": "@voyzu/auth",
+        "icon": "article",
+        "path": "/http-api-reference/@voyzu-auth/auth.operations",
+        "children": [
+          {
+            "label": "Log in",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.auth.login"
+          },
+          {
+            "label": "Log out",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.auth.logout"
+          },
+          {
+            "label": "Get current session",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.auth.me"
+          },
+          {
+            "label": "Get user organization access",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.getOrganizationAccess"
+          },
+          {
+            "label": "Replace user organization access",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.replaceOrganizationAccess"
+          },
+          {
+            "label": "List",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.list"
+          },
+          {
+            "label": "Create",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.create"
+          },
+          {
+            "label": "Filter",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.filter"
+          },
+          {
+            "label": "Search",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.search"
+          },
+          {
+            "label": "Batch Get",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.batchGet"
+          },
+          {
+            "label": "Batch Create",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.batchCreate"
+          },
+          {
+            "label": "Batch Update",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.batchUpdate"
+          },
+          {
+            "label": "Batch Patch",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.batchPatch"
+          },
+          {
+            "label": "Profile",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.profile"
+          },
+          {
+            "label": "Update Profile",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.updateProfile"
+          },
+          {
+            "label": "Profile Password",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.profilePassword"
+          },
+          {
+            "label": "Get",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.get"
+          },
+          {
+            "label": "Update",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.update"
+          },
+          {
+            "label": "Patch",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.patch"
+          },
+          {
+            "label": "Delete",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.delete"
+          },
+          {
+            "label": "Activate",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.activate"
+          },
+          {
+            "label": "Deactivate",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.deactivate"
+          },
+          {
+            "label": "Change Password",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.changePassword"
+          },
+          {
+            "label": "Batch Activate",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.batchActivate"
+          },
+          {
+            "label": "Batch Deactivate",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.batchDeactivate"
+          },
+          {
+            "label": "Batch Delete",
+            "path": "/http-api-reference/@voyzu-auth/auth.operations#auth.users.batchDelete"
+          }
+        ]
+      },
+      {
+        "label": "@voyzu/localization",
+        "icon": "article",
+        "path": "/http-api-reference/@voyzu-localization/localization.operations",
+        "children": [
+          {
+            "label": "List",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.list"
+          },
+          {
+            "label": "Create",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.create"
+          },
+          {
+            "label": "Filter",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.filter"
+          },
+          {
+            "label": "Search",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.search"
+          },
+          {
+            "label": "Batch Create",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.batchCreate"
+          },
+          {
+            "label": "Batch Get",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.batchGet"
+          },
+          {
+            "label": "Batch Update",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.batchUpdate"
+          },
+          {
+            "label": "Batch Patch",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.batchPatch"
+          },
+          {
+            "label": "Batch Delete",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.batchDelete"
+          },
+          {
+            "label": "Batch Activate",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.batchActivate"
+          },
+          {
+            "label": "Batch Deactivate",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.batchDeactivate"
+          },
+          {
+            "label": "Get",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.get"
+          },
+          {
+            "label": "Update",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.update"
+          },
+          {
+            "label": "Patch",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.patch"
+          },
+          {
+            "label": "Delete",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.delete"
+          },
+          {
+            "label": "Activate",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.activate"
+          },
+          {
+            "label": "Deactivate",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.countries.deactivate"
+          },
+          {
+            "label": "List",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.list"
+          },
+          {
+            "label": "Create",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.create"
+          },
+          {
+            "label": "Filter",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.filter"
+          },
+          {
+            "label": "Search",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.search"
+          },
+          {
+            "label": "Get",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.get"
+          },
+          {
+            "label": "Update",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.update"
+          },
+          {
+            "label": "Patch",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.patch"
+          },
+          {
+            "label": "Delete",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.delete"
+          },
+          {
+            "label": "Batch Create",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.batchCreate"
+          },
+          {
+            "label": "Batch Get",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.batchGet"
+          },
+          {
+            "label": "Batch Update",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.batchUpdate"
+          },
+          {
+            "label": "Batch Patch",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.batchPatch"
+          },
+          {
+            "label": "Batch Delete",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.batchDelete"
+          },
+          {
+            "label": "Activate",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.activate"
+          },
+          {
+            "label": "Deactivate",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.deactivate"
+          },
+          {
+            "label": "Batch Activate",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.batchActivate"
+          },
+          {
+            "label": "Batch Deactivate",
+            "path": "/http-api-reference/@voyzu-localization/localization.operations#localization.currencies.batchDeactivate"
+          }
+        ]
+      },
+      {
+        "label": "@voyzu/organization",
+        "icon": "article",
+        "path": "/http-api-reference/@voyzu-organization/organization.operations",
+        "children": [
+          {
+            "label": "List organization access",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organization-access.list"
+          },
+          {
+            "label": "Replace organization access",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organization-access.replace"
+          },
+          {
+            "label": "Get Selection",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organization-switcher.getSelection"
+          },
+          {
+            "label": "Set Selection",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organization-switcher.setSelection"
+          },
+          {
+            "label": "Access Archived Organization",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organization-switcher.accessArchivedSelection"
+          },
+          {
+            "label": "Update organization Finance settings",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.updateFinance"
+          },
+          {
+            "label": "List organizations",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.list"
+          },
+          {
+            "label": "Create organization",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.create"
+          },
+          {
+            "label": "Filter organizations",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.filter"
+          },
+          {
+            "label": "Search organizations",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.search"
+          },
+          {
+            "label": "Batch create organizations",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.batchCreate"
+          },
+          {
+            "label": "Batch get organizations",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.batchGet"
+          },
+          {
+            "label": "Batch update organizations",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.batchUpdate"
+          },
+          {
+            "label": "Batch patch organizations",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.batchPatch"
+          },
+          {
+            "label": "Batch delete organizations",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.batchDelete"
+          },
+          {
+            "label": "Batch activate organizations",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.batchActivate"
+          },
+          {
+            "label": "Batch deactivate organizations",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.batchDeactivate"
+          },
+          {
+            "label": "Activate organization",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.activate"
+          },
+          {
+            "label": "Deactivate organization",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.deactivate"
+          },
+          {
+            "label": "Get organization",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.get"
+          },
+          {
+            "label": "Update organization",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.update"
+          },
+          {
+            "label": "Patch organization",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.patch"
+          },
+          {
+            "label": "Delete organization",
+            "path": "/http-api-reference/@voyzu-organization/organization.operations#organization.organizations.delete"
+          }
+        ]
+      },
+      {
+        "label": "@voyzu/package-management",
+        "icon": "article",
+        "path": "/http-api-reference/@voyzu-package-management/package-management.operations",
+        "children": [
+          {
+            "label": "List Packages",
+            "path": "/http-api-reference/@voyzu-package-management/package-management.operations#package-management.package-management.list"
+          },
+          {
+            "label": "Get Package",
+            "path": "/http-api-reference/@voyzu-package-management/package-management.operations#package-management.package-management.get"
+          },
+          {
+            "label": "Update Package Visibility",
+            "path": "/http-api-reference/@voyzu-package-management/package-management.operations#package-management.package-management.update"
+          },
+          {
+            "label": "Move Package Navigation",
+            "path": "/http-api-reference/@voyzu-package-management/package-management.operations#package-management.package-management.move"
+          },
+          {
+            "label": "Refresh Package Inventory",
+            "path": "/http-api-reference/@voyzu-package-management/package-management.operations#package-management.package-management.refresh"
+          },
+          {
+            "label": "Get Home Page",
+            "path": "/http-api-reference/@voyzu-package-management/package-management.operations#package-management.package-management.getHomePage"
+          },
+          {
+            "label": "Update Home Page",
+            "path": "/http-api-reference/@voyzu-package-management/package-management.operations#package-management.package-management.updateHomePage"
+          }
+        ]
+      },
+      {
+        "label": "@voyzu/http-api",
+        "icon": "article",
+        "path": "/http-api-reference/@voyzu-http-api/voyzu.capability",
+        "children": [
+          {
+            "label": "Generate PDF",
+            "path": "/http-api-reference/@voyzu-http-api/voyzu.capability#voyzu.capability.pdf"
+          },
+          {
+            "label": "View PDF",
+            "path": "/http-api-reference/@voyzu-http-api/voyzu.capability#voyzu.capability.pdfView"
+          },
+          {
+            "label": "Export Rows",
+            "path": "/http-api-reference/@voyzu-http-api/voyzu.capability#voyzu.capability.export"
+          }
+        ]
+      }
+    ]
+  }
+]

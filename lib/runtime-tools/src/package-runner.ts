@@ -8,12 +8,11 @@ import { existsSync } from "node:fs";
 
 type PackageModule = {
   pageRoutes: Record<string, unknown>;
-  apiDefinitions: Record<string, unknown>;
 };
 
 type PackageDefinition = {
   modules: readonly PackageModule[];
-  contracts?: { internalApi?: object };
+  contracts?: { internalApi?: object; httpApiRouting?: object; httpApiDocumentation?: object };
   install?: {
     sql?: readonly string[];
     seedSql?: readonly string[];
@@ -45,9 +44,6 @@ function validateDefinition(value: unknown): PackageDefinition {
     if (!moduleDefinition.pageRoutes || typeof moduleDefinition.pageRoutes !== "object") {
       throw new Error(`Module at index ${index} must define pageRoutes.`);
     }
-    if (!moduleDefinition.apiDefinitions || typeof moduleDefinition.apiDefinitions !== "object") {
-      throw new Error(`Module at index ${index} must define apiDefinitions.`);
-    }
   }
   for (const [key, paths] of Object.entries(definition.install ?? {})) {
     if (!["sql", "seedSql"].includes(key) || !Array.isArray(paths)) {
@@ -69,9 +65,11 @@ function validateDefinition(value: unknown): PackageDefinition {
     definition.modules.length === 0
     && !(definition.install?.sql?.length || definition.install?.seedSql?.length)
     && !definition.contracts?.internalApi
+    && !definition.contracts?.httpApiRouting
+    && !definition.contracts?.httpApiDocumentation
   ) {
     throw new Error(
-      "voyzu.package.ts must define a module, internal API contracts, or database installation files.",
+      "voyzu.package.ts must define a module, API contracts, or database installation files.",
     );
   }
   return definition as PackageDefinition;

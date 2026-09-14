@@ -1,3 +1,4 @@
+import { httpCookieDefinitions, setHttpCookie, clearHttpCookie } from "@voyzu/http-api/cookies";
 import "server-only";
 import { cookies } from "next/headers";
 import { NotFoundError } from "@voyzu/capability/errors";
@@ -31,9 +32,6 @@ export async function setActiveOrganization({ organizationId }: { organizationId
     throw new NotFoundError("Organization was not found");
   }
   const store = await cookies();
-  store.set(SELECTED_ORGANIZATION_COOKIE, String(organizationId), {
-    httpOnly: true, maxAge: SELECTED_ORGANIZATION_COOKIE_MAX_AGE_SECONDS,
-    path: "/", sameSite: "lax",
-  });
+  setHttpCookie(store, httpCookieDefinitions.selectedOrganization, String(organizationId));
   return { selectedOrganizationId: organizationId };
 }

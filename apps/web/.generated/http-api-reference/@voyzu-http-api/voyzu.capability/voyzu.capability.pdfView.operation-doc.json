@@ -1,0 +1,139 @@
+{
+  "operationId": "voyzu.capability.pdfView",
+  "method": "get",
+  "path": "/api/capability/pdf-view",
+  "summary": "View PDF",
+  "description": "Renders a printable application route as an inline PDF.",
+  "tags": [
+    "@voyzu/http-api: Platform"
+  ],
+  "requestQuerystringParams": {
+    "path": {
+      "description": "Application path to render as a PDF.",
+      "required": true,
+      "schema": {
+        "type": "string",
+        "pattern": "^/(?!/)"
+      },
+      "example": "string"
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "Generated PDF.",
+      "contentType": "application/pdf",
+      "example": "%PDF-1.7\n% … binary PDF data …"
+    },
+    "400": {
+      "description": "The printable path was not supplied.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INPUT_VALIDATION_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INPUT_VALIDATION_ERROR",
+        "message": "string"
+      }
+    },
+    "401": {
+      "description": "Authentication failed.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "UNAUTHORIZED"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "UNAUTHORIZED",
+        "message": "string"
+      }
+    },
+    "403": {
+      "description": "Access is forbidden.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "FORBIDDEN"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "FORBIDDEN",
+        "message": "string"
+      }
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    },
+    "502": {
+      "description": "The printable route failed."
+    }
+  }
+}

@@ -18,7 +18,7 @@ Open an invoice to read its customer, references, financial lines, tax, totals, 
 
 ## Source and scope
 
-Invoices are created through an API client or an integrated application and then posted by Voyzu. This application screen is for enquiry.
+Invoices are created through an HTTP API client or an integrated application and then posted by Voyzu. This application screen is for enquiry.
 
 ## Refresh and export
 

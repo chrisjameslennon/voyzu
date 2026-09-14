@@ -1,0 +1,209 @@
+{
+  "operationId": "organization.organization-access.list",
+  "method": "get",
+  "path": "/api/organization/organization-access",
+  "summary": "List organization access",
+  "description": "Lists standard users, organizations and current organization assignments.",
+  "tags": [
+    "@voyzu/organization: Platform"
+  ],
+  "responses": {
+    "200": {
+      "description": "Organization access configuration.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "users",
+          "organizations"
+        ],
+        "properties": {
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "userId",
+                "userCode",
+                "displayName",
+                "userRole",
+                "userStatus",
+                "organizationIds"
+              ],
+              "properties": {
+                "userId": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "userCode": {
+                  "type": "string"
+                },
+                "displayName": {
+                  "type": "string"
+                },
+                "userRole": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "ADMIN"
+                      ]
+                    },
+                    {
+                      "type": "string",
+                      "enum": [
+                        "STANDARD"
+                      ]
+                    }
+                  ]
+                },
+                "userStatus": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "ACTIVE"
+                      ]
+                    },
+                    {
+                      "type": "string",
+                      "enum": [
+                        "INACTIVE"
+                      ]
+                    }
+                  ]
+                },
+                "organizationIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "organizations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "code",
+                "name",
+                "status"
+              ],
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "code": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "status": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "ACTIVE"
+                      ]
+                    },
+                    {
+                      "type": "string",
+                      "enum": [
+                        "INACTIVE"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "users": [
+          {
+            "userId": 1,
+            "userCode": "string",
+            "displayName": "string",
+            "userRole": "ADMIN",
+            "userStatus": "ACTIVE",
+            "organizationIds": [
+              1
+            ]
+          }
+        ],
+        "organizations": [
+          {
+            "id": 1,
+            "code": "string",
+            "name": "string",
+            "status": "ACTIVE"
+          }
+        ]
+      }
+    },
+    "403": {
+      "description": "Access is forbidden.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "FORBIDDEN"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "FORBIDDEN",
+        "message": "string"
+      }
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

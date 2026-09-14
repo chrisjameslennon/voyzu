@@ -12,9 +12,6 @@
     "pageRootPaths": [
       "/settings/audit"
     ],
-    "apiRootPaths": [
-      "/audit"
-    ],
     "preinstalled": true,
     "settings": {
       "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
@@ -24,7 +21,7 @@
     "./package.json": "./package.json",
     "./voyzu-package": "./voyzu.package.ts",
     "./audit": "./modules/audit/module.ts",
-    "./audit/api.routes": "./modules/audit/api.routes.ts",
+    "./audit/http-api.routes": "./modules/audit/http-api.routes.ts",
     "./audit/pages.routes": "./modules/audit/pages.routes.ts",
     "./common": "./modules/common/module.ts",
     "./types": "./types/index.ts",

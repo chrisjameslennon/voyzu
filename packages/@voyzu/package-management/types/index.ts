@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 
 const NonBlankString = Type.String({ pattern: "\\S" });
 const ApplicationPath = Type.String({ pattern: "^/(?!/)" });
@@ -12,7 +12,7 @@ export const InstalledPackageResponseDto = StrictObject({
   id: Type.Integer({ minimum: 1 }), code: NonBlankString, description: Type.String(), repository: Type.String(),
   topNavigationVisible: Type.Boolean(), pageRoutesVisible: Type.Boolean(), navOrder: Type.Integer({ minimum: 0 }),
   preinstalled: Type.Boolean(), hasTopNavigation: Type.Boolean(), required: Type.Boolean(),
-  pageRootPaths: Type.Array(ApplicationPath), apiRootPaths: Type.Array(ApplicationPath),
+  pageRootPaths: Type.Array(ApplicationPath), httpApiRootPaths: Type.Array(ApplicationPath),
 });
 export type InstalledPackageResponseDto = Type.Static<typeof InstalledPackageResponseDto>;
 export const InstalledPackageUpdateRequestDto = StrictObject({ topNavigationVisible: Type.Boolean(), pageRoutesVisible: Type.Boolean() });

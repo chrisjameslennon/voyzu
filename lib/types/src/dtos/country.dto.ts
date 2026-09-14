@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 import { AuditMetadataDto, Status } from "@voyzu/types/modules/core";
 import { BusinessCode, CurrencyCode, NonBlankText } from "./constraints";
 

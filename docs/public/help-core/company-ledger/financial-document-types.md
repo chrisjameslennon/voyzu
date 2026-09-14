@@ -18,7 +18,7 @@ Open a type and use its Posting and Details views to understand the business pur
 
 ## Source and scope
 
-Document types are not created or edited on this screen. They are supplied by Voyzu's financial model and exposed to API clients and integrations.
+Document types are not created or edited on this screen. They are supplied by Voyzu's financial model and exposed to HTTP API clients and integrations.
 
 ## Refresh and export
 

@@ -1,5 +1,6 @@
 export const pageRoutes = {
   list: {
+    httpApiDocumentationGroupId: "audit.operations",
     id: "voyzu.audit.page.list",
     path: "/settings/audit",
     loadPage: () =>
@@ -9,6 +10,7 @@ export const pageRoutes = {
     auth: { required: true, minRole: "ADMIN" },
   },
   detail: {
+    httpApiDocumentationGroupId: "audit.operations",
     id: "voyzu.audit.page.detail",
     path: "/settings/audit/[id]",
     loadPage: () =>

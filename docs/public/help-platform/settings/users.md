@@ -4,17 +4,17 @@ Users manages platform identities, authentication channels, roles and status. Cr
 
 ## Signing in
 
-A user has a unique code and may also have a unique email address. UI users can sign in with either identifier and their password. API authentication always uses the user code, not the email address.
+A user has a unique code and may also have a unique email address. UI users can sign in with either identifier and their password. HTTP API authentication always uses the user code, not the email address.
 
 Access mode controls where the identity can be used:
 
 | Access mode | Use                                  |
 | ----------- | ------------------------------------ |
 | UI          | Browser sign-in only.                |
-| API         | API authentication only.             |
-| UI and API  | Both browser and API authentication. |
+| HTTP API         | HTTP API authentication only.             |
+| UI and HTTP API  | Both browser and HTTP API authentication. |
 
-UI passwords require at least 8 characters. Identities with API access require at least 16 characters.
+UI passwords require at least 8 characters. Identities with HTTP API access require at least 16 characters.
 
 ## Roles
 
@@ -37,17 +37,17 @@ Search or filter by role, access mode, and status. Select rows for Activate, Dea
 
 Select **Add User**. Enter a stable code, optional email, display name, initial password, role, access mode and status.
 
-Choose **UI**, **API**, or **UI and API** deliberately. UI passwords require at least 8 characters; identities with API access require at least 16. Voyzu sends no email, invitation, or reset message, so supply the password manually through a secure channel.
+Choose **UI**, **HTTP API**, or **UI and HTTP API** deliberately. UI passwords require at least 8 characters; identities with HTTP API access require at least 16. Voyzu sends no email, invitation, or reset message, so supply the password manually through a secure channel.
 
 An email address is an optional UI login identifier, not a recovery mechanism. Voyzu does not send invitations, verification messages, or password-reset links.
 
 ## Make changes
 
-Open a user to update display name, email, role, access mode, or administrator-only options. Use **Change Password** to set a replacement credential. Changing an email changes an optional UI login identifier; API login always uses the user code.
+Open a user to update display name, email, role, access mode, or administrator-only options. Use **Change Password** to set a replacement credential. Changing an email changes an optional UI login identifier; HTTP API login always uses the user code.
 
 ## Change status
 
-Deactivate access that is no longer required. This blocks UI and API authentication without removing the identity or audit history. Activate the user to restore access.
+Deactivate access that is no longer required. This blocks UI and HTTP API authentication without removing the identity or audit history. Activate the user to restore access.
 
 ## Delete
 
@@ -56,7 +56,7 @@ Use deletion only for an identity created in error with no meaningful history. P
 ## Good practice
 
 * Give every person and integration its own identity.
-* Use API-only identities for integrations where practical.
+* Use HTTP API-only identities for integrations where practical.
 * Grant standard users only the business-package access they need.
 * Reserve the admin role for platform administration.
 * Share passwords outside Voyzu through a secure channel.

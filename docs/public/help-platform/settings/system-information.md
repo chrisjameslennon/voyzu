@@ -1,6 +1,6 @@
 # System information
 
-System Information is a read-only diagnostics page for administrators. It is rendered on the server from the current Voyzu process and database connection; it does not require a separate API.
+System Information is a read-only diagnostics page for administrators. It is rendered on the server from the current Voyzu process and database connection; it does not require a separate HTTP API.
 
 ## Operating system
 

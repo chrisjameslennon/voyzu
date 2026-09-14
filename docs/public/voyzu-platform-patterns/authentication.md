@@ -1,10 +1,10 @@
 # Authentication
 
-Voyzu provides one request identity model for the web application and external API callers. Packages use the authenticated user supplied by the platform; they do not implement their own login state, cookies, Basic authentication parsing, or request identity context.
+Voyzu provides one request identity model for the web application and external HTTP API callers. Packages use the authenticated user supplied by the platform; they do not implement their own login state, cookies, Basic authentication parsing, or request identity context.
 
-## API authentication
+## HTTP API authentication
 
-External API calls use HTTP Basic authentication. The username is the Voyzu user code and the password is that user's password. The user must be active and their access mode must allow API access.
+External HTTP API calls use HTTP Basic authentication. The username is the Voyzu user code and the password is that user's password. The user must be active and their access mode must allow HTTP API access.
 
 Construct the credentials as one exact text value:
 
@@ -44,11 +44,11 @@ Invalid or inactive credentials return `401 Unauthorized`. If an `Authorization`
 
 ## Application authentication
 
-The same API endpoint may receive an external request or a request from the Voyzu web application. External callers supply Basic credentials. When no `Authorization` header is present, Voyzu attempts to authenticate the signed-in browser through its session cookie.
+The same HTTP API endpoint may receive an external request or a request from the Voyzu web application. External callers supply Basic credentials. When no `Authorization` header is present, Voyzu attempts to authenticate the signed-in browser through its session cookie.
 
 This allows browser code to call Voyzu APIs normally after the user signs in, while scripts, integrations, test clients, and other external systems use Basic authentication. An endpoint requiring a user returns `401 Unauthorized` if neither method establishes an identity.
 
-The shared handler used by each generated API route installs the authenticated user in the request context before invoking a package handler. Services can therefore use the same current-user and audit helpers for application and API requests:
+The shared handler used by each generated HTTP API route installs the authenticated user in the request context before invoking a package handler. Services can therefore use the same current-user and audit helpers for application and HTTP API requests:
 
 ```ts
 import { getCurrentUser } from "@voyzu/auth/users/server";
@@ -59,7 +59,7 @@ if (!user) {
 }
 ```
 
-API requests are recorded with the API actor type. Packages must not parse authentication headers or construct their own request identity context.
+HTTP API requests are recorded with the HTTP API actor type. Packages must not parse authentication headers or construct their own request identity context.
 
 ## UI sessions
 
@@ -100,13 +100,13 @@ For a protected page, the application surface:
 - preserves the intended destination in the `next` query parameter; and
 - renders access denied when an authenticated user does not meet the minimum role.
 
-Page-route protection controls entry to the UI. API handlers and services must still enforce their own authorization and business rules. Never treat the presence of a session cookie, an API credential, a route parameter, or a request value as sufficient permission to access a record.
+Page-route protection controls entry to the UI. HTTP API handlers and services must still enforce their own authorization and business rules. Never treat the presence of a session cookie, an HTTP API credential, a route parameter, or a request value as sufficient permission to access a record.
 
 ## Package rules
 
 - Use the platform route `auth` declaration for protected pages.
 - Use `getCurrentUser()` when server-side behavior needs the current identity.
-- Allow the platform API router to establish request identity.
+- Allow the platform HTTP API router to establish request identity.
 - Keep authentication separate from organization selection and other business context.
 - Apply service-level authorization independently of UI visibility.
 - Do not decode `voyzu_auth`, parse Basic authentication, or create package-specific authentication cookies.

@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "../api";
+import { StrictObject } from "../http-api";
 
 export const ErrorResponseBaseDto = StrictObject({ code: Type.String(), message: Type.String() });
 export type ErrorResponseBaseDto = Type.Static<typeof ErrorResponseBaseDto>;

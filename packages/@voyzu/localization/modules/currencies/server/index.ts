@@ -16,7 +16,7 @@ export {
   handlePatch,
   handleSearch,
   handleUpdate,
-} from "./api/currency.http.handlers";
+} from "./http-api/currency.http.handlers";
 export { CurrenciesListPage } from "./pages/CurrenciesListPage";
 export { CurrencyDetailPage } from "./pages/CurrencyDetailPage";
 export {

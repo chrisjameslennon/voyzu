@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "./api";
+import { StrictObject } from "./http-api";
 import { ActorType, AuditUserDto } from "./modules/core";
 
 /** Platform identity/access boundary; Auth owns the implementation. */

@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "../api";
+import { StrictObject } from "../http-api";
 
 export const Pagination = StrictObject({
   page: Type.Integer({ minimum: 1 }),

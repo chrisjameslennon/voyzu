@@ -1,8 +1,7 @@
 export { handleLogin, handleLogout, handleMe } from "./auth.http.handlers";
-export { withApiBasicAuthContext } from "./api-basic-auth";
+export { withHttpApiBasicAuthContext } from "./http-api-basic-auth";
 export {
   AUTH_COOKIE_NAME,
-  authCookieOptions,
   createAuthSessionToken,
   verifyAuthSessionToken,
   type AuthSession,

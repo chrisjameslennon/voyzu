@@ -1,5 +1,6 @@
 export const pageRoutes = {
   login: {
+    httpApiDocumentationGroupId: "auth.operations",
     id: "voyzu.auth.page.login",
     path: "/login",
     loadPage: () =>

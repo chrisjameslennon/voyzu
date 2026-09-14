@@ -1,3 +1,4 @@
+import { httpApiRouting, httpApiDocumentation } from "./http-api.contracts";
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
 
 import { install } from "./install/manifest";
@@ -7,6 +8,8 @@ import { AuditDefinition } from "./contracts/audit.definition";
 
 export const voyzuAuditPackage = {
   contracts: {
+    httpApiRouting,
+    httpApiDocumentation,
     internalApi: {
       implements: { ...auditModule.implements },
       defines: { "@core/audit": AuditDefinition },

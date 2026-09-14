@@ -14,17 +14,17 @@ The screen shows your code, display name, email, and role. The code and role are
 
 Edit **Display Name** or **Email**, then select **Save**. Email is optional and can be used with the password to sign in to the UI. Voyzu does not verify the address or send email.
 
-Keep the email unique. Changing it does not change the user code, and API authentication continues to use the code.
+Keep the email unique. Changing it does not change the user code, and HTTP API authentication continues to use the code.
 
 ## Change password
 
-Select **Change Password**, enter and confirm the replacement, then save. UI-only users require at least 8 characters; users with API access require at least 16.
+Select **Change Password**, enter and confirm the replacement, then save. UI-only users require at least 8 characters; users with HTTP API access require at least 16.
 
 Voyzu has no password-reset email. If you cannot sign in, an administrator must set a replacement password and provide it outside Voyzu through a secure channel.
 
 ## Access changes
 
-You cannot change your role, UI/API access mode, or status from this screen. An administrator manages those settings from Users. Installed business packages manage their own scope assignments separately.
+You cannot change your role, UI/HTTP API access mode, or status from this screen. An administrator manages those settings from Users. Installed business packages manage their own scope assignments separately.
 
 ## See also
 

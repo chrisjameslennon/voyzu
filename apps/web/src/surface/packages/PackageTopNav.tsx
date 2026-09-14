@@ -3,7 +3,7 @@ import type { VoyzuComposedSurfaceDomain } from "@voyzu/ui-surface/types";
 import { managedPackageDomains } from "./managedPackageDomains";
 import { PackageTopNavClient } from "./PackageTopNavClient";
 
-const IMPLEMENTER_APPLICATIONS = new Set(["@voyzu/api-reference", "@voyzu/ui-reference"]);
+const IMPLEMENTER_APPLICATIONS = new Set(["@voyzu/http-api-reference", "@voyzu/ui-reference"]);
 
 export async function PackageTopNav({
   domains,

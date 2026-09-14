@@ -6,14 +6,14 @@ import styles from "@voyzu/ui-surface/css-modules/surface.module.css";
 import { useCurrentUserAccess } from "../common/useCurrentUserAccess";
 
 interface ImplementerMenuProps {
-  pageApiHref?: string;
-  apiReferenceVisible: boolean;
+  pageHttpApiHref?: string;
+  httpApiReferenceVisible: boolean;
   uiReferenceVisible: boolean;
 }
 
 export function ImplementerMenu({
-  pageApiHref,
-  apiReferenceVisible,
+  pageHttpApiHref,
+  httpApiReferenceVisible,
   uiReferenceVisible,
 }: ImplementerMenuProps) {
   const router = useRouter();
@@ -24,21 +24,21 @@ export function ImplementerMenu({
   const items: DropdownMenuItem[] = [
     {
       value: "page-api",
-      label: "Show API for this page",
+      label: "Show HTTP API for this page",
       icon: "api",
-      disabled: !pageApiHref,
+      disabled: !pageHttpApiHref,
       onSelect: () => {
-        if (pageApiHref) window.open(pageApiHref, "_blank", "noopener,noreferrer");
+        if (pageHttpApiHref) window.open(pageHttpApiHref, "_blank", "noopener,noreferrer");
       },
     },
   ];
 
-  if (apiReferenceVisible) {
+  if (httpApiReferenceVisible) {
     items.push({
-      value: "api-reference",
-      label: "API Reference Application",
+      value: "http-api-reference",
+      label: "HTTP API Reference Application",
       icon: "menu_book",
-      onSelect: () => router.push("/api-reference"),
+      onSelect: () => router.push("/http-api-reference"),
     });
   }
 

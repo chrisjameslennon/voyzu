@@ -40,12 +40,12 @@ function findMostSpecificActivePath(groups: NavGroup[], currentPath: string): st
 function collectActiveAncestors(items: NavItem[], currentPath: string, parents: string[] = []): string[] {
   for (const item of items) {
     if (isNavItemActive(item, currentPath)) {
-      return item.children?.length ? [...parents, item.label] : parents;
+      return item.children?.length ? [...parents, item.path] : parents;
     }
     if (item.children?.length) {
-      const found = collectActiveAncestors(item.children, currentPath, [...parents, item.label]);
+      const found = collectActiveAncestors(item.children, currentPath, [...parents, item.path]);
       if (found.length || item.children.some(c => isNavItemActive(c, currentPath))) {
-        return found.length ? found : [...parents, item.label];
+        return found.length ? found : [...parents, item.path];
       }
     }
   }
@@ -159,7 +159,7 @@ const LeftNav: React.FC<LeftNavProps> = ({
 
   const handleNavItemClick = (item: NavItem, depth: number) => {
     if (item.children && item.children.length > 0) {
-      toggleExpand(item.label, depth);
+      toggleExpand(item.path, depth);
     } else {
       persistScrollTop();
       onNavigate(item.path);
@@ -170,7 +170,7 @@ const LeftNav: React.FC<LeftNavProps> = ({
   const renderNavItem = (item: NavItem, depth = 0) => {
     const hasChildren = !!item.children && item.children.length > 0;
     const hasActiveChild = hasActiveDescendant(item.children, currentPath);
-    const isExpanded = expandedItems.includes(item.label) || (!autoClose && hasActiveChild);
+    const isExpanded = expandedItems.includes(item.path) || (!autoClose && hasActiveChild);
     const isActive = item.path === activePath;
     const childIndentStyle = !isCollapsed && depth > 0
       ? { paddingLeft: `${0.75 + depth * 1.25}rem` }
@@ -224,7 +224,7 @@ const LeftNav: React.FC<LeftNavProps> = ({
           </div>
         )}
 
-        {isCollapsed && depth === 0 && hasChildren && openCollapsedMenu === item.label && (
+        {isCollapsed && depth === 0 && hasChildren && openCollapsedMenu === item.path && (
           <div className={styles.floatingMenu}>
             <div className={styles.floatingHeader}>
               <span className={styles.floatingTitle}>{item.label}</span>
@@ -244,7 +244,7 @@ const LeftNav: React.FC<LeftNavProps> = ({
 
   const renderFloatingItem = (item: NavItem, depth: number): React.ReactNode => {
     const hasChildren = !!item.children && item.children.length > 0;
-    const floatingKey = `__floating__${item.label}`;
+    const floatingKey = `__floating__${item.path}`;
     const isFloatingExpanded = expandedItems.includes(floatingKey) || hasActiveDescendant(item.children, currentPath);
     const isChildActive = isNavItemActive(item, currentPath);
 

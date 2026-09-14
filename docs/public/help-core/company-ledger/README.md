@@ -6,7 +6,7 @@ Company Ledger contains the financial settings, immutable records, enquiries, an
 
 * [What Is a Financial Ledger?](../../voyzu-core-concepts/what-is-a-financial-ledger.md) explains the general ledger, subledgers, immutability, and reversals.
 * [Organizations and Companies](../../voyzu-core-concepts/organizations-and-companies.md) explains why each company has separate financial records.
-* [Financial Document Processing](../../voyzu-core-concepts/financial-document-processing.md) explains how API or client documents become ledger entries.
+* [Financial Document Processing](../../voyzu-core-concepts/financial-document-processing.md) explains how HTTP API or client documents become ledger entries.
 * [Control Accounts](../../voyzu-core-concepts/control-accounts.md), [Inventory](../../voyzu-core-concepts/inventory.md), and [Tax](../../voyzu-core-concepts/tax.md) cover specialist posting areas.
 
 ## Select the company
@@ -19,7 +19,7 @@ General ledger accounts, reporting categories, control accounts, bank/cash accou
 
 ## Recorded activity
 
-Journals and AP, AR, inventory, and tax ledger pages are read-only financial history. Source documents normally arrive through an API client or integration. Correct an error with a supported correcting document or reversal, never by deleting a posted record.
+Journals and AP, AR, inventory, and tax ledger pages are read-only financial history. Source documents normally arrive through an HTTP API client or integration. Correct an error with a supported correcting document or reversal, never by deleting a posted record.
 
 ## Reports and review
 

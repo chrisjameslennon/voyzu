@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 import { UserAccessMode, UserRole, UserStatus } from "./user.response.dto";
 import { UserCode, UserDisplayName, UserEmail } from "./user.fields";
 

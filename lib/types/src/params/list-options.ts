@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "../api";
+import { StrictObject } from "../http-api";
 import { OrderBy } from "./list-order-by";
 import { Pagination } from "./list-pagination";
 

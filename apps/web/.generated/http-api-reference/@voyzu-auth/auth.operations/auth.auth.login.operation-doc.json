@@ -1,0 +1,208 @@
+{
+  "operationId": "auth.auth.login",
+  "method": "post",
+  "path": "/api/auth/session",
+  "summary": "Log in",
+  "description": "Authenticates a UI user and creates an authenticated session cookie.",
+  "tags": [
+    "@voyzu/auth: Platform"
+  ],
+  "requestBody": {
+    "required": true,
+    "contentType": "application/json",
+    "schema": {
+      "type": "object",
+      "required": [
+        "identifier",
+        "password"
+      ],
+      "properties": {
+        "identifier": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "Non-blank user code, email address, or other configured login identifier."
+        },
+        "password": {
+          "type": "string",
+          "minLength": 1,
+          "description": "User password."
+        }
+      },
+      "additionalProperties": false
+    },
+    "example": {
+      "identifier": "string",
+      "password": "string"
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "The authenticated user.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "user"
+        ],
+        "properties": {
+          "user": {
+            "type": "object",
+            "required": [
+              "code",
+              "displayName",
+              "role"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "pattern": "\\S",
+                "description": "User business code."
+              },
+              "displayName": {
+                "type": "string",
+                "pattern": "\\S",
+                "description": "User display name."
+              },
+              "role": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "ADMIN"
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "STANDARD"
+                    ]
+                  }
+                ]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "user": {
+          "code": "string",
+          "displayName": "string",
+          "role": "ADMIN"
+        }
+      },
+      "cookies": [
+        "voyzu_auth"
+      ]
+    },
+    "400": {
+      "description": "Validation failed.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INPUT_VALIDATION_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INPUT_VALIDATION_ERROR",
+        "message": "string"
+      }
+    },
+    "401": {
+      "description": "Login credentials were invalid.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "UNAUTHORIZED"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "UNAUTHORIZED",
+        "message": "string"
+      }
+    },
+    "403": {
+      "description": "Access is forbidden.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "FORBIDDEN"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "FORBIDDEN",
+        "message": "string"
+      }
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import { httpApiRouting, httpApiDocumentation } from "./http-api.contracts";
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
 
 import { install } from "./install/manifest";
@@ -8,6 +9,8 @@ import { CurrencyDefinition } from "./contracts/currency.definition";
 
 export const voyzuLocalizationPackage = {
   contracts: {
+    httpApiRouting,
+    httpApiDocumentation,
     internalApi: {
       implements: { ...countriesModule.implements, ...currenciesModule.implements },
       defines: {

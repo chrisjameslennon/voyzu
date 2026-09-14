@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "../../../../lib/types/src/api";
+import { StrictObject } from "../../../../lib/types/src/http-api";
 import { AuditMetadataDto } from "../../../../lib/types/src/modules/core";
 
 export const Id = Type.Integer({ minimum: 1 });

@@ -50,8 +50,8 @@ const ROLE_OPTIONS = [
 
 const ACCESS_MODE_OPTIONS = [
   { value: "UI", label: "UI" },
-  { value: "API", label: "API" },
-  { value: "UI_AND_API", label: "UI and API" },
+  { value: "API", label: "HTTP API" },
+  { value: "UI_AND_API", label: "UI and HTTP API" },
 ];
 
 const STATUS_OPTIONS = [
@@ -239,7 +239,7 @@ export function UserFormModal({ isOpen, title, initial, onClose, onSubmit }: Pro
               />
               <span className={typography.fieldHelp}>
                 {value.accessMode === "API" || value.accessMode === "UI_AND_API"
-                  ? "API users require a password of at least 16 characters."
+                  ? "HTTP API users require a password of at least 16 characters."
                   : "UI users require a password of at least 8 characters."}
               </span>
             </label>

@@ -74,6 +74,12 @@ export class InstalledPackageRepo {
       AND NOT EXISTS (SELECT 1 FROM installed_packages WHERE code = '@voyzu/organization')`);
   }
 
+  migrateHttpApiReferencePackage() {
+    return this.db.query(`UPDATE installed_packages SET code = '@voyzu/http-api-reference'
+      WHERE code = '@voyzu/api-reference'
+      AND NOT EXISTS (SELECT 1 FROM installed_packages WHERE code = '@voyzu/http-api-reference')`);
+  }
+
   upsertDiscovered(code: string, description: string, navOrder: number) {
     return this.db.query(`INSERT INTO installed_packages (code, description, nav_order)
          VALUES ($1, $2, $3)

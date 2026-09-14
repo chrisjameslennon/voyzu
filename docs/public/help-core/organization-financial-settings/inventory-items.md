@@ -20,7 +20,7 @@ When a company is created, organization items and categories are copied into tha
 
 ## Making changes
 
-This application screen is for inspection. Item definitions are supplied through the supported setup or API process. Never edit a derived quantity or book value directly; record the appropriate inventory financial document so the ledger produces the new balance.
+This application screen is for inspection. Item definitions are supplied through the supported setup or HTTP API process. Never edit a derived quantity or book value directly; record the appropriate inventory financial document so the ledger produces the new balance.
 
 ## See also
 

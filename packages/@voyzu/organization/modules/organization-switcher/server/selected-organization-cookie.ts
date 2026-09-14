@@ -1,10 +1,11 @@
-export const SELECTED_ORGANIZATION_COOKIE = "voyzuSelectedOrganizationId";
+import { httpCookieDefinitions } from "@voyzu/http-api/cookies";
+export const SELECTED_ORGANIZATION_COOKIE = httpCookieDefinitions.selectedOrganization.name;
 
-export const SELECTED_ORGANIZATION_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
+export const SELECTED_ORGANIZATION_COOKIE_MAX_AGE_SECONDS = httpCookieDefinitions.selectedOrganization.maxAgeSeconds;
 
 export function parseSelectedOrganizationId(value: string | null | undefined): number | null {
-  if (!value) return null;
+  if (!value || !/^[1-9][0-9]*$/.test(value)) return null;
 
-  const parsed = Number.parseInt(value, 10);
+  const parsed = Number(value);
   return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : null;
 }

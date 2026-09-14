@@ -12,8 +12,8 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@voyzu/api": "*",
-    "@voyzu/api-reference": "*",
+    "@voyzu/http-api": "*",
+    "@voyzu/http-api-reference": "*",
     "@voyzu/auth": "*",
     "@voyzu/audit": "*",
     "@voyzu/localization": "*",

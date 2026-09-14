@@ -1,0 +1,45 @@
+{
+  "groupId": "package-management.operations",
+  "title": "@voyzu/package-management",
+  "description": "Platform operations provided by @voyzu/package-management.",
+  "sectionId": "package-management.platform",
+  "sectionTitle": "Platform",
+  "sectionDescription": "Core Voyzu platform operations.",
+  "operations": [
+    {
+      "id": "package-management.package-management.list",
+      "file": "package-management.package-management.list.operation-doc.json",
+      "summary": "List Packages"
+    },
+    {
+      "id": "package-management.package-management.get",
+      "file": "package-management.package-management.get.operation-doc.json",
+      "summary": "Get Package"
+    },
+    {
+      "id": "package-management.package-management.update",
+      "file": "package-management.package-management.update.operation-doc.json",
+      "summary": "Update Package Visibility"
+    },
+    {
+      "id": "package-management.package-management.move",
+      "file": "package-management.package-management.move.operation-doc.json",
+      "summary": "Move Package Navigation"
+    },
+    {
+      "id": "package-management.package-management.refresh",
+      "file": "package-management.package-management.refresh.operation-doc.json",
+      "summary": "Refresh Package Inventory"
+    },
+    {
+      "id": "package-management.package-management.getHomePage",
+      "file": "package-management.package-management.getHomePage.operation-doc.json",
+      "summary": "Get Home Page"
+    },
+    {
+      "id": "package-management.package-management.updateHomePage",
+      "file": "package-management.package-management.updateHomePage.operation-doc.json",
+      "summary": "Update Home Page"
+    }
+  ]
+}

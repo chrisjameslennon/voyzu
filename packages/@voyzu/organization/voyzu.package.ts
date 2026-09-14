@@ -1,3 +1,4 @@
+import { httpApiRouting, httpApiDocumentation } from "./http-api.contracts";
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
 
 import { organizationsModule } from "./modules/organizations/module";
@@ -15,6 +16,8 @@ export const organizationModules = [
 
 export const organizationPackage = {
   contracts: {
+    httpApiRouting,
+    httpApiDocumentation,
     internalApi: {
       implements: { ...organizationsModule.implements, ...organizationAccessModule.implements, ...organizationSwitcherModule.implements, ...documentLinksModule.implements },
       },

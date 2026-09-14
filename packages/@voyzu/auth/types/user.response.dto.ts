@@ -1,10 +1,11 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 import { AuditMetadataDto } from "@voyzu/types/modules/core";
 import { PositiveId, UserCode, UserDisplayName, UserEmail } from "./user.fields";
 
 export const UserRole = Type.Union([Type.Literal("ADMIN"), Type.Literal("STANDARD")]);
 export type UserRole = Type.Static<typeof UserRole>;
+// Persisted access-mode codes remain stable; user-facing labels say HTTP API.
 export const UserAccessMode = Type.Union([Type.Literal("UI"), Type.Literal("API"), Type.Literal("UI_AND_API")]);
 export type UserAccessMode = Type.Static<typeof UserAccessMode>;
 export const UserStatus = Type.Union([Type.Literal("ACTIVE"), Type.Literal("INACTIVE")]);

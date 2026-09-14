@@ -1,0 +1,30 @@
+{
+  "groupId": "audit.operations",
+  "title": "@voyzu/audit",
+  "description": "Platform operations provided by @voyzu/audit.",
+  "sectionId": "audit.platform",
+  "sectionTitle": "Platform",
+  "sectionDescription": "Core Voyzu platform operations.",
+  "operations": [
+    {
+      "id": "audit.audit.list",
+      "file": "audit.audit.list.operation-doc.json",
+      "summary": "List audit events"
+    },
+    {
+      "id": "audit.audit.count",
+      "file": "audit.audit.count.operation-doc.json",
+      "summary": "Count audit events"
+    },
+    {
+      "id": "audit.audit.export",
+      "file": "audit.audit.export.operation-doc.json",
+      "summary": "Export audit events"
+    },
+    {
+      "id": "audit.audit.get",
+      "file": "audit.audit.get.operation-doc.json",
+      "summary": "Get an audit event"
+    }
+  ]
+}

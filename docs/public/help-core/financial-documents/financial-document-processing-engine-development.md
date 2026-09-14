@@ -1,6 +1,6 @@
 # Add a Financial Document Processing Engine
 
-Voyzu includes a number of Financial Document Processing endpoints in the built-in [API Reference](../api-reference.md). Developing a new financial document processing engine should follow the established pattern and conventions.
+Voyzu includes a number of Financial Document Processing endpoints in the built-in [HTTP API Reference](../http-api-reference.md). Developing a new financial document processing engine should follow the established pattern and conventions.
 
 ## Naming conventions
 

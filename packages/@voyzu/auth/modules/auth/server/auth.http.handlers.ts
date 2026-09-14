@@ -1,3 +1,4 @@
+import { httpCookieDefinitions, setHttpCookie, clearHttpCookie } from "@voyzu/http-api/cookies";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { ok, serverError, unauthorizedError } from "@voyzu/capability/http";
@@ -6,7 +7,6 @@ import type { AuthLoginRequestDto } from "@voyzu/auth/types";
 import { authenticateUser } from "./auth.service";
 import {
   AUTH_COOKIE_NAME,
-  authCookieOptions,
   createAuthSessionToken,
   verifyAuthSessionToken,
 } from "./session";
@@ -30,7 +30,7 @@ export async function handleLogin(request: NextRequest): Promise<NextResponse> {
       role: user.role,
     });
     const response = ok({ user: toSafeUser(user) });
-    response.cookies.set(AUTH_COOKIE_NAME, token, authCookieOptions);
+    setHttpCookie(response.cookies, httpCookieDefinitions.authentication, token);
     return response;
   } catch (error) {
     if (error instanceof UnauthorizedError) return unauthorizedError(error.message);
@@ -40,10 +40,7 @@ export async function handleLogin(request: NextRequest): Promise<NextResponse> {
 
 export async function handleLogout(): Promise<NextResponse> {
   const response = ok({ authenticated: false });
-  response.cookies.set(AUTH_COOKIE_NAME, "", {
-    ...authCookieOptions,
-    maxAge: 0,
-  });
+  clearHttpCookie(response.cookies, httpCookieDefinitions.authentication);
   return response;
 }
 

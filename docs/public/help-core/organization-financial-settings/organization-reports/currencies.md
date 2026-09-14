@@ -19,7 +19,7 @@ Use the report to confirm the currency identifiers and symbols available for com
 
 ## Using the report
 
-Check codes carefully when reconciling an API client or integration. Refresh after reference-data changes, then view or download the PDF.
+Check codes carefully when reconciling an HTTP API client or integration. Refresh after reference-data changes, then view or download the PDF.
 
 ## See also
 

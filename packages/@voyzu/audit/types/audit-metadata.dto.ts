@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 import { ActorType } from "../../../../lib/types/src/modules/core/enums";
 
 export const AuditUserDto = StrictObject({

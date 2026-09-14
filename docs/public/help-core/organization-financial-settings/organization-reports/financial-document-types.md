@@ -15,7 +15,7 @@ Each row shows:
 * Primary supporting ledger
 * Status
 
-Use the report to identify which document codes an API client can submit and the supporting ledger principally affected by each type. It does not show the complete posting definition or account roles.
+Use the report to identify which document codes an HTTP API client can submit and the supporting ledger principally affected by each type. It does not show the complete posting definition or account roles.
 
 ## Using the report
 

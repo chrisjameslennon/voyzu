@@ -1,5 +1,7 @@
 # Develop a new package
 
+HTTP API registration uses `contracts.httpApiRouting` (roots and routes keyed by stable ID) and `contracts.httpApiDocumentation` (sections, groups and operation descriptions). Every route needs exactly one documentation entry. Section titles become package-qualified OpenAPI tags; route IDs become operation IDs. See the [HTTP API contract](../platform-contracts/http-api-contract.md) for the complete example. Module exports alone do not register HTTP routes.
+
 Voyzu business functionality is delivered through packages. A package owns its
 identity, lifecycle resources, public contracts, and one or more modules. Each
 module represents a coherent capability with its own pages, APIs, commands,
@@ -88,7 +90,6 @@ dependencies, and exposes its public entry points.
     "allowInstall": true,
     "dependencies": [],
     "pageRootPaths": ["/customer-orders"],
-    "apiRootPaths": ["/customer-orders"],
     "settings": {
       "helpBaseUrl": "https://docs.example.com/"
     }
@@ -110,9 +111,9 @@ dependencies, and exposes its public entry points.
       "types": "./modules/orders/pages.routes.ts",
       "import": "./modules/orders/pages.routes.ts"
     },
-    "./orders/api.routes": {
-      "types": "./modules/orders/api.routes.ts",
-      "import": "./modules/orders/api.routes.ts"
+    "./orders/http-api.routes": {
+      "types": "./modules/orders/http-api.routes.ts",
+      "import": "./modules/orders/http-api.routes.ts"
     },
     "./orders/commands": {
       "types": "./modules/orders/commands.ts",
@@ -157,7 +158,7 @@ in the package's top-level `types/` folder and export them through
 ```ts
 // types/order.dto.ts
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 
 export const OrderCreateRequestDto = StrictObject({
   code: Type.String({ pattern: "^[A-Z0-9][A-Z0-9_-]*$", maxLength: 30 }),
@@ -176,7 +177,7 @@ export const OrderResponseDto = StrictObject({
 export type OrderResponseDto = Type.Static<typeof OrderResponseDto>;
 ```
 
-The Voyzu API router validates declared request and response schemas at the HTTP
+The Voyzu HTTP API router validates declared request and response schemas at the HTTP
 perimeter. Keep validators under `server/lib` for business rules, such as
 whether an order can be cancelled; do not repeat DTO shape validation there.
 
@@ -233,7 +234,7 @@ modules/orders/
 │  ├─ pages/                # Server-rendered page components
 │  └─ index.ts              # Controlled server entry point
 ├─ types/                   # Optional module-private schemas
-├─ api.routes.ts
+├─ http-api.routes.ts
 ├─ module.ts
 ├─ commands.ts
 └─ pages.routes.ts
@@ -251,13 +252,12 @@ Do not add a module-root `index.ts` barrel. Import the module manifest from
 // modules/orders/module.ts
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
-import { apiDefinitions } from "./api.routes";
 import { commands } from "./commands";
 import { pageRoutes } from "./pages.routes";
 
 export const ordersModule = {
   pageRoutes,
-  apiDefinitions,
+  
   commands,
 } as const satisfies VoyzuPackageModuleDefinition;
 
@@ -265,9 +265,7 @@ export default ordersModule;
 ```
 
 This complete module manifest is registered by `voyzu.package.ts`, but the
-application composer imports the exported sibling surfaces directly. Use empty
-objects for `pageRoutes` or `apiDefinitions` when the module does not provide
-that kind of route.
+application composer imports page exports and package HTTP API contracts. Use `pageRoutes: {}` for a module without pages; modules do not register HTTP routes.
 
 ### Register page routes
 
@@ -306,13 +304,13 @@ root declared by `voyzu.pageRootPaths`. Keep the route manifest lightweight:
 `loadPage` must dynamically import the specific page module rather than
 statically importing a page or server barrel.
 
-### Register API routes
+### Register HTTP API routes
 
-`api.routes.ts` declares transport, documentation, request schemas, response
+`http-api.routes.ts` declares transport, documentation, request schemas, response
 schemas, and lazy typed handler loaders together:
 
 ```ts
-// modules/orders/api.routes.ts
+// modules/orders/http-api.routes.ts
 import {
   InputValidationErrorResponseDto,
   InternalServerErrorResponseDto,
@@ -320,15 +318,15 @@ import {
 import Type from "typebox";
 
 import { OrderCreateRequestDto, OrderResponseDto } from "../../types";
-export const apiDefinitions = {
-  list: {
+export const httpApiRoutes = {
+  "acme.example.list": {
     method: "GET",
     path: "/customer-orders",
-    loadHandler: () => import("./server/api/order.http.handlers")
+    loadHandler: () => import("./server/http-api/order.http.handlers")
       .then((module) => module.handleList),
     summary: "List customer orders",
-    description: "Lists customer orders.",
-    tags: ["Customer Orders"],
+    
+    
     responses: {
       "200": {
         description: "Customer orders.",
@@ -340,18 +338,18 @@ export const apiDefinitions = {
       },
     },
   },
-  create: {
+  "acme.example.create": {
     method: "POST",
     path: "/customer-orders",
-    loadHandler: () => import("./server/api/order.http.handlers")
+    loadHandler: () => import("./server/http-api/order.http.handlers")
       .then((module) => module.handleCreate),
     request: {
       contentType: "application/json",
       body: OrderCreateRequestDto,
     },
     summary: "Create a customer order",
-    description: "Creates a customer order.",
-    tags: ["Customer Orders"],
+    
+    
     responses: {
       "201": {
         description: "The created customer order.",
@@ -370,8 +368,8 @@ export const apiDefinitions = {
 } as const;
 ```
 
-API paths are relative to Voyzu's `/api` base and must remain within a root
-declared by `voyzu.apiRootPaths`. JSON is the default content type when one is
+HTTP API paths are relative to Voyzu's `/api` base and must remain within a root
+declared by `contracts.httpApiRouting.roots`. JSON is the default content type when one is
 not declared. Declare non-JSON content such as `application/pdf` or `text/csv`
 explicitly. A declared request body retains the current required-body behavior.
 Declare every expected success and error response, including the standard
@@ -559,8 +557,8 @@ npm run dev
 ```
 
 Voyzu mirrors editable linked-package source into the transient runtime. Run
-composition after changing package exports, page or API routes, commands,
-navigation, assets, or API schemas:
+composition after changing package exports, page or HTTP API routes, commands,
+navigation, assets, or HTTP API schemas:
 
 ```shell
 npm run voyzu:compose
@@ -568,8 +566,8 @@ npm run voyzu:compose
 
 Composition validates pre-installed and installed packages together and
 generates matching `pre-installed.ts` and `installed.ts` navigation, page-route,
-API-route, and command registries beneath `apps/web/.generated`, along with
-the API Reference output. The platform wildcard page and API handlers use these
+HTTP API-route, and command registries beneath `apps/web/.generated`, along with
+the HTTP API Reference output. The platform wildcard page and HTTP API handlers use these
 registries at runtime. Never edit generated files directly.
 
 See [Commands](commands.md) for the complete command reference.

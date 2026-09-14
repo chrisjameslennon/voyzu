@@ -1,0 +1,25 @@
+{
+  "groupId": "voyzu.capability",
+  "title": "@voyzu/http-api",
+  "description": "Generate PDF documents and export tabular data.",
+  "sectionId": "voyzu.capability",
+  "sectionTitle": "Platform",
+  "sectionDescription": "Core Voyzu platform operations.",
+  "operations": [
+    {
+      "id": "voyzu.capability.pdf",
+      "file": "voyzu.capability.pdf.operation-doc.json",
+      "summary": "Generate PDF"
+    },
+    {
+      "id": "voyzu.capability.pdfView",
+      "file": "voyzu.capability.pdfView.operation-doc.json",
+      "summary": "View PDF"
+    },
+    {
+      "id": "voyzu.capability.export",
+      "file": "voyzu.capability.export.operation-doc.json",
+      "summary": "Export Rows"
+    }
+  ]
+}

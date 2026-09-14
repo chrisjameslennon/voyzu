@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 import { AuditEventResponseDto } from "./audit-event.response.dto";
 export const AuditEventListResponseDto = StrictObject({
   items: Type.Array(AuditEventResponseDto),

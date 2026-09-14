@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 import { UserDisplayName, UserEmail } from "./user.fields";
 export const UserProfileUpdateRequestDto = StrictObject({
   email: Type.Optional(UserEmail),

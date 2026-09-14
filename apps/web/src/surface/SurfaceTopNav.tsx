@@ -20,13 +20,12 @@ export async function SurfaceTopNav({ slots, activeRoute }: SurfaceTopNavProps) 
   const helpUrl = activeRoute?.helpBaseUrl && activeRoute.helpPath
     ? resolveExternalUrl(activeRoute.helpBaseUrl, activeRoute.helpPath)
     : undefined;
-  const [apiReferenceVisible, uiReferenceVisible] = await Promise.all([
-    areInstalledPackagePageRoutesVisible("@voyzu/api-reference"),
+  const [httpApiReferenceVisible, uiReferenceVisible] = await Promise.all([
+    areInstalledPackagePageRoutesVisible("@voyzu/http-api-reference"),
     areInstalledPackagePageRoutesVisible("@voyzu/ui-reference"),
   ]);
-  const apiDocsUrl = activeRoute?.apiDocsUrl
-    && apiReferenceVisible
-    ? activeRoute.apiDocsUrl
+  const httpApiDocsUrl = httpApiReferenceVisible
+    ? activeRoute?.httpApiDocsUrl ?? "/http-api-reference"
     : undefined;
 
   return (
@@ -37,8 +36,8 @@ export async function SurfaceTopNav({ slots, activeRoute }: SurfaceTopNavProps) 
       </nav>
       <div className={styles.utility}>
         <ImplementerMenu
-          pageApiHref={apiDocsUrl}
-          apiReferenceVisible={apiReferenceVisible}
+          pageHttpApiHref={httpApiDocsUrl}
+          httpApiReferenceVisible={httpApiReferenceVisible}
           uiReferenceVisible={uiReferenceVisible}
         />
         <SettingsButton />

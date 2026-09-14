@@ -84,7 +84,8 @@ export default function nextConfig(phase: string): NextConfig {
     const generatedRoot = join(platformRoot, "apps", "web", ".generated");
     const required = [
       "page-routes/pre-installed.ts", "page-routes/installed.ts",
-      "api-routes/pre-installed.ts", "api-routes/installed.ts",
+      "http-api-routes/pre-installed.ts", "http-api-routes/installed.ts",
+      "http-api-routes/documentation-groups.json", "http-api-routes/package-roots.json",
       "navigation/pre-installed.ts", "navigation/installed.ts",
       "navigation/pre-installed-headers.tsx", "navigation/installed-headers.tsx",
       "internal-api/pre-installed.ts", "internal-api/installed.ts",
@@ -118,7 +119,7 @@ export default function nextConfig(phase: string): NextConfig {
     transpilePackages: [
       // voyzu compose:packages:start
       // voyzu compose:packages:end
-      "@voyzu/api-reference",
+      "@voyzu/http-api-reference",
       "@voyzu/capability",
       "@voyzu/auth",
       "@voyzu/audit",

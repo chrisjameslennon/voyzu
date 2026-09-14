@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 
 export const AccountType = Type.Union([
   Type.Literal("ASSET"), Type.Literal("LIABILITY"), Type.Literal("EQUITY"),

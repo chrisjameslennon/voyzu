@@ -1,6 +1,8 @@
 # Module contract
 
-A module is a cohesive application capability owned by one Voyzu package. It keeps its page and API contracts separate from its implementation and keeps business services private to the package. Cross-package communication uses semantic capability and master-data contracts registered by `voyzu.package.ts`.
+HTTP API registration uses `contracts.httpApiRouting` (roots and routes keyed by stable ID) and `contracts.httpApiDocumentation` (sections, groups and operation descriptions). Every route needs exactly one documentation entry. Section titles become package-qualified OpenAPI tags; route IDs become operation IDs. See the [HTTP API contract](../platform-contracts/http-api-contract.md) for the complete example. Module exports alone do not register HTTP routes.
+
+A module is a cohesive application capability owned by one Voyzu package. It keeps its page and HTTP API contracts separate from its implementation and keeps business services private to the package. Cross-package communication uses semantic capability and master-data contracts registered by `voyzu.package.ts`.
 
 A module resides beneath the owning package's `modules/` directory:
 
@@ -12,7 +14,7 @@ packages/@acme/warehousing/
       ├─ domain/
       ├─ server/
       ├─ types/
-      ├─ api.routes.ts
+      ├─ http-api.routes.ts
       ├─ module.ts
       └─ pages.routes.ts
 ```
@@ -28,12 +30,11 @@ Only the folders and root files required by the module need to be present. A ser
 ```ts
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
-import { apiDefinitions } from "./api.routes";
 import { pageRoutes } from "./pages.routes";
 
 export const stockModule = {
   pageRoutes,
-  apiDefinitions,
+  
 } as const satisfies VoyzuPackageModuleDefinition;
 
 export default stockModule;
@@ -52,7 +53,7 @@ export default {
 Do not add a module-level `index.ts` barrel. Import the manifest or an explicit same-package server entry point directly.
 
 The module registration above belongs to the package lifecycle contract. The
-application composer discovers pages and APIs through lightweight `package.json` exports: `./<module>/pages.routes` and `./<module>/api.routes`. Semantic contracts are instead read from the root `voyzu.package.ts`; see [Contracts](contracts.md).
+application composer discovers page exports and reads HTTP API contracts from `voyzu.package.ts`. See [HTTP API contract](../platform-contracts/http-api-contract.md).
 
 ### `pages.routes.ts`
 
@@ -102,9 +103,9 @@ export const pageRoutes = {} as const;
 
 Navigation belongs in the package's `navigation/` folder and refers to `pageRoutes` entries by route ID. A `helpPath` is relative to the package's `voyzu.settings.helpBaseUrl`. See [Application surfaces](../voyzu-platform-patterns/app-surface.md) and [Documentation and help](../voyzu-platform-patterns/documentation-and-help.md).
 
-### `api.routes.ts`
+### `http-api.routes.ts`
 
-`api.routes.ts` is the authoritative collection of the module's HTTP endpoints. Each entry declares the route, lazy handler loader, documentation, request schemas, and response schemas in one place.
+`http-api.routes.ts` is the authoritative collection of the module's HTTP endpoints. Each entry declares the route, short summary, lazy handler loader, request schemas and response schemas. Operation descriptions and grouping belong to `contracts.httpApiDocumentation`.
 
 ```ts
 import {
@@ -116,19 +117,19 @@ import {
   StockItemResponseDto,
 } from "@acme/warehousing/types";
 
-export const apiDefinitions = {
-  create: {
+export const httpApiRoutes = {
+  "acme.example.create": {
     method: "POST",
     path: "/warehousing/stock",
-    loadHandler: () => import("./server/api/stock.http.handlers")
+    loadHandler: () => import("./server/http-api/stock.http.handlers")
       .then((module) => module.handleCreate),
     request: {
       contentType: "application/json",
       body: StockItemCreateRequestDto,
     },
     summary: "Create stock item",
-    description: "Creates a stock item.",
-    tags: ["Stock"],
+    
+    
     responses: {
       "201": {
         description: "The created stock item.",
@@ -147,22 +148,21 @@ export const apiDefinitions = {
 } as const;
 ```
 
-Expose the manifest as `./<module>/api.routes`; composition and documentation
-generation import this lightweight surface directly.
+Import the manifest into `contracts.httpApiRouting.routes` in `voyzu.package.ts`.
 
-The combination of HTTP method and path must be unique across the composed application. Paths are relative to Voyzu's shared `/api` prefix and must remain within an API root owned by the package. For example, the declared path `/warehousing/stock` is served at `/api/warehousing/stock`.
+The combination of HTTP method and path must be unique across the composed application. Paths are relative to Voyzu's shared `/api` prefix and must remain within an HTTP API root owned by the package. For example, the declared path `/warehousing/stock` is served at `/api/warehousing/stock`.
 
 Request and response contracts use TypeBox DTOs. The router validates requests and responses against these schemas at the HTTP perimeter. When `request.body` is declared, the body is required. JSON is the default content type when none is declared; non-JSON bodies such as PDF or CSV must declare their content type explicitly.
 
 An invalid response indicates an application defect. In development, response validation failures throw. In production, Voyzu logs the validation error and returns the response.
 
-Path parameters use the same Next.js bracket names as the path. Query and path schemas belong under `request`. Use an empty object when the module has no API:
+Path parameters use the same Next.js bracket names as the path. Query and path schemas belong under `request`. Use an empty object when the module has no HTTP API:
 
 ```ts
-export const apiDefinitions = {} as const;
+export const httpApiRoutes = {} as const;
 ```
 
-API paths identify resources with nouns and use standard HTTP method and status semantics. See [API patterns](../voyzu-platform-patterns/api-patterns.md) and [Validation layers](../voyzu-platform-patterns/validation-layers.md).
+HTTP API paths identify resources with nouns and use standard HTTP method and status semantics. See [HTTP API patterns](../voyzu-platform-patterns/http-api-patterns.md) and [Validation layers](../voyzu-platform-patterns/validation-layers.md).
 
 ### Cross-package contracts
 
@@ -217,12 +217,12 @@ Server services remain the authority and must enforce the rule even when the cli
 
 ## `types/`
 
-`types/` is optional for module-private schemas and types. Public DTOs shared by API definitions or semantic contracts normally belong in the owning package's top-level `types/` folder and are exported through `package.json`.
+`types/` is optional for module-private schemas and types. Public DTOs shared by HTTP API definitions or semantic contracts normally belong in the owning package's top-level `types/` folder and are exported through `package.json`.
 
 ```ts
 // types/stock-selection.dto.ts
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 
 export const StockSelectionDto = StrictObject({
   code: Type.String(),
@@ -235,7 +235,7 @@ DTO schemas own structural object validation. Do not repeat their length, shape,
 
 ## `server/`
 
-`server/` contains all server-only implementation code. Browser code must never import this folder. Keep API transport, persistence, services, and server-rendered pages in their dedicated subfolders.
+`server/` contains all server-only implementation code. Browser code must never import this folder. Keep HTTP API transport, persistence, services, and server-rendered pages in their dedicated subfolders.
 
 ```text
 server/
@@ -250,7 +250,7 @@ server/
 
 `server/index.ts` is an optional controlled server entry point for deliberate
 public server APIs. Route registration and composition do not use it; page and
-API loaders dynamically import their specific implementation modules.
+HTTP API loaders dynamically import their specific implementation modules.
 
 ```ts
 export { StockListPage } from "./pages/StockListPage";
@@ -269,12 +269,12 @@ use semantic contracts; they must not import private service or server file path
 }
 ```
 
-### `server/api/`
+### `server/http-api/`
 
-`server/api/` contains thin HTTP handlers. A handler reads HTTP-specific input, calls a service, maps known errors to Voyzu responses, and returns a `NextResponse`.
+`server/http-api/` contains thin HTTP handlers. A handler reads HTTP-specific input, calls a service, maps known errors to Voyzu responses, and returns a `NextResponse`.
 
 ```ts
-// server/api/stock.http.handlers.ts
+// server/http-api/stock.http.handlers.ts
 export async function handleCreate(req: NextRequest): Promise<NextResponse> {
   try {
     const input = await parseBody<StockItemCreateRequestDto>(req);
@@ -286,7 +286,7 @@ export async function handleCreate(req: NextRequest): Promise<NextResponse> {
 }
 ```
 
-TypeBox validation belongs to the API route and is performed by the router. Handlers do not repeat DTO validation.
+TypeBox validation belongs to the HTTP API route and is performed by the router. Handlers do not repeat DTO validation.
 
 ### `server/db/`
 

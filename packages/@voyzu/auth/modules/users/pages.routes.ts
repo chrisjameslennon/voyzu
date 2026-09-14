@@ -1,5 +1,6 @@
 export const pageRoutes = {
   list: {
+    httpApiDocumentationGroupId: "auth.operations",
     id: "voyzu.users.page.list",
     path: "/settings/users",
     loadPage: () =>
@@ -11,6 +12,7 @@ export const pageRoutes = {
     auth: { required: true, minRole: "ADMIN" },
   },
   profile: {
+    httpApiDocumentationGroupId: "auth.operations",
     id: "voyzu.users.page.profile",
     path: "/settings/users/profile",
     loadPage: () =>
@@ -22,6 +24,7 @@ export const pageRoutes = {
     auth: { required: true, minRole: "STANDARD" },
   },
   detail: {
+    httpApiDocumentationGroupId: "auth.operations",
     id: "voyzu.users.page.detail",
     path: "/settings/users/[code]",
     loadPage: () =>

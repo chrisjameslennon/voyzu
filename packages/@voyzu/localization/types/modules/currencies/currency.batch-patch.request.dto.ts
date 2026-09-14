@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 import { CurrencyPatchRequestDto } from "./currency.patch.request.dto";
 import { BusinessCode } from "@voyzu/localization/types/constraints";
 

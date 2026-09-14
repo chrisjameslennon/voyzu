@@ -1,6 +1,6 @@
 # Voyzu compose
 
-Composition registers installed packages with the Voyzu web and API surfaces.
+Composition registers installed packages with the Voyzu web and HTTP API surfaces.
 End users normally run it through the generated project script:
 
 ```shell
@@ -14,7 +14,12 @@ installation, pass `--no-install`:
 npm run voyzu:compose -- --no-install
 ```
 
-Package inventory reconciliation and API reference generation still run.
+Package inventory reconciliation and HTTP API reference generation still run.
+
+For HTTP API or documentation contract changes, use `npm run voyzu:compose -- --surfaces-only`.
+This validates HTTP contracts and page references, then refreshes HTTP API,
+page/navigation registries and reference documentation. It leaves internal API
+composition, dependency installation, database inventory and the Next.js cache alone.
 
 `voyzu:install-package` invokes compose automatically.
 
@@ -32,15 +37,16 @@ npm namespace:
 An included package must:
 
 - set `voyzu.voyzu-package` to `true`;
-- declare `voyzu.dependencies`, `voyzu.pageRootPaths` and `voyzu.apiRootPaths` arrays;
+- declare `voyzu.dependencies` and `voyzu.pageRootPaths` arrays;
+- declare HTTP roots and routes in `contracts.httpApiRouting`, with documentation in `contracts.httpApiDocumentation`;
 - declare a repository URL matching the source Git checkout;
 - export `./voyzu-package`;
-- contain `voyzu.package.ts` with at least one module or database installation file.
+- contain `voyzu.package.ts` with a module, an API contract or database installation files.
 
 Packages marked `voyzu.preinstalled` are supplied directly by the platform.
 They are excluded from installed-package composition, but compose discovers
-their exported `./<module>/pages.routes`, `./<module>/api.routes`, and optional
-`./navigation` surfaces to generate the platform page-route, API-route, and
+their exported `./<module>/pages.routes`, package HTTP API contracts, and optional
+`./navigation` surfaces to generate the platform page-route, HTTP API-route, and
 navigation indexes. Installed runtime
 packages cannot declare themselves preinstalled.
 
@@ -52,12 +58,12 @@ into the runtime, package visibility is controlled only by Package Management.
 
 The composer:
 
-1. discovers preinstalled page-route, API-route, and navigation surfaces;
-2. generates the preinstalled page-route, API-route, and navigation indexes;
+1. discovers preinstalled page-route, HTTP API-route, and navigation surfaces;
+2. generates the preinstalled page-route, HTTP API-route, and navigation indexes;
 3. discovers the installed package set from `.run/packages`;
 4. adds package workspace dependencies to the web application;
 5. adds package names to Next.js `transpilePackages`;
-6. generates installed-package navigation, API, command, and component registries;
+6. generates installed-package navigation, HTTP API, command, and component registries;
 7. publishes each package's optional `public-assets` directory beneath
    `apps/web/public/<full-package-name>`;
 8. runs the runtime workspace installation.

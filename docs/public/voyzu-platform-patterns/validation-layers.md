@@ -7,8 +7,8 @@ The word **validation** is often used broadly, but in the application there are 
 The overall flow, from the origin request is:
 
 ```
-1. API surface
-2. API contract schemas
+1. HTTP API surface
+2. HTTP API contract schemas
 3. Request perimeter validation
 4. Business validation
 5. Service prerequisites
@@ -17,11 +17,11 @@ The overall flow, from the origin request is:
 8. Response perimeter validation
 ```
 
-A rule should be enforced at the earliest appropriate layer. Do not add an operation-policy blocker for an operation that should not exist in the API at all.
+A rule should be enforced at the earliest appropriate layer. Do not add an operation-policy blocker for an operation that should not exist in the HTTP API at all.
 
 ***
 
-### 1. API surface
+### 1. HTTP API surface
 
 #### Question
 
@@ -32,7 +32,7 @@ A rule should be enforced at the earliest appropriate layer. Do not add an opera
 Typically implemented by:
 
 ```
-server/api/
+server/http-api/
 ```
 
 and by the routes and HTTP methods exported by the module.
@@ -45,22 +45,22 @@ GET     /control-accounts/{code}
 PATCH   /control-accounts/{code}
 ```
 
-If control accounts are fixed system data, the API should not expose:
+If control accounts are fixed system data, the HTTP API should not expose:
 
 ```
 POST    /control-accounts
 DELETE  /control-accounts/{code}
 ```
 
-Creation and deletion are therefore not operations that need to be rejected by business logic. They are simply not capabilities provided by the API.
+Creation and deletion are therefore not operations that need to be rejected by business logic. They are simply not capabilities provided by the HTTP API.
 
 #### Principle
 
-> If an operation must never be performed, do not expose the API method.
+> If an operation must never be performed, do not expose the HTTP API method.
 
 ***
 
-### 2. API contract schemas
+### 2. HTTP API contract schemas
 
 #### Question
 
@@ -68,7 +68,7 @@ Creation and deletion are therefore not operations that need to be rejected by b
 
 #### Implementation
 
-Implemented as TypeBox schemas in the owning package's exported types and referenced directly by the module API definition.
+Implemented as TypeBox schemas in the owning package's exported types and referenced directly by the module HTTP API definition.
 
 ```
 the owning package's exported types
@@ -136,11 +136,11 @@ responses: {
 },
 ```
 
-The same schemas drive routing validation, generated API documentation and the combined OpenAPI document.
+The same schemas drive routing validation, generated HTTP API documentation and the combined OpenAPI document.
 
 #### Principle
 
-> Define each API object once as an executable TypeBox schema and derive its TypeScript type from that schema.
+> Define each HTTP API object once as an executable TypeBox schema and derive its TypeScript type from that schema.
 
 ***
 
@@ -152,9 +152,9 @@ The same schemas drive routing validation, generated API documentation and the c
 
 #### Implementation
 
-The shared API router validates the declared path parameters, query string, cookies, content type and body before invoking the handler.
+The shared HTTP API router validates the declared path parameters, query string, cookies, content type and body before invoking the handler.
 
-Path and query values arrive from HTTP as strings. The router uses TypeBox `Value.Convert` when checking them so a numeric parameter can be declared as `Type.Integer(...)`. Converted values are discarded after validation: handlers continue to receive the original string values and perform their normal parsing when using them.
+Path and query values are validated as strings without coercion. Query parameters declared as arrays receive arrays of strings; repeated scalar parameters return `400`. Undeclared query parameters are ignored. Handlers explicitly convert accepted string values when needed. Cookie declarations contain required names only; presence does not verify authentication.
 
 Query definitions keep presentation metadata alongside one schema for the complete query object:
 
@@ -165,7 +165,7 @@ query: {
     search: { description: "Free-text search." },
   },
   schema: Type.Object({
-    organizationId: Type.Optional(Type.Integer({ minimum: 1 })),
+    organizationId: Type.Optional(Type.String({ pattern: "^[1-9][0-9]*$" })),
     search: Type.Optional(Type.String({ pattern: "\\S" })),
   }),
 },
@@ -186,7 +186,7 @@ Handlers and services must not repeat these structural checks. Normalization may
 
 #### Principle
 
-> Reject malformed API input once, before application code runs.
+> Reject malformed HTTP API input once, before application code runs.
 
 ***
 
@@ -455,7 +455,7 @@ Not every business rule belongs in the database, but structural integrity should
 
 #### Implementation
 
-The repository returns a database row and the module mapper converts it into a response DTO. The API router validates the final HTTP response against the response definition declared by the route:
+The repository returns a database row and the module mapper converts it into a response DTO. The HTTP API router validates the final HTTP response against the response definition declared by the route:
 
 ```text
 database row
@@ -483,7 +483,7 @@ Response object constraints belong in the response TypeBox schema, including nes
 
 #### Principle
 
-> Validate the final response once at the API perimeter: fail fast in development and report the mismatch without interrupting production.
+> Validate the final response once at the HTTP API perimeter: fail fast in development and report the mismatch without interrupting production.
 
 ***
 
@@ -496,7 +496,7 @@ The layers therefore work as follows:
 ### Creation
 
 ```
-API surface:
+HTTP API surface:
   No POST method exists.
 ```
 
@@ -505,7 +505,7 @@ No creation policy is required.
 ### Deletion
 
 ```
-API surface:
+HTTP API surface:
   No DELETE method exists.
 ```
 
@@ -518,12 +518,12 @@ Request DTO:
   These fields are not present in ControlAccountPatchRequestDto.
 ```
 
-These changes are not supported by the API.
+These changes are not supported by the HTTP API.
 
 ### Changing the linked GL account
 
 ```
-API surface:
+HTTP API surface:
   PATCH exists.
 
 Request DTO:

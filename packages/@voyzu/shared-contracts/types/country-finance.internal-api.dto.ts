@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "../../../../lib/types/src/api";
+import { StrictObject } from "../../../../lib/types/src/http-api";
 
 export const Status = Type.Union([Type.Literal("ACTIVE"), Type.Literal("INACTIVE")]);
 

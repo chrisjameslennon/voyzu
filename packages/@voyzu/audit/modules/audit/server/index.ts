@@ -12,4 +12,4 @@ export {
   handleExportAll,
   handleGetById,
   handleList,
-} from "./api/audit-event.http.handlers";
+} from "./http-api/audit-event.http.handlers";

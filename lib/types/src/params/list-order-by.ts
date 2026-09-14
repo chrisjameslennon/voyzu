@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "../api";
+import { StrictObject } from "../http-api";
 
 export const OrderBy = StrictObject({
   field: Type.String({ pattern: "\\S" }),

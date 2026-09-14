@@ -12,11 +12,6 @@
     "pageRootPaths": [
       "/settings/packages"
     ],
-    "apiRootPaths": [
-      "/installed-packages",
-      "/installed-package-reconciliation",
-      "/package-settings"
-    ],
     "preinstalled": true,
     "settings": {
       "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
@@ -27,7 +22,7 @@
     "./voyzu-package": "./voyzu.package.ts",
     "./navigation": "./navigation/index.ts",
     "./navigation/settings": "./navigation/settings.left-nav.ts",
-    "./package-management/api.routes": "./modules/package-management/api.routes.ts",
+    "./package-management/http-api.routes": "./modules/package-management/http-api.routes.ts",
     "./package-management/pages.routes": "./modules/package-management/pages.routes.ts",
     "./server": "./modules/package-management/server/index.ts",
     "./types": "./types/index.ts"

@@ -1,0 +1,242 @@
+{
+  "operationId": "auth.users.replaceOrganizationAccess",
+  "method": "put",
+  "path": "/api/users/{code}/organization-access",
+  "summary": "Replace user organization access",
+  "description": "Replaces all organization assignments for a standard user through the Organization internal API.",
+  "tags": [
+    "@voyzu/auth: Platform"
+  ],
+  "requestPathParams": {
+    "code": {
+      "description": "User code.",
+      "required": true,
+      "schema": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 20,
+        "pattern": "^[A-Z0-9_-]+$"
+      },
+      "example": "string"
+    }
+  },
+  "requestBody": {
+    "required": true,
+    "contentType": "application/json",
+    "schema": {
+      "type": "object",
+      "required": [
+        "organization_ids"
+      ],
+      "properties": {
+        "organization_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "example": {
+      "organization_ids": [
+        1
+      ]
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "Updated organization assignments.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "userId",
+          "organization_ids"
+        ],
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "organization_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "userId": 1,
+        "organization_ids": [
+          1
+        ]
+      }
+    },
+    "400": {
+      "description": "Validation failed.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INPUT_VALIDATION_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INPUT_VALIDATION_ERROR",
+        "message": "string"
+      }
+    },
+    "401": {
+      "description": "Authentication failed.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "UNAUTHORIZED"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "UNAUTHORIZED",
+        "message": "string"
+      }
+    },
+    "403": {
+      "description": "Access is forbidden.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "FORBIDDEN"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "FORBIDDEN",
+        "message": "string"
+      }
+    },
+    "404": {
+      "description": "User or organization not found.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "ENTITY_NOT_FOUND"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "ENTITY_NOT_FOUND",
+        "message": "string"
+      }
+    },
+    "422": {
+      "description": "A business rule prevented the operation.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "BUSINESS_RULE"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "BUSINESS_RULE",
+        "message": "string"
+      }
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

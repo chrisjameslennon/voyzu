@@ -14,10 +14,6 @@
     "pageRootPaths": [
       "/organization"
     ],
-    "apiRootPaths": [
-      "/organization",
-      "/organization-selection"
-    ],
     "settings": {
       "helpBaseUrl": "https://voyzu.gitbook.io/docs/"
     },
@@ -29,17 +25,17 @@
     "./navigation": "./navigation/index.ts",
     "./organizations": "./modules/organizations/module.ts",
     "./organizations/pages.routes": "./modules/organizations/pages.routes.ts",
-    "./organizations/api.routes": "./modules/organizations/api.routes.ts",
+    "./organizations/http-api.routes": "./modules/organizations/http-api.routes.ts",
     "./organizations/client": "./modules/organizations/client/index.ts",
     "./organizations/server": "./modules/organizations/server/index.ts",
     "./organizations/domain/operation-policy": "./modules/organizations/domain/operation-policy.ts",
     "./organization-switcher": "./modules/organization-switcher/module.ts",
-    "./organization-switcher/api.routes": "./modules/organization-switcher/api.routes.ts",
+    "./organization-switcher/http-api.routes": "./modules/organization-switcher/http-api.routes.ts",
     "./organization-switcher/server": "./modules/organization-switcher/server/index.ts",
     "./organization-switcher/types": "./modules/organization-switcher/types/index.ts",
     "./organization-access": "./modules/organization-access/module.ts",
     "./organization-access/pages.routes": "./modules/organization-access/pages.routes.ts",
-    "./organization-access/api.routes": "./modules/organization-access/api.routes.ts",
+    "./organization-access/http-api.routes": "./modules/organization-access/http-api.routes.ts",
     "./organization-access/server": "./modules/organization-access/server/index.ts",
     "./organization-reports": "./modules/organization-reports/module.ts",
     "./organization-reports/pages.routes": "./modules/organization-reports/pages.routes.ts",

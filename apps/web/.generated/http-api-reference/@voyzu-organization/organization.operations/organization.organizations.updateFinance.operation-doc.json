@@ -1,0 +1,313 @@
+{
+  "operationId": "organization.organizations.updateFinance",
+  "method": "put",
+  "path": "/api/organization/organizations/{code}/finance",
+  "summary": "Update organization Finance settings",
+  "description": "Updates Finance settings through the shared internal API. Finance must be installed and the organization active.",
+  "tags": [
+    "@voyzu/organization: Platform"
+  ],
+  "requestPathParams": {
+    "code": {
+      "description": "Organization code.",
+      "required": true,
+      "schema": {
+        "type": "string"
+      },
+      "example": "string"
+    }
+  },
+  "requestBody": {
+    "required": true,
+    "contentType": "application/json",
+    "schema": {
+      "type": "object",
+      "required": [
+        "taxFilingAnchorMonth",
+        "taxFilingIntervalMonths"
+      ],
+      "properties": {
+        "taxFilingAnchorMonth": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "taxFilingIntervalMonths": {
+          "anyOf": [
+            {
+              "type": "number",
+              "enum": [
+                1
+              ]
+            },
+            {
+              "type": "number",
+              "enum": [
+                2
+              ]
+            },
+            {
+              "type": "number",
+              "enum": [
+                3
+              ]
+            },
+            {
+              "type": "number",
+              "enum": [
+                6
+              ]
+            },
+            {
+              "type": "number",
+              "enum": [
+                12
+              ]
+            }
+          ]
+        },
+        "reportLine1": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "reportLine2": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "reportFooter": {
+          "type": "string",
+          "maxLength": 80
+        }
+      }
+    },
+    "example": {
+      "taxFilingAnchorMonth": 1,
+      "taxFilingIntervalMonths": 1,
+      "reportLine1": "string",
+      "reportLine2": "string",
+      "reportFooter": "string"
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "Updated Finance settings.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "organization_id",
+          "financeCompanyId",
+          "taxFilingAnchorMonth",
+          "taxFilingIntervalMonths",
+          "hasPostings"
+        ],
+        "properties": {
+          "organization_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "financeCompanyId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "taxFilingAnchorMonth": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "taxFilingIntervalMonths": {
+            "anyOf": [
+              {
+                "type": "number",
+                "enum": [
+                  1
+                ]
+              },
+              {
+                "type": "number",
+                "enum": [
+                  2
+                ]
+              },
+              {
+                "type": "number",
+                "enum": [
+                  3
+                ]
+              },
+              {
+                "type": "number",
+                "enum": [
+                  6
+                ]
+              },
+              {
+                "type": "number",
+                "enum": [
+                  12
+                ]
+              }
+            ]
+          },
+          "reportLine1": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "reportLine2": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "reportFooter": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "hasPostings": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "organization_id": 1,
+        "financeCompanyId": 1,
+        "taxFilingAnchorMonth": 1,
+        "taxFilingIntervalMonths": 1,
+        "reportLine1": "string",
+        "reportLine2": "string",
+        "reportFooter": "string",
+        "hasPostings": true
+      }
+    },
+    "400": {
+      "description": "Invalid settings or archived organization.",
+      "contentType": "application/json",
+      "schema": {
+        "anyOf": [
+          {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "INPUT_VALIDATION_ERROR"
+                ]
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "BUSINESS_RULE"
+                ]
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "example": {
+        "code": "INPUT_VALIDATION_ERROR",
+        "message": "string"
+      }
+    },
+    "401": {
+      "description": "An active user is required.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "UNAUTHORIZED"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "UNAUTHORIZED",
+        "message": "string"
+      }
+    },
+    "404": {
+      "description": "Organization or Finance provider not found.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "ENTITY_NOT_FOUND"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "ENTITY_NOT_FOUND",
+        "message": "string"
+      }
+    },
+    "500": {
+      "description": "Unexpected error.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

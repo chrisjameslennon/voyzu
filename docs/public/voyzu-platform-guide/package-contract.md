@@ -1,5 +1,7 @@
 # Package contract
 
+HTTP API registration uses `contracts.httpApiRouting` (roots and routes keyed by stable ID) and `contracts.httpApiDocumentation` (sections, groups and operation descriptions). Every route needs exactly one documentation entry. Section titles become package-qualified OpenAPI tags; route IDs become operation IDs. See the [HTTP API contract](../platform-contracts/http-api-contract.md) for the complete example. Module exports alone do not register HTTP routes.
+
 A Voyzu package is a self-contained unit of functionality made up of one or more modules. Its scoped package name determines its source location:
 
 ```text
@@ -54,7 +56,6 @@ The following is illustrative JSON with comments. Remove the comments in a real 
     "allowInstall": true,
     "dependencies": ["@acme/products"], // Other Voyzu packages, not npm packages.
     "pageRootPaths": ["/warehousing"],  // Browser route namespaces owned here.
-    "apiRootPaths": ["/warehousing"],   // API route namespaces owned here.
     "settings": {
       "helpBaseUrl": "https://docs.acme.example/warehousing/"
     }
@@ -65,7 +66,7 @@ The following is illustrative JSON with comments. Remove the comments in a real 
     "./navigation": "./navigation/index.ts",
     "./modules/stock": "./modules/stock/module.ts",
     "./stock/pages.routes": "./modules/stock/pages.routes.ts",
-    "./stock/api.routes": "./modules/stock/api.routes.ts",
+    "./stock/http-api.routes": "./modules/stock/http-api.routes.ts",
     "./types": "./types/index.ts"
   },
 
@@ -86,22 +87,19 @@ shapes:
 | Export | Purpose | Loading rule |
 |---|---|---|
 | `./<module>/pages.routes` | Browser page declarations | Each route provides a lazy `loadPage` function. |
-| `./<module>/api.routes` | HTTP route declarations | Each route provides a lazy `loadHandler` function. |
+| `./voyzu-package` | Package HTTP API routing and documentation contracts | Route handlers remain lazy. |
 | `./navigation` | Optional package navigation declaration | May import route manifests for their IDs, but not page, handler, or service implementations. |
 | `./navigation/left-nav-header` | Optional client left-navigation header | Composed into the separate header registry. |
 
-These exports are the composition boundary. The composer does not fall back to
-loading `voyzu.package.ts`, `module.ts`, package barrels, server barrels, or
-implementation files to find routes. A package that owns page or
-API roots must export the corresponding route surfaces.
+Page and navigation exports are their composition boundaries. HTTP routes and documentation are registered explicitly in the package contracts; composition reads `voyzu.package.ts` and preserves route IDs.
 
-Page and API root paths reserve separate namespaces. A package may use the same root in both namespaces, but two packages cannot own overlapping roots within the same namespace. Use an empty array when the package owns no roots. The Voyzu platform itself is implicit and is not listed in `voyzu.dependencies`.
+Page and HTTP API root paths reserve separate namespaces. A package may use the same root in both namespaces, but two packages cannot own overlapping roots within the same namespace. Use an empty array when the package owns no roots. The Voyzu platform itself is implicit and is not listed in `voyzu.dependencies`.
 
 ### `voyzu.package.ts`
 
 `voyzu.package.ts` is the package lifecycle manifest. It composes the package's
 modules and optional install, uninstall, and script registrations. Install and
-script commands load this manifest deliberately. Semantic contract composition also reads its optional `contracts` section. Route and navigation discovery still use their existing lightweight exports.
+script commands load this manifest deliberately. Semantic contract composition also reads its optional `contracts` section. Page and navigation discovery use their existing exports; HTTP API discovery reads the package contracts.
 
 ```ts
 import type { VoyzuPackageDefinition } from "@voyzu/types/framework";
@@ -180,7 +178,7 @@ modules/
 └─ stock/
    ├─ client/
    ├─ server/
-   ├─ api.routes.ts
+   ├─ http-api.routes.ts
    ├─ module.ts
    └─ pages.routes.ts
 ```
@@ -190,21 +188,17 @@ modules/
 ```ts
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
-import { apiDefinitions } from "./api.routes";
 import { pageRoutes } from "./pages.routes";
 
 export const stockModule = {
   pageRoutes,
-  apiDefinitions,
+  
 } as const satisfies VoyzuPackageModuleDefinition;
 ```
 
 The module manifest remains useful to the package lifecycle contract and to
 code that deliberately consumes the complete module definition. It is not a
-route registry. Voyzu imports the separately exported
-`pages.routes.ts` and `api.routes.ts` surfaces when composing
-the application, so none of those generated registrations pulls in
-`module.ts` or `voyzu.package.ts`.
+route registry. Voyzu imports page exports and package HTTP API contracts. Handler loaders remain lazy.
 
 `pages.routes.ts` contains metadata and lazy page loaders. It must not import
 page implementations eagerly:
@@ -312,12 +306,12 @@ npm run voyzu:run-script @acme/warehousing sampleData
 
 ## `types/`
 
-`types/` contains shared public DTO schemas and their inferred TypeScript types. Use TypeBox so the same contract supports runtime validation, API documentation, and static typing.
+`types/` contains shared public DTO schemas and their inferred TypeScript types. Use TypeBox so the same contract supports runtime validation, HTTP API documentation, and static typing.
 
 ```ts
 // types/stock-item.dto.ts
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 
 export const StockItemDto = StrictObject({
   code: Type.String({ maxLength: 30 }),
@@ -362,7 +356,7 @@ lazy-loading rules, and generated registry shapes. Pre-installed packages are
 regular conforming packages that happen to ship in the Voyzu repository and
 participate in platform initialization. They declare `voyzu.preinstalled: true`;
 independently installed packages must not. Their code receives no route,
-navigation, API, or semantic-contract fallback.
+navigation, HTTP API, or semantic-contract fallback.
 
 The two groups have separate generated files, but both are generated only by
 explicit composition. Development startup loads them without regeneration:
@@ -370,7 +364,7 @@ explicit composition. Development startup loads them without regeneration:
 | Surface | Pre-installed | Installed |
 |---|---|---|
 | Page routes | `apps/web/.generated/page-routes/pre-installed.ts` | `apps/web/.generated/page-routes/installed.ts` |
-| API routes | `apps/web/.generated/api-routes/pre-installed.ts` | `apps/web/.generated/api-routes/installed.ts` |
+| HTTP API routes | `apps/web/.generated/http-api-routes/pre-installed.ts` | `apps/web/.generated/http-api-routes/installed.ts` |
 | Navigation | `apps/web/.generated/navigation/pre-installed.ts` | `apps/web/.generated/navigation/installed.ts` |
 | Left-nav headers | `apps/web/.generated/navigation/pre-installed-headers.tsx` | `apps/web/.generated/navigation/installed-headers.tsx` |
 | Semantic contracts | Root `voyzu.package.ts` manifests + platform definitions | Workspace `contracts/index.ts` (or standalone `.generated/contracts/index.ts`), bridged by `apps/web/.generated/contracts/installed.ts` |

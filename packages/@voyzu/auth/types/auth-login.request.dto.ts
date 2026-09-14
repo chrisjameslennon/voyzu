@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 
 export const AuthLoginRequestDto = StrictObject({
   identifier: Type.String({ pattern: "\\S", description: "Non-blank user code, email address, or other configured login identifier." }),

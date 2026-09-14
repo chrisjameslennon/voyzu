@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 import { OrganizationResponseDto } from "./organization.response.dto";
 
 export const OrganizationListResponseDto = StrictObject({

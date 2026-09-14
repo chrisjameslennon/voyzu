@@ -154,7 +154,7 @@ After registration changes, run `npm run voyzu:compose -- --no-install`.
 Dev, build and typecheck do not regenerate registries. Empty registries are valid;
 optional package folders are not required.
 
-The migration does not change database storage or external API DTOs. Internal
+The migration does not change database storage or external HTTP API DTOs. Internal
 contracts use the semantic names and response shapes specified in the catalogues.
 
 Historical command tests remain `.ts.disabled`. `npm run test:contracts` in the

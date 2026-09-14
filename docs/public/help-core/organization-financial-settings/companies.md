@@ -86,7 +86,7 @@ The editable company details are:
 * Country and base currency
 * Organization standard settings
 
-The company code is used by integrations and financial API routes. A code change requires confirmation because external integrations may also need to be updated. Make any necessary correction before the company has postings; after that, treat the code as permanent.
+The company code is used by integrations and financial HTTP API routes. A code change requires confirmation because external integrations may also need to be updated. Make any necessary correction before the company has postings; after that, treat the code as permanent.
 
 Changing **Use Organization Standard Settings** is a separate confirmed action, not part of the normal Save operation. The change deletes the company's current settings and defaults, including its inventory setup, before applying the newly selected model. It is available only before the company has postings.
 

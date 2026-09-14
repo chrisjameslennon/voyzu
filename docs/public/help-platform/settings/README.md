@@ -4,12 +4,12 @@ Settings manages application users and the signed-in user's own profile.
 
 ## Concepts
 
-* [Users and permissions](users.md) explains authentication, UI and API access, platform roles, and password handling.
+* [Users and permissions](users.md) explains authentication, UI and HTTP API access, platform roles, and password handling.
 * [Organizations and Companies](../../voyzu-core-concepts/organizations-and-companies.md) explains the company scope granted by assignments.
 
 ## User administration
 
-Administrators use **Users** to create identities, choose UI or API access, assign platform roles, set passwords, change status, and preserve audit attribution. Voyzu has no built-in email delivery, invitation, or password-reset service.
+Administrators use **Users** to create identities, choose UI or HTTP API access, assign platform roles, set passwords, change status, and preserve audit attribution. Voyzu has no built-in email delivery, invitation, or password-reset service.
 
 ## Personal profile
 

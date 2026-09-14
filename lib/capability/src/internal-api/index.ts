@@ -176,7 +176,7 @@ export const internalApi = {
     return shared.__voyzuInternalApi.callOptional(resource, method, input);
   },
   async call<R extends Resource, M extends Method<R>>(resource: R, method: M, input: Input<R, M>): Promise<Output<R, M>> {
-    if (!shared.__voyzuInternalApi) throw new InternalApiError("Cross-package API is not initialized; run voyzu:compose and load its registry");
+    if (!shared.__voyzuInternalApi) throw new InternalApiError("Internal API is not initialized; run voyzu:compose and load its registry");
     return shared.__voyzuInternalApi.call(resource, method, input);
   },
 };

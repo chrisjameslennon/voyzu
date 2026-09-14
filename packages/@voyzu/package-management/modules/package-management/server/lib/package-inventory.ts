@@ -11,7 +11,6 @@ interface PackageManifest {
     allowInstall?: boolean;
     dependencies?: string[];
     pageRootPaths?: string[];
-    apiRootPaths?: string[];
     preinstalled?: boolean;
   };
 }
@@ -23,7 +22,7 @@ export interface DiscoveredPackage {
   preinstalled: boolean;
   hasTopNavigation: boolean;
   pageRootPaths: string[];
-  apiRootPaths: string[];
+  httpApiRootPaths: string[];
 }
 
 export interface InstalledPackageFiles {
@@ -40,7 +39,7 @@ const PLATFORM_PACKAGE_ORDER = [
   "@voyzu/localization",
   "@voyzu/welcome",
   "@voyzu/ui-reference",
-  "@voyzu/api-reference",
+  "@voyzu/http-api-reference",
 ] as const;
 
 async function exists(path: string): Promise<boolean> {
@@ -102,6 +101,7 @@ function hasExport(manifest: PackageManifest, name: string): boolean {
 export async function discoverInstalledPackages(): Promise<DiscoveredPackage[]> {
   const platformRoot = await findPlatformRoot();
   const runtimeWorkspaceRoot = workspaceRoot(platformRoot);
+  const httpApiRoots = JSON.parse(await readFile(join(platformRoot, "apps/web/.generated/http-api-routes/package-roots.json"), "utf8")) as Record<string, string[]>;
   const roots = [
     join(platformRoot, "packages"),
     ...(runtimeWorkspaceRoot === platformRoot ? [] : [join(runtimeWorkspaceRoot, "packages")]),
@@ -122,7 +122,7 @@ export async function discoverInstalledPackages(): Promise<DiscoveredPackage[]> 
           || hasExport(manifest, "./navigation/domains")
           || (manifest.voyzu.preinstalled !== true && hasExport(manifest, "./navigation")),
         pageRootPaths: manifest.voyzu.pageRootPaths ?? [],
-        apiRootPaths: manifest.voyzu.apiRootPaths ?? [],
+        httpApiRootPaths: httpApiRoots[manifest.name] ?? [],
       });
     }
   }

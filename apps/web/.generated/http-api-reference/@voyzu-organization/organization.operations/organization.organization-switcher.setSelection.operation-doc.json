@@ -1,0 +1,136 @@
+{
+  "operationId": "organization.organization-switcher.setSelection",
+  "method": "put",
+  "path": "/api/organization-selection",
+  "summary": "Set Selection",
+  "description": "Set Selection Organization Switcher.",
+  "tags": [
+    "@voyzu/organization: Platform"
+  ],
+  "requestBody": {
+    "required": true,
+    "contentType": "application/json",
+    "schema": {
+      "type": "object",
+      "required": [
+        "organizationId"
+      ],
+      "properties": {
+        "organizationId": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "example": {
+      "organizationId": 1
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "The selected organization id.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "selectedOrganizationId"
+        ],
+        "properties": {
+          "selectedOrganizationId": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "selectedOrganizationId": 1
+      },
+      "cookies": [
+        "voyzuSelectedOrganizationId"
+      ]
+    },
+    "400": {
+      "description": "Validation failed.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INPUT_VALIDATION_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INPUT_VALIDATION_ERROR",
+        "message": "string"
+      }
+    },
+    "404": {
+      "description": "Entity not found.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "ENTITY_NOT_FOUND"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "ENTITY_NOT_FOUND",
+        "message": "string"
+      }
+    },
+    "500": {
+      "description": "An unexpected server error occurred.",
+      "contentType": "application/json",
+      "schema": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INTERNAL_SERVER_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "example": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "string"
+      }
+    }
+  }
+}

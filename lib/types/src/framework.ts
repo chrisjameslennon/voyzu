@@ -1,11 +1,9 @@
-import type { ApiRouteDefinition } from "./api";
 import type { PackageContracts } from "./contracts";
 
 export interface VoyzuPackageModuleDefinition {
   defines?: NonNullable<PackageContracts["internalApi"]>["defines"];
   implements?: NonNullable<PackageContracts["internalApi"]>["implements"];
   pageRoutes: Readonly<Record<string, unknown>>;
-  apiDefinitions: Readonly<Record<string, ApiRouteDefinition>>;
 }
 
 /**
@@ -16,7 +14,6 @@ export interface VoyzuPackageMetadata {
   allowInstall: boolean;
   dependencies: readonly string[];
   pageRootPaths: readonly string[];
-  apiRootPaths: readonly string[];
   preinstalled?: boolean;
   settings?: VoyzuPackageSettings;
 }

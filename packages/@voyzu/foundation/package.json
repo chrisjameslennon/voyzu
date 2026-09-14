@@ -10,7 +10,6 @@
     "allowInstall": true,
     "dependencies": [],
     "pageRootPaths": [],
-    "apiRootPaths": [],
     "preinstalled": true
   },
   "exports": {

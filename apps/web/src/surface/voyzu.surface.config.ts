@@ -6,7 +6,7 @@ import type {
   VoyzuSurfaceRoute,
 } from "@voyzu/ui-surface/types";
 
-import apiReferenceGeneratedLeftNav from "../../.generated/api-reference/navigation.json";
+import httpApiReferenceGeneratedLeftNav from "../../.generated/http-api-reference/navigation.json";
 import {
   createPreInstalledPackageDomains,
   preInstalledNavigation,
@@ -76,8 +76,8 @@ const preInstalledSurfaceDomains = createPreInstalledPackageDomains(installedPag
 const installedSurfaceDomains = createInstalledPackageDomains(preInstalledPageRoutes);
 const packageSurfaceDomains = [
   ...preInstalledSurfaceDomains.map((domain) =>
-    domain.packageName === "@voyzu/api-reference"
-      ? { ...domain, leftNav: [...domain.leftNav, ...mutableLeftNav(apiReferenceGeneratedLeftNav)] }
+    domain.packageName === "@voyzu/http-api-reference"
+      ? { ...domain, leftNav: [...domain.leftNav, ...mutableLeftNav(httpApiReferenceGeneratedLeftNav)] }
       : domain
   ),
   ...installedSurfaceDomains,

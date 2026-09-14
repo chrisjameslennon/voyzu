@@ -1,0 +1,125 @@
+{
+  "groupId": "organization.operations",
+  "title": "@voyzu/organization",
+  "description": "Platform operations provided by @voyzu/organization.",
+  "sectionId": "organization.platform",
+  "sectionTitle": "Platform",
+  "sectionDescription": "Core Voyzu platform operations.",
+  "operations": [
+    {
+      "id": "organization.organization-access.list",
+      "file": "organization.organization-access.list.operation-doc.json",
+      "summary": "List organization access"
+    },
+    {
+      "id": "organization.organization-access.replace",
+      "file": "organization.organization-access.replace.operation-doc.json",
+      "summary": "Replace organization access"
+    },
+    {
+      "id": "organization.organization-switcher.getSelection",
+      "file": "organization.organization-switcher.getSelection.operation-doc.json",
+      "summary": "Get Selection"
+    },
+    {
+      "id": "organization.organization-switcher.setSelection",
+      "file": "organization.organization-switcher.setSelection.operation-doc.json",
+      "summary": "Set Selection"
+    },
+    {
+      "id": "organization.organization-switcher.accessArchivedSelection",
+      "file": "organization.organization-switcher.accessArchivedSelection.operation-doc.json",
+      "summary": "Access Archived Organization"
+    },
+    {
+      "id": "organization.organizations.updateFinance",
+      "file": "organization.organizations.updateFinance.operation-doc.json",
+      "summary": "Update organization Finance settings"
+    },
+    {
+      "id": "organization.organizations.list",
+      "file": "organization.organizations.list.operation-doc.json",
+      "summary": "List organizations"
+    },
+    {
+      "id": "organization.organizations.create",
+      "file": "organization.organizations.create.operation-doc.json",
+      "summary": "Create organization"
+    },
+    {
+      "id": "organization.organizations.filter",
+      "file": "organization.organizations.filter.operation-doc.json",
+      "summary": "Filter organizations"
+    },
+    {
+      "id": "organization.organizations.search",
+      "file": "organization.organizations.search.operation-doc.json",
+      "summary": "Search organizations"
+    },
+    {
+      "id": "organization.organizations.batchCreate",
+      "file": "organization.organizations.batchCreate.operation-doc.json",
+      "summary": "Batch create organizations"
+    },
+    {
+      "id": "organization.organizations.batchGet",
+      "file": "organization.organizations.batchGet.operation-doc.json",
+      "summary": "Batch get organizations"
+    },
+    {
+      "id": "organization.organizations.batchUpdate",
+      "file": "organization.organizations.batchUpdate.operation-doc.json",
+      "summary": "Batch update organizations"
+    },
+    {
+      "id": "organization.organizations.batchPatch",
+      "file": "organization.organizations.batchPatch.operation-doc.json",
+      "summary": "Batch patch organizations"
+    },
+    {
+      "id": "organization.organizations.batchDelete",
+      "file": "organization.organizations.batchDelete.operation-doc.json",
+      "summary": "Batch delete organizations"
+    },
+    {
+      "id": "organization.organizations.batchActivate",
+      "file": "organization.organizations.batchActivate.operation-doc.json",
+      "summary": "Batch activate organizations"
+    },
+    {
+      "id": "organization.organizations.batchDeactivate",
+      "file": "organization.organizations.batchDeactivate.operation-doc.json",
+      "summary": "Batch deactivate organizations"
+    },
+    {
+      "id": "organization.organizations.activate",
+      "file": "organization.organizations.activate.operation-doc.json",
+      "summary": "Activate organization"
+    },
+    {
+      "id": "organization.organizations.deactivate",
+      "file": "organization.organizations.deactivate.operation-doc.json",
+      "summary": "Deactivate organization"
+    },
+    {
+      "id": "organization.organizations.get",
+      "file": "organization.organizations.get.operation-doc.json",
+      "summary": "Get organization"
+    },
+    {
+      "id": "organization.organizations.update",
+      "file": "organization.organizations.update.operation-doc.json",
+      "summary": "Update organization"
+    },
+    {
+      "id": "organization.organizations.patch",
+      "file": "organization.organizations.patch.operation-doc.json",
+      "summary": "Patch organization"
+    },
+    {
+      "id": "organization.organizations.delete",
+      "file": "organization.organizations.delete.operation-doc.json",
+      "summary": "Delete organization"
+    }
+  ]
+}

@@ -24,7 +24,7 @@ The first implementation covers only two runtime surfaces:
 Explicitly out of scope for this change:
 
 - packages from the separate `voyzu-packages` repository
-- API routes
+- HTTP API routes
 - commands
 - slots and other extension surfaces
 - React navigation components such as left-nav headers
@@ -39,9 +39,9 @@ Voyzu is package based, so the application must compose the page routes and navi
 
 The problem is not the size of the route or navigation definition files themselves. They are small. The problem is what they import transitively.
 
-Today a runtime import of a package definition can make the complete package/module graph reachable. A lightweight need such as finding a page path can therefore pull in page implementations, API handlers, commands, services, repositories, and their dependencies.
+Today a runtime import of a package definition can make the complete package/module graph reachable. A lightweight need such as finding a page path can therefore pull in page implementations, HTTP API handlers, commands, services, repositories, and their dependencies.
 
-The runtime should be able to know that `/settings/users` exists without importing the implementation of the Users page, and without importing unrelated Auth API or command code.
+The runtime should be able to know that `/settings/users` exists without importing the implementation of the Users page, and without importing unrelated Auth HTTP API or command code.
 
 The intended separation is:
 
@@ -93,13 +93,13 @@ The generated files are indexes only. They do not copy or reconstruct package ro
 ```ts
 import type { VoyzuPackageModuleDefinition } from "@voyzu/types/framework";
 
-import { apiDefinitions } from "./api.routes";
+import { httpApiRoutes } from "./http-api.routes";
 import { pageRoutes } from "./pages.routes";
 import { commands } from "./commands";
 
 export const usersModule = {
   pageRoutes,
-  apiDefinitions,
+  httpApiRoutes,
   commands,
 } as const satisfies VoyzuPackageModuleDefinition;
 ```
@@ -357,7 +357,7 @@ export const settingsLeftNav = [
 ] as const;
 ```
 
-This gives good type safety, but importing `usersModule` also reaches `api.routes.ts`, `commands.ts`, and `pages.routes.ts`.
+This gives good type safety, but importing `usersModule` also reaches `http-api.routes.ts`, `commands.ts`, and `pages.routes.ts`.
 
 Once `pages.routes.ts` is safe to import globally, navigation should reference it directly:
 
@@ -549,8 +549,8 @@ import { preinstalledNavigation }
 The existing hardcoded runtime imports of complete preinstalled package definitions should no longer be required to construct page routes or navigation.
 
 The page-route index is consumed as the bare flattened route array shown above.
-It does not inject package metadata into route objects. Automatic `apiDocsUrl`
-generation is paused until API composition is redesigned.
+It does not inject package metadata into route objects. Automatic `httpApiDocsUrl`
+generation is paused until HTTP API composition is redesigned.
 
 The page runtime becomes:
 
@@ -623,7 +623,7 @@ The following must not be imported merely to match `/settings/users`:
 ```text
 @voyzu/auth/voyzu.package.ts
 @voyzu/auth/modules/users/module.ts
-@voyzu/auth/modules/users/api.routes.ts
+@voyzu/auth/modules/users/http-api.routes.ts
 @voyzu/auth/modules/users/commands.ts
 UsersListPage.tsx
 UserDetailPage.tsx
@@ -652,7 +652,7 @@ The page implementation is loaded only after its route is selected.
 This change must not:
 
 - migrate packages in the `voyzu-packages` repository;
-- redesign API composition;
+- redesign HTTP API composition;
 - redesign commands;
 - convert page implementations into string entry points;
 - duplicate page route metadata into generated files;

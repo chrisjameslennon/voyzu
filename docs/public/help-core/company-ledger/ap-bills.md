@@ -18,7 +18,7 @@ Open a bill to read its supplier, references, financial lines, tax, totals, appl
 
 ## Source and scope
 
-Bills are created through an API client or an integrated application and then posted by Voyzu. This application screen is for enquiry.
+Bills are created through an HTTP API client or an integrated application and then posted by Voyzu. This application screen is for enquiry.
 
 ## Refresh and export
 

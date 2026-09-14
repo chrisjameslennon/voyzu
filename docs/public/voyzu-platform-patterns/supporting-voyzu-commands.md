@@ -1,7 +1,9 @@
 # Supporting Voyzu commands
 
+HTTP API registration uses `contracts.httpApiRouting` (roots and routes keyed by stable ID) and `contracts.httpApiDocumentation` (sections, groups and operation descriptions). Every route needs exactly one documentation entry. Section titles become package-qualified OpenAPI tags; route IDs become operation IDs. See the [HTTP API contract](../platform-contracts/http-api-contract.md) for the complete example. Module exports alone do not register HTTP routes.
+
 Voyzu packages participate in installation, composition, development linking,
-API documentation generation, builds, and optional ad hoc scripts. Most of
+HTTP API documentation generation, builds, and optional ad hoc scripts. Most of
 these commands do not require custom command code in the package. A package
 supports them by following the package contract and keeping its declared files,
 exports, dependencies, modules, and lifecycle SQL valid.
@@ -19,9 +21,9 @@ reference and operator instructions.
 | `npm run voyzu:link-package <package-name>` | In a development runtime, copies one local package from `packages`, applies its installation SQL, composes it, and enables source mirroring while the development server runs. |
 | `npm run voyzu:link-packages` | Links every installable local package, installs dependencies, applies each package's SQL, and composes once. |
 | `npm run voyzu:uninstall-package <package-name>` | Applies declared uninstall SQL in one transaction, removes the runtime package copy, and recomposes the application. |
-| `npm run voyzu:compose` | Reads installed package contracts and regenerates dependencies, navigation, routes, assets, API documentation, and the OpenAPI document. |
+| `npm run voyzu:compose` | Reads installed package contracts and regenerates dependencies, navigation, routes, assets, HTTP API documentation, and the OpenAPI document. |
 | `npm run voyzu:run-script <package-name> <script-name> [parameters...]` | Loads and runs a TypeScript function exposed by the package's `scripts` contract. |
-| `npm run voyzu:build-api-reference` | Reads package API definitions and DTOs to regenerate API operation documents, DTO documents, and the combined OpenAPI document. |
+| `npm run voyzu:build-http-api-reference` | Reads package HTTP API definitions and DTOs to regenerate HTTP API operation documents, DTO documents, and the combined OpenAPI document. |
 | `npm run voyzu:list-packages` | Reads the installed package's `package.json` name and version for display. |
 | `npm run voyzu:build` and `npm run voyzu:start` | Build and run the composed application, including the package's registered pages, APIs, and dependencies. |
 | `npm run voyzu:update` | Re-composes installed packages after updating Voyzu. It does not re-run package SQL or package scripts. |
@@ -37,7 +39,7 @@ lifecycle that an existing package must implement.
 
 An installable package needs valid Voyzu metadata in `package.json` and a
 default package definition in `voyzu.package.ts`. The package metadata declares
-whether installation is allowed, package dependencies, and the page and API
+whether installation is allowed, package dependencies, and the page and HTTP API
 root paths it owns.
 
 ```json
@@ -49,7 +51,6 @@ root paths it owns.
     "allowInstall": true,
     "dependencies": [],
     "pageRootPaths": ["/ice-creams"],
-    "apiRootPaths": ["/ice-creams"]
   }
 }
 ```
@@ -196,25 +197,20 @@ not completed.
 
 ## Composition support
 
-`voyzu.package.ts` registers complete module definitions for lifecycle commands,
-but application composition discovers route and command surfaces only from
-explicit `./<module>/pages.routes`, `./<module>/api.routes`, and
-`./<module>/commands` exports. Navigation uses the single optional
-`./navigation` export. There are no fallbacks through the package manifest,
-module manifest, or legacy navigation exports.
+`voyzu.package.ts` registers package lifecycle contributions and HTTP API contracts. Page composition reads `./<module>/pages.routes`; HTTP composition reads `contracts.httpApiRouting` and `contracts.httpApiDocumentation`. Navigation uses the optional `./navigation` export.
 
 Composition also consumes static assets, documentation settings, dependencies,
 owned route roots, and other package metadata. It validates pre-installed and
 installed packages through the same descriptor and surface rules, then writes
-paired `pre-installed.ts` and `installed.ts` navigation, page-route, API-route,
+paired `pre-installed.ts` and `installed.ts` navigation, page-route, HTTP API-route,
 and command output beneath
-`apps/web/.generated`. The platform wildcard page and API handlers consume the
-composed route definitions at runtime. API
-documentation generation reads API route definitions and referenced DTOs from
+`apps/web/.generated`. The platform wildcard page and HTTP API handlers consume the
+composed route definitions at runtime. HTTP API
+documentation generation reads HTTP API route definitions and referenced DTOs from
 the package source. Generated output must never be edited directly.
 
 Run composition after changing package contracts, dependencies, routes,
-navigation, assets, API definitions, or DTO documentation:
+navigation, assets, HTTP API definitions, or DTO documentation:
 
 ```shell
 npm run voyzu:compose
@@ -234,16 +230,16 @@ Before publishing or installing a package, confirm that:
 * `voyzu.package.ts` exports a valid default definition;
 * every complete module satisfies the module contract;
 * every composed surface has the required direct package export;
-* page routes, API routes, and commands use lazy implementation loaders;
+* page routes, HTTP API routes, and commands use lazy implementation loaders;
 * install and uninstall paths exist and remain inside the package;
 * installation and seed SQL are idempotent;
 * uninstall SQL is dependency-safe and preserves platform audit records;
 * optional TypeScript scripts are explicitly exposed through `scripts`;
 * routes and navigation stay within the package's declared roots;
-* API definitions and DTO schema descriptions are complete enough to generate the API
+* HTTP API definitions and DTO schema descriptions are complete enough to generate the HTTP API
   Reference; and
 * the composed application can typecheck and build with the package installed.
 
 See also the [Package contract](../voyzu-platform-guide/package-contract.md),
-[API patterns](api-patterns.md), and
+[HTTP API patterns](http-api-patterns.md), and
 [Managing dependencies](managing-dependencies.md).

@@ -6,11 +6,11 @@ Installed Packages shows the packages composed into this Voyzu instance. Use it 
 
 The list shows each installed package, whether its page routes are visible, and whether it contributes top navigation. Required platform packages keep their page routes visible.
 
-Changing UI visibility does not install or uninstall package code and does not delete package data. Package installation and removal are command-line operations. Package API routes are not affected by either visibility setting.
+Changing UI visibility does not install or uninstall package code and does not delete package data. Package installation and removal are command-line operations. Package HTTP API routes are not affected by either visibility setting.
 
 ## Package details
 
-Open a package to view its description, repository, page and API root paths, installation type, and UI visibility. The **View** menu displays the installed `package.json` or `voyzu.package.ts` definition used by the composed runtime.
+Open a package to view its description, repository, page and HTTP API root paths, installation type, and UI visibility. The **View** menu displays the installed `package.json` or `voyzu.package.ts` definition used by the composed runtime.
 
 **Show top navigation** controls whether the package contributes items to the platform top navigation. It does not block direct access to page routes.
 

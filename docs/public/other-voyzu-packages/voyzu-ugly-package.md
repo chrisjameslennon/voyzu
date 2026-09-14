@@ -7,7 +7,7 @@ The package shows that a developer can:
 * Own the visual design and use package-specific styling instead of Voyzu UI components.
 * Register independent page routes and provide package-owned top navigation without a left navigation.
 * Declare a package-specific npm dependency and publish package-owned static assets.
-* Receive a Next.js request and return a response through a registered API route.
+* Receive a Next.js request and return a response through a registered HTTP API route.
 * Choose not to use database objects or auditing when the package does not need them.
 
 Voyzu still controls the outer platform, authentication and route composition. The package must still satisfy the [package contract](../voyzu-platform-guide/package-contract.md), and each registered module must satisfy the [module contract](../voyzu-platform-guide/module-contract.md).

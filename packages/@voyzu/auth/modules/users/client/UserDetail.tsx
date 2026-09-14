@@ -22,8 +22,8 @@ const ROLE_OPTIONS = [
 
 const ACCESS_MODE_OPTIONS = [
   { value: "UI", label: "UI" },
-  { value: "API", label: "API" },
-  { value: "UI_AND_API", label: "UI and API" },
+  { value: "API", label: "HTTP API" },
+  { value: "UI_AND_API", label: "UI and HTTP API" },
 ];
 
 const CODE_PATTERN = /^[A-Z0-9_-]*$/;

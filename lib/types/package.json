@@ -21,9 +21,9 @@
       "types": "./src/errors/index.ts",
       "import": "./src/errors/index.ts"
     },
-    "./api": {
-      "types": "./src/api/index.ts",
-      "import": "./src/api/index.ts"
+    "./http-api": {
+      "types": "./src/http-api/index.ts",
+      "import": "./src/http-api/index.ts"
     },
     "./framework": {
       "types": "./src/framework.ts",

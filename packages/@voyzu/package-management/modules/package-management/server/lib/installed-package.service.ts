@@ -26,7 +26,7 @@ function response(
     hasTopNavigation: discovered?.hasTopNavigation ?? false,
     required: isRequiredPackage(row.code),
     pageRootPaths: discovered?.pageRootPaths ?? [],
-    apiRootPaths: discovered?.apiRootPaths ?? [],
+    httpApiRootPaths: discovered?.httpApiRootPaths ?? [],
   };
   return dto;
 }
@@ -35,6 +35,7 @@ export async function reconcileInstalledPackages(): Promise<InstalledPackageResp
   const inventory = await discoverInstalledPackages();
   return withTransaction(async (db) => {
     await new InstalledPackageRepo(db).lockInventory();
+    await new InstalledPackageRepo(db).migrateHttpApiReferencePackage();
     if (inventory.some(pkg => pkg.code === "@voyzu/organization")) {
       await new InstalledPackageRepo(db).migrateOrganizationPackage();
     }

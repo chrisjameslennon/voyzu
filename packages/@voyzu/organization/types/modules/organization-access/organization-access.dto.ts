@@ -1,6 +1,6 @@
 import Type from "typebox";
 
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 
 const PositiveId = Type.Integer({ minimum: 1 });
 

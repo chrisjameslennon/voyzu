@@ -7,7 +7,7 @@ It includes:
 * Package and module declarations with package-owned top and left navigation.
 * Layered CRUD pages and REST APIs using Voyzu DTO, validation, service and repository patterns.
 * Database installation, reference seeds, optional sample data and uninstall artifacts.
-* Audited business data, package-owned audit views and the shared platform audit API.
+* Audited business data, package-owned audit views and the shared platform audit HTTP API.
 * A report module with interactive and printable routes.
 
 Use this package as a working example when following [Develop a new package](../voyzu-platform-guide/develop-a-new-package.md), the [package contract](../voyzu-platform-guide/package-contract.md) and the [module contract](../voyzu-platform-guide/module-contract.md).

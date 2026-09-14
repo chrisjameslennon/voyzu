@@ -1,12 +1,12 @@
 # Internal API Contract
 
-Server-side, same-runtime calls to package-owned and shared resources (`@core`, `@erp`). This API replaces the former semantic data and capability APIs.
+Server-side, same-runtime calls to package-owned and shared resources (`@core`, `@erp`). This internal API replaces the former semantic data and capability APIs.
 
 ## Usage
 
 Use the internal API when one installed package needs to interact with a another package. Calls withing a package can use a standard typescript import and should not use the internal API.
 
-The internal API can be thought of as the internal, runtime equivalent of the composed HTTP REST API.
+The internal API can be thought of as the internal, runtime equivalent of the composed HTTP API.
 
 ## Defining an internal API contract
 

@@ -203,7 +203,7 @@ Package Management provides two independent controls:
 * **Show top navigation** controls the package's UI-domain items in the desktop top navigation and mobile drawer.
 * **Show page routes** controls whether package pages can be opened, including through direct URLs.
 
-These controls do not affect API routes, uninstall the package, run uninstall scripts or delete data. Package code does not need special visibility checks; Voyzu applies both controls at the shared application surface.
+These controls do not affect HTTP API routes, uninstall the package, run uninstall scripts or delete data. Package code does not need special visibility checks; Voyzu applies both controls at the shared application surface.
 
 ## Compose after installation
 
@@ -211,10 +211,10 @@ The install and link-package workflows compose packages automatically. Compositi
 
 1. discovers pre-installed and installed packages in the runtime workspace;
 2. reads each package's metadata and dedicated surface exports;
-3. imports exported page-route and API-route manifests and validates their lazy
+3. imports exported page-route and HTTP API-route manifests and validates their lazy
    loaders and owned roots;
 4. imports the optional common `./navigation` export;
-5. writes navigation, page-route, API-route, operation, and API Reference output beneath
+5. writes navigation, page-route, HTTP API-route, operation, and HTTP API Reference output beneath
    `apps/web/.generated` for the platform wildcard handlers to consume;
    and
 6. updates the runtime workspace and Next.js transpilation metadata.

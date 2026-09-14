@@ -156,7 +156,7 @@ The document posting engine will determine which Supporting Ledger(s) apply to t
 
 Counterparties are related parties to a given transaction. For example a customer is a counterparty to an invoice or invoice payment transaction. The applicable Tax Authority may also be said to be a counterparty to the transaction.
 
-For documents that support counterparties then the document can either supply the code of an existing counterparty, or supply a new counterparty, in which case the counterparty will be added. Counterparties cannot be updated via document posting, use the relevant counterparty API instead.
+For documents that support counterparties then the document can either supply the code of an existing counterparty, or supply a new counterparty, in which case the counterparty will be added. Counterparties cannot be updated via document posting, use the relevant counterparty HTTP API instead.
 
 Counterparty balances are updated as needed by the Financial Document engine.
 
@@ -211,7 +211,7 @@ If the document has lines, a line can also supply dimensions. Header dimensions 
 
 ### Configuring dimensions
 
-Dimensions can be configured within the "Organization > Dimensions" screen and associated API. A financial document processor declares whether it supports dimensions.
+Dimensions can be configured within the "Organization > Dimensions" screen and associated HTTP API. A financial document processor declares whether it supports dimensions.
 
 ### Validating supplied dimensions
 

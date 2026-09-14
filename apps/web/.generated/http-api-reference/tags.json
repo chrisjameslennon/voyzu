@@ -1,0 +1,26 @@
+[
+  {
+    "name": "@voyzu/audit: Platform",
+    "description": "Core Voyzu platform operations."
+  },
+  {
+    "name": "@voyzu/auth: Platform",
+    "description": "Core Voyzu platform operations."
+  },
+  {
+    "name": "@voyzu/localization: Platform",
+    "description": "Core Voyzu platform operations."
+  },
+  {
+    "name": "@voyzu/organization: Platform",
+    "description": "Core Voyzu platform operations."
+  },
+  {
+    "name": "@voyzu/package-management: Platform",
+    "description": "Core Voyzu platform operations."
+  },
+  {
+    "name": "@voyzu/http-api: Platform",
+    "description": "Core Voyzu platform operations."
+  }
+]

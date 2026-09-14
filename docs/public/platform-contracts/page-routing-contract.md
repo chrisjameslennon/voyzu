@@ -79,9 +79,11 @@ export default {
           //     ? "journal-lines"
           //     : "journal-details",
 
-          // Reference to related API documentation for this page.
-          // This is documentation metadata; it does not register an API route.
-          apiDocsUrl: "/api-reference/finance/journals",
+          // Reference to related HTTP API documentation for this page.
+          // This is documentation metadata; it does not register an HTTP API route.
+          // Composition validates the group ID and resolves its generated URL.
+          // Omit this to link to the HTTP API documentation landing page.
+          httpApiDocumentationGroupId: "finance.journals",
 
           // false: render inside the normal platform surface.
           // true: render the page without the platform frame or breadcrumbs,

@@ -44,7 +44,7 @@
 * [Theming](voyzu-platform-patterns/theming.md)
 * [UI patterns](voyzu-platform-patterns/ui-reference.md)
 * [Command patterns](voyzu-platform-patterns/commands.md)
-* [API patterns](voyzu-platform-patterns/api-patterns.md)
+* [HTTP API patterns](voyzu-platform-patterns/http-api-patterns.md)
 * [Supporting Voyzu commands](voyzu-platform-patterns/supporting-voyzu-commands.md)
 * [Testing patterns](voyzu-platform-patterns/tests.md)
 * [Validation layers](voyzu-platform-patterns/validation-layers.md)
@@ -175,7 +175,7 @@
   * [TAX\_PAYMENT](help-core/financial-documents/tax_payment.md)
   * [TAX\_REFUND](help-core/financial-documents/tax_refund.md)
   * [Add a financial document processing engine](help-core/financial-documents/financial-document-processing-engine-development.md)
-* [API Reference](help-core/api-reference.md)
+* [HTTP API Reference](help-core/http-api-reference.md)
 
 ## Other Voyzu Packages
 

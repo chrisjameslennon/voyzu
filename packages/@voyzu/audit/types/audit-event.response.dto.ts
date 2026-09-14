@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 import { ActorType } from "@voyzu/types/modules/core";
 
 const NonBlankString = Type.String({ pattern: "\\S" });

@@ -1,5 +1,5 @@
 import Type from "typebox";
-import { StrictObject } from "@voyzu/types/api";
+import { StrictObject } from "@voyzu/types/http-api";
 import { AuditMetadataDto, Status } from "@voyzu/types/modules/core";
 const BusinessCode = Type.String({ pattern: "^[A-Z0-9][A-Z0-9_-]*$" });
 const CountryCode = Type.String({ pattern: "^[A-Z]{2}$" });

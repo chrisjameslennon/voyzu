@@ -1,0 +1,34 @@
+{
+  "@voyzu/audit": [
+    "/audit"
+  ],
+  "@voyzu/auth": [
+    "/auth",
+    "/users",
+    "/user-queries",
+    "/user-search-results",
+    "/user-selections",
+    "/user-batches"
+  ],
+  "@voyzu/foundation": [],
+  "@voyzu/http-api-reference": [],
+  "@voyzu/localization": [
+    "/localization"
+  ],
+  "@voyzu/organization": [
+    "/organization",
+    "/organization-selection"
+  ],
+  "@voyzu/package-management": [
+    "/installed-packages",
+    "/installed-package-reconciliation",
+    "/package-settings"
+  ],
+  "@voyzu/shared-contracts": [],
+  "@voyzu/system-info": [],
+  "@voyzu/ui-reference": [],
+  "@voyzu/welcome": [],
+  "@voyzu/http-api": [
+    "/capability"
+  ]
+}
