@@ -120,7 +120,12 @@ export function OrganizationDetail({ organization, activeCountries, activeCurren
             label: "Details",
             content: (
               <section className={detailStyles.card}>
-                <h2 className={typography.sectionHeading}>Organization Details</h2>
+                <div className={detailStyles.cardHeader}>
+                  <h2 className={`${typography.sectionHeading} ${detailStyles.cardHeaderTitle}`}>Organization Details</h2>
+                  <div className={detailStyles.cardHeaderActions}>
+                    <Button variant="secondary" icon="save" onClick={() => void save()} disabled={busy || !code || !name || !countryCode || !baseCurrencyCode}>Save</Button>
+                  </div>
+                </div>
                 {error ? <p>{error}</p> : null}
                 <div className={detailStyles.formGrid}>
                   <label className={detailStyles.fieldGroup}><span className={typography.fieldLabel}>Code</span><Input value={code} maxLength={14} onChange={(event) => setCode(event.target.value.toUpperCase())} /></label>
@@ -128,7 +133,6 @@ export function OrganizationDetail({ organization, activeCountries, activeCurren
                   <label className={detailStyles.fieldGroup}><span className={typography.fieldLabel}>Country</span><SearchableSelect value={countryCode} onChange={setCountryCode} options={activeCountries} /></label>
                   <label className={detailStyles.fieldGroup}><span className={typography.fieldLabel}>Base Currency</span><SearchableSelect value={baseCurrencyCode} onChange={setBaseCurrencyCode} options={activeCurrencies} /></label>
                 </div>
-                <div className={detailStyles.cardActions}><Button variant="primary" onClick={() => void save()} disabled={busy || !code || !name || !countryCode || !baseCurrencyCode}>Save</Button></div>
               </section>
             ),
           },

@@ -31,9 +31,14 @@ const settingsPageRoutes = pageRoutes.filter(
   ({ path }) => path.startsWith("/settings/"),
 );
 const settingsRoutePaths = pageRoutes.map(({ id, path, rootPath, packageName }) => ({ id, path, rootPath, packageName }));
+const headerRoots = new Set(
+  [...preInstalledSurfaceContributions, ...installedSurfaceContributions]
+    .flatMap(({ surface }) => Object.keys(surface["leftnav.header"] ?? {})),
+);
 const leftNavRouteIds = [
   ...settingsPageRoutes.map(({ id }) => id),
   ...packageSurfaceDomains
+    .filter(area => area.leftNav.some(group => group.items.length > 0) || headerRoots.has(area.rootPath))
     .flatMap((domain) => domain.routePaths.map(({ id }) => id)),
 ];
 

@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
 const VERSION_KEY = "voyzu.browserStateVersion";
 const PAGE_PREFIX = "voyzu.currentPage.";
 
 export function BrowserStateReset({ version, children }: { version: string | null; children: ReactNode }) {
-  const [ready, setReady] = useState(false);
-
   useEffect(() => {
     if (version) {
       try {
@@ -26,8 +24,9 @@ export function BrowserStateReset({ version, children }: { version: string | nul
         // Browsing still works when session storage is unavailable.
       }
     }
-    setReady(true);
   }, [version]);
 
-  return ready ? children : null;
+  // Printable pages must include their content in server-rendered HTML.
+  // Reset browser state after hydration without withholding the page.
+  return children;
 }
