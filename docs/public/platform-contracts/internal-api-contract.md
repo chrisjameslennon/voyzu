@@ -1,6 +1,6 @@
 # Internal API Contract
 
-Server-side, same-runtime calls to package-owned and shared resources (`@core`, `@erp`). This internal API replaces the former semantic data and capability APIs.
+This contract is based on the [Semantic Data Contract](https://github.com/chrisjameslennon/semantic-contracts/blob/main/semantic-data-contract.md) and the [Semantic Capability Contract](https://github.com/chrisjameslennon/semantic-contracts/blob/main/semantic-capability-contract.md). Because Voyzu packages share a runtime some modifications have been made.
 
 ## Usage
 
