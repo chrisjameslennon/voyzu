@@ -31,15 +31,24 @@ Voyzu package contracts are described below:
 
 ### Internal API Contract
 
+Read the Internal API contract [here](internal-api-contract.md).
+
 ### HTTP API Contract
+
+Read the HTTP API contract [here](http-api-contract.md).
 
 ### Page routing contract
 
+Read the Page routing contract [here](page-routing-contract.md).
+
 ### UI Surface Contract
+
+Read the UI Surface contract [here](ui-surface-contract.md).
 
 ## Patterns
 
 Voyzu packages follow a standard set of patterns, to promote system understandability, reliability and to promote Rapid Application Development. These patterns do not form part of the package contract. They do interact with the package contracts, in that they assume that contracts are in place and adhered to.
 
+[Read more](../voyzu-platform-patterns/).
 
 

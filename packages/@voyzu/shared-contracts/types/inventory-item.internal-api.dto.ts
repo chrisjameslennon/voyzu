@@ -9,3 +9,9 @@ export const InventoryItemGetResponseDto = Type.Union([InventoryItemSchema, Type
 export const InventoryItemByOrganizationRequestDto = Type.Object({ organization_id: Type.Integer({ minimum: 1 }) }, { additionalProperties: false });
 
 export const InventoryItemByOrganizationResponseDto = Type.Array(InventoryItemSchema);
+
+export const InventoryItemAvailabilityDto = Type.Object({
+  itemId: Type.Integer({ minimum: 1 }), warehouseId: Type.Integer({ minimum: 1 }), warehouseName: Type.String(),
+  onHand: Type.Number(), reserved: Type.Number(), available: Type.Number(),
+}, { additionalProperties: false });
+export const InventoryItemAvailabilityResponseDto = Type.Array(InventoryItemAvailabilityDto);
