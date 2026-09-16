@@ -84,6 +84,7 @@ export default [
         "icon": "radio_button_checked",
         "routeId": "voyzu.ui-reference.page.radio"
       },
+      "ui-reference.menu1.rich-text-editor": { "label": "Rich Text Editor", "icon": "edit_note", "routeId": "voyzu.ui-reference.page.rich-text-editor" },
       "ui-reference.menu1.searchable-select": {
         "label": "Searchable Select",
         "icon": "arrow_drop_down_circle",

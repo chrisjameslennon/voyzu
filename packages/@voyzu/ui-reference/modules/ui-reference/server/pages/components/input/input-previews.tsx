@@ -97,3 +97,14 @@ export function BadgeInputPreview() {
     </div>
   );
 }
+
+export function DecimalInputPreview() {
+  const [whole, setWhole] = useState("12");
+  const [price, setPrice] = useState("39.9");
+  const [rate, setRate] = useState("1.234");
+  return <div style={{ display: "grid", gap: "1rem", maxWidth: 320 }}>
+    <label>Whole numbers (0 decimals)<Input type="number" decimalPlaces={0} value={whole} onChange={(event) => setWhole(event.target.value)} /></label>
+    <label>Price (2 decimals)<Input type="number" decimalPlaces={2} min={0} value={price} onChange={(event) => setPrice(event.target.value)} /></label>
+    <label>Rate (4 decimals)<Input type="number" decimalPlaces={4} value={rate} onChange={(event) => setRate(event.target.value)} /></label>
+  </div>;
+}

@@ -6,6 +6,7 @@ const auth = {
 const helpPath = "voyzu-platform-patterns/ui-reference";
 
 export const pageRoutes = {
+  "voyzu.ui-reference.page.rich-text-editor": { path: "/ui-reference/components/rich-text-editor", pageTitle: "Rich Text Editor", loadPage: () => import("./server/pages/components/rich-text-editor/page").then((module) => module.default), helpPath, auth },
   "voyzu.ui-reference.page.textarea": {  path: "/ui-reference/components/textarea", pageTitle: "Textarea", loadPage: () => import("./server/pages/components/textarea/page").then((module) => module.default), helpPath, auth },
   "voyzu.ui-reference.page.context-switcher": {  path: "/ui-reference/components/context-switcher", pageTitle: "Context Switcher", loadPage: () => import("./server/pages/components/context-switcher/page").then((module) => module.default), helpPath, auth },
   "voyzu.ui-reference.page.alert": {  path: "/ui-reference", pageTitle: "Alert", loadPage: () => import("./server/pages/components/alert/page").then((module) => module.default), helpPath, auth },

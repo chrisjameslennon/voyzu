@@ -1,0 +1,34 @@
+.editor { min-width: 0; border: 1px solid var(--voyzu-color-border); border-radius: var(--voyzu-radius-control); background: var(--voyzu-color-surface); color: var(--voyzu-color-text); }
+.editor:focus-within { border-color: var(--voyzu-color-link); }
+.editor.invalid { border-color: var(--voyzu-color-danger); }
+.editor :global(.ProseMirror-menubar) { border-radius: var(--voyzu-radius-control) var(--voyzu-radius-control) 0 0; min-height: 0 !important; padding: 4px 6px; background: var(--voyzu-color-surface-muted); border-color: var(--voyzu-color-border); color: var(--voyzu-color-text); }
+.editor :global(.ProseMirror) { min-height: 220px; padding: 0.5rem 1rem; outline: none; font-family: inherit; font-size: var(--voyzu-font-size-body); line-height: 1.5; overflow-wrap: anywhere; white-space: pre-wrap; }
+.editor :global(.ProseMirror) p { margin: 0.75em 0; }
+.editor :global(.ProseMirror) h1 { font-size: 2em; }
+.editor :global(.ProseMirror) h2 { font-size: 1.5em; }
+.editor :global(.ProseMirror) h3 { font-size: 1.25em; }
+.editor :global(.ProseMirror) h4 { font-size: 1.1em; }
+.editor :global(.ProseMirror) h5 { font-size: 1em; }
+.editor :global(.ProseMirror) h6 { font-size: 0.9em; }
+.editor :global(.ProseMirror) :is(h1,h2,h3,h4,h5,h6) { font-weight: 700; margin: 1em 0 0.5em; }
+.editor :global(.ProseMirror) ul { list-style: disc; padding-left: 2rem; }
+.editor :global(.ProseMirror) ol { list-style: decimal; padding-left: 2rem; }
+.editor :global(.ProseMirror) a { color: var(--voyzu-color-link); text-decoration: underline; }
+.editor :global(.ProseMirror) blockquote { margin-left: 0; padding-left: 1rem; border-left: 3px solid var(--voyzu-color-border); }
+.editor :global(.ProseMirror) pre { padding: 0.75rem; background: var(--voyzu-color-surface-muted); overflow-x: auto; }
+.editor :global(.ProseMirror) img { max-width: 100%; }
+.editor :global(.ProseMirror) table { margin: 0.75rem 0; }
+.editor :global(.ProseMirror) :is(td,th) { border: 1px solid var(--voyzu-color-border); padding: 2px 6px; }
+.editor :global(.ProseMirror) th { background: var(--voyzu-color-surface-muted); text-align: left; }
+.editor :global(.ProseMirror-menu-dropdown-menu), .editor :global(.ProseMirror-menu-submenu) { background: var(--voyzu-color-surface); border-color: var(--voyzu-color-border); color: var(--voyzu-color-text); z-index: 20; }
+.editor :global(.ProseMirror-menu-active), .editor :global(.ProseMirror-menu-dropdown-item):hover { background: var(--voyzu-color-surface-muted); }
+.editor.readOnly :global(.ProseMirror-menubar) { display: none; }
+ .wrapper { position: relative; min-width: 0; }
+.linkOpen .editor { min-height: 330px; }
+.linkDialog { position: absolute; top: 2.5rem; left: 0.75rem; z-index: 30; box-sizing: border-box; width: min(360px, calc(100% - 1.5rem)); border: 1px solid var(--voyzu-color-border); border-radius: var(--voyzu-radius-control); background: var(--voyzu-color-surface); color: var(--voyzu-color-text); box-shadow: var(--voyzu-shadow-floating); }
+.linkHeader { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.75rem; border-bottom: 1px solid var(--voyzu-color-border); }
+.linkHeader h2 { margin: 0; }
+.linkBody { display: grid; gap: 0.75rem; padding: 0.75rem; }
+.linkFooter { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; padding: 0.75rem; border-top: 1px solid var(--voyzu-color-border); }
+.editor :global(.ProseMirror) :is(td,th) p { margin: 0; }
+.editor :global(.ProseMirror) :is(td,th) p + p { margin-top: 0.25rem; }

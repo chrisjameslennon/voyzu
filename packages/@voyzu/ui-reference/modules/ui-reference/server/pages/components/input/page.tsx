@@ -1,6 +1,7 @@
 import { getSingletonHighlighter } from "shiki";
 import pageStyles from "../../page.module.css";
 import {
+  DecimalInputPreview,
   BadgeInputPreview,
   BasicInputPreview,
   DisabledInputPreview,
@@ -16,6 +17,17 @@ async function highlight(code: string) {
 }
 
 const STORIES = [
+  {
+    name: "Decimal places",
+    description: "Set decimalPlaces to limit fractional digits while typing or pasting. Values display exactly that many decimal places initially and on blur; empty values stay empty. While editing, intermediate values such as 12. are preserved. Use 0 for whole numbers, 2 for prices, or 4 for rates. This uses a text input with a decimal keyboard hint; read event.target.value rather than valueAsNumber. Validate numeric ranges in the form and on the server.",
+    preview: <DecimalInputPreview />,
+    code: `const [price, setPrice] = useState("39.9");
+
+<Input type="number" decimalPlaces={2} min={0}
+  value={price} onChange={(event) => setPrice(event.target.value)} />
+// Displays 39.90. Keep a string draft, then convert on submission:
+const amount = price.trim() === "" ? null : Number(price);`,
+  },
   {
     name: "Basic",
     description: "A standard text field using the shared control sizing, border, focus, and disabled states.",
@@ -97,7 +109,8 @@ const STORIES = [
 ];
 
 const PROP_TABLE = [
-  { name: "value", type: "string", required: "", description: "Current input value" },
+  { name: "decimalPlaces", type: "number (integer 0?20)", required: "", description: "Opt-in numeric precision: limits entered fractional digits and formats initial/blurred values. Omit for normal Input behaviour. onChange returns text; valueAsNumber is not available in this mode." },
+  { name: "value", type: "string | number", required: "", description: "Current input value" },
   { name: "onChange", type: "ChangeEventHandler<HTMLInputElement>", required: "", description: "Called when the input changes" },
   { name: "placeholder", type: "string", required: "", description: "Placeholder text" },
   { name: "type", type: "HTMLInputTypeAttribute", required: "", description: "Native input type. Defaults to text; password mode overrides it" },
