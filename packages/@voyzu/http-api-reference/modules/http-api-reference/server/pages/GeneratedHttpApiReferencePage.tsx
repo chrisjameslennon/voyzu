@@ -8,8 +8,8 @@ export function GeneratedHttpApiReferencePage({ context }: PageProps) {
   }
   return (
     <GeneratedOperationsPage
-      packageFolder={packageFolder}
-      groupFolder={groupFolder}
+      packageFolder={decodeURIComponent(packageFolder)}
+      groupFolder={decodeURIComponent(groupFolder)}
     />
   );
 }

@@ -32,3 +32,9 @@
 .linkFooter { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; padding: 0.75rem; border-top: 1px solid var(--voyzu-color-border); }
 .editor :global(.ProseMirror) :is(td,th) p { margin: 0; }
 .editor :global(.ProseMirror) :is(td,th) p + p { margin-top: 0.25rem; }
+
+.resizable { resize: vertical; overflow: auto; height: 280px; min-height: 260px; }
+.resizable .editor { box-sizing: border-box; height: 100%; }
+.resizable :global(.ProseMirror-menubar-wrapper) { display: flex; flex-direction: column; height: 100%; }
+.resizable :global(.ProseMirror) { flex: 1; overflow: auto; min-height: 180px; }
+.resizable.linkOpen { min-height: 340px; }

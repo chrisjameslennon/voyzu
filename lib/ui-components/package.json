@@ -8,7 +8,8 @@
       "types": "./src/index.ts",
       "import": "./src/index.ts"
     },
-    "./filter-panel/filter-panel.module.css": "./src/filter-panel/filter-panel.module.css"
+    "./filter-panel/filter-panel.module.css": "./src/filter-panel/filter-panel.module.css",
+    "./rich-text-editor/document": "./src/rich-text-editor/document.ts"
   },
   "peerDependencies": {
     "@voyzu/ui-layout": "*",

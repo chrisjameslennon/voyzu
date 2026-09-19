@@ -22,20 +22,6 @@ const STORIES = [
 />`,
   },
   {
-    name: "Split buttons",
-    preview: <SplitButtonPreview />,
-    code: `<SplitButton
-  variant="primary" label="Add Product" icon="add"
-  onClick={openAddProduct}
-  items={[{ label: "Add from Inventory", icon: "inventory_2", onClick: openFromInventory }]}
-/>`,
-  },
-  {
-    name: "Link button",
-    preview: <LinkButton href="/ui-reference/components/input">View Input reference</LinkButton>,
-    code: `<LinkButton href="/inventory/items/COFFEE">View inventory item</LinkButton>`,
-  },
-  {
     name: "Variants",
     preview: (
       <>
@@ -122,6 +108,20 @@ const STORIES = [
 <Button variant="cancel" disabled>Cancel</Button>
 <Button variant="danger" disabled>Danger</Button>`,
   },
+  {
+    name: "Split buttons",
+    preview: <SplitButtonPreview />,
+    code: `<SplitButton
+  variant="primary" label="Add Product" icon="add"
+  onClick={openAddProduct}
+  items={[{ label: "Add from Inventory", icon: "inventory_2", onClick: openFromInventory }]}
+/>`,
+  },
+  {
+    name: "Link button",
+    preview: <LinkButton href="/ui-reference/components/input">View Input reference</LinkButton>,
+    code: `<LinkButton href="/inventory/items/COFFEE">View inventory item</LinkButton>`,
+  },
 ] satisfies { name: string; preview: React.ReactNode; code: string }[];
 
 const PROPS = [
@@ -177,12 +177,6 @@ export default async function Page() {
         </div>
       </section>
 
-      <section className={styles.section}>
-        <h2 className={styles.sectionTitle}>Choosing a button</h2>
-        <p>Use DropdownMenu with a Button when the entire control opens a menu. Use SplitButton when the main button runs an action immediately and the chevron opens alternatives. Both examples below show primary and secondary styles.</p>
-        <p>LinkButton is a compact outlined anchor for navigation. It requires href and accepts children, an optional Material Symbol icon, className, and native anchor props such as target, rel and aria-label. Use Button for actions and the standard typography link style for links within prose. LinkButton retains normal browser link behaviour.</p>
-        <p><a className={styles.link} href="/ui-reference/components/dropdown-menu">Dropdown Menu props</a>{" ? "}<a className={styles.link} href="/ui-reference/components/split-button">Split Button props</a></p>
-      </section>
       {STORIES.map((story, i) => (
         <section key={story.name} className={styles.section}>
           <h2 className={styles.sectionTitle}>{story.name}</h2>

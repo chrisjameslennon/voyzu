@@ -17,8 +17,11 @@ Load JSON text with parseRichTextDocument(JSON.parse(savedText)); for JSON objec
 - ariaLabel: accessible name (defaults to Rich text editor).
 - readOnly: disables editing and hides toolbar.
 - invalid: error border and aria-invalid.
+- resizable: optional bottom-right handle to resize the editor vertically.
 - className: additional container styling.
 
 ## Exports
 
 Browser-side richTextToMarkdown(value) returns Markdown; simple tables use pipe syntax and complex/merged tables use embedded HTML. richTextToHtml(value) returns an HTML fragment. Native JSON is the lossless editing format. Export helpers do not save data or create download buttons. The reference page provides separate export buttons and a JSON load/save demonstration at /ui-reference/components/rich-text-editor.
+
+Server-side validation can import parseRichTextDocument and readRichTextDocument from @voyzu/ui-components/rich-text-editor/document without importing the client component.

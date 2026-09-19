@@ -28,6 +28,7 @@ export default async function Page() {
       <tr><td>value</td><td>RichTextDocument</td><td>Required native ProseMirror JSON document.</td></tr>
       <tr><td>onChange</td><td>(document) =&gt; void</td><td>Receives the whole JSON document after content changes. Store it in state and pass it back as value.</td></tr>
       <tr><td>readOnly</td><td>boolean</td><td>Prevents editing and hides the toolbar. Defaults to false.</td></tr>
+      <tr><td>resizable</td><td>boolean</td><td>Enables the bottom-right handle for vertical resizing.</td></tr>
       <tr><td>invalid</td><td>boolean</td><td>Shows an error border and sets aria-invalid.</td></tr>
       <tr><td>ariaLabel</td><td>string</td><td>Accessible name, default: Rich text editor.</td></tr>
       <tr><td>className</td><td>string</td><td>Additional class on the editor container.</td></tr>

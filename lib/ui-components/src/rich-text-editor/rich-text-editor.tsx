@@ -64,9 +64,10 @@ export interface RichTextEditorProps {
   ariaLabel?: string;
   readOnly?: boolean;
   invalid?: boolean;
+  resizable?: boolean;
   className?: string;
 }
-export function RichTextEditor({ value, onChange, ariaLabel = "Rich text editor", readOnly = false, invalid = false, className }: RichTextEditorProps) {
+export function RichTextEditor({ value, onChange, ariaLabel = "Rich text editor", readOnly = false, invalid = false, resizable = false, className }: RichTextEditorProps) {
   const container = useRef<HTMLDivElement>(null);
   const editorView = useRef<EditorView | null>(null);
   const props = useRef({ value, onChange, ariaLabel, readOnly, invalid });
@@ -160,7 +161,7 @@ export function RichTextEditor({ value, onChange, ariaLabel = "Rich text editor"
     editorView.current?.setProps({ editable: () => !readOnly, attributes: { role: "textbox", "aria-label": ariaLabel, "aria-multiline": "true", "aria-readonly": String(readOnly), "aria-invalid": String(invalid) } });
     if (readOnly) setLinkRequest(null);
   }, [readOnly, ariaLabel, invalid]);
-  return <div className={styles.wrapper + (linkRequest ? " " + styles.linkOpen : "")}>
+  return <div className={styles.wrapper + (resizable ? " " + styles.resizable : "") + (linkRequest ? " " + styles.linkOpen : "")}>
     <div ref={container} className={[styles.editor, readOnly ? styles.readOnly : "", invalid ? styles.invalid : "", className].filter(Boolean).join(" ")} />
     {linkRequest && <LinkDialog request={linkRequest} onClose={() => setLinkRequest(null)} />}
   </div>;
