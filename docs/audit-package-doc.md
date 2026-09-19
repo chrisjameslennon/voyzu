@@ -9,21 +9,23 @@
 
 Read-only audit history. One contract returns the event header and its dependent field-change records.
 
-```ts
-type ActorType = "APP" | "API" | "SYSTEM";
+#### Data definition and relationships
 
-interface AuditChange {
+```ts
+export type ActorType = "APP" | "API" | "SYSTEM";
+
+export interface AuditChange {
   id: number;
   fieldPath: string;
   oldValue: unknown;
   newValue: unknown;
 }
 
-interface Audit {
+export interface Audit {
   id: number;
   code: string;
   packageCode: string;
-  organization_id: number | null;
+  organizationId: number | null;
   organizationCode: string | null;
   actorType: ActorType | null;
   actorId: string | null;
@@ -34,113 +36,140 @@ interface Audit {
   entityId: string;
   entityCode: string | null;
   mutationId: string | null;
-  creationDate: string; // Date-time string.
+  creationDate: string;
   changes: AuditChange[];
 }
 
-interface AuditFilters {
+export interface AuditRelationships {
+  references: {
+    organization: {
+      contract: "@core/organization";
+      source: "organizationId";
+      participation: "optional";
+    };
+
+    package: {
+      contract: "@core/installed-package";
+      source: "packageCode";
+      participation: "mandatory";
+    };
+
+    actor: {
+      contract: "@core/user";
+      source: "actorId";
+      participation: "optional";
+      when: {
+        field: "actorType";
+        in: readonly ["APP", "API"];
+      };
+    };
+
+    entity: {
+      contract: "*";
+      source: {
+        discriminator: "entityType";
+        identifier: "entityId";
+      };
+      participation: "mandatory";
+    };
+  };
+}
+
+export interface AuditContract {
+  identifier: "id";
+  dataDefinition: Audit;
+  relationships: AuditRelationships;
+  methods: AuditMethods;
+}
+```
+
+### Relationships Diagram
+
+```mermaid
+flowchart LR
+    Audit["Audit<br/>@core/audit"]
+    Organization["Organization<br/>@core/organization"]
+    Package["Installed Package<br/>@core/installed-package"]
+    User["User<br/>@core/user"]
+    Entity["Affected entity<br/>Polymorphic target"]
+
+    Audit -->|"references (optional)<br/>organizationId"| Organization
+    Audit -->|"references (mandatory)<br/>packageCode"| Package
+    Audit -->|"references (optional)<br/>actorId, APP/API only"| User
+    Audit -->|"references (mandatory)<br/>entityType + entityId"| Entity
+```
+
+Arrows point from Audit to the referenced contract. Each target's `referencedBy` relationship is derived from the corresponding arrow. Audit declares no extends or composes relationships to other contracts.
+
+#### Methods
+
+```ts
+export interface AuditFilters {
   packageCode?: string;
-  organization_id?: number;
+  organizationId?: number;
   entityType?: string;
   entityCode?: string;
   entityId?: string;
   mutationId?: string;
   actorId?: string;
-  dateFrom?: string; // Inclusive YYYY-MM-DD.
-  dateTo?: string; // Inclusive YYYY-MM-DD.
+  dateFrom?: string;
+  dateTo?: string;
   search?: string;
 }
 
-interface AuditPage {
+export interface AuditPage {
   items: Audit[];
   nextCursor: string | null;
   totalMatching: number;
 }
 
-interface AuditMethods {
-  get(parameters: { id: number }): Promise<Audit | null>;
+export interface AuditMethods {
+  get(parameters: {
+    id: number;
+  }): Promise<Audit | null>;
+
   list(parameters: {
     filters?: AuditFilters;
     cursor?: string;
   }): Promise<AuditPage>;
+
   filter(parameters: {
     filters: AuditFilters;
     cursor?: string;
   }): Promise<AuditPage>;
+
   search(parameters: {
     q: string;
     filters?: AuditFilters;
     cursor?: string;
   }): Promise<AuditPage>;
-  batchGet(parameters: { ids: number[] }): Promise<Audit[]>;
-  count(parameters: { filters?: AuditFilters }): Promise<{ count: number }>;
-  export(parameters: { filters?: AuditFilters }): Promise<Audit[]>;
-}
 
-export const AuditRelationships = {
-  references: {
-    organization: {
-      contract: "@core/organization",
-      source: "organization_id",
-      participation: "optional",
-    },
-    package: {
-      contract: "@core/installed-package",
-      source: "packageCode",
-      participation: "mandatory",
-    },
-    actor: {
-      contract: "@core/user",
-      source: "actorId",
-      participation: "optional",
-      when: { field: "actorType", in: ["APP", "API"] },
-    },
-    entity: {
-      contract: "*",
-      source: { discriminator: "entityType", identifier: "entityId" },
-      participation: "mandatory",
-    },
-  },
-} as const;
+  batchGet(parameters: {
+    ids: number[];
+  }): Promise<Audit[]>;
 
-interface AuditContract {
-  identifier: "id";
-  dataDefinition: Audit;
-  relationships: typeof AuditRelationships;
-  methods: AuditMethods;
+  count(parameters: {
+    filters?: AuditFilters;
+  }): Promise<{ count: number }>;
+
+  export(parameters: {
+    filters?: AuditFilters;
+  }): Promise<Audit[]>;
 }
 ```
 
-The contract identifier is `@core/audit`. Its `identifier: "id"` declaration names the canonical field identifying one Audit instance; for example, `id: 15451`. The generated `code` is a display/business code, not the canonical instance identifier.
+### Semantic Contract to DTO mapping
 
-References use the target contract's declared identifier unless an explicit `target` selects another field:
-
-| Contract | Instance identifier field |
+| Semantic interface | DTO equivalent |
 | --- | --- |
-| `@core/audit` | `id` |
-| `@core/organization` | `organization_id` |
-| `@core/user` | `id` |
-| `@core/installed-package` | `code` |
+| `AuditChange` | `AuditChangeResponseDto`. |
+| `Audit` | `AuditGetResponseDto` when non-null. HTTP `AuditEventResponseDto` differs by making `changes` optional. |
+| `AuditFilters` | Used directly by `AuditEventFilterRequestDto`. |
+| `AuditPage` | Corresponds to `AuditEventListResponseDto`, but contains semantic `Audit` objects instead of HTTP event DTOs. |
+| `AuditMethods` | No single DTO; its method parameters and return values map to request/response DTOs. |
+| `AuditContract` | No DTO; describes the contract itself, including identity, relationships and methods. |
 
-Thus Audit's `organization_id`, `actorId` and `packageCode` references do not repeat the target field. The polymorphic entity reference uses `entityType` to identify the target and `entityId` to carry that target's instance identifier. Identifier declarations describe identity; they do not add properties to the data shape or prescribe SQL storage.
-
-## Diagram
-
-```mermaid
-flowchart LR
-    Audit["Audit ? @core/audit"]
-    Organization["Organization ? @core/organization"]
-    Package["Installed Package ? @core/installed-package"]
-    User["User ? @core/user"]
-    Entity["Affected entity ? polymorphic target"]
-
-    Audit -->|"references ? optional ? organization_id"| Organization
-    Audit -->|"references ? mandatory ? packageCode ? code"| Package
-    Audit -->|"references ? optional ? actorId ? id ? APP/API only"| User
-    Audit -->|"references ? mandatory ? entityType + entityId"| Entity
-```
-
-Arrows point from Audit to the referenced contract. Each target?s `referencedBy` relationship is derived from the corresponding arrow. Audit declares no extends or composes relationships to other contracts.
+`ActorType` is a shared value type rather than a standalone DTO.
 
 ## Persistence
 
@@ -155,7 +184,7 @@ CREATE TABLE IF NOT EXISTS audit_event (
     id BIGINT PRIMARY KEY GENERATED BY DEFAULT AS IDENTITY (START WITH 10000),
     code TEXT GENERATED ALWAYS AS ('AUDIT-' || id::TEXT) STORED,
     package_code TEXT NOT NULL CHECK (length(btrim(package_code)) > 0),
-    organization_id BIGINT,
+    organizationId BIGINT,
     actor_type actor_type,
     actor_id TEXT,
     action TEXT NOT NULL,
@@ -168,7 +197,7 @@ CREATE TABLE IF NOT EXISTS audit_event (
 );
 
 CREATE INDEX IF NOT EXISTS audit_event_package_organization_date_idx
-    ON audit_event (package_code, organization_id, creation_date DESC, id DESC);
+    ON audit_event (package_code, organizationId, creation_date DESC, id DESC);
 
 CREATE INDEX IF NOT EXISTS audit_event_package_entity_idx
     ON audit_event (package_code, entity_type, entity_id);
@@ -200,7 +229,7 @@ CREATE TABLE IF NOT EXISTS audit_change (
 CREATE OR REPLACE FUNCTION audit_trigger_fn() RETURNS TRIGGER AS $$
 DECLARE
   v_event_id    BIGINT;
-  v_organization_id  BIGINT;
+  v_organizationId  BIGINT;
   v_entity_id   TEXT;
   v_entity_code TEXT;
   v_entity_code_field TEXT;
@@ -278,7 +307,7 @@ BEGIN
     v_new_record := to_jsonb(NEW);
     v_entity_id := COALESCE(v_new_record->>'id', v_new_record->>'code');
     v_entity_code := v_new_record->>v_entity_code_field;
-    v_organization_id := NULLIF(v_new_record->>'organization_id','')::BIGINT;
+    v_organizationId := NULLIF(v_new_record->>'organizationId','')::BIGINT;
     IF TG_OP = 'INSERT' THEN
       v_actor_type := v_new_record->>'creation_actor_type';
       v_actor_id := v_new_record->>'creation_user_id';
@@ -296,7 +325,7 @@ BEGIN
     IF TG_OP = 'DELETE' THEN
       v_entity_id := COALESCE(v_old_record->>'id', v_old_record->>'code');
       v_entity_code := v_old_record->>v_entity_code_field;
-      v_organization_id := NULLIF(v_old_record->>'organization_id','')::BIGINT;
+      v_organizationId := NULLIF(v_old_record->>'organizationId','')::BIGINT;
       v_actor_type := COALESCE(v_old_record->>'deletion_actor_type', v_old_record->>'updated_actor_type');
       v_actor_id := COALESCE(v_old_record->>'deletion_user_id', v_old_record->>'updated_user_id');
       v_mutation_id := COALESCE(v_old_record->>'deletion_mutation_id', v_old_record->>'updated_mutation_id');
@@ -308,7 +337,7 @@ BEGIN
   -- Insert audit event
   INSERT INTO audit_event (
     package_code,
-    organization_id,
+    organizationId,
     actor_type,
     actor_id,
     action,
@@ -318,7 +347,7 @@ BEGIN
     mutation_id
   ) VALUES (
     v_package_code,
-    v_organization_id,
+    v_organizationId,
     v_actor_type::actor_type,
     v_actor_id,
     v_action,
@@ -458,15 +487,15 @@ Paths below are declared relative to the host HTTP API prefix. See [route defini
 
 | Method | Path | Request / Response | Result |
 | --- | --- | --- | --- |
-| GET | `/audit` | ↓&nbsp;[AuditEventListResponseDto](../packages/@voyzu/audit/types/audit-event.list.response.dto.ts) | Filtered events, next cursor and total matching count. |
-| POST | `/audit/filter` | ↑&nbsp;[AuditEventFilterRequestDto](#auditeventfilterrequestdto)<br>↓&nbsp;[AuditEventListResponseDto](../packages/@voyzu/audit/types/audit-event.list.response.dto.ts) | Body: `{ filters, cursor? }`. Matching events, next cursor and total matching count. |
-| GET | `/audit/search?q=...` | ↓&nbsp;[AuditEventListResponseDto](../packages/@voyzu/audit/types/audit-event.list.response.dto.ts) | Search results with next cursor and total matching count; accepts scope filters and cursor. |
-| POST | `/audit/batch/get` | ↑&nbsp;[AuditEventBatchGetRequestDto](#auditeventbatchgetrequestdto)<br>↓&nbsp;[AuditEventResponseDto[]](../packages/@voyzu/audit/types/audit-event.response.dto.ts) | Body: `{ ids: number[] }`. Matching events with field changes; missing IDs are omitted. |
-| GET | `/audit/count` | ↓&nbsp;[AuditEventCountResponseDto](../packages/@voyzu/audit/types/audit-event-count.response.dto.ts) | Matching count. |
-| GET | `/audit/export` | ↓&nbsp;[AuditEventResponseDto[]](../packages/@voyzu/audit/types/audit-event.response.dto.ts) | All matching events as a JSON array. |
-| GET | `/audit/[id]` | ↓&nbsp;[AuditEventResponseDto](../packages/@voyzu/audit/types/audit-event.response.dto.ts) | One event with field changes; 404 if absent. |
+| GET | `/audit` | ↓&nbsp;[AuditEventListResponseDto](#auditeventlistresponsedto) | Filtered events, next cursor and total matching count. |
+| POST | `/audit/filter` | ↑&nbsp;[AuditEventFilterRequestDto](#auditeventfilterrequestdto)<br>↓&nbsp;[AuditEventListResponseDto](#auditeventlistresponsedto) | Body: `{ filters, cursor? }`. Matching events, next cursor and total matching count. |
+| GET | `/audit/search?q=...` | ↓&nbsp;[AuditEventListResponseDto](#auditeventlistresponsedto) | Search results with next cursor and total matching count; accepts scope filters and cursor. |
+| POST | `/audit/batch/get` | ↑&nbsp;[AuditEventBatchGetRequestDto](#auditeventbatchgetrequestdto)<br>↓&nbsp;[AuditEventResponseDto[]](#auditeventresponsedto) | Body: `{ ids: number[] }`. Matching events with field changes; missing IDs are omitted. |
+| GET | `/audit/count` | ↓&nbsp;[AuditEventCountResponseDto](#auditeventcountresponsedto) | Matching count. |
+| GET | `/audit/export` | ↓&nbsp;[AuditEventResponseDto[]](#auditeventresponsedto) | All matching events as a JSON array. |
+| GET | `/audit/[id]` | ↓&nbsp;[AuditEventResponseDto](#auditeventresponsedto) | One event with field changes; 404 if absent. |
 
-List/filter/search/count/export filters: `packageCode`, `organizationId`, `entityType`, `entityCode`, `entityId`, `mutationId`, `actorId` (ID or user code), inclusive `dateFrom`/`dateTo`, and `search`. List, filter and search additionally accept `cursor`. The search route uses `q` for its search text. Filter accepts its filters and cursor in the request body; list, search, count and export use query parameters. Results are ordered by creation date and ID descending. The HTTP DTO uses `organizationId`; the internal API uses `organization_id`.
+List/filter/search/count/export filters: `packageCode`, `organizationId`, `entityType`, `entityCode`, `entityId`, `mutationId`, `actorId` (ID or user code), inclusive `dateFrom`/`dateTo`, and `search`. List, filter and search additionally accept `cursor`. The search route uses `q` for its search text. Filter accepts its filters and cursor in the request body; list, search, count and export use query parameters. Results are ordered by creation date and ID descending. Both the HTTP DTO and semantic contract use `organizationId`.
 
 ## Components
 
@@ -486,41 +515,123 @@ A reusable component for browsing audit history, embedded by a host screen or mo
 
 A reusable panel for record detail screens, following the shared information-panel visual pattern.
 
-- Displays creation and last-update timestamps, actor types and user information from the record?s audit metadata.
-- Accepts the record?s package, organization and entity identifiers to scope its audit history.
+- Displays creation and last-update timestamps, actor types and user information from the record's audit metadata.
+- Accepts the record's package, organization and entity identifiers to scope its audit history.
 - Provides the **View audit information** action to show the Audit List scoped to that record.
 - Uses the same Audit List component rather than implementing a separate history view.
 - Handles missing audit metadata or unresolved user information without preventing the host record from being displayed.
 
 ## Types
 
+DTOs reuse semantic contract types directly when their shapes match. Transport-specific shapes extend or project those types, declaring only the differences. The `@voyzu/semantic-contracts/*` import paths below are illustrative. Types defined together in one DTO file do not need imports between each other.
+
 | Type name | Description | Link |
 | --- | --- | --- |
 | `AuditEventFilterRequestDto` | HTTP filter request containing filters and an optional pagination cursor. | [Definition](#auditeventfilterrequestdto) |
 | `AuditEventBatchGetRequestDto` | HTTP batch-get request containing audit event IDs. | [Definition](#auditeventbatchgetrequestdto) |
-| `AuditGetRequestDto` | Internal API request identifying an audit event by its positive integer ID. | [Source](../packages/@voyzu/audit/types/audit.internal-api.dto.ts) |
-| `AuditGetResponseDto` | Internal API response containing the Audit contract, or null when not found. | [Source](../packages/@voyzu/audit/types/audit.internal-api.dto.ts) |
-| `AuditChangeResponseDto` | One field change: change ID, field path, old value and new value. | [Source](../packages/@voyzu/audit/types/audit-event.response.dto.ts) |
-| `AuditEventResponseDto` | Audit event header with package, organization, actor, entity, action and timestamp information, plus optional field changes. | [Source](../packages/@voyzu/audit/types/audit-event.response.dto.ts) |
-| `AuditEventListResponseDto` | Paginated audit events with the next cursor and total matching count. | [Source](../packages/@voyzu/audit/types/audit-event.list.response.dto.ts) |
-| `AuditEventCountResponseDto` | Number of audit events matching the supplied filters. | [Source](../packages/@voyzu/audit/types/audit-event-count.response.dto.ts) |
-| `AuditUserDto` | User summary containing ID, code and display name. | [Source](../packages/@voyzu/audit/types/audit-metadata.dto.ts) |
-| `AuditStampDto` | Audit timestamp with optional actor type, user ID, user summary and mutation ID. | [Source](../packages/@voyzu/audit/types/audit-metadata.dto.ts) |
-| `AuditMetadataDto` | Creation and last-update audit stamps attached to a business record. | [Source](../packages/@voyzu/audit/types/audit-metadata.dto.ts) |
+| `AuditGetRequestDto` | Internal API request identifying an audit event by its positive integer ID. | [Definition](#auditgetrequestdto) |
+| `AuditGetResponseDto` | Internal API response containing the Audit contract, or null when not found. | [Definition](#auditgetresponsedto) |
+| `AuditChangeResponseDto` | One field change: change ID, field path, old value and new value. | [Definition](#auditchangeresponsedto) |
+| `AuditEventResponseDto` | Audit event header with package, organization, actor, entity, action and timestamp information, plus optional field changes. | [Definition](#auditeventresponsedto) |
+| `AuditEventListResponseDto` | Paginated audit events with the next cursor and total matching count. | [Definition](#auditeventlistresponsedto) |
+| `AuditEventCountResponseDto` | Number of audit events matching the supplied filters. | [Definition](#auditeventcountresponsedto) |
+| `AuditUserDto` | User summary containing ID, code and display name. | [Definition](#audituserdto) |
+| `AuditStampDto` | Audit timestamp with optional actor type, user ID, user summary and mutation ID. | [Definition](#auditstampdto) |
+| `AuditMetadataDto` | Creation and last-update audit stamps attached to a business record. | [Definition](#auditmetadatadto) |
 
 ### AuditEventFilterRequestDto
 
 ```ts
-interface AuditEventFilterRequestDto {
-  filters: Omit<AuditFilters, "organization_id"> & { organizationId?: number };
-  cursor?: string;
-}
+import type { AuditMethods } from "@voyzu/semantic-contracts/audit";
+
+export type AuditEventFilterRequestDto = Parameters<AuditMethods["filter"]>[0];
 ```
 
 ### AuditEventBatchGetRequestDto
 
 ```ts
-interface AuditEventBatchGetRequestDto {
-  ids: number[]; // Positive integer audit event IDs.
+import type { AuditMethods } from "@voyzu/semantic-contracts/audit";
+
+export type AuditEventBatchGetRequestDto = Parameters<AuditMethods["batchGet"]>[0];
+```
+
+### AuditGetRequestDto
+
+```ts
+import type { AuditMethods } from "@voyzu/semantic-contracts/audit";
+
+export type AuditGetRequestDto = Parameters<AuditMethods["get"]>[0];
+```
+
+### AuditGetResponseDto
+
+```ts
+import type { AuditMethods } from "@voyzu/semantic-contracts/audit";
+
+export type AuditGetResponseDto = Awaited<ReturnType<AuditMethods["get"]>>;
+```
+
+### AuditChangeResponseDto
+
+```ts
+export type { AuditChange as AuditChangeResponseDto } from "@voyzu/semantic-contracts/audit";
+```
+
+### AuditEventResponseDto
+
+```ts
+import type { Audit } from "@voyzu/semantic-contracts/audit";
+
+export interface AuditEventResponseDto
+  extends Omit<Audit, "changes"> {
+  changes?: Audit["changes"];
+}
+```
+
+### AuditEventListResponseDto
+
+```ts
+import type { AuditPage } from "@voyzu/semantic-contracts/audit";
+import type { AuditEventResponseDto } from "./audit-event.response.dto";
+
+export interface AuditEventListResponseDto extends Omit<AuditPage, "items"> {
+  items: AuditEventResponseDto[];
+}
+```
+
+### AuditEventCountResponseDto
+
+```ts
+import type { AuditMethods } from "@voyzu/semantic-contracts/audit";
+
+export type AuditEventCountResponseDto = Awaited<ReturnType<AuditMethods["count"]>>;
+```
+
+### AuditUserDto
+
+```ts
+import type { User } from "@voyzu/semantic-contracts/user";
+
+export type AuditUserDto = Pick<User, "id" | "code" | "displayName">;
+```
+
+### AuditStampDto
+
+```ts
+import type { Audit } from "@voyzu/semantic-contracts/audit";
+
+export interface AuditStampDto extends Partial<Pick<Audit, "actorType" | "mutationId">> {
+  date: Audit["creationDate"];
+  userId?: Audit["actorId"];
+  user?: AuditUserDto | null;
+}
+```
+
+### AuditMetadataDto
+
+```ts
+export interface AuditMetadataDto {
+  created: AuditStampDto;
+  updated: AuditStampDto;
 }
 ```
